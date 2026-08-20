@@ -1,6 +1,6 @@
 # Harness 学习文档项目执行计划 v1
 
-状态：**活动 Goal 已启动；M1 已完成；M2 进行中；M9 未授权**
+状态：**活动 Goal 已启动；M1–M2 已完成；M3 进行中；M9 未授权**
 交付契约批准语句：批准交付契约 v1，请保存执行计划  
 计划修订日期：2026-08-20  
 工作区：C:\Users\lxiang\repos\about-harness
@@ -19,8 +19,8 @@
 | --- | --- | --- |
 | M0 | **已完成** | 执行计划已复核并批准 |
 | M1 | **已完成** | legacy baseline：`2847afc147704e453476f083c52e058e2f5e3639`；tag：`legacy-baseline-v1` |
-| M2 | **进行中** | 知识地图、站点骨架、事实注册表和作品集 rubric |
-| M3 | 未开始 | Python 最小 harness、TypeScript 映射、容器和离线 runner |
+| M2 | **已完成** | 知识地图、站点骨架、事实注册表、作品集 rubric 与 legacy 迁移 |
+| M3 | **进行中** | Python 最小 harness、TypeScript 映射、容器和离线 runner |
 | M4 | 未开始 | 模型、harness、framework、领域和安全内容 |
 | M5 | 未开始 | 六个案例、正式 schema 和评测系统 |
 | M6 | 未开始 | 来源、许可、隐私、CI、视觉和发布自动化 |
@@ -1164,6 +1164,16 @@ npm run verify 最终聚合全部离线 PR 门禁。项目 Pages 构建必须显
 - README、changelog 和 legacy reviews 在 baseline 前未移动、改写或改标。
 - 恢复点：`legacy-baseline-v1`；下一步在同一 Goal 下执行 M2。
 
+### M2 结果
+
+- 完成知识地图、前置知识、学习路径、六项作品集及 40/25/20/15 评分 rubric。
+- 建立首页、导航、来源、事实注册表、兼容性、隐私、维护、贡献与 issue 模板骨架。
+- 十份旧 review 原样迁至 `docs/reviews/legacy/`，原始 SHA256 全部保持；旧路由仅显示迁移说明，README/changelog 不再声称 v1 十轮完成。
+- 新增 `facts:check`、`reviews:check` 与负例 self-test；8 条注册事实可解析，pending 主张不会被误标为 verified。
+- `npm run check` 在 `/` 与 `/about-harness/` base 均通过：55 个 Markdown 页面、55 条路由、56 个 HTML artifact，无断链或孤页。
+- 安全与外部状态：只使用本地文件、构建和离线检查；无真实 API、凭据、费用、remote 或发布动作。
+- 恢复点：M2 result commit/tag；下一步在同一 Goal 下执行 M3。
+
 ### 后续里程碑记录模板
 
 每个里程碑完成或中止时追加：
@@ -1195,7 +1205,7 @@ M9 后必须总结：
 
 ## 17. 当前停止点
 
-M0、M1 已完成。活动 Goal 已按批准计划 SHA256 授予 A1+A2，当前执行 M2，并在未命中异常暂停条件时连续执行到 M8。
+M0–M2 已完成。活动 Goal 已按批准计划 SHA256 授予 A1+A2，当前执行 M3，并在未命中异常暂停条件时连续执行到 M8。
 
 Goal 执行期间不得调用真实 API、读取凭据、产生费用，或执行 remote、push、PR、Pages 和发布操作。M8 完成后必须停止。
 

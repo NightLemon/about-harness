@@ -39,5 +39,12 @@
 | pass@k / best-of-k | 运行/采样 k 次至少一次成功的指标，不等同于单次成功率 |
 | Wilson interval | 二元成功率的小样本区间估计方法；区间宽说明不确定性大 |
 | Prompt injection | 不可信内容试图被当作高优先级指令，诱导越权或偏离目标 |
+| E0 | 未验证假设；来自推断、营销材料、主观印象或待运行方案，不可写成推荐 |
+| E1 | 固定 fixture、fake、replay 或本地路径提供的确定性离线证据，只证明流程与约束 |
+| E2 | 锁定模型 ID、provider、adapter、harness、配置和日期的真实环境有限烟测 |
+| E3 | 达到任务量、重复、holdout、预注册、安全与成本门槛的正式比较证据 |
+| Evidence level | 对结论证据强度的 E0–E3 标记；级别高低不替代适用范围说明 |
+| Result commit | 某次里程碑或 review 修正并验证后的不可变 Git commit |
+| Annotated tag | 含 tagger、日期和说明对象的 Git tag；本项目用它绑定 baseline/result 与证据 |
 
 产品可能对同一词使用更窄或不同定义。引用产品行为时以对应官方文档为准。

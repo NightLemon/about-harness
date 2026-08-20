@@ -15,16 +15,19 @@ export default defineConfig({
     logo: { src: '/logo.svg', alt: 'About Harness' },
     nav: [
       { text: '学习路径', link: '/guide/start' },
+      { text: '知识地图', link: '/guide/roadmap' },
       { text: '模型优化', link: '/optimization/model-fit' },
       { text: 'Harness 指南', link: '/harnesses/comparison' },
-      { text: '审阅记录', link: '/meta/changelog' }
+      { text: '项目状态', link: '/meta/changelog' }
     ],
     sidebar: [
       {
         text: '开始',
         items: [
+          { text: '前置知识', link: '/guide/prerequisites' },
           { text: '学习路径', link: '/guide/start' },
-          { text: '知识地图', link: '/guide/roadmap' }
+          { text: '知识地图', link: '/guide/roadmap' },
+          { text: '作品集与评分', link: '/guide/portfolio' }
         ]
       },
       {
@@ -72,9 +75,15 @@ export default defineConfig({
         items: [
           { text: '术语表', link: '/references/glossary' },
           { text: '资料来源', link: '/references/sources' },
+          { text: '事实注册表', link: '/references/fact-registry' },
+          { text: '兼容性矩阵', link: '/references/compatibility' },
           { text: '审阅方法', link: '/meta/review-method' },
           { text: '迭代记录', link: '/meta/changelog' },
+          { text: 'V1 Review 状态', link: '/reviews/v1' },
+          { text: 'Legacy Review 说明', link: '/reviews/legacy' },
           { text: '站点依赖安全', link: '/meta/dependency-security' },
+          { text: '隐私与公开结果', link: '/meta/privacy' },
+          { text: '维护与事实刷新', link: '/meta/maintenance' },
           { text: '发布到 GitHub Pages', link: '/meta/publishing' }
         ]
       }

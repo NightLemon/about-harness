@@ -11,6 +11,33 @@ This repository is a Chinese learning site about AI agent harnesses. Keep stable
 - Do not present a model ranking as universal. State workload, harness, settings, and evidence.
 - Every tutorial should include a verification step and a safe rollback or stop condition when relevant.
 - Keep examples free of real secrets, personal paths, and destructive commands.
+- Use Chinese prose; preserve product names, commands, API fields, and configuration keys in English.
+- Separate stable mechanisms, product facts, project recommendations, and examples.
+- Label evidence as E0, E1, E2, or E3. Never upgrade evidence merely because a command succeeded.
+- A tutorial must state prerequisites, pinned versions, inputs, commands, expected outputs, assertions, a failure case, cleanup, rollback, and known limits.
+
+## Facts and sources
+
+- Register volatile claims in `docs/references/fact-registry.md`.
+- Prefer official documentation or the maintained repository; pin a tag or commit when possible.
+- A checked date means the cited source or target version was actually inspected on that date.
+- If online verification is unavailable, mark the claim `待核验` or E0; do not invent a checked result.
+- Product comparisons must state version, surface, workload, configuration, and evidence boundary.
+
+## Experiments and safety
+
+- Offline fake/replay fixtures are the default. Live adapters must be disabled by default.
+- Never commit credentials, private paths, private traces, personal data, or unredacted tool output.
+- Record task, run, trace, result, fixture hash, configuration, exit code, and failure classification.
+- Do not present E1 replay evidence as proof of live-model quality.
+- Real APIs, fees, Git remotes, pushes, PRs, Pages, and releases require separate authorization.
+
+## Reviews
+
+- `docs/reviews/legacy/` is historical evidence and does not count toward v1.
+- New rounds live in `docs/reviews/v1/`; evidence lives in `artifacts/reviews/v1/`.
+- Findings must exist before the corresponding fix. A round needs a frozen baseline, substantive findings, a diff, verification, unresolved items, environment metadata, a result commit, and annotated tags.
+- Typo-only or evidence-free edits do not count as a round.
 
 ## Verification
 
@@ -18,7 +45,8 @@ After changing Markdown or site configuration, run:
 
 ```bash
 npm run check
+npm run facts:check
+npm run reviews:check
 ```
 
 Do not claim a review round is complete until its findings, edits, and verification are recorded under `docs/reviews/`.
-

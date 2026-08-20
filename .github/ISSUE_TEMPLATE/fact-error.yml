@@ -1,0 +1,36 @@
+name: 产品事实错误
+description: 报告版本敏感的命令、配置或行为错误
+title: "[事实] "
+labels: [documentation, fact]
+body:
+  - type: input
+    id: page
+    attributes:
+      label: 页面与锚点
+    validations:
+      required: true
+  - type: textarea
+    id: claim
+    attributes:
+      label: 当前主张与问题
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: 产品、模型、harness、surface 与版本
+    validations:
+      required: true
+  - type: input
+    id: source
+    attributes:
+      label: 官方来源 URL 与核对日期
+    validations:
+      required: true
+  - type: textarea
+    id: privacy
+    attributes:
+      label: 脱敏确认
+      description: 不要提交凭据、私人路径或未脱敏 trace。
+    validations:
+      required: true

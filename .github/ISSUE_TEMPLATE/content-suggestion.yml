@@ -1,0 +1,23 @@
+name: 内容建议
+description: 建议新的稳定机制、案例或学习路径改进
+title: "[内容] "
+labels: [documentation]
+body:
+  - type: textarea
+    id: learner
+    attributes:
+      label: 目标读者与学习问题
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: 建议范围与明确非目标
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: 来源、练习与验收证据
+    validations:
+      required: true

@@ -9,8 +9,11 @@
     "docs:preview": "vitepress preview docs",
     "docs:check": "node scripts/check-docs.mjs",
     "docs:verify-build": "node scripts/check-built-site.mjs",
+    "facts:check": "node scripts/facts-check.mjs",
+    "reviews:check": "node scripts/reviews-check.mjs",
+    "checks:self-test": "node scripts/test-m2-checks.mjs",
     "eval:summary": "node scripts/summarize-evals.mjs evals/runs.example.jsonl",
-    "check": "npm run docs:check && npm run docs:build && npm run docs:verify-build"
+    "check": "npm run docs:check && npm run docs:build && npm run docs:verify-build && npm run facts:check && npm run reviews:check && npm run checks:self-test"
   },
   "devDependencies": {
     "playwright": "^1.62.1",

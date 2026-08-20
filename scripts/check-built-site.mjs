@@ -26,7 +26,9 @@ function outputForUrl(url) {
   if (!relative) return path.join(dist, 'index.html')
   if (relative.endsWith('/')) return path.join(dist, relative, 'index.html')
   if (path.extname(relative)) return path.join(dist, relative)
-  return path.join(dist, `${relative}.html`)
+  const flat = path.join(dist, `${relative}.html`)
+  const directoryIndex = path.join(dist, relative, 'index.html')
+  return fs.existsSync(flat) ? flat : directoryIndex
 }
 
 if (!fs.existsSync(dist)) {
@@ -61,7 +63,7 @@ for (const file of htmlFiles) {
 }
 
 const index = fs.readFileSync(path.join(dist, 'index.html'), 'utf8')
-for (const expected of [`${base}logo.svg`, `${base}guide/start`, `${base}practice/model-playbook`]) {
+for (const expected of [`${base}logo.svg`, `${base}guide/start`, `${base}guide/portfolio`]) {
   if (!index.includes(expected)) errors.push(`index.html: missing expected base-aware reference ${expected}`)
 }
 
@@ -72,4 +74,3 @@ if (errors.length) {
 }
 
 console.log(`Build verification passed: ${renderedPages.length} pages, ${htmlFiles.length} HTML files, base ${base}.`)
-
