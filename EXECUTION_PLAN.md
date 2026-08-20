@@ -1105,6 +1105,7 @@ npm run verify 最终聚合全部离线 PR 门禁。项目 Pages 构建必须显
 11. 当前 package.json 已包含 Playwright，docs:dev 当前为 vitepress dev docs；这些只能作为现状事实，不是新十轮证据。
 12. M3 期间直接 PyPI/npmjs TLS 握手失败；改用环境既有 Microsoft package feed proxy 后生成 `uv.lock`，锁定官方 Pyright/pytest/Ruff/jsonschema，并由离线 `uv sync --frozen --offline` 复验。
 13. 本机最初没有 `python:3.12-slim`；只拉取公开 base digest 并构建本地镜像 `sha256:9dc56e…bfcc`，无登录、push 或模型 API。运行时使用无网络、只读文件系统、drop capabilities 与 no-new-privileges。
+14. 首次 M3 result commit 误收录 18 个 `__pycache__/*.pyc`；按不可改写历史原则保留 `m3-complete-v1`，随后用新 commit 删除生成物、补齐忽略规则，并以 `m3-corrected-v1` 作为权威 M3 恢复点。
 
 后续每次新增发现使用格式：
 
@@ -1184,7 +1185,8 @@ npm run verify 最终聚合全部离线 PR 门禁。项目 Pages 构建必须显
 - `uv sync --frozen --offline`、20 项 pytest、Ruff 0.16.2、Pyright 1.1.411、TypeScript `tsc --noEmit` 与离线 smoke 全部通过。
 - 本地容器镜像 `sha256:9dc56e8601de95eefbd8b3adb0ef1e9b0d309495ca4074525d9e8f2a1bd5bfcc` 在 `--network none --read-only --cap-drop ALL --security-opt no-new-privileges` 下完成 smoke。
 - Root 与 `/about-harness/` base 的 60 页面构建均通过；live adapter 硬禁用，未读取凭据、未调用模型 API、未产生模型费用、未执行 Git remote/push/发布。
-- 恢复点：M3 result commit/tag；下一步在同一 Goal 下执行 M4。
+- 首次 tag `m3-complete-v1` 包含误收录的 Python cache，保留作审计但已废止；权威恢复点为后续 `m3-corrected-v1`，其中删除 18 个 `.pyc` 并补齐 `.gitignore`。
+- 恢复点：`m3-corrected-v1`；下一步在同一 Goal 下执行 M4。
 
 ### 后续里程碑记录模板
 
