@@ -1,0 +1,19 @@
+{
+  "name": "about-harness",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs",
+    "docs:check": "node scripts/check-docs.mjs",
+    "docs:verify-build": "node scripts/check-built-site.mjs",
+    "eval:summary": "node scripts/summarize-evals.mjs evals/runs.example.jsonl",
+    "check": "npm run docs:check && npm run docs:build && npm run docs:verify-build"
+  },
+  "devDependencies": {
+    "playwright": "^1.62.1",
+    "vitepress": "1.6.4"
+  }
+}

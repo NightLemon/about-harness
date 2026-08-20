@@ -1,0 +1,4 @@
+{"task_id":"docs-link-01","category":"small-fix","fixture_ref":"git:example/repo@1111111","prompt_version":"task-contract-v1","timeout_s":600,"must_pass":["npm run docs:check"],"must_not":["change application code","access network"],"weight":1}
+{"task_id":"auth-refresh-01","category":"debugging","fixture_ref":"git:example/repo@2222222","prompt_version":"task-contract-v1","timeout_s":1200,"must_pass":["npm run test -- auth/refresh","npm run typecheck"],"must_not":["change token TTL","add production dependencies"],"weight":2}
+{"task_id":"api-pagination-01","category":"multi-file","fixture_ref":"git:example/repo@3333333","prompt_version":"task-contract-v1","timeout_s":1200,"must_pass":["npm run test -- api/pagination","npm run lint"],"must_not":["change public response fields"],"weight":2}
+

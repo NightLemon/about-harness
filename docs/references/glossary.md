@@ -1,0 +1,43 @@
+# 术语表
+
+| 术语 | 本项目中的含义 |
+| --- | --- |
+| Agent | 围绕目标进行多步观察、决策、行动和反馈的系统行为体 |
+| Harness | 承载并约束 agent 循环的运行环境，包含上下文、工具、权限、状态和反馈 |
+| Agentic loop | 观察—决策—行动—读取结果—继续/完成的循环 |
+| Context window | 模型单次推理可接收的有限 token 空间；不等于长期记忆 |
+| Token | 模型处理文本/代码的计量片段，不等同于字或字符；计费与上下文常以它计量 |
+| Context engineering | 选择、组织、检索、压缩和隔离模型当前所见信息的工程 |
+| Compaction | 将较早会话有损摘要以释放上下文的过程 |
+| Tool calling | 模型输出结构化调用意图，由 harness 校验与执行 |
+| Schema | 对工具参数或数据字段的结构、类型与约束定义 |
+| MCP | Model Context Protocol，连接 host/client 与外部 server 的开放协议 |
+| Skill | 可按需发现和加载的工作流/领域知识包，通常以 `SKILL.md` 为核心 |
+| Hook | 在生命周期事件上确定性执行的程序化规则 |
+| Extension/Plugin | 扩展工具、循环、UI、集成或可分发能力的代码/资源包；各产品含义有差别 |
+| Subagent | 在独立上下文、角色或工具权限中承担边界任务的 agent |
+| Sandbox | 在操作系统或执行层限制文件、网络、进程等能力的隔离环境 |
+| Approval | 在有副作用动作执行前由用户或策略授权 |
+| Allowlist | 只允许预先列出的命令、工具、路径或域；未列出的默认拒绝/审批 |
+| Dry-run | 只预览计划或校验输入，不提交真实副作用的运行方式 |
+| Provider | 实际提供模型 API/推理服务的供应方或适配层 |
+| Adapter | 把某 provider 的消息、工具调用、流式事件和错误映射为 harness 内部格式的适配层 |
+| Surface | 同一产品的 CLI、IDE、桌面、Web、云端等交互或执行表面；默认值与能力可能不同 |
+| Host | 承载 MCP client、模型调用和工具策略的 agent 应用，例如 Codex 或 Claude Code |
+| Runtime/controller | 维护循环状态并决定继续、重试、压缩、暂停或结束的 harness 组件 |
+| Reasoning effort | Harness/API 给模型分配的推理深度/预算档位；不同模型不可直接等量比较 |
+| Task contract | 目标、上下文入口、边界与完成条件组成的可执行任务描述 |
+| Fixture | 可重复测试/评测的固定起始仓库、数据和环境 |
+| Run | 某一任务在某一配置下的一次独立执行；同一任务的多个 run 不是多个不同任务 |
+| Rubric | 把主观质量拆为具体维度和分值/判定标准的评分规程 |
+| Holdout set | 调优时不可见、只用于最终检验泛化的保留任务集 |
+| Evaluator | 检查输出或轨迹的程序、规则、模型或人工评审者 |
+| Artifact | 可保存和引用的运行产物，如日志、截图、diff、构建包或结果 JSON |
+| Trajectory/trace | 一次 agent 运行中的消息、工具调用、结果、状态与决策轨迹 |
+| Worktree | Git 提供的独立工作目录，可让并行任务避免写同一 checkout |
+| P50 / P90 | 分位数；P50 是中位数，P90 表示 90% 样本不超过该值，需同时报告样本量 |
+| pass@k / best-of-k | 运行/采样 k 次至少一次成功的指标，不等同于单次成功率 |
+| Wilson interval | 二元成功率的小样本区间估计方法；区间宽说明不确定性大 |
+| Prompt injection | 不可信内容试图被当作高优先级指令，诱导越权或偏离目标 |
+
+产品可能对同一词使用更窄或不同定义。引用产品行为时以对应官方文档为准。
