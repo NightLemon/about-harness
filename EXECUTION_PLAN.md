@@ -1,6 +1,6 @@
 # Harness 学习文档项目执行计划 v1
 
-状态：**计划已批准；等待单一 Goal 启动 M1–M8；M9 未授权**
+状态：**活动 Goal 已启动；M1 已完成；M2 进行中；M9 未授权**
 交付契约批准语句：批准交付契约 v1，请保存执行计划  
 计划修订日期：2026-08-20  
 工作区：C:\Users\lxiang\repos\about-harness
@@ -18,8 +18,8 @@
 | 里程碑 | 状态 | 当前说明 |
 | --- | --- | --- |
 | M0 | **已完成** | 执行计划已复核并批准 |
-| M1 | 待 Goal 启动 | 冻结当前 legacy 快照并建立 Git baseline |
-| M2 | 未开始 | 知识地图、站点骨架、事实注册表和作品集 rubric |
+| M1 | **已完成** | legacy baseline：`2847afc147704e453476f083c52e058e2f5e3639`；tag：`legacy-baseline-v1` |
+| M2 | **进行中** | 知识地图、站点骨架、事实注册表和作品集 rubric |
 | M3 | 未开始 | Python 最小 harness、TypeScript 映射、容器和离线 runner |
 | M4 | 未开始 | 模型、harness、framework、领域和安全内容 |
 | M5 | 未开始 | 六个案例、正式 schema 和评测系统 |
@@ -1152,6 +1152,18 @@ npm run verify 最终聚合全部离线 PR 门禁。项目 Pages 构建必须显
 - 聚合指纹口径：递归枚举工作区普通文件，排除 `.git/**`、`node_modules/**`、`docs/.vitepress/dist/**`、`docs/.vitepress/cache/**` 和 `EXECUTION_PLAN.md`；按使用反斜杠的相对路径排序；每行写为 `相对路径<TAB>大写文件 SHA256`；以 LF 连接、UTF-8 无 BOM 编码且末尾不加换行，再计算 SHA256。
 - 等待用户设置引用最终 SHA256 的 Goal，启动 M1–M8。
 
+### M1 结果
+
+- 执行时间：2026-08-20 16:53–16:55（Asia/Shanghai）。
+- 授权：引用批准计划 SHA256 `8FEB03FBB5E44C9CFC197D84B6864424E5E36894835315F4F26958EEF54F2964` 的活动 Goal，A1+A2。
+- 原样 baseline commit：`2847afc147704e453476f083c52e058e2f5e3639`。
+- Annotated tag：`legacy-baseline-v1`，tag object `a659a4317e731ba3dc133a972a3b47b42d187dcf`。
+- 54 个源文件验证前后聚合 SHA256 均为 `9D6E079100F0E427B1DD78C990E694810EAAC90E7D89A8AF78A5A054FECB9E7D`；tag 注释保存完整 manifest。
+- `npm run check`、`npm run eval:summary`、`DOCS_BASE=/about-harness/ npm run check`、两项 `npm audit --offline` 均退出 0。
+- 为遵守禁止真实 API/remote 的 Goal，audit 只使用 `--offline`；remote 保持为空，未 push。
+- README、changelog 和 legacy reviews 在 baseline 前未移动、改写或改标。
+- 恢复点：`legacy-baseline-v1`；下一步在同一 Goal 下执行 M2。
+
 ### 后续里程碑记录模板
 
 每个里程碑完成或中止时追加：
@@ -1183,12 +1195,11 @@ M9 后必须总结：
 
 ## 17. 当前停止点
 
-M0 已完成并获批准。下一步允许用户设置明确引用本文件及其 SHA256 的 `/goal`，一次性授予 A1+A2 并连续执行 M1–M8。
+M0、M1 已完成。活动 Goal 已按批准计划 SHA256 授予 A1+A2，当前执行 M2，并在未命中异常暂停条件时连续执行到 M8。
 
-Goal 启动前不得执行 M1。Goal 执行期间仍不得调用真实 API、读取凭据、产生费用，或执行 remote、push、PR、Pages 和发布操作。
+Goal 执行期间不得调用真实 API、读取凭据、产生费用，或执行 remote、push、PR、Pages 和发布操作。M8 完成后必须停止。
 
 ### 待用户确认
 
-- 设置引用本文件最终 SHA256 的 `/goal`，并在同一条 Goal 中授予 M1–M8 所需的 A1+A2。
 - 若未来需要 E2/E3：具体模型、provider、凭据提供方式、允许的数据范围和费用上限；默认预算仍为 0。
 - M9 前：GitHub owner/repo、仓库可见性、默认分支，以及允许的 remote、push、PR、Pages、合并和发布动作。
