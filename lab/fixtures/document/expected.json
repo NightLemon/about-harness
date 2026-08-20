@@ -1,0 +1,6 @@
+{
+  "status": "answered",
+  "answer": "The retention policy keeps records for 45 days.",
+  "citations": ["handbook@v2"],
+  "stale_versions_ignored": 1
+}

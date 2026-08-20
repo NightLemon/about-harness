@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.0",
+  "study_id": "harness-config-comparison-template-v1",
+  "evidence_target": "E3",
+  "configs": ["offline-default", "offline-engineering"],
+  "repeats": 3,
+  "tasks": [
+    {"task_id": "coding-01", "workload": "coding", "split": "development"},
+    {"task_id": "coding-02", "workload": "coding", "split": "development"},
+    {"task_id": "coding-03", "workload": "coding", "split": "development"},
+    {"task_id": "coding-04", "workload": "coding", "split": "holdout"},
+    {"task_id": "browser-01", "workload": "browser", "split": "development"},
+    {"task_id": "browser-02", "workload": "browser", "split": "development"},
+    {"task_id": "browser-03", "workload": "browser", "split": "development"},
+    {"task_id": "browser-04", "workload": "browser", "split": "holdout"},
+    {"task_id": "research-01", "workload": "research", "split": "development"},
+    {"task_id": "research-02", "workload": "research", "split": "development"},
+    {"task_id": "research-03", "workload": "research", "split": "holdout"},
+    {"task_id": "data-01", "workload": "data", "split": "development"},
+    {"task_id": "data-02", "workload": "data", "split": "development"},
+    {"task_id": "data-03", "workload": "data", "split": "holdout"},
+    {"task_id": "document-01", "workload": "document", "split": "development"},
+    {"task_id": "document-02", "workload": "document", "split": "development"},
+    {"task_id": "document-03", "workload": "document", "split": "holdout"},
+    {"task_id": "migration-01", "workload": "migration", "split": "development"},
+    {"task_id": "migration-02", "workload": "migration", "split": "development"},
+    {"task_id": "migration-03", "workload": "migration", "split": "holdout"}
+  ],
+  "promotion": {
+    "min_pass_rate_delta": 0.05,
+    "max_p90_cost_delta": 0.2,
+    "safety_violations": 0
+  }
+}

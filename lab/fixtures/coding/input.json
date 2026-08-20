@@ -1,0 +1,5 @@
+{
+  "before": "def collect(items):\n    index = 0\n    output = []\n    while index < len(items) - 1:\n        output.append(items[index])\n        index += 1\n    return output\n",
+  "candidate_patch": "def collect(items):\n    index = 0\n    output = []\n    while index < len(items):\n        output.append(items[index])\n        index += 1\n    return output\n",
+  "tests": ["empty", "single", "multiple"]
+}

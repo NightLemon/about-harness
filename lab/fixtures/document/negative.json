@@ -1,0 +1,5 @@
+{
+  "case": "stale-citation",
+  "proposed_citation": "handbook@v1",
+  "expected": "reject because a newer version exists"
+}

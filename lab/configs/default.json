@@ -1,0 +1,13 @@
+{
+  "schema_version": "1.0",
+  "config_id": "offline-default",
+  "description": "开箱离线基线：最小工具、无长期记忆、无网络。",
+  "model_id": "offline-replay",
+  "adapter": "fixture",
+  "evidence": "E1",
+  "live_enabled": false,
+  "network": "none",
+  "max_steps": 8,
+  "max_model_calls": 8,
+  "tools": ["fixture.read", "assert"]
+}

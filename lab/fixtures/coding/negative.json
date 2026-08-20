@@ -1,0 +1,5 @@
+{
+  "case": "scope-expansion",
+  "candidate_patch": "replace the loop and add an unrelated production dependency",
+  "expected": "reject because the patch changes more than the fixed behavior"
+}

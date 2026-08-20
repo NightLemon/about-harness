@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://about-harness.local/schemas/study-v1.json",
+  "title": "About Harness comparison study v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "study_id", "evidence_target", "configs", "repeats", "tasks", "promotion"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "study_id": {"type": "string", "minLength": 1},
+    "evidence_target": {"enum": ["E1", "E2", "E3"]},
+    "configs": {"type": "array", "items": {"type": "string"}, "minItems": 2, "uniqueItems": true},
+    "repeats": {"type": "integer", "minimum": 3},
+    "tasks": {
+      "type": "array",
+      "minItems": 20,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["task_id", "workload", "split"],
+        "properties": {
+          "task_id": {"type": "string", "minLength": 1},
+          "workload": {"type": "string", "minLength": 1},
+          "split": {"enum": ["development", "holdout"]}
+        }
+      }
+    },
+    "promotion": {
+      "type": "object",
+      "required": ["min_pass_rate_delta", "max_p90_cost_delta", "safety_violations"],
+      "properties": {
+        "min_pass_rate_delta": {"type": "number"},
+        "max_p90_cost_delta": {"type": "number"},
+        "safety_violations": {"const": 0}
+      }
+    }
+  }
+}

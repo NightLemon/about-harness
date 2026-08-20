@@ -1,0 +1,17 @@
+{
+  "claims": [
+    {
+      "claim": "retention_days",
+      "status": "conflict",
+      "values": ["30", "45"],
+      "citations": ["policy-v1", "policy-v2"]
+    },
+    {
+      "claim": "review_required",
+      "status": "supported",
+      "values": ["yes"],
+      "citations": ["legal-note"]
+    }
+  ],
+  "unsupported_claims": 0
+}

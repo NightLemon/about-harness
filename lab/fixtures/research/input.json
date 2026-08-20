@@ -1,0 +1,8 @@
+{
+  "query": "Which retention policy is current?",
+  "sources": [
+    {"id": "policy-v1", "claim": "retention_days", "value": "30"},
+    {"id": "policy-v2", "claim": "retention_days", "value": "45"},
+    {"id": "legal-note", "claim": "review_required", "value": "yes"}
+  ]
+}

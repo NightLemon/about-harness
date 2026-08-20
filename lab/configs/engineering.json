@@ -1,0 +1,14 @@
+{
+  "schema_version": "1.0",
+  "config_id": "offline-engineering",
+  "description": "工程基线：固定任务契约、来源过滤、结构化验证和安全拒绝。",
+  "model_id": "offline-replay",
+  "adapter": "fixture",
+  "evidence": "E1",
+  "live_enabled": false,
+  "network": "none",
+  "max_steps": 8,
+  "max_model_calls": 8,
+  "tools": ["fixture.read", "policy.check", "assert"],
+  "controls": ["trusted-source-filter", "schema-validation", "negative-fixture"]
+}

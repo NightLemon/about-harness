@@ -1,0 +1,5 @@
+{
+  "case": "schema-drift",
+  "row": {"userId": "u-3", "score": 9},
+  "expected_error": "schema drift: userId is not an allowed field"
+}

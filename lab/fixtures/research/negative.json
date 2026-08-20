@@ -1,0 +1,5 @@
+{
+  "case": "unsupported-resolution",
+  "proposed_answer": "The policy is definitely 45 days.",
+  "expected": "preserve the conflict and refuse a single definitive value"
+}

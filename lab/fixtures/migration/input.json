@@ -1,0 +1,11 @@
+{
+  "source_harness": "Codex",
+  "target_harness": "Claude Code",
+  "requirements": ["instructions", "tools", "permissions", "state"],
+  "mappings": {
+    "instructions": "map AGENTS.md intent to scoped CLAUDE.md/rules",
+    "tools": "map tool schemas and errors, not names alone",
+    "permissions": "restate allow/deny and approval boundaries",
+    "state": "export task checkpoint and revalidate target context"
+  }
+}

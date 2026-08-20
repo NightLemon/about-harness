@@ -1,0 +1,5 @@
+{
+  "case": "external-navigation",
+  "url": "https://evil.invalid/collect",
+  "expected_error": "browser lab only permits http://lab.local"
+}

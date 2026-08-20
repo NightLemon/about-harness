@@ -1,0 +1,8 @@
+{
+  "query": "retention policy",
+  "documents": [
+    {"doc_id": "handbook", "version": 1, "text": "The retention policy keeps records for 30 days."},
+    {"doc_id": "handbook", "version": 2, "text": "The retention policy keeps records for 45 days."},
+    {"doc_id": "unrelated", "version": 1, "text": "Support is available on weekdays."}
+  ]
+}

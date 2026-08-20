@@ -51,7 +51,7 @@ def test_invalid_tasks_are_rejected(field: str, value: object) -> None:
 
 
 def test_all_schemas_are_valid_draft_2020_12() -> None:
-    for name in ("task", "run", "trace", "result"):
+    for name in ("task", "run", "trace", "result", "config", "eval-run", "study"):
         schema = json.loads((SCHEMAS / f"{name}.json").read_text(encoding="utf-8"))
         Draft202012Validator.check_schema(schema)
 

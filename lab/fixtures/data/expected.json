@@ -1,0 +1,8 @@
+{
+  "rows": [
+    {"user_id": "u-1", "score": 7.5, "email": "[REDACTED]"},
+    {"user_id": "u-2", "score": null, "email": "[REDACTED]"}
+  ],
+  "row_count": 2,
+  "sensitive_values_exposed": 0
+}

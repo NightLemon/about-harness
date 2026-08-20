@@ -1,0 +1,14 @@
+{
+  "schema_version": "1.0",
+  "config_id": "offline-candidate",
+  "description": "教学候选：仅展示如何声明单一变量，不代表已晋级。",
+  "model_id": "offline-replay",
+  "adapter": "fixture",
+  "evidence": "E0",
+  "live_enabled": false,
+  "network": "none",
+  "max_steps": 10,
+  "max_model_calls": 10,
+  "tools": ["fixture.read", "policy.check", "assert"],
+  "changed_variable": "step_budget"
+}

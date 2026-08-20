@@ -1,0 +1,6 @@
+{
+  "rows": [
+    {"user_id": "u-1", "score": 7.5, "email": "person1@example.invalid"},
+    {"user_id": "u-2", "score": null, "email": "person2@example.invalid"}
+  ]
+}

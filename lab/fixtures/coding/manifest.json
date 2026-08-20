@@ -1,0 +1,13 @@
+{
+  "fixture_version": "1.0",
+  "case_id": "coding",
+  "source": "project-synthetic",
+  "license": "CC-BY-4.0",
+  "checked": "2026-08-20",
+  "contains_personal_data": false,
+  "files": {
+    "input.json": "43e8e7d0c28c14a0feccfeb13e14462ca65fa77c9336529f0a9f8c13807ce560",
+    "expected.json": "dfa7f00cc02375fbf8b1c17c6dd2bc0c3c4867a20c79810ab08019285de1b807",
+    "negative.json": "1da88ed705be0d742de2fa5392b41a8556ed7a2da8241959207466762f1d6a6b"
+  }
+}

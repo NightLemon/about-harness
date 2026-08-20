@@ -1,6 +1,6 @@
 # Harness 学习文档项目执行计划 v1
 
-状态：**活动 Goal 已绑定批准计划；M1–M4 已完成；M5 进行中；A3/A4 未授权**
+状态：**活动 Goal 已绑定批准计划；M1–M5 已完成；M6 进行中；A3/A4 未授权**
 交付契约批准语句：批准交付契约 v1，请保存执行计划  
 计划修订日期：2026-08-20  
 工作区：C:\Users\lxiang\repos\about-harness
@@ -24,8 +24,8 @@
 | M2 | **已完成** | `m2-complete-v1`，result `ade425e` |
 | M3 | **已完成并修正** | `m3-corrected-v1`，恢复点 `dd419bb`；旧 `m3-complete-v1` 保留审计 |
 | M4 | **已完成** | `m4-complete-v1`；模型、harness、framework、领域、安全与事实来源已验证 |
-| M5 | **进行中** | 六个案例、正式 schema 和评测系统 |
-| M6 | 未开始 | 来源、许可、隐私、CI、视觉和发布自动化 |
+| M5 | **已完成** | `m5-complete-v1`；六案例、正式 schema、评测、公开结果与负例门禁 |
+| M6 | **进行中** | 来源、许可、隐私、CI、视觉和发布自动化 |
 | M7 | 未开始 | 新 review 01–05 |
 | M8 | 未开始 | 新 review 06–10 和 release candidate |
 | M9 | 未开始 | 经用户单独授权后的远程操作与发布 |
@@ -1119,6 +1119,9 @@ npm run verify 最终聚合全部离线 PR 门禁。项目 Pages 构建必须显
 7. 当前没有 remote；A3 和 A4 仍未授权，真实 API、费用、remote、push、PR、Pages 和发布继续禁止。
 8. M4 实际获取 10 个已登记官方/维护来源及 4 个模型目录入口；12 条登记事实均为 E1/verified。DeepSeek docs 在当前环境仍发生 TLS 握手失败，相关价格、alias 与可用性保持 E0。
 9. 本机 Claude Code 为 `2.1.96`；Pi 不在 PATH；桌面应用捆绑的 `codex.exe` 可定位但当前 shell 启动时报“拒绝访问”。因此 M4 只把来源核对与离线职责映射标为 E1，不把 CLI 或模型性能写成已测。
+10. M5 fixture 最初按原始文件字节计算 SHA256，可能受 Windows CRLF checkout 影响；已改为对解析后的 canonical JSON 计算 hash，并用测试证明篡改仍会被拒绝。
+11. Browser Use、LangGraph、PydanticAI、LlamaIndex 在 M5 只实现 dependency-free `offline-contract-seam`；它们验证职责、schema 与安全负例，不冒充第三方 package 或 live 模型执行。
+12. 正式 study 模板满足 20 任务、6 workload、2 配置、3 重复、6 holdout（30%）；示例 run 只有 12 条 E1 配对记录，validator 明示完整矩阵应为 120 条且当前不完整，防止把模板当 E3。
 
 后续每次新增发现使用格式：
 
@@ -1157,6 +1160,9 @@ npm run verify 最终聚合全部离线 PR 门禁。项目 Pages 构建必须显
 | 2026-08-20 | `m3-corrected-v1` / `dd419bb` 为恢复点 | 保留旧 M3 tag，同时从修正后的干净结果继续 |
 | 2026-08-20 | 当前工作树认定为 M4 进行中 | 非破坏性保留已有 tracked/untracked 内容，避免丢失工作 |
 | 2026-08-20 | 单一 Goal 授予 M4–M8 的 A1+A2 | 减少重复确认；A3/A4 继续作为硬门禁 |
+| 2026-08-20 | Fixture 使用 canonical JSON SHA256 | 消除 CRLF/格式化导致的跨平台伪漂移，同时保持内容篡改可检测 |
+| 2026-08-20 | 四个 M5 集成先交付 dependency-free E1 seam | 当前无 A3；明确验证接口责任而不伪称真实 framework/model 已运行 |
+| 2026-08-20 | 正式 120-run 设计与 12-run E1 样例分离 | 交付可运行分析接口，但不虚构 E2/E3 数据或补齐未运行矩阵 |
 
 新决策必须记录日期、备选方案、选择理由、影响文件和是否需要契约变更。
 
@@ -1181,7 +1187,11 @@ npm run verify 最终聚合全部离线 PR 门禁。项目 Pages 构建必须显
 - M4 验证：根路径与 `/about-harness/` base 的 `npm run check` 均通过（95 个 Markdown/路由、96 个 HTML）；20 项 pytest、Ruff、Pyright、TypeScript 与离线 smoke 通过。
 - M4 证据边界：只核对官方文档、固定 Pi commit、本机版本和离线实现；没有真实模型调用、凭据或费用，不存在 E2/E3 性能结论。
 - M4 恢复点：annotated tag `m4-complete-v1`（result SHA 由 Git tag 解析）。
-- M5 进行中；M6–M9 未开始，M9 仍需单独 A4。
+- M5 已完成：六个固定 fixture、四个离线集成 seam、三份 config、七份 schema、六案例 runner、14 篇 labs/evaluation 页面、20×3 study 模板、评测/脱敏/负例检查和两份公开 E1 结果。
+- M5 验证：六个正例与六个负例通过；27 项 pytest、Ruff、Pyright、TypeScript、离线 smoke、根路径与 `/about-harness/` base 的 `npm run check` 全部通过（109 个 Markdown/路由、110 个 HTML）。
+- M5 证据边界：`offline-replay` 与 12 条合成配对样例只证明 E1 流程；未安装四个第三方 framework，未调用模型/API，完整 120-run 正式矩阵未运行。
+- M5 恢复点：annotated tag `m5-complete-v1`（result SHA 由 Git tag 解析）。
+- M6 进行中；M7–M9 未开始，M9 仍需单独 A4。
 
 ### 后续里程碑记录模板
 
@@ -1214,9 +1224,9 @@ M9 后必须总结：
 
 ## 17. 当前停止点
 
-当前恢复点为 `m4-complete-v1`，M5 正在进行。不得重跑 M1–M4，也不得删除、移动或覆盖任何现有 commit/tag。
+当前恢复点为 `m5-complete-v1`，M6 正在进行。不得重跑 M1–M5，也不得删除、移动或覆盖任何现有 commit/tag。
 
-活动 Goal 已授予 M4–M8 的 A1+A2；M4 checkpoint 后自动继续 M5。Goal 执行期间禁止真实 API、凭据、费用、remote、push、PR、Pages 和发布；完成 M8 或命中安全/许可/范围暂停条件时停止。
+活动 Goal 已授予 M4–M8 的 A1+A2；M5 checkpoint 后自动继续 M6。Goal 执行期间禁止真实 API、凭据、费用、remote、push、PR、Pages 和发布；完成 M8 或命中安全/许可/范围暂停条件时停止。
 
 ### 待用户确认
 

@@ -1,0 +1,5 @@
+{
+  "case": "verbatim-config-copy",
+  "proposed": "rename AGENTS.md to CLAUDE.md and keep all permission strings unchanged",
+  "expected": "reject because discovery, scope and permission semantics differ"
+}

@@ -1,0 +1,14 @@
+{
+  "schema_version": "1.0",
+  "run_id": "m5-browser-offline-sample",
+  "evidence": "E1",
+  "offline": true,
+  "fixture_hash": "2914046dfb5e3f667b0fba2eb17319440f28dc83c2cb08673b9b10e0b37dfab6",
+  "trace": [
+    {"sequence": 0, "kind": "fixture_loaded", "data": {"source": "project-synthetic"}},
+    {"sequence": 1, "kind": "policy_checked", "data": {"allowed_origin": "http://lab.local"}},
+    {"sequence": 2, "kind": "injection_refused", "data": {"external_navigation": false}},
+    {"sequence": 3, "kind": "assertions_passed", "data": {"count": 3}}
+  ],
+  "redaction": "No credentials, personal paths, personal data, or live page content are present."
+}

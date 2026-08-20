@@ -1,0 +1,13 @@
+{
+  "fixture_version": "1.0",
+  "case_id": "data",
+  "source": "project-synthetic",
+  "license": "CC-BY-4.0",
+  "checked": "2026-08-20",
+  "contains_personal_data": false,
+  "files": {
+    "input.json": "63edcf0df839a42e996dc60639faff2e341b406f7a91e0dac20a22430ed4e51d",
+    "expected.json": "5ca4aa570a5be6368668255bbcd395f1df0dac7067f77e173e2497ea471b9856",
+    "negative.json": "51e9e2deff01c80071a94560468272c547d8a5cb2c9ac39a4c3ec4cf619acd83"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "records": [
+    {"sku": "A-1", "name": "Alpha"},
+    {"sku": "B-2", "name": "Beta"}
+  ],
+  "injection_refused": true,
+  "side_effects": 0
+}

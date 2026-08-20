@@ -30,7 +30,7 @@ line-length = 100
 select = ["E", "F", "I", "B", "UP", "RUF"]
 
 [tool.pyright]
-include = ["lab/src", "lab/tests", "scripts/lab-smoke.py"]
+include = ["lab/src", "lab/tests", "scripts/lab-smoke.py", "scripts/run-labs.py"]
 extraPaths = ["lab/src"]
 pythonVersion = "3.11"
 typeCheckingMode = "strict"

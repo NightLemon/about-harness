@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://about-harness.local/schemas/config-v1.json",
+  "title": "About Harness lab config v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "config_id",
+    "description",
+    "model_id",
+    "adapter",
+    "evidence",
+    "live_enabled",
+    "network",
+    "max_steps",
+    "max_model_calls",
+    "tools"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "config_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]+$"},
+    "description": {"type": "string", "minLength": 1},
+    "model_id": {"type": "string", "minLength": 1},
+    "adapter": {"type": "string", "minLength": 1},
+    "evidence": {"enum": ["E0", "E1", "E2", "E3"]},
+    "live_enabled": {"type": "boolean"},
+    "network": {"enum": ["none", "restricted", "live"]},
+    "max_steps": {"type": "integer", "minimum": 1},
+    "max_model_calls": {"type": "integer", "minimum": 1},
+    "tools": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "controls": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "changed_variable": {"type": "string"}
+  }
+}

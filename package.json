@@ -15,8 +15,12 @@
     "lab:smoke": "uv run --frozen --offline python scripts/lab-smoke.py",
     "lab:pyright": "uv run --frozen --offline pyright",
     "lab:typecheck": "tsc -p lab/ts/tsconfig.json",
-    "eval:summary": "node scripts/summarize-evals.mjs evals/runs.example.jsonl",
-    "check": "npm run docs:check && npm run docs:build && npm run docs:verify-build && npm run facts:check && npm run reviews:check && npm run checks:self-test"
+    "labs:all": "uv run --frozen --offline python scripts/run-labs.py all",
+    "eval:validate": "node scripts/eval-validate.mjs evals/study.example.json evals/runs.example.jsonl",
+    "eval:summary": "node scripts/summarize-evals.mjs evals/study.example.json evals/runs.example.jsonl",
+    "results:redact": "node scripts/redact-results.mjs lab/results/public",
+    "m5:self-test": "node scripts/test-m5-checks.mjs",
+    "check": "npm run docs:check && npm run docs:build && npm run docs:verify-build && npm run facts:check && npm run reviews:check && npm run checks:self-test && npm run labs:all && npm run eval:validate && npm run eval:summary && npm run results:redact && npm run m5:self-test"
   },
   "devDependencies": {
     "playwright": "^1.62.1",
