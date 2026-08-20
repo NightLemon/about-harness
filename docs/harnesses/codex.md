@@ -1,84 +1,42 @@
-# 在 Codex 中优化模型
+# 在 Codex 中适配指定模型
 
-本页聚焦 Codex 的配置方法，不是模型排行榜。产品事实基于 2026-08-20 的官方 OpenAI 文档；模型与可用表面会变化。
+核对日期：2026-08-20。官方来源：[AGENTS.md](https://learn.chatgpt.com/docs/agent-configuration/agents-md)、[Customization](https://learn.chatgpt.com/docs/customization/overview)、[Config basics](https://learn.chatgpt.com/docs/config-file/config-basic)。本页不保证账号可用模型、价格或默认值。
 
-> **事实基线与本文建议：** 模型名称、配置层和命令来自页面中链接的官方 OpenAI 文档；任务路由、调优顺序和安全门槛是本项目建议，需要在你的工作负载上验证。
+## 先画控制面
 
-## 当前模型选择原则
+Codex 的可调层包括 task prompt、目录分层 AGENTS.md、memory、skills、MCP、subagents、user/project/profile/system config、CLI override、permissions/sandbox 与运行 surface。它们职责不同：规则约束行为，工具扩展能力，policy 限制副作用，测试证明结果。
 
-[官方模型页](https://learn.chatgpt.com/docs/models)将 GPT-5.6 系列概括为：Sol 面向复杂、开放、高价值任务；Terra 是日常均衡选择；Luna 面向清晰、可重复和高吞吐任务。默认从中等推理开始，任务需要更深规划时再增加。Max 给单任务更多推理，Ultra 使用 subagents 并行分解复杂工作；多数任务不需要最高档。
+## 指令发现
 
-这只是起始先验。你的代码库、任务和延迟约束仍要用[实验方法](/optimization/experiment)验证。
+官方文档说明 Codex 每次 run 构造一次指令链：先读取 Codex home 的 `AGENTS.override.md` 或 `AGENTS.md`；再从项目 root 走到 cwd，每目录最多取 override/AGENTS/fallback 中一个；靠近 cwd 的内容在合并后更晚，因而覆盖更早指导。默认合并上限为 32 KiB。[FACT:codex-agents-md]
 
-## 配置层次
+把团队规则放 repo root，把子系统差异放最近目录；不要把 API reference 或长背景全部塞进 AGENTS.md，改用路径路由和按需 skill。
 
-| 层 | 放什么 | 不应放什么 |
-| --- | --- | --- |
-| 当前任务 | 本次目标、上下文、边界、完成条件 | 永久团队规则 |
-| `AGENTS.md` | 构建/测试、目录路由、非显然约定、完成定义 | 长教程、易变 API 文档 |
-| `.codex/config.toml` | 仓库可信后适用的模型、推理、sandbox、MCP、hooks 等 | 密钥、只对一次任务的覆盖 |
-| `.agents/skills` | 可复用流程、领域知识、脚本/模板 | 每次都必须常驻的短规则 |
-| MCP/插件 | 实时外部数据与受控动作 | 可直接从仓库读取的静态内容 |
-| Hooks/CI | 必须机械执行的检查和限制 | 主观架构判断 |
+## 配置优先级
 
-根据[配置文档](https://learn.chatgpt.com/docs/config-file/config-basic)，CLI、IDE extension 和 ChatGPT desktop app 共享 `config.toml` 配置层；云端 surface 的模型和环境行为可能不同，实验时必须记录 surface。
+官方配置从高到低为 CLI/`--config`、可信项目的 `.codex/config.toml`（root 到 cwd）、profile、用户 `~/.codex/config.toml`、system、内置默认。未信任项目跳过 project-scoped config/hooks/rules。[FACT:codex-config]
 
-## 最小起步
+因此实验报告必须保存 surface、cwd、trust、CLI override、profile 和 config 摘要；只写“用了 Codex”不可复现。
 
-先用项目 `AGENTS.md` 给出：
+## 指定模型优化流程
 
-```md
-# Project instructions
-- Install: `npm ci`
-- Fast check: `npm run lint && npm run test -- --changed`
-- Full check: `npm run check`
-- Start architecture searches at `docs/architecture/index.md`.
-- Do not edit generated files under `dist/`.
-- Finish with changed files and exact verification results.
-```
+1. 解析精确模型/provider/alias 与 surface；
+2. 用开箱默认运行固定 coding fixture；
+3. 写四段任务契约：目标、上下文入口、边界、验收；
+4. 把高信号项目规则放 AGENTS.md，确定性规则放测试/policy；
+5. 从最小工具和权限开始，按失败增加 skill/MCP；
+6. 调节 reasoning budget、context 与委派，每次只改一个主变量；
+7. 报告任务级成功、测试、人工介入、延迟、token/费用和安全事件；
+8. 为 timeout、拒权、上下文污染和模型退化设置回退。
 
-然后在可信仓库中配置所需模型与推理强度。示例 ID 仅代表 2026-08-20 的可用命名，运行前以模型选择器/官方页为准：
+## 常见失败
 
-```toml
-model = "gpt-5.6-sol"
-model_reasoning_effort = "medium"
-```
+- 在错误 cwd 启动导致加载不同指令；
+- 用 prompt 代替 sandbox/approval；
+- 让 MCP 返回的大量内容淹没任务上下文；
+- 更换模型时同时改任务、工具和预算，无法归因；
+- 把 Codex UI 中的模型名当作稳定 API model ID。
 
-先验证 Codex 实际加载了目标 `AGENTS.md`、配置文件与工作目录，再调模型。
+## 当前证据
 
-## 针对模型的调优
-
-### Sol：给开放任务明确终点
-
-复杂模型能探索更多路径，也可能做得过宽。写清不在范围内的重构、性能/兼容约束和可执行完成条件。高风险任务增加独立 review，而不是只让同一上下文自评。
-
-### Terra：为日常路径优化反馈速度
-
-保持短 `AGENTS.md`、准确测试命令和常用入口。先以 medium 作为基线；若任务已清晰，比较 low 的成本；若多文件依赖判断失败，再测试 high，而非永久把所有任务设到最高。
-
-### Luna：把任务和工具收窄
-
-用于提取、分类、格式转换和明确小修时，提供样例、schema 和窄工具集。避免把模糊架构探索直接交给快模型，再用大量纠正抵消成本优势。
-
-### 第三方或自托管模型
-
-Codex 可连接兼容 Responses 或 Chat Completions 的 provider；[官方模型页](https://learn.chatgpt.com/docs/models)已提示 Chat Completions 支持将被移除。重点验证工具调用、多轮错误恢复、上下文上限、流式协议和 reasoning 参数是否被 provider 正确映射。不要只验证一轮文本回答。
-
-## 用 Codex 能力闭合外循环
-
-- 重复纠正写入最接近作用域的 `AGENTS.md`。
-- 重复流程做成 skill；已有插件时优先复用并审查。
-- 外部新鲜信息走 MCP/connector，不复制陈旧快照。
-- 噪声调查交给 subagent，主任务保留干净上下文。
-- 稳定后再变成 automation；自动化应在独立 worktree 或受控环境运行。
-- 用 `/review`、测试和 diff 证据验证，不接受“应该可以”。
-
-## 常见误区
-
-- 把全局个人偏好、团队规则、任务细节全部塞进一个根 `AGENTS.md`。
-- 没确认 sandbox/工作目录就把权限失败归因于模型。
-- 让多个本地任务写同一 checkout，不用 worktree 隔离。
-- 把 Ultra 当成更高单模型推理档；它的关键是 subagent 并行。
-- 使用已经退役的保存模型 ID，却只修改 prompt。
-
-参见：[OpenAI Models](https://learn.chatgpt.com/docs/models)、[Codex best practices](https://learn.chatgpt.com/guides/best-practices)、[`AGENTS.md`](https://learn.chatgpt.com/docs/agent-configuration/agents-md)。
+产品事实来自上述 OpenAI Docs；M3 只有 fake/replay E1。未运行真实 Codex 模型，因此不声称任何模型配置已优于基线。

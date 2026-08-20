@@ -1,6 +1,6 @@
 # Harness 学习文档项目执行计划 v1
 
-状态：**活动 Goal 已启动；M1–M3 已完成；M4 进行中；M9 未授权**
+状态：**活动 Goal 已绑定批准计划；M1–M4 已完成；M5 进行中；A3/A4 未授权**
 交付契约批准语句：批准交付契约 v1，请保存执行计划  
 计划修订日期：2026-08-20  
 工作区：C:\Users\lxiang\repos\about-harness
@@ -9,7 +9,9 @@
 
 本文件是《Harness 学习文档项目交付契约 v1》的自包含执行计划。未来即使无法访问批准本计划的聊天记录，执行者也应能从本文件恢复范围、交付物、里程碑、验证门禁、授权边界和暂停条件。
 
-用户以 `/goal` 明确引用本文件及其 SHA256 后，该 Goal 可一次性授予 M1–M8 所需的 A1 与 A2，并持续执行到 M8 完成。M1–M7 之间不再重复请求批准；真实 API/费用（A3）、remote/发布（A4）和本计划规定的异常暂停条件始终需要单独授权。
+本计划已获用户批准。用户以 `/goal` 明确引用本文件的当前 SHA256 后，该 Goal 可一次性授予 M4–M8 所需的本地文件修改与验证（A1）以及本地 commit/annotated tag（A2），并持续执行到 M8 完成。真实 API、凭据和费用（A3）以及 remote、push、PR、Pages 和发布（A4）始终需要单独授权。
+
+2026-08-20 恢复裁定：保留现有线性 Git 历史和全部 annotated tags，不删除、不移动、不覆盖，也不重跑 M1–M3。`legacy-baseline-v1` 是有效原始基线；`m3-corrected-v1`（commit `dd419bb`）是当前已验收恢复点。当前 tracked/untracked 改动属于 M4 进行中工作，必须原样保留并从此继续。先前把进度重置为 M0 的未提交计划改写不代表项目回滚，由本裁定取代。
 
 ## 2. Progress
 
@@ -18,11 +20,11 @@
 | 里程碑 | 状态 | 当前说明 |
 | --- | --- | --- |
 | M0 | **已完成** | 执行计划已复核并批准 |
-| M1 | **已完成** | legacy baseline：`2847afc147704e453476f083c52e058e2f5e3639`；tag：`legacy-baseline-v1` |
-| M2 | **已完成** | 知识地图、站点骨架、事实注册表、作品集 rubric 与 legacy 迁移 |
-| M3 | **已完成** | Python 最小 harness、TypeScript 映射、容器和离线 runner |
-| M4 | **进行中** | 模型、harness、framework、领域和安全内容 |
-| M5 | 未开始 | 六个案例、正式 schema 和评测系统 |
+| M1 | **已完成** | `legacy-baseline-v1` / `m1-complete-v1`；保留且不得重跑 |
+| M2 | **已完成** | `m2-complete-v1`，result `ade425e` |
+| M3 | **已完成并修正** | `m3-corrected-v1`，恢复点 `dd419bb`；旧 `m3-complete-v1` 保留审计 |
+| M4 | **已完成** | `m4-complete-v1`；模型、harness、framework、领域、安全与事实来源已验证 |
+| M5 | **进行中** | 六个案例、正式 schema 和评测系统 |
 | M6 | 未开始 | 来源、许可、隐私、CI、视觉和发布自动化 |
 | M7 | 未开始 | 新 review 01–05 |
 | M8 | 未开始 | 新 review 06–10 和 release candidate |
@@ -275,24 +277,27 @@
 
 | 层级 | 权限 | 默认状态 | 授权要求 |
 | --- | --- | --- | --- |
-| A0 | 本地只读盘点和计划修订 | 已完成 | 用户明确限定范围 |
-| A1 | 本地修改工作区文件和运行本地验证 | 待 Goal 授权 | `/goal` 明确引用本文件及其 SHA256，并授权执行 M1–M8 |
-| A2 | 本地 Git commit 和 annotated tag | 待 Goal 授权 | 可与 A1 在同一 `/goal` 中一次性授予 M1–M8 |
+| A0 | 本地只读盘点和计划修订 | 已完成 | M0 已完成 |
+| A1 | 本地修改项目文件和运行本地验证 | 待新 Goal 绑定 | `/goal` 引用本文件当前 SHA256，并明确覆盖 M4–M8 |
+| A2 | 本地 Git commit 和 annotated tag | 待新 Goal 绑定 | 可在同一 `/goal` 中与 A1 一并明确授予 M4–M8 |
 | A3 | 真实 API、凭据和费用 | 未授权，预算 0 | 必须指定 provider、凭据方式、数据范围和费用上限 |
 | A4 | remote、push、PR、仓库设置、Pages 和发布 | 未授权 | 必须指定 owner/repo 和允许的外部动作；A1/A2/A3 均不包含 A4 |
 
 规则：
 
-- A1 与 A2 可以由一个明确引用本文件及其 SHA256 的 `/goal` 一次性授予，并持续覆盖 M1–M8。
-- A3、A4 不能由 Goal、A1、A2 或“继续执行”隐含获得。
-- Goal 在 M8 完成、用户 pause/clear Goal 或命中暂停条件时失效。
+- A1 与 A2 可以由一条明确引用本文件当前 SHA256 的 `/goal` 一次性授予 M4–M8。
+- A3、A4 不能由 Goal、A1、A2、普通里程碑、计划批准或“继续执行”隐含获得。
+- M4–M7 完成后记录 checkpoint 并自动继续；M8 完成后必须停止并等待 A4。
 - 需要更高层授权时必须保存当前恢复点并停止。
-- M1–M8 使用 Goal 授予的 A1+A2；M1–M7 完成后记录 checkpoint 并自动进入下一里程碑；M8 完成后必须停止；M9 需要 A4。
+- M1–M3 已完成，不得重跑；M4–M8 使用新 Goal 授予的 A1+A2；M9 始终需要 A4。
 - 缺少 A2 时可以在 A1 范围内形成未提交 diff，但不能宣告需要 commit/tag 证据的里程碑完成。
+- A3 不包含 A4，A4 也不包含 A3；两者都不允许读取或输出未获授权的凭据。
 
 ## 10. M0–M9 运行手册
 
 ### M0：保存并批准执行计划
+
+**状态：已完成，不得重跑。**
 
 **输入**
 
@@ -310,7 +315,8 @@
 2. 建立 Progress、Surprises & Discoveries、Decision Log、Outcomes & Retrospective、Idempotence & Recovery。
 3. 对修订前后除本文件以外的工作区源文件计算聚合指纹。
 4. 复核里程碑编号只能使用 M0–M9。
-5. 记录计划批准结果并等待用户设置引用最终 SHA256 的 Goal。
+5. 记录计划批准和最终 SHA256。
+6. 等待 Goal 启动后续里程碑。
 
 **当前已经存在且允许使用的验证**
 
@@ -324,7 +330,7 @@
 **验收证据**
 
 - 本文件存在且包含所有必需章节；
-- Progress 中 M0 为“已完成”，M1 等待 Goal 启动，M2–M9 均未开始；
+- Progress 中 M0 为“已完成”；
 - 修订前后除本文件外的工作区聚合 SHA256 相同；
 - 未出现 commit、tag、API、remote 或发布动作。
 
@@ -335,52 +341,55 @@
 
 **完成后状态**
 
-- M0 已完成。等待用户设置明确引用本文件及其 SHA256 的 `/goal`，一次性授予 M1–M8 的 A1+A2。
+- 已完成。当前恢复不再执行本节步骤。
 
 ### M1：冻结当前 legacy 快照并建立 Git baseline
 
-**开始授权**
+**状态：已完成，不得重跑。** 有效基线为 `legacy-baseline-v1`，完成记录为 `m1-complete-v1`。
 
-- 必须存在明确引用本文件及其 SHA256、授权执行 M1–M8 且授予 A1+A2 的活动 Goal。
+**恢复规则**
+
+- 现有 M1 commit/tag 已核验为有效且名称无冲突；保留全部对象，不创建第二份 baseline。
+- 当前 M4 内容不属于 M1，不得为了重跑 M1 而 stash、删除、提交或回滚。
 
 **输入**
 
-- M0 已复核的 EXECUTION_PLAN.md；
-- 当前工作区原始内容；
-- 当前无 commit、无 remote、文件未跟踪的 Git 状态。
+- M0 已复核的 EXECUTION_PLAN.md 及其 SHA256；
+- M0 只读盘点得到的当前工作区、Git 历史、tags、remote、文件和验证现状；
+- 用户对任何既有 commit/tag 名称冲突和未提交内容的明确处置决定；
+- 已批准的 M1 A1 与 A2 授权原文。
 
 **允许修改的文件或状态**
 
-- 工作区文件内容：**零修改**；
-- 只允许更新 .git 内的 index、objects、refs 和 annotated tag 元数据；
+- baseline commit/tag 完成前，工作区文件内容：**零修改**；
+- baseline 阶段只允许更新 .git 内的 index、objects、refs 和 annotated tag 元数据；
+- baseline 验证完成后，只允许修改 EXECUTION_PLAN.md 以记录 M1 结果；该修改不并入 baseline；
 - baseline 前不得移动、改写或改标现有 review、README、changelog 或任何其他文件。
 
 **具体步骤，顺序不可调整**
 
-1. 只读记录 git status、branch、remote、完整文件清单、每个源文件 SHA256、聚合 SHA256、目录结构和时间。
-2. 在不修改源文件的前提下运行当前已经存在的验证。
-3. 再次计算源文件 hash，确认验证没有改变源文件；构建缓存和已忽略 artifact 不属于 baseline 源文件。
-4. 原样将当前源文件加入初始 commit，commit message 固定为：chore: capture legacy baseline before v1 execution。
-5. 创建 annotated tag：legacy-baseline-v1。
-6. Tag 注释必须包含：commit SHA、branch、remote 状态、每个文件 SHA256 或可完整恢复的 manifest、聚合 SHA256、验证命令与退出码、audit 摘要和已知风险。
-7. 用 commit tree 和 tag 注释反向核对步骤 1 的文件和 hash。
-8. 更新 Progress、Surprises、Decision Log 和 Outcomes，记录 M1 checkpoint。
-9. 未命中暂停条件时自动进入 M2。
+1. 只读记录 git status、branch、log、tags、remote、完整文件清单、每个源文件 SHA256、聚合 SHA256、目录结构、验证命令清单和时间。
+2. 检查历史、tag 名称或工作树是否与“初始 legacy baseline”发生冲突；若冲突未获用户明确裁定，立即停止，不创建或移动任何 Git 对象。
+3. 在不修改源文件的前提下，只运行该快照当时已经存在且不会写回源文件的验证；记录未运行项与原因。
+4. 再次计算源文件 hash，确认验证没有改变源文件；构建缓存和已忽略 artifact 不属于 baseline 源文件。
+5. 原样将当前源文件创建为初始 baseline commit，commit message 固定为：chore: capture legacy baseline before v1 execution。
+6. 创建 annotated tag：legacy-baseline-v1；若同名 tag 已存在，停止并报告，禁止覆盖、移动或删除。
+7. Tag 注释必须包含：commit SHA、branch、remote 状态、每个文件 SHA256 或可完整恢复的 manifest、聚合 SHA256、验证命令与退出码、audit 摘要和已知风险。
+8. 用 commit tree 和 tag 注释反向核对步骤 1 的文件和 hash。
+9. baseline 完成后才更新 EXECUTION_PLAN.md 的 Progress、Surprises、Decision Log 和 Outcomes，记录 M1 checkpoint；不得移动、改写或改标 legacy reviews、README 或 changelog。
+10. 报告 commit SHA、annotated tag、hash、验证结果、未决冲突和恢复点，然后停止。
 
 **当时已经存在的验证命令**
 
-- git status --short --branch
-- git remote -v
-- npm run check
-- npm run eval:summary
-- npm audit --omit=dev
-- npm audit
-- 使用 DOCS_BASE=/about-harness/ 运行现有 npm run check
-- PowerShell Get-FileHash 文件清单和聚合 hash
+- `git status --short --branch`、`git log`、`git tag`、`git remote -v`；
+- PowerShell `Get-Content`、`Get-Item`、`Get-FileHash` 及确定性的文件清单/聚合 hash；
+- 只允许运行 M1 输入快照的 `package.json` 在当时实际声明的命令；计划中的未来命令不是 M1 前置条件；
+- 对已批准 legacy 快照，预期可用命令为 `npm run check`、`npm run eval:summary`，以及用 `DOCS_BASE=/about-harness/` 运行现有 `npm run check`；执行前仍须从实际 `package.json` 核对；
+- `npm audit` 与 `npm audit --omit=dev` 只有在不需要网络且不会改写 lockfile 时才运行；否则记录“未运行”及原因，不因此阻断原样 baseline。
 
 **需要创建但尚不存在的命令**
 
-- 无。未来的 facts:check、licenses:check、secrets:check、lab:smoke、eval:validate、docs:visual、verify、pages:smoke 都不是 M1 前置条件，也不得在 M1 假装存在。
+- 无。未来的 `facts:check`、`reviews:check`、`licenses:check`、`secrets:check`、`lab:smoke`、`lab:typecheck`、`labs:all`、`eval:validate`、`docs:visual`、`verify`、`pages:smoke` 以及全部 `uv` 命令都不是 M1 前置条件，也不得在 M1 假装存在。
 
 **验收证据**
 
@@ -396,15 +405,17 @@
 - 如果 commit 成功但 tag 创建失败，保留 commit，报告部分完成并等待新的 A2 授权；不得伪造完成。
 - 不移动、不删除 baseline commit/tag，不用 reset --hard；后续错误通过新 commit 或 revert 处理。
 
-**完成后继续**
+**完成后状态**
 
-- 报告并记录 commit SHA、tag、hash 和验证结果；未命中暂停条件时自动进入 M2。
+- 已满足：`legacy-baseline-v1` 指向 `2847afc`，`m1-complete-v1` 指向 `48950fa`。当前恢复不再执行本节步骤。
 
 ### M2：知识地图、站点骨架、事实注册表和作品集 rubric
 
+**状态：已完成，不得重跑。** 完成记录为 `m2-complete-v1`，result `ade425e`。
+
 **开始授权**
 
-- 由活动 Goal 的 A1+A2 覆盖，无需再次请求授权。
+- 历史记录：M2 已由先前 Goal 的 A1+A2 完成；当前恢复不得重跑。
 
 **输入**
 
@@ -467,15 +478,17 @@
 - 移动采用可追溯 rename，失败时恢复原路径；
 - 已有用户改动不得被 checkout 覆盖；通过 revert 或精确 patch 恢复。
 
-**完成后继续**
+**完成后状态**
 
-- 写入 M2 checkpoint；未命中暂停条件时自动进入 M3。
+- 已满足并记录为 `m2-complete-v1`；当前恢复不再执行本节步骤。
 
 ### M3：Python 最小 harness、TypeScript 映射、容器和离线 runner
 
+**状态：已完成并修正，不得重跑。** `m3-complete-v1` 保留审计；当前有效结果为 `m3-corrected-v1`（`dd419bb`）。
+
 **开始授权**
 
-- 由活动 Goal 的 A1+A2 覆盖；不包含也不允许 A3。
+- 历史记录：M3 已由先前 Goal 的 A1+A2 完成并修正；当前恢复不得重跑。A3 从未授予。
 
 **输入**
 
@@ -540,15 +553,17 @@
 - 失败实现通过 revert 或精确 patch 回到 M2 result；
 - live adapter 保持默认禁用，无 API 副作用。
 
-**完成后继续**
+**完成后状态**
 
-- 写入 M3 checkpoint；未命中暂停条件时自动进入 M4。
+- 已满足；有效恢复点为 `m3-corrected-v1`。任何真实 API 需求仍必须申请 A3。
 
 ### M4：模型、harness、framework、领域和安全内容
 
+**状态：进行中。** 输入恢复点为 `m3-corrected-v1`（`dd419bb`）；当前工作树中的 tracked/untracked M4 文件必须保留并继续完成。
+
 **开始授权**
 
-- 由活动 Goal 的 A1+A2 覆盖；事实探针仅限离线，不含 A3。
+- 新 Goal 必须引用本文件当前 SHA256，并明确授予 M4–M8 的 A1+A2；事实探针仅限本地/离线，真实 API 与费用仍需 A3。
 
 **输入**
 
@@ -615,13 +630,13 @@
 
 **完成后继续**
 
-- 写入 M4 checkpoint；未命中暂停条件时自动进入 M5。
+- 记录并提交 M4 checkpoint；未命中安全、许可、计划范围或 A3/A4 暂停条件时自动进入 M5。
 
 ### M5：六个案例、正式 schema 和评测系统
 
 **开始授权**
 
-- 由活动 Goal 的 A1+A2 覆盖；默认只允许 E1，不含 A3。
+- 引用当前计划 SHA256 的活动 Goal 已明确覆盖 M4–M8 的 A1+A2。默认只允许 E1；E2/E3 真实运行另需 A3。
 
 **输入**
 
@@ -685,13 +700,13 @@
 
 **完成后继续**
 
-- 写入 M5 checkpoint；未命中暂停条件时自动进入 M6。
+- 写入 M5 checkpoint 后自动进入 M6。缺少 A3 时，E2/E3 保持未运行而不是阻断 E1 交付。
 
 ### M6：来源、许可、隐私、CI、视觉和发布自动化
 
 **开始授权**
 
-- 由活动 Goal 的 A1+A2 覆盖；不得使用 A4。
+- 引用当前计划 SHA256 的活动 Goal 已明确覆盖 M4–M8 的 A1+A2。M6 只创建和本地检查发布自动化，不得使用 A4。
 
 **输入**
 
@@ -762,14 +777,14 @@
 
 **完成后继续**
 
-- 写入 M6 checkpoint；未命中暂停条件时自动进入 M7。
+- 写入 M6 checkpoint 后自动进入 M7。任何 workflow 远程运行或 Pages 动作都必须停留到 A4。
 
 ### M7：新 review 01–05
 
 **开始授权**
 
-- 由活动 Goal 的 A1+A2 覆盖内容修正以及每轮 baseline/result commit 和 annotated tag。
-- 不需要人工逐轮确认，M7 完成后自动进入 M8。
+- 引用当前计划 SHA256 的活动 Goal 已明确覆盖 M4–M8 的 A1+A2，包括 round 01–05 每轮 baseline/result commit 和 annotated tag。
+- Round 01–05 不要求逐轮人工确认。
 
 **输入**
 
@@ -842,13 +857,13 @@
 **完成后继续**
 
 - Round 01–05 之间不要求人工暂停。
-- 写入 M7 checkpoint，报告五轮证据和未决项；未命中暂停条件时自动进入 M8。
+- 写入 M7 checkpoint 并报告五轮证据和未决项，然后自动进入 M8。
 
 ### M8：新 review 06–10 和 release candidate
 
 **开始授权**
 
-- 由活动 Goal 的 A1+A2 覆盖内容修正以及每轮 commits/tags；不得使用 A4。
+- 引用当前计划 SHA256 的活动 Goal 已明确覆盖 M4–M8 的 A1+A2，包括 round 06–10 和 release candidate 所需 commits/tags；不得使用 A4。
 
 **输入**
 
@@ -926,7 +941,7 @@
 - RC 不覆盖已有 artifact，使用新版本目录；
 - 不通过降低门禁或删除失败证据来完成 M8。
 
-**完成后暂停**
+**完成后是否必须暂停等待用户**
 
 - Round 06–10 之间不要求人工暂停。
 - **M8 完成后必须暂停。** 报告 RC、十轮证据和拟发布动作，等待单独 A4 授权。
@@ -963,7 +978,7 @@
 6. 合并经批准的 PR，观察 deploy workflow。
 7. 运行线上 pages:smoke 和人工视觉抽查。
 8. 保存 URL、PR、workflow run、deployment、SHA 和 smoke 证据。
-9. 发布成功后更新 Outcomes；任何失败不得宣告完成。
+9. 发布成功后在任务报告中给出 Outcomes；M9 不修改本地内容文件。若要把结果回填本文件，须另获 A1，若要提交该回填还须另获 A2；任何失败不得宣告完成。
 
 **当时已经存在的验证命令**
 
@@ -991,15 +1006,15 @@
 - 部署失败时保留上一成功 artifact，返回 M8 修复。
 - 可按用户授权禁用 Pages 或回滚到上一已知良好 release。
 
-**完成后暂停**
+**完成后是否必须暂停等待用户**
 
 - **必须暂停并报告最终 URL、SHA、workflow 和 smoke 证据。**
 
 ## 11. 稳定命令接口
 
-### 11.1 当前已经存在
+### 11.1 M0 物理存在但尚未重新验收
 
-当前 package.json 已声明：
+2026-08-20 本轮只读检查显示，当前 `package.json` 物理声明：
 
 - npm run docs:dev
 - npm run docs:build
@@ -1008,25 +1023,26 @@
 - npm run docs:verify-build
 - npm run eval:summary
 - npm run check
+- npm run checks:self-test
+- npm run facts:check
+- npm run reviews:check
+- npm run lab:smoke
+- npm run lab:typecheck
+- npm run lab:pyright
 
-当前还可直接运行 npm audit 和 npm audit --omit=dev。
+后六项来自尚未获本计划验收的现状，不得据此认定 M2/M3 完成，也不是 M1 的强制前置命令。M1 只按用户裁定后的输入快照核对和运行当时实际存在、不会改写源文件的命令。`npm audit` 与 `npm audit --omit=dev` 是直接 npm 操作，不是 `package.json` script；能否在 M1 运行受离线和不改写约束限制。
 
-### 11.2 未来必须创建并验收
+### 11.2 未来必须创建或重新验收
 
-这些命令是 M2–M6 的交付物，**不是 M1 前置条件**：
+下列命令按目标里程碑创建；已经物理存在的 `facts:check`、`reviews:check`、`lab:smoke`、`lab:typecheck` 和 `lab:pyright` 仍须在对应里程碑重新验收。它们全部**不是 M1 前置条件**：
 
 ~~~text
 npm run verify
-npm run facts:check
-npm run reviews:check
 npm run docs:visual
 npm run licenses:check
 npm run secrets:check
-npm run lab:smoke
-npm run lab:typecheck
 npm run labs:all
 npm run eval:validate
-npm run eval:summary
 npm run results:redact
 npm run pages:smoke -- <published-url>
 uv sync --frozen
@@ -1036,6 +1052,8 @@ uv run pyright
 ~~~
 
 npm run verify 最终聚合全部离线 PR 门禁。项目 Pages 构建必须显式验证 /about-harness/ base。任何跳过的命令都要记录原因和风险。
+
+重新验收清单：`npm run facts:check`、`npm run reviews:check`、`npm run lab:smoke`、`npm run lab:typecheck`、`npm run lab:pyright`、升级后的 `npm run eval:summary`。物理存在不等于接口、负例和证据已经满足本计划。
 
 ## 12. 十轮 Review 统一证据契约
 
@@ -1068,7 +1086,7 @@ npm run verify 最终聚合全部离线 PR 门禁。项目 Pages 构建必须显
 
 ### 13.2 中断恢复协议
 
-1. 确认引用本计划 SHA256 的 Goal 仍为 active；若 Goal paused、cleared 或已完成，停止并等待用户。
+1. 核对当前用户授权原文、授权层级、覆盖里程碑和暂停条件；缺少、过期或含糊时停止并等待用户。
 2. 读取 Progress 中最后一个完整里程碑和恢复点。
 3. 核对 baseline/result tag、工作树 diff 和证据目录。
 4. 若有未提交改动，先只读审计其归属；不得覆盖。
@@ -1092,20 +1110,15 @@ npm run verify 最终聚合全部离线 PR 门禁。项目 Pages 构建必须显
 
 ### 已知发现
 
-1. 仓库当前为 main 分支，但没有任何 commit、remote；全部项目文件未跟踪。
-2. 当前站点有 37 个 Markdown 页面和 37 条路由；/about-harness/ base 构建曾通过。
-3. README、changelog 和现有十份 review 声称完成十轮，但没有 commit/diff/tag 证明轮次差异，因此不计入 v1。
-4. 当前十份 review 具有不同主题和当前态修正痕迹，可作为 legacy 审计材料，不是空文件。
-5. 当前 npm run eval:summary 可处理最小 JSONL 示例，但没有正式 schema、生产 runner、artifact hash 或真实模型证据。
-6. npm audit --omit=dev 曾为 0；完整 npm audit 曾报告 VitePress/Vite/esbuild 链的 1 high、2 moderate，fixAvailable 为 false。
-7. GitHub Pages workflow 存在，但从未在本仓库 remote 上运行；站点尚未发布。
-8. 当前内容以 coding agent 为主，缺少独立完整的记忆生命周期、可观测性、可靠执行、多 agent 编排和最小 harness 实现。
-9. 第 10 轮记录承认视觉检查未完成。后续只读 QA 观察到桌面导航、搜索、主题切换和移动首页基本工作，但深层锚点标题可能被固定导航遮挡，密集比较表首列过窄，移动菜单完整检查被中断。
-10. package.json 的修改时间晚于现有 round-10 记录，说明 legacy 第 10 轮不能自动覆盖当前快照。
-11. 当前 package.json 已包含 Playwright，docs:dev 当前为 vitepress dev docs；这些只能作为现状事实，不是新十轮证据。
-12. M3 期间直接 PyPI/npmjs TLS 握手失败；改用环境既有 Microsoft package feed proxy 后生成 `uv.lock`，锁定官方 Pyright/pytest/Ruff/jsonschema，并由离线 `uv sync --frozen --offline` 复验。
-13. 本机最初没有 `python:3.12-slim`；只拉取公开 base digest 并构建本地镜像 `sha256:9dc56e…bfcc`，无登录、push 或模型 API。运行时使用无网络、只读文件系统、drop capabilities 与 no-new-privileges。
-14. 首次 M3 result commit 误收录 18 个 `__pycache__/*.pyc`；按不可改写历史原则保留 `m3-complete-v1`，随后用新 commit 删除生成物、补齐忽略规则，并以 `m3-corrected-v1` 作为权威 M3 恢复点。
+1. 仓库位于 `main`，HEAD 为 `dd419bb`；从 `legacy-baseline-v1` 到 `m3-corrected-v1` 是无分叉的线性历史，相关标签均为 annotated tags。
+2. `legacy-baseline-v1` 指向 `2847afc`，tag 注释包含 54 个源文件 manifest、聚合 SHA256 和现有验证结果，因此可直接作为 M1 原始基线，无需另建或改名。
+3. `m1-complete-v1`、`m2-complete-v1`、`m3-complete-v1` 和 `m3-corrected-v1` 分别指向现有线性提交；M3 修正提交删除误跟踪的 Python cache，旧提交和 tag 保留审计。
+4. 当前工作树已有 M4 的 tracked/untracked 改动，包括 VitePress 配置、harness 指南以及 foundations、frameworks、models、domains、optimization、security 页面；恢复时必须保留并继续，不得重跑 M1 或覆盖工作树。
+5. 先前未提交的计划改写把已完成进度重置为 M0，造成 Goal 哈希失效和虚假的 tag 冲突；本次恢复裁定以实际线性历史、annotated tag 证据和非破坏性原则纠正该状态。
+6. README、changelog 和 legacy review 对旧十轮的自述仍须按第 12 节证据合同核验；现有十轮不计入 v1 新十轮。
+7. 当前没有 remote；A3 和 A4 仍未授权，真实 API、费用、remote、push、PR、Pages 和发布继续禁止。
+8. M4 实际获取 10 个已登记官方/维护来源及 4 个模型目录入口；12 条登记事实均为 E1/verified。DeepSeek docs 在当前环境仍发生 TLS 握手失败，相关价格、alias 与可用性保持 E0。
+9. 本机 Claude Code 为 `2.1.96`；Pi 不在 PATH；桌面应用捆绑的 `codex.exe` 可定位但当前 shell 启动时报“拒绝访问”。因此 M4 只把来源核对与离线职责映射标为 E1，不把 CLI 或模型性能写成已测。
 
 后续每次新增发现使用格式：
 
@@ -1139,7 +1152,11 @@ npm run verify 最终聚合全部离线 PR 门禁。项目 Pages 构建必须显
 | 2026-08-20 | M1 必须原样 baseline，legacy 移动推迟到 M2 | 避免先改历史再建立证据 |
 | 2026-08-20 | A1–A4 分层授权 | commit/API/remote 不得由普通里程碑隐含授权 |
 | 2026-08-20 | 里程碑固定为 M0–M9 | 与批准的交付契约完全一致 |
-| 2026-08-20 | 单一 Goal 授予 M1–M8 的 A1+A2 | 减少重复确认，同时保留 API、费用和发布硬门禁 |
+| 2026-08-20 | 本地修改、Git 对象、API/费用、remote/发布分为 A1–A4 | A2、A3、A4 均须明确授权，不能由普通里程碑或较低授权隐含获得 |
+| 2026-08-20 | 接受现有 M1–M3 线性历史与 annotated tags | 标签和提交证据有效；删除或重跑会破坏审计链 |
+| 2026-08-20 | `m3-corrected-v1` / `dd419bb` 为恢复点 | 保留旧 M3 tag，同时从修正后的干净结果继续 |
+| 2026-08-20 | 当前工作树认定为 M4 进行中 | 非破坏性保留已有 tracked/untracked 内容，避免丢失工作 |
+| 2026-08-20 | 单一 Goal 授予 M4–M8 的 A1+A2 | 减少重复确认；A3/A4 继续作为硬门禁 |
 
 新决策必须记录日期、备选方案、选择理由、影响文件和是否需要契约变更。
 
@@ -1148,45 +1165,23 @@ npm run verify 最终聚合全部离线 PR 门禁。项目 Pages 构建必须显
 ### M0 当前结果
 
 - 执行计划已保存并修订为自包含版本。
-- 执行计划已复核并批准，等待单一 Goal 启动 M1–M8。
-- M1 尚未运行；没有 commit、tag、API、remote 或发布操作。
-- 本轮修订前 EXECUTION_PLAN.md 的 SHA256 为 `1C0F3723F65A39CF1819E2672E4E9D494A6D65BAEAE715199D9090471A385DCA`，长度为 16,288 字节。
-- 除 EXECUTION_PLAN.md 外的源文件共 53 个；修订前后的聚合 SHA256 均为 `F88D99B0D5D11104607F4569EE3C378558809B36CB7DBC4A961F072B1ABFE6B9`，因此本轮没有修改其他源文件。
-- 聚合指纹口径：递归枚举工作区普通文件，排除 `.git/**`、`node_modules/**`、`docs/.vitepress/dist/**`、`docs/.vitepress/cache/**` 和 `EXECUTION_PLAN.md`；按使用反斜杠的相对路径排序；每行写为 `相对路径<TAB>大写文件 SHA256`；以 LF 连接、UTF-8 无 BOM 编码且末尾不加换行，再计算 SHA256。
-- 等待用户设置引用最终 SHA256 的 Goal，启动 M1–M8。
+- 执行计划已复核并批准。
+- 本轮修订前 `EXECUTION_PLAN.md` 的 SHA256 为 `BE791E6D68A03B3517F3035032F6A36B6F861D19D3AB6580565D2C7446D55EBD`，长度为 59,221 字节。
+- 本轮开始前，按 `git ls-files --cached --others --exclude-standard` 枚举并排除 `EXECUTION_PLAN.md` 后共有 152 个文件，聚合 SHA256 为 `BA25B03DEA17B6EBCE245B93563DCF4AD0550855D138F417DDB3FBFA0592AE3D`。
+- 聚合指纹口径：路径转为反斜杠并排序；每行写为 `相对路径<TAB>大写文件 SHA256`；以 LF 连接、UTF-8 无 BOM 编码且末尾不加换行，再计算 SHA256。
+- 修订后用同一口径复核仍为 152 个文件、聚合 SHA256 `BA25B03DEA17B6EBCE245B93563DCF4AD0550855D138F417DDB3FBFA0592AE3D`，证明本轮未改变 `EXECUTION_PLAN.md` 以外的已跟踪或未忽略文件。最终计划 SHA256 在交付回复中报告，避免把自引用 hash 写回文件导致 hash 再次变化。
+- 本轮没有新建 commit/tag，没有调用 API，没有执行 remote、push、PR、Pages 或发布；开始前已存在的 Git 历史与工作树改动不计为本轮动作。
 
-### M1 结果
+### M1–M9 当前结果
 
-- 执行时间：2026-08-20 16:53–16:55（Asia/Shanghai）。
-- 授权：引用批准计划 SHA256 `8FEB03FBB5E44C9CFC197D84B6864424E5E36894835315F4F26958EEF54F2964` 的活动 Goal，A1+A2。
-- 原样 baseline commit：`2847afc147704e453476f083c52e058e2f5e3639`。
-- Annotated tag：`legacy-baseline-v1`，tag object `a659a4317e731ba3dc133a972a3b47b42d187dcf`。
-- 54 个源文件验证前后聚合 SHA256 均为 `9D6E079100F0E427B1DD78C990E694810EAAC90E7D89A8AF78A5A054FECB9E7D`；tag 注释保存完整 manifest。
-- `npm run check`、`npm run eval:summary`、`DOCS_BASE=/about-harness/ npm run check`、两项 `npm audit --offline` 均退出 0。
-- 为遵守禁止真实 API/remote 的 Goal，audit 只使用 `--offline`；remote 保持为空，未 push。
-- README、changelog 和 legacy reviews 在 baseline 前未移动、改写或改标。
-- 恢复点：`legacy-baseline-v1`；下一步在同一 Goal 下执行 M2。
-
-### M2 结果
-
-- 完成知识地图、前置知识、学习路径、六项作品集及 40/25/20/15 评分 rubric。
-- 建立首页、导航、来源、事实注册表、兼容性、隐私、维护、贡献与 issue 模板骨架。
-- 十份旧 review 原样迁至 `docs/reviews/legacy/`，原始 SHA256 全部保持；旧路由仅显示迁移说明，README/changelog 不再声称 v1 十轮完成。
-- 新增 `facts:check`、`reviews:check` 与负例 self-test；8 条注册事实可解析，pending 主张不会被误标为 verified。
-- `npm run check` 在 `/` 与 `/about-harness/` base 均通过：55 个 Markdown 页面、55 条路由、56 个 HTML artifact，无断链或孤页。
-- 安全与外部状态：只使用本地文件、构建和离线检查；无真实 API、凭据、费用、remote 或发布动作。
-- 恢复点：M2 result commit/tag；下一步在同一 Goal 下执行 M3。
-
-### M3 结果
-
-- 建立 task/run/trace/result JSON Schema、Python contracts/loop/context/memory/policy/tool/retry/trace 与 fake/replay/禁用 live adapters。
-- 实现预算、timeout、取消传播、有限重试、幂等键、权限拒绝、checkpoint/恢复、可信来源记忆检索和 trace 脱敏。
-- 提供严格 TypeScript 5.9.3 接口映射、Python 3.11+ 锁文件、Docker/Compose/devcontainer 与五篇实现文档。
-- `uv sync --frozen --offline`、20 项 pytest、Ruff 0.16.2、Pyright 1.1.411、TypeScript `tsc --noEmit` 与离线 smoke 全部通过。
-- 本地容器镜像 `sha256:9dc56e8601de95eefbd8b3adb0ef1e9b0d309495ca4074525d9e8f2a1bd5bfcc` 在 `--network none --read-only --cap-drop ALL --security-opt no-new-privileges` 下完成 smoke。
-- Root 与 `/about-harness/` base 的 60 页面构建均通过；live adapter 硬禁用，未读取凭据、未调用模型 API、未产生模型费用、未执行 Git remote/push/发布。
-- 首次 tag `m3-complete-v1` 包含误收录的 Python cache，保留作审计但已废止；权威恢复点为后续 `m3-corrected-v1`，其中删除 18 个 `.pyc` 并补齐 `.gitignore`。
-- 恢复点：`m3-corrected-v1`；下一步在同一 Goal 下执行 M4。
+- M1 已完成：`legacy-baseline-v1`（`2847afc`）和 `m1-complete-v1`（`48950fa`）。
+- M2 已完成：`m2-complete-v1`（`ade425e`）。
+- M3 已完成并修正：`m3-complete-v1`（`f61b8c7`）保留审计，当前恢复点为 `m3-corrected-v1`（`dd419bb`）。
+- M4 已完成：新增/重写 foundations、models、harnesses、frameworks、domains、optimization 与 security 页面；导航覆盖全部 M4 主页面；12 条登记事实均为 E1/verified。
+- M4 验证：根路径与 `/about-harness/` base 的 `npm run check` 均通过（95 个 Markdown/路由、96 个 HTML）；20 项 pytest、Ruff、Pyright、TypeScript 与离线 smoke 通过。
+- M4 证据边界：只核对官方文档、固定 Pi commit、本机版本和离线实现；没有真实模型调用、凭据或费用，不存在 E2/E3 性能结论。
+- M4 恢复点：annotated tag `m4-complete-v1`（result SHA 由 Git tag 解析）。
+- M5 进行中；M6–M9 未开始，M9 仍需单独 A4。
 
 ### 后续里程碑记录模板
 
@@ -1219,9 +1214,9 @@ M9 后必须总结：
 
 ## 17. 当前停止点
 
-M0–M3 已完成。活动 Goal 已按批准计划 SHA256 授予 A1+A2，当前执行 M4，并在未命中异常暂停条件时连续执行到 M8。
+当前恢复点为 `m4-complete-v1`，M5 正在进行。不得重跑 M1–M4，也不得删除、移动或覆盖任何现有 commit/tag。
 
-Goal 执行期间不得调用真实 API、读取凭据、产生费用，或执行 remote、push、PR、Pages 和发布操作。M8 完成后必须停止。
+活动 Goal 已授予 M4–M8 的 A1+A2；M4 checkpoint 后自动继续 M5。Goal 执行期间禁止真实 API、凭据、费用、remote、push、PR、Pages 和发布；完成 M8 或命中安全/许可/范围暂停条件时停止。
 
 ### 待用户确认
 

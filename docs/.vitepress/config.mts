@@ -35,20 +35,75 @@ export default defineConfig({
         collapsed: false,
         items: [
           { text: '什么是 Harness', link: '/foundations/what-is-harness' },
+          { text: '系统架构', link: '/foundations/architecture' },
           { text: 'Agent 循环', link: '/foundations/agent-loop' },
           { text: '上下文工程', link: '/foundations/context' },
-          { text: '工具与协议', link: '/foundations/tools' },
-          { text: '指令与扩展层', link: '/foundations/instructions' },
+          { text: '指令系统', link: '/foundations/instructions' },
+          { text: '记忆生命周期', link: '/foundations/memory' },
+          { text: '推理预算', link: '/foundations/reasoning' },
+          { text: '工具设计', link: '/foundations/tools' },
+          { text: '模型与工具协议', link: '/foundations/protocols' },
+          { text: '状态与可靠执行', link: '/foundations/state-reliability' },
+          { text: '可观测性', link: '/foundations/observability' },
+          { text: '多 Agent 编排', link: '/foundations/multi-agent' },
+          { text: '人在循环中', link: '/foundations/human-control' },
           { text: '安全与权限', link: '/foundations/security' }
         ]
       },
       {
-        text: '模型适配',
+        text: '模型与协议',
+        items: [
+          { text: '指定模型适配', link: '/models/adaptation' },
+          { text: '协议兼容性', link: '/models/protocol-compatibility' },
+          { text: '推理预算', link: '/models/reasoning-budget' },
+          { text: 'OpenAI', link: '/models/openai' },
+          { text: 'Anthropic', link: '/models/anthropic' },
+          { text: 'Google', link: '/models/google' },
+          { text: 'Qwen', link: '/models/qwen' },
+          { text: 'DeepSeek', link: '/models/deepseek' },
+          { text: 'Llama', link: '/models/llama' }
+        ]
+      },
+      {
+        text: '优化方法',
         items: [
           { text: '模型—Harness 匹配', link: '/optimization/model-fit' },
           { text: '提示与任务契约', link: '/optimization/prompting' },
           { text: '上下文与工具调优', link: '/optimization/context-tools' },
+          { text: '记忆优化', link: '/optimization/memory' },
+          { text: '推理与路由', link: '/optimization/reasoning-routing' },
+          { text: '问题诊断', link: '/optimization/debugging' },
           { text: '实验方法', link: '/optimization/experiment' }
+        ]
+      },
+      {
+        text: 'Agent Framework',
+        items: [
+          { text: 'Framework 对照', link: '/frameworks/comparison' },
+          { text: 'LangGraph', link: '/frameworks/langgraph' },
+          { text: 'OpenAI Agents SDK', link: '/frameworks/openai-agents-sdk' },
+          { text: 'Google ADK', link: '/frameworks/google-adk' },
+          { text: 'AutoGen', link: '/frameworks/autogen' }
+        ]
+      },
+      {
+        text: '领域模式',
+        items: [
+          { text: 'Coding Agent', link: '/domains/coding' },
+          { text: '浏览器 Agent', link: '/domains/browser' },
+          { text: '研究 Agent', link: '/domains/research' },
+          { text: '数据 Agent', link: '/domains/data' },
+          { text: '文档 Agent', link: '/domains/document' }
+        ]
+      },
+      {
+        text: '安全专题',
+        items: [
+          { text: '威胁模型', link: '/security/threat-model' },
+          { text: 'Prompt Injection', link: '/security/prompt-injection' },
+          { text: 'Secret 与隐私', link: '/security/secrets-privacy' },
+          { text: '供应链安全', link: '/security/supply-chain' },
+          { text: '事件响应', link: '/security/incident-response' }
         ]
       },
       {

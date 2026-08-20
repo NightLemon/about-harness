@@ -2,8 +2,8 @@
 
 本项目优先引用官方文档与官方维护仓库。产品事实均按核对日期理解，不推断套餐、账号权限或未来路线。
 
-::: warning 当前证据状态
-本页链接来自 legacy baseline。日期表示 baseline 中记录的核对日期；M4 必须把正文中的易变主张逐项登记到[事实注册表](/references/fact-registry)，并重新确认版本、来源与证据等级。未完成登记的链接不能单独证明产品事实。
+::: info 当前证据状态
+M4 已在 2026-08-20 实际获取下列官方页面或固定仓库内容，并把正文使用的易变主张登记到[事实注册表](/references/fact-registry)。这里的 E1 只证明来源核对和离线职责映射，不证明模型质量或 live 产品组合可用；真实运行仍需 E2/E3。
 :::
 
 ## OpenAI / Codex
@@ -35,6 +35,26 @@
 - [Pi coding agent README（当前主分支）](https://github.com/earendil-works/pi/tree/main/packages/coding-agent)：操作前检查新版本；主分支不是可复现引用。
 - [Pi repository](https://github.com/earendil-works/pi)：源码、版本、examples 与详细 docs。
 
+## Framework 与 runtime
+
+核对日期：**2026-08-20**。
+
+- [LangGraph overview](https://docs.langchain.com/oss/python/langgraph/overview)：低层 orchestration、durable execution、streaming、human-in-the-loop 与确定性/模型步骤混合。
+- [OpenAI Agents SDK](https://developers.openai.com/api/docs/guides/agents-sdk)：agent、run、tool、handoff、guardrail、state、MCP、tracing 与 evaluation 的 code-first 入口。
+- [Google ADK](https://google.github.io/adk-docs/)：agent、model、tool、session、runtime、deployment、observability、evaluation 与 safety/security 导航。
+- [AutoGen stable docs](https://microsoft.github.io/autogen/stable/)：AgentChat、Core、Extensions 与 Studio 分层。
+
+## 模型家族核对入口
+
+核对日期：**2026-08-20**。这些入口用于运行前解析精确 model ID、provider、license 和版本，不构成性能比较。
+
+- [OpenAI models](https://developers.openai.com/api/docs/models) 与 [Codex models](https://learn.chatgpt.com/docs/models)
+- [Anthropic Claude models](https://docs.anthropic.com/en/docs/about-claude/models/overview)
+- [Google Gemini models](https://ai.google.dev/gemini-api/docs/models)
+- [Qwen 官方站](https://qwenlm.github.io/)及目标 checkpoint 的 model card
+- [DeepSeek API docs](https://api-docs.deepseek.com/)；本轮特定 pricing 页面 TLS 失败，价格/alias 保持待核验
+- [Meta Llama docs](https://www.llama.com/docs/overview/)及目标权重的 license/model card
+
 ## 跨产品标准与方法
 
 - [Model Context Protocol specification](https://modelcontextprotocol.io/specification)：协议角色与能力。
@@ -48,6 +68,29 @@
 - 若运行环境的 `--help` 与网页冲突，先记录版本和冲突，以实际目标版本行为为准。
 - 外部博客与 benchmark 可用于形成假设，不应单独证明对所有模型和工作负载都成立。
 - 禁止网络或真实 API 的执行阶段可以保留官方 URL 与待核验主张，但必须标为 E0/待核验，不能填写伪造的核对结果。
+
+## M4 获取指纹
+
+以下 SHA256 对应本轮实际收到的响应正文，仅用于证明“核对了哪一份滚动页面”，不是对外部站点的永久存档。滚动页面更新后应重新抓取并更新日期与指纹。
+
+| Fact ID | 响应 SHA256 |
+| --- | --- |
+| `codex-agents-md` | `9D1F87A2D1CB55B4782B95ABE710692B35B9659789C2DB31A22C7074A3383E8E` |
+| `codex-config` | `46D88F56B56542FF72E50B851D5E011DD01009815C4845137036868320C188A2` |
+| `claude-memory` | `631411505E6D6C4AB20FB7985C01033231977B2DF388F957A7D6F3D6C354BDED` |
+| `claude-settings` | `4A0EBD8230F89565507CAB2FC8E5817D90C5A53E26887FF9023897E8ED027135` |
+| `pi-readme` | `CE0F95C3D314DCACB5F2388B956880A86736EDE3C383FD1F8E91BF9056AA134D` |
+| `mcp-spec` | `B6816BB89C9D6E3BD916C07E5D64491F0B44FB0687710B580A5A3C26CDC8EB51` |
+| `langgraph-overview` | `F83C53FE1574EA2DB529F048B507F88305ACFDB67F9F63A5D5D58BE35BCB869F` |
+| `openai-agents-sdk` | `7855BE154BBC3A8F65CFF8BE0DBF0657008218583C729E4EEE93194744E9CE8D` |
+| `google-adk` | `D9B398FE4F94F4C07BD9D7E4F1E8B2B40A0EF3B9DED9EED46D7DC47FA61195C5` |
+| `autogen-overview` | `B6DBD2156CB2A0A00AE3C99054A2CEEB98550FF1026C5D48BF2EB335C5C3404E` |
+| Anthropic model catalog | `AF3D816038BB040ADA6975DA189ADA02662FA12D9E33E6ECDD0FA0CF7980CB37` |
+| Gemini model catalog | `0BDEFB5C2ACC0FEAB0D8D27014C38391F87528DDB2D1B7CF7DDD5B44629815BC` |
+| Qwen 官方站 | `F874CC1C99C3454E3EA933DAC9790E5CB329E25BF5766B270AB9E38BD780BFFE` |
+| Meta Llama docs（重定向到 developer.meta.com） | `6C33060FD693972D5F58E412E2EDE3EAE10D86211E2ED7FE6CA16ADC715B6521` |
+
+DeepSeek API docs 在同一环境中仍因 TLS 握手失败而无法抓取，因此没有填写响应指纹，相关价格、alias、上下文和可用性主张继续保持 E0/待核验。
 
 ## 事实与建议如何区分
 

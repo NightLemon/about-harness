@@ -17,12 +17,16 @@
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | boundary-harness | 本项目将 harness 定义为承载和约束 agent loop 的工作环境 | project | /foundations/what-is-harness | v1-contract | 2026-08-20 | low | E1 | verified | /guide/roadmap |
 | review-legacy | legacy 十轮缺少 v1 所需的冻结 baseline、逐轮 diff 与 result tag，因此不计入 v1 | repository | /reviews/legacy/ | legacy-baseline-v1 | 2026-08-20 | low | E1 | verified | /meta/changelog |
-| codex-agents-md | Codex 项目指令的发现、作用域与覆盖行为 | product | https://learn.chatgpt.com/docs/agent-configuration/agents-md | rolling | 2026-08-20 | high | E0 | pending | /harnesses/codex |
-| codex-config | Codex 配置层、字段与 surface 行为 | product | https://learn.chatgpt.com/docs/config-file/config-basic | rolling | 2026-08-20 | high | E0 | pending | /harnesses/codex |
-| claude-memory | Claude Code 的 CLAUDE.md 作用域与加载行为 | product | https://code.claude.com/docs/en/memory | rolling | 2026-08-20 | high | E0 | pending | /harnesses/claude-code |
-| claude-settings | Claude Code settings 与权限配置行为 | product | https://code.claude.com/docs/en/settings | rolling | 2026-08-20 | high | E0 | pending | /harnesses/claude-code |
-| pi-readme | Pi coding agent 的工具、session、compaction、context、skills 与 extensions 行为 | product | https://github.com/earendil-works/pi/tree/496185f6e4267b979e3663c45f7eb70b0c6a97b4/packages/coding-agent | 496185f6e4267b979e3663c45f7eb70b0c6a97b4 | 2026-08-20 | medium | E0 | pending | /harnesses/pi |
-| mcp-spec | MCP 定义 host/client/server 间的能力与消息协议，而不是自动授予工具权限 | standard | https://modelcontextprotocol.io/specification | rolling | 2026-08-20 | medium | E0 | pending | /foundations/tools |
+| codex-agents-md | Codex 项目指令的发现、作用域与覆盖行为 | product | https://learn.chatgpt.com/docs/agent-configuration/agents-md | rolling | 2026-08-20 | high | E1 | verified | /harnesses/codex |
+| codex-config | Codex 配置层、字段与 surface 行为 | product | https://learn.chatgpt.com/docs/config-file/config-basic | rolling | 2026-08-20 | high | E1 | verified | /harnesses/codex |
+| claude-memory | Claude Code 的 CLAUDE.md 作用域与加载行为 | product | https://code.claude.com/docs/en/memory | rolling | 2026-08-20 | high | E1 | verified | /harnesses/claude-code |
+| claude-settings | Claude Code settings 与权限配置行为 | product | https://code.claude.com/docs/en/settings | rolling | 2026-08-20 | high | E1 | verified | /harnesses/claude-code |
+| pi-readme | Pi coding agent 的工具、session、compaction、context、skills 与 extensions 行为 | product | https://github.com/earendil-works/pi/tree/496185f6e4267b979e3663c45f7eb70b0c6a97b4/packages/coding-agent | 496185f6e4267b979e3663c45f7eb70b0c6a97b4 | 2026-08-20 | medium | E1 | verified | /harnesses/pi |
+| mcp-spec | MCP 定义 host/client/server 间的能力与消息协议，而不是自动授予工具权限 | standard | https://modelcontextprotocol.io/specification | rolling | 2026-08-20 | medium | E1 | verified | /foundations/tools |
+| langgraph-overview | LangGraph 是面向长运行、有状态 agent 的低层 orchestration framework/runtime | product | https://docs.langchain.com/oss/python/langgraph/overview | rolling | 2026-08-20 | high | E1 | verified | /frameworks/langgraph |
+| openai-agents-sdk | OpenAI Agents SDK 提供 code-first agent runtime 组件 | product | https://developers.openai.com/api/docs/guides/agents-sdk | rolling | 2026-08-20 | high | E1 | verified | /frameworks/openai-agents-sdk |
+| google-adk | Google ADK 提供 agent、tool、session、runtime、deployment、observability 与 evaluation 等构件 | product | https://google.github.io/adk-docs/ | rolling | 2026-08-20 | high | E1 | verified | /frameworks/google-adk |
+| autogen-overview | AutoGen 区分 AgentChat、Core、Extensions 与 Studio 等层 | product | https://microsoft.github.io/autogen/stable/ | stable-docs | 2026-08-20 | high | E1 | verified | /frameworks/autogen |
 
 ## 冲突处理
 
