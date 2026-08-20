@@ -1,0 +1,13 @@
+services:
+  lab-smoke:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    network_mode: none
+    read_only: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    tmpfs:
+      - /tmp:size=16m

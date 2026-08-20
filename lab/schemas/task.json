@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://about-harness.local/schemas/task-v1.json",
+  "title": "About Harness task v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "task_id", "goal", "allowed_tools", "budgets"],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "task_id": { "type": "string", "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._-]{0,127}$" },
+    "goal": { "type": "string", "minLength": 1, "maxLength": 4000 },
+    "input": { "type": "object" },
+    "allowed_tools": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    },
+    "budgets": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["max_steps", "max_model_calls", "timeout_ms"],
+      "properties": {
+        "max_steps": { "type": "integer", "minimum": 1, "maximum": 10000 },
+        "max_model_calls": { "type": "integer", "minimum": 1, "maximum": 10000 },
+        "timeout_ms": { "type": "integer", "minimum": 1, "maximum": 86400000 },
+        "max_cost_usd": { "type": "number", "minimum": 0 }
+      }
+    },
+    "acceptance": { "type": "object" },
+    "metadata": { "type": "object" }
+  }
+}

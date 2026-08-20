@@ -1,6 +1,6 @@
 # Harness 学习文档项目执行计划 v1
 
-状态：**活动 Goal 已启动；M1–M2 已完成；M3 进行中；M9 未授权**
+状态：**活动 Goal 已启动；M1–M3 已完成；M4 进行中；M9 未授权**
 交付契约批准语句：批准交付契约 v1，请保存执行计划  
 计划修订日期：2026-08-20  
 工作区：C:\Users\lxiang\repos\about-harness
@@ -20,8 +20,8 @@
 | M0 | **已完成** | 执行计划已复核并批准 |
 | M1 | **已完成** | legacy baseline：`2847afc147704e453476f083c52e058e2f5e3639`；tag：`legacy-baseline-v1` |
 | M2 | **已完成** | 知识地图、站点骨架、事实注册表、作品集 rubric 与 legacy 迁移 |
-| M3 | **进行中** | Python 最小 harness、TypeScript 映射、容器和离线 runner |
-| M4 | 未开始 | 模型、harness、framework、领域和安全内容 |
+| M3 | **已完成** | Python 最小 harness、TypeScript 映射、容器和离线 runner |
+| M4 | **进行中** | 模型、harness、framework、领域和安全内容 |
 | M5 | 未开始 | 六个案例、正式 schema 和评测系统 |
 | M6 | 未开始 | 来源、许可、隐私、CI、视觉和发布自动化 |
 | M7 | 未开始 | 新 review 01–05 |
@@ -1103,6 +1103,8 @@ npm run verify 最终聚合全部离线 PR 门禁。项目 Pages 构建必须显
 9. 第 10 轮记录承认视觉检查未完成。后续只读 QA 观察到桌面导航、搜索、主题切换和移动首页基本工作，但深层锚点标题可能被固定导航遮挡，密集比较表首列过窄，移动菜单完整检查被中断。
 10. package.json 的修改时间晚于现有 round-10 记录，说明 legacy 第 10 轮不能自动覆盖当前快照。
 11. 当前 package.json 已包含 Playwright，docs:dev 当前为 vitepress dev docs；这些只能作为现状事实，不是新十轮证据。
+12. M3 期间直接 PyPI/npmjs TLS 握手失败；改用环境既有 Microsoft package feed proxy 后生成 `uv.lock`，锁定官方 Pyright/pytest/Ruff/jsonschema，并由离线 `uv sync --frozen --offline` 复验。
+13. 本机最初没有 `python:3.12-slim`；只拉取公开 base digest 并构建本地镜像 `sha256:9dc56e…bfcc`，无登录、push 或模型 API。运行时使用无网络、只读文件系统、drop capabilities 与 no-new-privileges。
 
 后续每次新增发现使用格式：
 
@@ -1174,6 +1176,16 @@ npm run verify 最终聚合全部离线 PR 门禁。项目 Pages 构建必须显
 - 安全与外部状态：只使用本地文件、构建和离线检查；无真实 API、凭据、费用、remote 或发布动作。
 - 恢复点：M2 result commit/tag；下一步在同一 Goal 下执行 M3。
 
+### M3 结果
+
+- 建立 task/run/trace/result JSON Schema、Python contracts/loop/context/memory/policy/tool/retry/trace 与 fake/replay/禁用 live adapters。
+- 实现预算、timeout、取消传播、有限重试、幂等键、权限拒绝、checkpoint/恢复、可信来源记忆检索和 trace 脱敏。
+- 提供严格 TypeScript 5.9.3 接口映射、Python 3.11+ 锁文件、Docker/Compose/devcontainer 与五篇实现文档。
+- `uv sync --frozen --offline`、20 项 pytest、Ruff 0.16.2、Pyright 1.1.411、TypeScript `tsc --noEmit` 与离线 smoke 全部通过。
+- 本地容器镜像 `sha256:9dc56e8601de95eefbd8b3adb0ef1e9b0d309495ca4074525d9e8f2a1bd5bfcc` 在 `--network none --read-only --cap-drop ALL --security-opt no-new-privileges` 下完成 smoke。
+- Root 与 `/about-harness/` base 的 60 页面构建均通过；live adapter 硬禁用，未读取凭据、未调用模型 API、未产生模型费用、未执行 Git remote/push/发布。
+- 恢复点：M3 result commit/tag；下一步在同一 Goal 下执行 M4。
+
 ### 后续里程碑记录模板
 
 每个里程碑完成或中止时追加：
@@ -1205,7 +1217,7 @@ M9 后必须总结：
 
 ## 17. 当前停止点
 
-M0–M2 已完成。活动 Goal 已按批准计划 SHA256 授予 A1+A2，当前执行 M3，并在未命中异常暂停条件时连续执行到 M8。
+M0–M3 已完成。活动 Goal 已按批准计划 SHA256 授予 A1+A2，当前执行 M4，并在未命中异常暂停条件时连续执行到 M8。
 
 Goal 执行期间不得调用真实 API、读取凭据、产生费用，或执行 remote、push、PR、Pages 和发布操作。M8 完成后必须停止。
 

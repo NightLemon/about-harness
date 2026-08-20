@@ -52,6 +52,16 @@ export default defineConfig({
         ]
       },
       {
+        text: '参考实现',
+        items: [
+          { text: 'Python 最小 Harness', link: '/implementation/minimal-harness-python' },
+          { text: 'TypeScript 映射', link: '/implementation/typescript-mapping' },
+          { text: 'Adapter 契约', link: '/implementation/adapter-contract' },
+          { text: '扩展点', link: '/implementation/extensions' },
+          { text: '测试策略', link: '/implementation/testing' }
+        ]
+      },
+      {
         text: 'Harness 实战',
         items: [
           { text: '横向比较', link: '/harnesses/comparison' },

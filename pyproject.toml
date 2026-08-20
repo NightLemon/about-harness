@@ -1,0 +1,37 @@
+[project]
+name = "about-harness-lab"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = []
+
+[dependency-groups]
+dev = [
+  "jsonschema>=4.26,<5",
+  "pyright>=1.1.400,<2",
+  "pytest>=8.4,<9",
+  "ruff>=0.16,<0.17",
+]
+
+[[tool.uv.index]]
+name = "microsoft-proxy"
+url = "https://packagefeedproxy.microsoft.io/pypi/simple/"
+default = true
+
+[tool.pytest.ini_options]
+testpaths = ["lab/tests"]
+pythonpath = ["lab/src"]
+addopts = "-q"
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "RUF"]
+
+[tool.pyright]
+include = ["lab/src", "lab/tests", "scripts/lab-smoke.py"]
+extraPaths = ["lab/src"]
+pythonVersion = "3.11"
+typeCheckingMode = "strict"
+reportMissingTypeStubs = false

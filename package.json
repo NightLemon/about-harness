@@ -12,11 +12,16 @@
     "facts:check": "node scripts/facts-check.mjs",
     "reviews:check": "node scripts/reviews-check.mjs",
     "checks:self-test": "node scripts/test-m2-checks.mjs",
+    "lab:smoke": "uv run --frozen --offline python scripts/lab-smoke.py",
+    "lab:pyright": "uv run --frozen --offline pyright",
+    "lab:typecheck": "tsc -p lab/ts/tsconfig.json",
     "eval:summary": "node scripts/summarize-evals.mjs evals/runs.example.jsonl",
     "check": "npm run docs:check && npm run docs:build && npm run docs:verify-build && npm run facts:check && npm run reviews:check && npm run checks:self-test"
   },
   "devDependencies": {
     "playwright": "^1.62.1",
+    "pyright": "^1.1.408",
+    "typescript": "^5.9.3",
     "vitepress": "1.6.4"
   }
 }
