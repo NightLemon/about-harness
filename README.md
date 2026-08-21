@@ -10,7 +10,7 @@
 
 ## 本地运行
 
-要求 Node.js 22 与 npm。
+要求 Node.js 22+ 与 npm；CI 与发布自动化以 Node.js 22 为最低发布基线。
 
 ```bash
 npm ci

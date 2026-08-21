@@ -2,7 +2,7 @@
 
 ## 学习目标与证据边界
 
-完成本页后，你能在无网络、无凭据环境运行六个固定案例，并解释为什么这些结果只能标为 E1。案例使用 Python 3.11+、uv 0.11、Node 24、TypeScript 5.9 的锁定项目环境；真实模型、Browser Use、LangGraph、PydanticAI 与 LlamaIndex 都不会被导入或调用。
+完成本页后，你能在无网络、无凭据环境运行六个固定案例，并解释为什么这些结果只能标为 E1。案例要求 Python 3.11+、uv 0.11、Node.js 22+ 和锁定的 TypeScript 5.9 依赖；CI 与发布自动化以 Node.js 22 为最低发布基线，单次实验仍须记录实际 Node 版本。真实模型、Browser Use、LangGraph、PydanticAI 与 LlamaIndex 都不会被导入或调用。
 
 ## 前置条件与输入
 

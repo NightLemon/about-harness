@@ -19,6 +19,11 @@ const dockerfile = read('Dockerfile')
 const compose = read('compose.yaml')
 const cli = read('scripts/run-labs.py')
 const migration = read('docs/labs/migration.md')
+const readme = read('README.md')
+const prerequisites = read('docs/guide/prerequisites.md')
+const packageText = read('package.json')
+const packageLockText = read('package-lock.json')
+const workflows = ['ci', 'deploy', 'facts'].map((name) => [name, read(`.github/workflows/${name}.yml`)])
 const cases = ['coding', 'browser', 'research', 'data', 'document', 'migration']
 
 for (const marker of [
@@ -52,6 +57,30 @@ for (const marker of ['labs-all:', 'network_mode: none', 'read_only: true', 'cap
 }
 if (!cli.includes('"--fixtures-root"')) errors.push('runner CLI does not expose isolated fixture root')
 
+let packageJson = {}
+let packageLock = {}
+try {
+  packageJson = JSON.parse(packageText)
+} catch {
+  errors.push('Node runtime baseline: package.json is invalid JSON')
+}
+try {
+  packageLock = JSON.parse(packageLockText)
+} catch {
+  errors.push('Node runtime baseline: package-lock.json is invalid JSON')
+}
+if (packageJson.engines?.node !== '>=22') errors.push('Node runtime baseline: package.json engines.node must be >=22')
+if (packageLock.packages?.['']?.engines?.node !== '>=22') errors.push('Node runtime baseline: package-lock root engines.node must be >=22')
+for (const [label, body] of [['README', readme], ['prerequisites', prerequisites], ['lab setup', setup]]) {
+  if (!body.includes('Node.js 22+')) errors.push(`Node runtime baseline: ${label} must state Node.js 22+`)
+}
+if (!setup.includes('Node.js 22 为最低发布基线') || /Node(?:\.js)? 24/.test(setup)) {
+  errors.push('Node runtime baseline: lab setup must distinguish Node.js 22 CI baseline from the recorded local runtime')
+}
+for (const [name, body] of workflows) {
+  if (!/node-version:\s*22(?:\s|$)/m.test(body)) errors.push(`Node runtime baseline: ${name} workflow must use Node 22`)
+}
+
 for (const marker of [
   'Codex 分别映射到 Pi 和 Claude Code',
   'source_semantics',
@@ -74,4 +103,4 @@ if (errors.length) {
   process.exit(1)
 }
 
-console.log('Tutorial check passed: six cases have executable failure, container, Windows, and POSIX paths.')
+console.log('Tutorial check passed: six cases have executable failure, container, Windows/POSIX paths, and a Node.js 22+ baseline.')

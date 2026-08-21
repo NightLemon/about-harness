@@ -3,7 +3,7 @@
 本项目优先引用官方文档与官方维护仓库。产品事实均按核对日期理解，不推断套餐、账号权限或未来路线。
 
 ::: info 当前证据状态
-M4 已在 2026-08-20 实际获取下列官方页面或固定仓库内容，并把正文使用的易变主张登记到[事实注册表](/references/fact-registry)。这里的 E1 只证明来源核对和离线职责映射，不证明模型质量或 live 产品组合可用；真实运行仍需 E2/E3。
+M4 在 2026-08-20 获取下列官方页面或固定仓库内容，Round 10 又在 2026-08-21 复核三项发布关键事实，并把正文使用的易变主张登记到[事实注册表](/references/fact-registry)。这里的 E1 只证明来源核对和离线职责映射，不证明模型质量或 live 产品组合可用；真实运行仍需 E2/E3。
 :::
 
 ## OpenAI / Codex
@@ -105,6 +105,16 @@ M4 已在 2026-08-20 实际获取下列官方页面或固定仓库内容，并�
 | Meta Llama docs（重定向到 developer.meta.com） | `6C33060FD693972D5F58E412E2EDE3EAE10D86211E2ED7FE6CA16ADC715B6521` |
 
 DeepSeek API docs 在同一环境中仍因 TLS 握手失败而无法抓取，因此没有填写响应指纹，相关价格、alias、上下文和可用性主张继续保持 E0/待核验。
+
+## Round 10 官方复核指纹
+
+Round 10 于 2026-08-21 通过只读浏览器再次核对发布关键主张，没有调用模型 API。下列 SHA256 是浏览器当次可见 DOM 文本的指纹，用于把审阅结论绑定到实际看到的滚动页面；DOM 指纹不是页面的永久快照，也不能替代未来发布时重新核对来源。
+
+| Fact ID | DOM SHA256 |
+| --- | --- |
+| `codex-sandbox-approval` | `DEC83FB38B634C0A984C9F312568AE60C0B62A930152D62656DCD828DF795143` |
+| `openai-function-calling` | `B9C7D7E4D95BCB4D0D425D2A70F89FF5EEDFF656C5AF488846F2F916BFDCECD9` |
+| `openai-reasoning-items` / `openai-reasoning-effort` | `3DC42F7A7C0D7BC9CD32ACC48E61CC1E29A07B78C3754A9DA7D3A4CFF13BA94E` |
 
 ## 事实与建议如何区分
 

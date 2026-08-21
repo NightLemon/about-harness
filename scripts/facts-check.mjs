@@ -30,12 +30,17 @@ const allowedEvidence = new Set(['E0', 'E1', 'E2', 'E3'])
 const allowedStatus = new Set(['verified', 'pending', 'conflict', 'retired'])
 const datePattern = /^\d{4}-\d{2}-\d{2}$/
 
-function routeExists(route) {
-  if (!route.startsWith('/')) return true
+function routeFile(route) {
+  if (!route.startsWith('/')) return null
   const rel = route.slice(1)
-  return fs.existsSync(path.join(docsRoot, `${rel}.md`)) ||
-    fs.existsSync(path.join(docsRoot, rel, 'index.md')) ||
-    (route === '/' && fs.existsSync(path.join(docsRoot, 'index.md')))
+  const candidates = route === '/'
+    ? [path.join(docsRoot, 'index.md')]
+    : [path.join(docsRoot, `${rel}.md`), path.join(docsRoot, rel, 'index.md')]
+  return candidates.find((candidate) => fs.existsSync(candidate)) || null
+}
+
+function routeExists(route) {
+  return !route.startsWith('/') || Boolean(routeFile(route))
 }
 
 for (const cells of rows) {
@@ -65,7 +70,12 @@ for (const cells of rows) {
       errors.push(`${id}: high-volatility fact is ${ageDays} days old; release limit is ${maxAge}`)
     }
   }
-  if (!routeExists(usedBy)) errors.push(`${id}: Used by route does not exist: ${usedBy}`)
+  const usedByFile = routeFile(usedBy)
+  if (!usedBy.startsWith('/')) errors.push(`${id}: Used by must be a site route: ${usedBy}`)
+  else if (!usedByFile) errors.push(`${id}: Used by route does not exist: ${usedBy}`)
+  else if (status !== 'retired' && !fs.readFileSync(usedByFile, 'utf8').includes(`[FACT:${id}]`)) {
+    errors.push(`${id}: Used by route ${usedBy} is missing [FACT:${id}]`)
+  }
   if (source.startsWith('/') && !routeExists(source)) errors.push(`${id}: source route does not exist: ${source}`)
 }
 

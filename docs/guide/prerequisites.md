@@ -10,7 +10,7 @@
 
 | 目标 | 必需环境 | 说明 |
 | --- | --- | --- |
-| 阅读或构建站点 | Node.js 22、npm | VitePress、文档、事实和 review 检查 |
+| 阅读或构建站点 | Node.js 22+、npm | VitePress、文档、事实和 review 检查；CI 以 Node.js 22 为发布基线 |
 | 运行离线 lab | Python 3.11+（CI 使用 3.12）、uv 0.11.16 | pytest、Ruff、Pyright、六个离线案例 |
 | 运行视觉门禁 | 上述 Node 环境、Playwright Chromium | 1440/390/320 视口、搜索、主题、菜单、表格和锚点 |
 | 最小容器 smoke | Docker Compose 或 devcontainer | `network_mode: none`，不需要凭据 |

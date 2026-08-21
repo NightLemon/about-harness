@@ -1,4 +1,5 @@
 import crypto from 'node:crypto'
+import { spawnSync } from 'node:child_process'
 import fs from 'node:fs'
 import path from 'node:path'
 
@@ -6,6 +7,7 @@ const root = process.cwd()
 const legacyDir = path.join(root, 'docs', 'reviews', 'legacy')
 const v1Dir = path.join(root, 'docs', 'reviews', 'v1')
 const errors = []
+const allowPending = process.env.REVIEWS_ALLOW_PENDING || ''
 
 const expectedLegacy = {
   'round-01.md': '530C9476C2D220F39166D6D4D126A2ADF3F9F50EB5A8208A0E43E90F9301C931',
@@ -20,13 +22,98 @@ const expectedLegacy = {
   'round-10.md': '8CA608D92DE0CF363090C3B29A999CD417D44AD56B9275A34F9333B6995E72BB'
 }
 
+function sha256(file) {
+  return crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex').toUpperCase()
+}
+
+function readJson(file, label) {
+  try {
+    return JSON.parse(fs.readFileSync(file, 'utf8'))
+  } catch (error) {
+    errors.push(`${label}: invalid JSON (${error.message})`)
+    return null
+  }
+}
+
+function git(args) {
+  return spawnSync('git', args, { cwd: root, encoding: 'utf8' })
+}
+
+const gitProbe = git(['rev-parse', '--is-inside-work-tree'])
+const hasGit = gitProbe.status === 0 && gitProbe.stdout.trim() === 'true'
+
+function commitFromAnnotatedTag(tag, label, allowMissing = false) {
+  const type = git(['cat-file', '-t', `refs/tags/${tag}`])
+  if (type.status !== 0) {
+    if (!allowMissing) errors.push(`${label}: missing annotated tag ${tag}`)
+    return null
+  }
+  if (type.stdout.trim() !== 'tag') {
+    errors.push(`${label}: ${tag} is not an annotated tag`)
+    return null
+  }
+  const commit = git(['rev-parse', `${tag}^{commit}`])
+  if (commit.status !== 0) {
+    errors.push(`${label}: cannot resolve ${tag} to a commit`)
+    return null
+  }
+  return commit.stdout.trim()
+}
+
+function requireAncestor(older, newer, label) {
+  const result = git(['merge-base', '--is-ancestor', older, newer])
+  if (result.status !== 0) errors.push(`${label}: ${older.slice(0, 7)} is not an ancestor of ${newer.slice(0, 7)}`)
+}
+
+function resolveCommit(value, label) {
+  if (!/^[0-9a-f]{7,40}$/i.test(value || '')) {
+    errors.push(`${label}: invalid commit reference`)
+    return null
+  }
+  if (!hasGit) {
+    if (value.length !== 40) errors.push(`${label}: abbreviated commit cannot be verified outside a Git worktree`)
+    return value.toLowerCase()
+  }
+  const result = git(['rev-parse', '--verify', `${value}^{commit}`])
+  if (result.status !== 0) {
+    errors.push(`${label}: commit reference does not resolve`)
+    return null
+  }
+  return result.stdout.trim().toLowerCase()
+}
+
+function patchBody(raw) {
+  const normalized = raw.replace(/\r\n/g, '\n')
+  const match = /(^|\n)diff --git /.exec(normalized)
+  if (!match) return ''
+  return normalized
+    .slice(match.index + (match[1] ? 1 : 0))
+    .replace(/^(@@ -\d+(?:,\d+)? \+\d+(?:,\d+)? @@).*$/gm, '$1')
+    .trimEnd()
+}
+
+function patchPaths(body, label) {
+  const paths = []
+  for (const match of body.matchAll(/^diff --git a\/(.+) b\/(.+)$/gm)) {
+    const left = match[1]
+    const right = match[2]
+    for (const candidate of [left, right]) {
+      if (candidate.startsWith('/') || candidate.split('/').includes('..')) {
+        errors.push(`${label}: diff.patch contains unsafe path ${candidate}`)
+      }
+    }
+    paths.push(right)
+  }
+  return [...new Set(paths)]
+}
+
 for (const [name, expected] of Object.entries(expectedLegacy)) {
   const file = path.join(legacyDir, name)
   if (!fs.existsSync(file)) {
     errors.push(`missing legacy review: ${name}`)
     continue
   }
-  const actual = crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex').toUpperCase()
+  const actual = sha256(file)
   if (actual !== expected) errors.push(`${name}: legacy hash changed (${actual})`)
 }
 
@@ -36,13 +123,99 @@ for (let round = 1; round <= 10; round += 1) {
   if (!fs.existsSync(stub)) errors.push(`missing old-route stub: round-${id}.md`)
 }
 
-const v1Rounds = fs.readdirSync(v1Dir).filter((name) => /^round-\d{2}\.md$/.test(name))
+const v1Rounds = fs.existsSync(v1Dir)
+  ? fs.readdirSync(v1Dir).filter((name) => /^round-\d{2}\.md$/.test(name)).sort()
+  : []
+
+for (let index = 0; index < v1Rounds.length; index += 1) {
+  const expected = `round-${String(index + 1).padStart(2, '0')}.md`
+  if (v1Rounds[index] !== expected || index >= 10) errors.push(`v1 reviews must be contiguous round-01 through round-10; found ${v1Rounds[index]}`)
+}
+
+let previousEvidenceCommit = null
 for (const name of v1Rounds) {
   const id = name.match(/\d{2}/)[0]
-  const artifactDir = path.join(root, 'artifacts', 'reviews', 'v1', `round-${id}`)
-  for (const required of ['baseline.json', 'findings.md', 'diff.patch', 'verification.json', 'unresolved.md']) {
-    if (!fs.existsSync(path.join(artifactDir, required))) errors.push(`${name}: missing artifact ${required}`)
+  const label = `round-${id}`
+  const artifactDir = path.join(root, 'artifacts', 'reviews', 'v1', label)
+  const docPath = path.join(v1Dir, name)
+  const required = ['baseline.json', 'findings.md', 'diff.patch', 'verification.json', 'unresolved.md']
+  for (const requiredName of required) {
+    const file = path.join(artifactDir, requiredName)
+    if (!fs.existsSync(file)) errors.push(`${name}: missing artifact ${requiredName}`)
+    else if (fs.statSync(file).size === 0) errors.push(`${name}: empty artifact ${requiredName}`)
   }
+  if (!required.every((requiredName) => fs.existsSync(path.join(artifactDir, requiredName)))) continue
+
+  const baseline = readJson(path.join(artifactDir, 'baseline.json'), `${label} baseline`)
+  const verification = readJson(path.join(artifactDir, 'verification.json'), `${label} verification`)
+  if (!baseline || !verification) continue
+  if (String(baseline.round).padStart(2, '0') !== id) errors.push(`${label}: baseline round mismatch`)
+  if (String(verification.round).padStart(2, '0') !== id) errors.push(`${label}: verification round mismatch`)
+  const baselineMetadataCommit = resolveCommit(baseline.baseline_commit, `${label} baseline metadata`)
+  const baselineCommit = resolveCommit(verification.baseline_commit, `${label} verification baseline_commit`)
+  const findingsCommit = resolveCommit(verification.findings_commit, `${label} findings_commit`)
+  const contentResultCommit = resolveCommit(verification.content_result_commit, `${label} content_result_commit`)
+  if (baselineMetadataCommit && baselineCommit && baselineMetadataCommit !== baselineCommit) errors.push(`${label}: baseline commit differs between metadata files`)
+  if (previousEvidenceCommit && baselineCommit && previousEvidenceCommit !== baselineCommit) {
+    errors.push(`${label}: baseline is not the previous round evidence commit`)
+  }
+  if (!baseline.baseline_tag || !verification.complete_tag) errors.push(`${label}: missing baseline/complete tag metadata`)
+  if (!Array.isArray(verification.commands) || !verification.commands.length || verification.commands.some((item) => item.exit_code !== 0)) {
+    errors.push(`${label}: verification commands are missing or contain failures`)
+  }
+  if (verification.result?.open_blockers !== 0) errors.push(`${label}: open blockers are not zero`)
+
+  const findings = fs.readFileSync(path.join(artifactDir, 'findings.md'), 'utf8')
+  if (!new RegExp(`R${id}-P[0-3]-\\d{2}`).test(findings)) errors.push(`${label}: findings contain no round-specific P0-P3 ID`)
+  const diff = fs.readFileSync(path.join(artifactDir, 'diff.patch'), 'utf8')
+  const normalizedPatch = patchBody(diff)
+  const changedPaths = patchPaths(normalizedPatch, label)
+  if (!normalizedPatch || changedPaths.length === 0) errors.push(`${label}: diff.patch is not a non-empty Git patch`)
+  const unresolved = fs.readFileSync(path.join(artifactDir, 'unresolved.md'), 'utf8')
+  for (const severity of ['P0', 'P1', 'P2', 'P3']) {
+    if (!unresolved.includes(`开放 ${severity}`)) errors.push(`${label}: unresolved.md lacks ${severity} count`)
+  }
+
+  const hashes = verification.artifact_hashes
+  if (!hashes || typeof hashes !== 'object') errors.push(`${label}: missing artifact_hashes`)
+  else {
+    for (const artifact of ['baseline.json', 'findings.md', 'diff.patch', 'unresolved.md', `docs/reviews/v1/${name}`]) {
+      if (!hashes[artifact]) errors.push(`${label}: artifact_hashes does not cover ${artifact}`)
+    }
+    for (const [artifact, expected] of Object.entries(hashes)) {
+      const file = artifact.includes('/') ? path.join(root, artifact) : path.join(artifactDir, artifact)
+      if (!/^[0-9a-f]{64}$/i.test(expected || '')) errors.push(`${label}: invalid SHA256 for ${artifact}`)
+      else if (!fs.existsSync(file)) errors.push(`${label}: hashed artifact is missing: ${artifact}`)
+      else if (sha256(file) !== expected) errors.push(`${label}: artifact hash mismatch: ${artifact}`)
+    }
+  }
+
+  if (!hasGit) continue
+  const baselineTagCommit = commitFromAnnotatedTag(baseline.baseline_tag, label)
+  if (baselineTagCommit && baselineCommit && baselineTagCommit !== baselineCommit) errors.push(`${label}: baseline tag points to the wrong commit`)
+  const pending = allowPending === id
+  const evidenceCommit = commitFromAnnotatedTag(verification.complete_tag, label, pending)
+  if (evidenceCommit) {
+    if (baselineCommit && findingsCommit) requireAncestor(baselineCommit, findingsCommit, label)
+    if (findingsCommit && contentResultCommit) requireAncestor(findingsCommit, contentResultCommit, label)
+    if (contentResultCommit) requireAncestor(contentResultCommit, evidenceCommit, label)
+    for (const rel of [
+      `docs/reviews/v1/${name}`,
+      ...required.map((requiredName) => `artifacts/reviews/v1/${label}/${requiredName}`)
+    ]) {
+      if (git(['cat-file', '-e', `${evidenceCommit}:${rel}`]).status !== 0) errors.push(`${label}: complete tag does not contain ${rel}`)
+    }
+  }
+
+  if (normalizedPatch && changedPaths.length && contentResultCommit) {
+    const candidates = [baselineCommit, findingsCommit].filter(Boolean)
+    const matches = candidates.some((fromCommit) => {
+      const generated = git(['diff', '--unified=0', '--no-color', '--no-ext-diff', fromCommit, contentResultCommit, '--', ...changedPaths])
+      return generated.status === 0 && patchBody(generated.stdout) === normalizedPatch
+    })
+    if (!matches) errors.push(`${label}: diff.patch does not match its paths from baseline/findings to content result`)
+  }
+  if (evidenceCommit) previousEvidenceCommit = evidenceCommit
 }
 
 const readme = fs.readFileSync(path.join(root, 'README.md'), 'utf8')
@@ -56,4 +229,4 @@ if (errors.length) {
   process.exit(1)
 }
 
-console.log(`Review check passed: 10 legacy hashes preserved; ${v1Rounds.length} v1 round record(s) present.`)
+console.log(`Review check passed: 10 legacy hashes preserved; ${v1Rounds.length} v1 round record(s) have structured evidence${hasGit ? ', lineage and annotated tags' : ''}.`)
