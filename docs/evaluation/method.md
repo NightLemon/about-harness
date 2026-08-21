@@ -22,6 +22,6 @@ npm run eval:validate
 npm run eval:summary
 ```
 
-重复 run ID、未知任务、split 泄漏、坏 hash、违规 failure type 会失败。出现安全违规、holdout 提前用于调参、费用超预算或环境版本不明时停止，不发布晋级结论。
+重复 run ID、重复 `(task, config, repeat)` 单元、同 config 的模型/版本/指令漂移、未知任务、split 泄漏、坏 hash、违规 failure type 会失败。矩阵 coverage 必须按期望单元计算，不能用总行数代替。出现安全违规、holdout 提前用于调参、费用超预算或环境版本不明时停止，不发布晋级结论。
 
 继续阅读[Schema](/evaluation/task-schema)、[指标](/evaluation/metrics)和[报告纪律](/evaluation/reporting)。

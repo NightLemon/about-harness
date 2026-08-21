@@ -2,7 +2,7 @@
 
 ## 最小报告
 
-报告写明 workload、任务抽样、模型/provider/adapter/harness、版本、surface、指令/config/fixture hash、重复、split、失败处理、指标、区间、安全、成本、排除项与证据等级。结论句必须带边界，例如“在这 20 个锁定任务和预算内”。
+报告写明 workload、任务抽样、模型/provider/adapter/harness、版本、surface、指令/config/fixture hash、重复、split、矩阵缺口、失败处理、指标、区间、安全、token/费用、排除项与证据等级。Development 与 holdout 必须分开；矩阵不完整、证据低于目标或存在安全违规时明确 `promotion_eligible=false`。结论句必须带边界，例如“在这 20 个锁定任务和预算内”。
 
 ## 公开前门禁
 

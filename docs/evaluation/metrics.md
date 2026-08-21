@@ -13,7 +13,7 @@
 - failure type 分布与最差案例；
 - development/holdout 分开报告。
 
-`npm run eval:summary` 输出上述可由 E1 样例计算的部分。12 行小样本只演示分析接口；区间很宽时结论应为“不足”，不能因 6/6 就声称真实成功率 100%。
+`npm run eval:summary` 输出上述可由 E1 样例计算的部分，并把 development/holdout 的 config 与配对结果分开，报告 input/output token 总量、矩阵缺口和晋级阻断原因。12 行小样本没有 holdout run，`holdout=null`、`promotion_eligible=false` 才是正确结果；区间很宽时结论应为“不足”，不能因 6/6 就声称真实成功率 100%。
 
 ## 成本为零的解释
 

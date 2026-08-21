@@ -10,7 +10,7 @@
 
 ## 漂移触发
 
-模型 alias、harness/adapter、工具 schema、指令、依赖、fixture 或业务任务分布变化都触发受影响回归。只要 hash 变化，就不能把新 run 与旧配置无条件合并。
+模型 alias、harness/adapter、工具 schema、指令、依赖、fixture 或业务任务分布变化都触发受影响回归。同一 `config_id` 内的 config version、model、harness、instruction hash 与 evidence 必须一致；任一身份字段变化就建立新 config ID，不能把新 run 与旧配置合并。
 
 ## 恢复
 

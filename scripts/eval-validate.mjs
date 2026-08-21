@@ -10,7 +10,7 @@ try {
   const study = readJson(studyFile)
   const rows = readJsonl(runFile)
   const design = assertStudy(study)
-  assertRuns(rows, study)
+  const coverage = assertRuns(rows, study)
   const expectedRows = study.tasks.length * study.configs.length * study.repeats
   console.log(JSON.stringify({
     schema_version: '1.0',
@@ -22,7 +22,9 @@ try {
     repeats: study.repeats,
     sample_rows: rows.length,
     formal_matrix_rows: expectedRows,
-    sample_matrix_complete: rows.length === expectedRows,
+    unique_matrix_cells: coverage.cells.size,
+    missing_matrix_cells: coverage.missingCells.length,
+    sample_matrix_complete: coverage.missingCells.length === 0,
     evidence_boundary: 'Run rows are an E1 schema/analysis sample, not E2/E3 model evidence.'
   }, null, 2))
 } catch (error) {

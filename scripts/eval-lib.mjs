@@ -3,7 +3,7 @@ import fs from 'node:fs'
 export const RUN_REQUIRED = [
   'schema_version', 'run_id', 'task_id', 'config_id', 'config_version', 'repeat',
   'split', 'passed', 'safety_violation', 'duration_ms', 'cost_usd', 'tool_errors',
-  'human_turns', 'failure_type', 'fixture_hash', 'evidence', 'model_id',
+  'input_tokens', 'output_tokens', 'human_turns', 'failure_type', 'fixture_hash', 'evidence', 'model_id',
   'harness_version', 'instruction_hash'
 ]
 
@@ -74,6 +74,8 @@ export function assertRuns(rows, study) {
   if (rows.length === 0) throw new Error('run file is empty')
   const taskMap = new Map(study.tasks.map((task) => [task.task_id, task]))
   const ids = new Set()
+  const cells = new Set()
+  const configIdentities = new Map()
   for (const row of rows) {
     for (const key of RUN_REQUIRED) {
       if (!(key in row)) throw new Error(`${row.run_id || '<unknown>'}: missing ${key}`)
@@ -90,11 +92,31 @@ export function assertRuns(rows, study) {
     if (!Number.isInteger(row.repeat) || row.repeat < 1 || row.repeat > study.repeats) {
       throw new Error(`${row.run_id}: repeat is outside study range`)
     }
+    const cell = `${row.task_id}#${row.config_id}#${row.repeat}`
+    if (cells.has(cell)) throw new Error(`${row.run_id}: duplicate matrix cell ${cell}`)
+    cells.add(cell)
+
+    const identity = JSON.stringify({
+      config_version: row.config_version,
+      model_id: row.model_id,
+      harness_version: row.harness_version,
+      instruction_hash: row.instruction_hash,
+      evidence: row.evidence
+    })
+    const previousIdentity = configIdentities.get(row.config_id)
+    if (previousIdentity && previousIdentity !== identity) {
+      throw new Error(`${row.run_id}: config identity drift for ${row.config_id}`)
+    }
+    configIdentities.set(row.config_id, identity)
     if (typeof row.passed !== 'boolean' || typeof row.safety_violation !== 'boolean') {
       throw new Error(`${row.run_id}: passed and safety_violation must be booleans`)
     }
     for (const key of ['duration_ms', 'cost_usd', 'tool_errors', 'human_turns']) {
       numberAtLeast(row, key)
+    }
+    for (const key of ['input_tokens', 'output_tokens']) {
+      numberAtLeast(row, key)
+      if (!Number.isInteger(row[key])) throw new Error(`${row.run_id}: ${key} must be an integer`)
     }
     if (!FAILURE_TYPES.has(row.failure_type)) {
       throw new Error(`${row.run_id}: invalid failure_type`)
@@ -109,7 +131,16 @@ export function assertRuns(rows, study) {
       throw new Error(`${row.run_id}: invalid evidence level`)
     }
   }
-  return ids
+  const expectedCells = []
+  for (const task of study.tasks) {
+    for (const config of study.configs) {
+      for (let repeat = 1; repeat <= study.repeats; repeat += 1) {
+        expectedCells.push(`${task.task_id}#${config}#${repeat}`)
+      }
+    }
+  }
+  const missingCells = expectedCells.filter((cell) => !cells.has(cell))
+  return { ids, cells, expectedCells, missingCells, configIdentities }
 }
 
 export function percentile(values, p) {
