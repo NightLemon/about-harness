@@ -4,7 +4,7 @@
 
 - 当前 release candidate 的最高证据等级是 **E1**：固定 fixture、fake/replay、离线 runner、容器/本地门禁和只读来源核对。它不能证明真实模型、provider 或线上产品组合的质量。
 - **A3 未使用**：没有读取凭据、调用真实模型 API 或产生费用。E2 烟测与 E3 正式比较均未运行。
-- **A4 已用于发布准备**：已经创建公开 remote、推送 RC1 历史与 tags、启用 branch protection 和 Pages，并观察到首次 workflow 的浅克隆失败。RC2 仍为 **pending-publication**；在新的 PR、CI、deploy 与线上 smoke 全部通过前，不得声称已发布成功。
+- **A4 已用于发布准备**：已经创建公开 remote、推送 RC1 历史与 tags、启用 branch protection 和 Pages，并观察到首次 workflow 的浅克隆失败。RC2 仍为 **pending-publication（尚未发布）**；在新的 PR、CI、deploy 与线上 smoke 全部通过前，不得声称已发布成功。
 - 20-task × 3-repeat 的正式矩阵要求 120 个 cells；当前公开 E1 样例只有 12 个，缺少 108 个，因此 `promotion_eligible=false`，不得形成模型排行榜或“最优配置”结论。
 
 ## 运行与事实限制
