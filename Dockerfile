@@ -10,7 +10,9 @@ RUN useradd --create-home --uid 10001 harness
 
 COPY --chown=harness:harness lab/src/ lab/src/
 COPY --chown=harness:harness lab/schemas/ lab/schemas/
+COPY --chown=harness:harness lab/fixtures/ lab/fixtures/
 COPY --chown=harness:harness scripts/lab-smoke.py scripts/lab-smoke.py
+COPY --chown=harness:harness scripts/run-labs.py scripts/run-labs.py
 
 USER harness
 CMD ["python", "scripts/lab-smoke.py"]

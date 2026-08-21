@@ -1,13 +1,21 @@
+x-lab-base: &lab-base
+  build:
+    context: .
+    dockerfile: Dockerfile
+  network_mode: none
+  read_only: true
+  cap_drop:
+    - ALL
+  security_opt:
+    - no-new-privileges:true
+  tmpfs:
+    - /tmp:size=16m
+
 services:
   lab-smoke:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    network_mode: none
-    read_only: true
-    cap_drop:
-      - ALL
-    security_opt:
-      - no-new-privileges:true
-    tmpfs:
-      - /tmp:size=16m
+    <<: *lab-base
+    command: ["python", "scripts/lab-smoke.py"]
+
+  labs-all:
+    <<: *lab-base
+    command: ["python", "scripts/run-labs.py", "all"]

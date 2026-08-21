@@ -2,7 +2,7 @@
 
 ## 目标、版本与输入
 
-输入两行合成数据，`score` 允许缺失，`email` 必须脱敏，字段只能是 `user_id`、`score`、`email`。PydanticAI seam 表达结构化契约但不安装 PydanticAI；不存在真实个人数据。
+输入两行合成数据，`score` 允许缺失，`email` 必须脱敏，字段只能是 `user_id`、`score`、`email`。PydanticAI seam 表达结构化契约但不安装 PydanticAI；不存在真实个人数据。容器与三平台本地入口见[实验环境](/labs/setup)。
 
 ## 运行与预期
 

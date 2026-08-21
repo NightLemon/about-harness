@@ -18,10 +18,33 @@ uv run --frozen --offline python scripts/run-labs.py browser
 
 ## 失败练习
 
-复制一个 fixture 到临时目录并修改 `input.json`，但不更新 manifest。`load_fixture` 必须报 `hash mismatch`。这个失败证明运行的是冻结输入；不要在正式目录做练习，也不要把篡改后的文件提交。
+复制一个 fixture 到临时目录并修改 `input.json`，但不更新 manifest。新增的 `--fixtures-root` 只改变只读输入根目录，不绕过 manifest hash。
+
+Windows PowerShell：
+
+```powershell
+$caseRoot = Join-Path $env:TEMP "about-harness-fixture-drill"
+New-Item -ItemType Directory -Force $caseRoot | Out-Null
+Copy-Item -Recurse lab/fixtures/coding (Join-Path $caseRoot "coding")
+Set-Content -Encoding utf8 (Join-Path $caseRoot "coding/input.json") '{"tampered":true}'
+uv run --frozen --offline python scripts/run-labs.py coding --fixtures-root $caseRoot
+Remove-Item -Recurse -Force $caseRoot
+```
+
+macOS / Linux：
+
+```bash
+case_root="$(mktemp -d)"
+cp -R lab/fixtures/coding "$case_root/coding"
+printf '%s\n' '{"tampered":true}' > "$case_root/coding/input.json"
+uv run --frozen --offline python scripts/run-labs.py coding --fixtures-root "$case_root"
+rm -rf "$case_root"
+```
+
+运行命令必须以非零状态退出并在 stderr 包含 `hash mismatch`。删除的只能是刚创建的临时目录；不要在正式目录做练习，也不要把篡改后的文件提交。
 
 ## 清理、回滚与限制
 
-Runner 不写文件。终止命令即可停止；若代码改动导致失败，用最近 checkpoint 的精确 patch/revert 恢复，不删除失败证据。它不模拟第三方 package 的全部事件、异步、错误或部署行为。
+Runner 不写文件。终止命令即可停止；按上面的平台命令删除已核对的临时目录。若代码改动导致失败，用最近 checkpoint 的精确 patch/revert 恢复，不删除失败证据。它不模拟第三方 package 的全部事件、异步、错误或部署行为。六案例的容器、本地 PowerShell 与 POSIX 入口见[实验环境](/labs/setup)。
 
 下一步：[Coding](/labs/coding) → [浏览器](/labs/browser) → [研究](/labs/research)。

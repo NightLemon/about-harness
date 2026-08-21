@@ -2,7 +2,7 @@
 
 ## 目标、版本与输入
 
-把一个受约束 coding 工作流从 Codex 映射到 Claude Code。固定职责是 instructions、tools、permissions、state；输入给出语义映射，不逐字复制配置。产品事实以 2026-08-20 的[事实注册表](/references/fact-registry)为边界。
+把一个受约束 coding 工作流从 Codex 映射到 Claude Code。固定职责是 instructions、tools、permissions、state；输入给出语义映射，不逐字复制配置。产品事实以 2026-08-20 的[事实注册表](/references/fact-registry)为边界；容器与三平台本地入口见[实验环境](/labs/setup)。
 
 ## 运行与预期
 

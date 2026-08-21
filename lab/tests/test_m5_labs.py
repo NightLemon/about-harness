@@ -2,6 +2,9 @@ from __future__ import annotations
 
 # pyright: reportUnknownMemberType=false
 import json
+import shutil
+import subprocess
+import sys
 from pathlib import Path
 from typing import Any
 
@@ -33,6 +36,26 @@ def test_fixture_hash_tampering_is_rejected(tmp_path: Path) -> None:
     (target / "input.json").write_text('{"tampered":true}', encoding="utf-8")
     with pytest.raises(FixtureError, match="hash mismatch"):
         load_fixture(tmp_path, "coding")
+
+
+def test_cli_accepts_isolated_fixture_root_and_rejects_tampering(tmp_path: Path) -> None:
+    target = tmp_path / "coding"
+    shutil.copytree(FIXTURES / "coding", target)
+    command = [
+        sys.executable,
+        str(ROOT.parent / "scripts" / "run-labs.py"),
+        "coding",
+        "--fixtures-root",
+        str(tmp_path),
+    ]
+    good = subprocess.run(command, cwd=ROOT.parent, capture_output=True, text=True, check=False)
+    assert good.returncode == 0
+    assert '"passed": true' in good.stdout
+
+    (target / "input.json").write_text('{"tampered":true}', encoding="utf-8")
+    bad = subprocess.run(command, cwd=ROOT.parent, capture_output=True, text=True, check=False)
+    assert bad.returncode != 0
+    assert "hash mismatch" in bad.stderr
 
 
 def test_browser_external_navigation_negative_case_is_rejected() -> None:

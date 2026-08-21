@@ -23,6 +23,8 @@
     "model:self-test": "node scripts/test-model-protocol-check.mjs",
     "compat:check": "node scripts/compatibility-check.mjs",
     "compat:self-test": "node scripts/test-compatibility-check.mjs",
+    "tutorial:check": "node scripts/tutorial-check.mjs",
+    "tutorial:self-test": "node scripts/test-tutorial-check.mjs",
     "checks:self-test": "node scripts/test-m2-checks.mjs",
     "lab:smoke": "uv run --frozen --offline python scripts/lab-smoke.py",
     "lab:pyright": "uv run --frozen --offline pyright",
@@ -38,7 +40,7 @@
     "pages:smoke": "node scripts/pages-smoke.mjs",
     "m6:self-test": "node scripts/test-m6-checks.mjs",
     "check": "npm run docs:check && npm run docs:build && npm run docs:verify-build && npm run facts:check && npm run reviews:check && npm run checks:self-test && npm run labs:all && npm run eval:validate && npm run eval:summary && npm run results:redact && npm run m5:self-test",
-    "verify": "npm run check && npm run roadmap:check && npm run roadmap:self-test && npm run learning:check && npm run learning:self-test && npm run model:check && npm run model:self-test && npm run compat:check && npm run compat:self-test && npm run docs:project-base && uv run --frozen --offline pytest && uv run --frozen --offline ruff check && npm run lab:pyright && npm run lab:typecheck && npm run facts:release && npm run links:check && npm run licenses:check && npm run secrets:check && npm run workflows:check && npm run docs:visual && npm run m6:self-test"
+    "verify": "npm run check && npm run roadmap:check && npm run roadmap:self-test && npm run learning:check && npm run learning:self-test && npm run model:check && npm run model:self-test && npm run compat:check && npm run compat:self-test && npm run tutorial:check && npm run tutorial:self-test && npm run docs:project-base && uv run --frozen --offline pytest && uv run --frozen --offline ruff check && npm run lab:pyright && npm run lab:typecheck && npm run facts:release && npm run links:check && npm run licenses:check && npm run secrets:check && npm run workflows:check && npm run docs:visual && npm run m6:self-test"
   },
   "devDependencies": {
     "playwright": "^1.62.1",

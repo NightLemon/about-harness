@@ -2,7 +2,7 @@
 
 ## 目标、版本与输入
 
-三个合成来源对 `retention_days` 给出 30/45 的冲突，对 `review_required` 给出一致证据。LangGraph seam 只执行确定性“收集—分组—冲突/支持—引用”状态转换，不安装 LangGraph 或调用搜索/模型 API。
+三个合成来源对 `retention_days` 给出 30/45 的冲突，对 `review_required` 给出一致证据。LangGraph seam 只执行确定性“收集—分组—冲突/支持—引用”状态转换，不安装 LangGraph 或调用搜索/模型 API。容器与三平台本地入口见[实验环境](/labs/setup)。
 
 ## 运行与预期
 

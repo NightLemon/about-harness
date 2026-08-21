@@ -2,7 +2,7 @@
 
 ## 目标、版本与输入
 
-目标是识别 `collect` 漏掉最后一个元素的边界错误，只改一个函数并用 empty/single/multiple 三个断言验证。输入、期望和“顺手加生产依赖”的负例都由 `lab/fixtures/coding/manifest.json` 固定；执行环境继承[实验环境](/labs/setup)。
+目标是识别 `collect` 漏掉最后一个元素的边界错误，只改一个函数并用 empty/single/multiple 三个断言验证。输入、期望和“顺手加生产依赖”的负例都由 `lab/fixtures/coding/manifest.json` 固定；容器、Windows PowerShell 与 macOS/Linux POSIX 入口继承[实验环境](/labs/setup)。
 
 ## 运行与预期
 

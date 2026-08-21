@@ -2,7 +2,7 @@
 
 ## 目标、版本与输入
 
-同一 handbook 有 v1/v2，另有无关文档。LlamaIndex seam 在检索前按 doc ID 选最新版本，再回答 `retention policy`；它不安装 LlamaIndex、不建立向量索引。
+同一 handbook 有 v1/v2，另有无关文档。LlamaIndex seam 在检索前按 doc ID 选最新版本，再回答 `retention policy`；它不安装 LlamaIndex、不建立向量索引。容器与三平台本地入口见[实验环境](/labs/setup)。
 
 ## 运行与预期
 

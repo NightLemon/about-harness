@@ -13,7 +13,27 @@
 
 ## 命令
 
+以下三条路径执行相同的冻结输入。容器首次构建若本机没有 `python:3.12-slim`，需要先在允许联网的受控环境获取并记录 image digest；镜像就绪后，案例运行保持 `network_mode: none`。不要把“能拉取基础镜像”算作离线案例证据。
+
+### 容器基线（Windows、macOS、Linux 一致）
+
+```shell
+docker compose build --pull=false labs-all
+docker compose run --rm labs-all
+```
+
+### Windows（PowerShell）
+
 ```powershell
+uv sync --frozen --offline
+npm run labs:all
+npm run eval:validate
+npm run results:redact
+```
+
+### macOS / Linux（POSIX shell）
+
+```bash
 uv sync --frozen --offline
 npm run labs:all
 npm run eval:validate
@@ -28,6 +48,6 @@ npm run results:redact
 
 ## 清理、回滚与限制
 
-命令只读 fixture，输出到终端；删除 `.pytest_cache/` 等忽略缓存即可清理。若修改案例，先恢复对应 manifest 与三个固定文件，再重跑全套；不要覆盖旧公开结果，应产生新版本。当前结果只证明 runner、契约与安全负例可复现，不证明第三方 framework、harness 或模型质量。
+命令只读 fixture，输出到终端；`docker compose down --remove-orphans` 清理容器，删除 `.pytest_cache/` 等忽略缓存即可清理本地路径。若修改案例，先恢复对应 manifest 与三个固定文件，再重跑全套；不要覆盖旧公开结果，应产生新版本。当前结果只证明 runner、契约与安全负例可复现，不证明第三方 framework、harness 或模型质量。
 
 下一步阅读[离线 Runner](/labs/runner)，或直接进入[Coding 案例](/labs/coding)。

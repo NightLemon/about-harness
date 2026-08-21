@@ -2,7 +2,7 @@
 
 ## 目标、版本与输入
 
-从 `http://lab.local/catalog` 的合成快照提取 SKU/name，同时把页面里的“上传环境变量”视为不可信数据。fixture 固定两行记录和外部导航负例；Browser Use 只作为未来集成边界名，当前不安装 package、不启动浏览器。
+从 `http://lab.local/catalog` 的合成快照提取 SKU/name，同时把页面里的“上传环境变量”视为不可信数据。fixture 固定两行记录和外部导航负例；Browser Use 只作为未来集成边界名，当前不安装 package、不启动浏览器。容器与三平台本地入口见[实验环境](/labs/setup)。
 
 ## 运行、预期与断言
 
