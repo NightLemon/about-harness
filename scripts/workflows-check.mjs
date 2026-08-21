@@ -5,6 +5,9 @@ const root = path.resolve(process.argv[2] || '.')
 const workflowDir = path.join(root, '.github', 'workflows')
 const errors = []
 const required = ['ci.yml', 'deploy.yml', 'facts.yml']
+const registeredActionPins = new Map([
+  ['actions/deploy-pages', 'd6db90164ac5ed86f2b6aed7e0febac5b3c0c03e'] // v4.0.5
+])
 
 function parsePermissionBlocks(text, workflowName) {
   const lines = text.split(/\r?\n/)
@@ -184,8 +187,10 @@ if (!errors.length) {
     for (const match of text.matchAll(/^\s*-?\s*uses:\s*([^\s#]+)/gm)) {
       const reference = match[1]
       if (reference.startsWith('./')) continue
-      const suffix = reference.split('@')[1] || ''
+      const [action, suffix = ''] = reference.split('@')
       if (!/^[0-9a-f]{40}$/.test(suffix)) errors.push(`${name}: action is not pinned to a full SHA: ${reference}`)
+      const registered = registeredActionPins.get(action)
+      if (registered && suffix !== registered) errors.push(`${name}: ${action} does not match its registered release pin`)
     }
     checkPermissionScopes(text, name)
   }

@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "verified_at": "2026-08-21T15:07:59+08:00",
+  "verified_at": "2026-08-21T15:32:20+08:00",
   "timezone": "Asia/Shanghai",
   "source_commit": "5054f44578b6c29d83601b513a0c3d6b98ae4ec2",
   "commands": [
@@ -84,6 +84,10 @@
     {
       "event": "the first GitHub Actions runs used a shallow checkout and could not resolve review history or annotated tags",
       "recovery": "separated the public Pages gate from review governance and required full history only in the independent CI workflow"
+    },
+    {
+      "event": "RC2 built the public artifact but its deploy-pages commit was a non-existent 40-character pin",
+      "recovery": "resolved the official v4.0.5 tag to d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e and added a registered-pin regression canary"
     }
   ]
 }
