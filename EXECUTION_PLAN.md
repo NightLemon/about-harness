@@ -1,6 +1,6 @@
 # Harness 学习文档项目执行计划 v1
 
-状态：**M1-M7 已完成；M8 进行中（Round 06 待执行）；活动 Goal 已授予 M6-M8 的 A1/A2；A3/A4 未授权**
+状态：**M1-M7 已完成；M8 进行中（Round 06 完成，Round 07 待执行）；活动 Goal 已授予 M6-M8 的 A1/A2；A3/A4 未授权**
 交付契约批准语句：批准交付契约 v1，请保存执行计划  
 计划修订日期：2026-08-21
 工作区：仓库根目录（不得记录个人绝对路径）
@@ -27,7 +27,7 @@ M6 已由 `m6-complete-v1`（`999a4c3`）冻结；M7 Round 01–05 已由各自 
 | M5 | **已完成** | `m5-complete-v1`，result `6aada53` |
 | M6 | **已完成** | 来源、许可、隐私、CI、视觉与发布自动化；`npm run verify` 与本地 Pages smoke 通过 |
 | M7 | **已完成** | Round 01–05 完成；`m7-complete-v1` |
-| M8 | **进行中** | Round 06 待执行；之后连续完成 Round 07–10 与 release candidate |
+| M8 | **进行中** | Round 06 完成；Round 07 待执行，之后连续完成 Round 08–10 与 release candidate |
 | M9 | 未开始 | 经用户单独授权后的远程操作与发布 |
 
 进度记录格式：
@@ -868,7 +868,7 @@ M6 已由 `m6-complete-v1`（`999a4c3`）冻结；M7 Round 01–05 已由各自 
 
 ### M8：新 review 06–10 和 release candidate
 
-**状态：进行中；Round 06 待执行。**
+**状态：进行中；Round 06 完成，Round 07 待执行。**
 
 **开始授权**
 
@@ -1111,6 +1111,7 @@ M7/M8 原则上复用第 11.1 节接口。只有真实 finding 证明缺少防�
 11. Round 03 复现了负数成本绕过预算和“记录退避但零等待”；现已在 adapter/action/checkpoint 边界验证控制面字段、执行真实可注入 sleeper，并明确总 deadline 不抢占任意阻塞 Python callable。
 12. Round 04 依据实际获取的 OpenAI Docs 发现 Responses 工具循环、reasoning state 与 model-dependent effort 没有进入 adapter 验收；现已登记官方事实、补充双路径探针并加入正反例门禁。该技能使 OpenAI 协议主张限定到官方页面与 2026-08-21 响应 hash，没有扩展为 live 模型结论。
 13. Round 05 发现兼容矩阵把 source fact、local surface、project seam 与 live evidence 压成单一状态，并把 Codex sandbox、approval 和 network 混成“权限”；现已建立四轴矩阵与兼容负例门禁。OpenAI Docs 的官方 Markdown 指纹为 `58C06F…A18ACD`；没有把 E1 seam 升级为产品 live 证据。
+14. Round 06 发现临时 fixture 失败练习没有 CLI 入口，容器也只运行最小 smoke；现已增加 `--fixtures-root`、PowerShell/POSIX 失败路径和 hardened `labs-all` service。实际容器六案例均以 E1/offline 通过，基础镜像 digest 已记录；没有把容器构建网络写成模型证据。
 
 后续每次新增发现使用格式：
 
@@ -1166,7 +1167,7 @@ M7/M8 原则上复用第 11.1 节接口。只有真实 finding 证明缺少防�
 - M5 已完成：`m5-complete-v1`（`6aada53`）。
 - M6 已完成：109 个 Markdown/路由、110 个 HTML、27 项 pytest、Ruff、Pyright、TypeScript、事实时效、许可、秘密、workflow、视觉和 canary 门禁通过；本地 Pages smoke 覆盖 16 路由与 23 个同源资源。
 - M6 证据：`artifacts/visual/m6/manifest.json` 和 6 张固定截图；没有远程 workflow run、Pages、真实 API、凭据或费用。
-- M7 已完成：Round 01–05 由各自 annotated complete tag 和 `m7-complete-v1` 绑定；Round 05 内容结果为 `350cba7`，事实注册表含 16 条 verified claim。M8 正在从 Round 06 继续；M9 尚未完成且仍需单独 A4。
+- M7 已完成：Round 01–05 由各自 annotated complete tag 和 `m7-complete-v1` 绑定；Round 05 内容结果为 `350cba7`。M8 Round 06 已完成，内容结果为 `3c3d0cf`，下一轮为 Round 07；M9 尚未完成且仍需单独 A4。
 - 上述 commits 和 annotated tags 是不可移动的恢复证据；本文件的未提交状态变化不得覆盖它们。
 
 ### 后续里程碑记录模板
@@ -1200,7 +1201,7 @@ M9 后必须总结：
 
 ## 17. 当前停止点
 
-M1-M7 已完成且不得重跑。当前动作是以 Round 05 完整证据 result 作为 M8 Round 06 baseline，随后连续完成 Round 06–10 和 release candidate。
+M1-M7 已完成且不得重跑。M8 Round 06 已完成，当前动作是以其完整证据 result 作为 Round 07 baseline，随后连续完成 Round 07–10 和 release candidate。
 
 当前活动 Goal 授予 M6-M8 的 A1+A2，不绑定任何文件 SHA256。禁止真实 API、凭据、费用、remote、push、PR、Pages 和发布；仅在需要 A3/A4、真实安全事件、无法非破坏性合并的用户改动或完成 M8 时停止。
 
