@@ -1,0 +1,64 @@
+{
+  "schema_version": "1.0",
+  "round": "04",
+  "verified_at": "2026-08-21T11:36:31+08:00",
+  "timezone": "Asia/Shanghai",
+  "baseline_commit": "916d9247bd8c42b3416c368b4b1e3fd4c7ed11ca",
+  "findings_commit": "47793e0",
+  "content_result_commit": "58777d93ae5dd29095239ef80b57777e006a5883",
+  "complete_tag": "review-v1-round-04-complete",
+  "evidence_commit": "resolved by complete_tag to avoid a self-referential commit hash",
+  "commands": [
+    {
+      "command": "official OpenAI documentation GET: function-calling.md and reasoning.md",
+      "exit_code": 0,
+      "assertion": "actual official pages fetched; response SHA256 stored in baseline and sources"
+    },
+    {
+      "command": "npm run model:check",
+      "exit_code": 0,
+      "assertion": "surface identity, tool flow, reasoning state, effort controls and fact IDs are explicit"
+    },
+    {
+      "command": "npm run model:self-test",
+      "exit_code": 0,
+      "assertion": "missing identity, state, effort and fact evidence canary was rejected"
+    },
+    {
+      "command": "npm run facts:check",
+      "exit_code": 0,
+      "assertion": "15 verified claims; zero pending, conflict or retired claims"
+    },
+    {
+      "command": "npm run verify",
+      "exit_code": 0,
+      "assertion": "112 Markdown/routes, 113 HTML, 33 pytest, types, 15 facts, licenses, secrets, workflows and visual gates passed"
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0,
+      "assertion": "content result has no whitespace errors"
+    }
+  ],
+  "result": {
+    "finding": "R04-P2-01",
+    "status": "fixed",
+    "regression_gate": [
+      "scripts/model-protocol-check.mjs",
+      "scripts/test-model-protocol-check.mjs",
+      "scripts/facts-check.mjs"
+    ],
+    "open_blockers": 0
+  },
+  "environment_ref": "baseline.json",
+  "network": "official OpenAI documentation GET only; all project verification offline or localhost",
+  "a3_used": false,
+  "a4_used": false,
+  "artifact_hashes": {
+    "baseline.json": "6FA4D4AC4F37B149A2B3A7B1D4951F878BAFE7BA608F03D4E9F43F7097663FDF",
+    "findings.md": "E2563B53966641634B793D34DC674C485D5FDE8495AEA9BE723920C7BCAFECA7",
+    "diff.patch": "16C4F72408263E6FEEF18075B6645B451DC5D180CDD3A1C66FC4EF1BD8E7CAA6",
+    "unresolved.md": "E9007E1CF4892DEB7AFB7E9F8923784C25063292F36F71E88805A269CF1B6D16",
+    "docs/reviews/v1/round-04.md": "93B77FF1B3BCCEDFAAD593D3D5E26A5F8DF0BFD48796E40054D9A92936FB97ED"
+  }
+}
