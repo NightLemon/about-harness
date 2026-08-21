@@ -1,6 +1,6 @@
 # Harness 学习文档项目执行计划 v1
 
-状态：**M1-M6 已完成；M7 进行中（Round 01–04 完成）；活动 Goal 已授予 M6-M8 的 A1/A2；A3/A4 未授权**
+状态：**M1-M7 已完成；M8 进行中（Round 06 待执行）；活动 Goal 已授予 M6-M8 的 A1/A2；A3/A4 未授权**
 交付契约批准语句：批准交付契约 v1，请保存执行计划  
 计划修订日期：2026-08-21
 工作区：仓库根目录（不得记录个人绝对路径）
@@ -11,7 +11,7 @@
 
 Git 历史和 annotated tags 已验收 M1-M5。当前恢复点为 `m5-complete-v1`（commit `6aada53`）；不得重跑 M1-M5，不得删除、移动或覆盖其 commits/tags。若本文件出现 M0、M1-M5 未开始或逐里程碑重新授权等旧措辞，视为计划回退，必须修正后继续 M6，不得据此阻塞。
 
-M6 已由 `m6-complete-v1`（`999a4c3`）冻结；M7 Round 01–04 已由各自 annotated complete tag 绑定。当前下一步是 Round 05。A3（真实 API/费用）和 A4（remote/发布）仍未授权。
+M6 已由 `m6-complete-v1`（`999a4c3`）冻结；M7 Round 01–05 已由各自 annotated complete tag 和 `m7-complete-v1` 绑定。当前下一步是 M8 Round 06。A3（真实 API/费用）和 A4（remote/发布）仍未授权。
 
 ## 2. Progress
 
@@ -26,8 +26,8 @@ M6 已由 `m6-complete-v1`（`999a4c3`）冻结；M7 Round 01–04 已由各自 
 | M4 | **已完成** | `m4-complete-v1`，result `e7ba394` |
 | M5 | **已完成** | `m5-complete-v1`，result `6aada53` |
 | M6 | **已完成** | 来源、许可、隐私、CI、视觉与发布自动化；`npm run verify` 与本地 Pages smoke 通过 |
-| M7 | **进行中** | Round 01–04 完成；Round 05 待执行 |
-| M8 | 未开始 | 新 review 06–10 和 release candidate |
+| M7 | **已完成** | Round 01–05 完成；`m7-complete-v1` |
+| M8 | **进行中** | Round 06 待执行；之后连续完成 Round 07–10 与 release candidate |
 | M9 | 未开始 | 经用户单独授权后的远程操作与发布 |
 
 进度记录格式：
@@ -787,7 +787,7 @@ M6 已由 `m6-complete-v1`（`999a4c3`）冻结；M7 Round 01–04 已由各自 
 
 ### M7：新 review 01–05
 
-**状态：进行中；Round 01–04 完成，Round 05 待执行。**
+**状态：已完成。** Round 01–05 均有修改前 findings、内容 result、防回归验证、证据 commit 与 annotated complete tag；M7 checkpoint 为 `m7-complete-v1`。
 
 **开始授权**
 
@@ -868,7 +868,7 @@ M6 已由 `m6-complete-v1`（`999a4c3`）冻结；M7 Round 01–04 已由各自 
 
 ### M8：新 review 06–10 和 release candidate
 
-**状态：未开始。**
+**状态：进行中；Round 06 待执行。**
 
 **开始授权**
 
@@ -1110,6 +1110,7 @@ M7/M8 原则上复用第 11.1 节接口。只有真实 finding 证明缺少防�
 10. Round 02 发现正式学习入口仍回流 legacy `/practice/`、环境页保留未来时态且作品集缺少统一评分锚点；修正后新增 learning-path 正反例门禁并由全量 `npm run verify` 验收。
 11. Round 03 复现了负数成本绕过预算和“记录退避但零等待”；现已在 adapter/action/checkpoint 边界验证控制面字段、执行真实可注入 sleeper，并明确总 deadline 不抢占任意阻塞 Python callable。
 12. Round 04 依据实际获取的 OpenAI Docs 发现 Responses 工具循环、reasoning state 与 model-dependent effort 没有进入 adapter 验收；现已登记官方事实、补充双路径探针并加入正反例门禁。该技能使 OpenAI 协议主张限定到官方页面与 2026-08-21 响应 hash，没有扩展为 live 模型结论。
+13. Round 05 发现兼容矩阵把 source fact、local surface、project seam 与 live evidence 压成单一状态，并把 Codex sandbox、approval 和 network 混成“权限”；现已建立四轴矩阵与兼容负例门禁。OpenAI Docs 的官方 Markdown 指纹为 `58C06F…A18ACD`；没有把 E1 seam 升级为产品 live 证据。
 
 后续每次新增发现使用格式：
 
@@ -1165,7 +1166,7 @@ M7/M8 原则上复用第 11.1 节接口。只有真实 finding 证明缺少防�
 - M5 已完成：`m5-complete-v1`（`6aada53`）。
 - M6 已完成：109 个 Markdown/路由、110 个 HTML、27 项 pytest、Ruff、Pyright、TypeScript、事实时效、许可、秘密、workflow、视觉和 canary 门禁通过；本地 Pages smoke 覆盖 16 路由与 23 个同源资源。
 - M6 证据：`artifacts/visual/m6/manifest.json` 和 6 张固定截图；没有远程 workflow run、Pages、真实 API、凭据或费用。
-- M7 进行中：Round 01–04 已由各自 annotated complete tag 绑定；Round 04 内容结果为 `58777d9`，事实注册表含 15 条 verified claim。Round 05 待执行。M8-M9 尚未完成，M9 仍需单独 A4。
+- M7 已完成：Round 01–05 由各自 annotated complete tag 和 `m7-complete-v1` 绑定；Round 05 内容结果为 `350cba7`，事实注册表含 16 条 verified claim。M8 正在从 Round 06 继续；M9 尚未完成且仍需单独 A4。
 - 上述 commits 和 annotated tags 是不可移动的恢复证据；本文件的未提交状态变化不得覆盖它们。
 
 ### 后续里程碑记录模板
@@ -1199,7 +1200,7 @@ M9 后必须总结：
 
 ## 17. 当前停止点
 
-M1-M6 已完成且不得重跑。M7 Round 01–04 已完成，当前动作是以 Round 04 完整证据 result 作为 Round 05 baseline；Round 05 完成后进入 M8。
+M1-M7 已完成且不得重跑。当前动作是以 Round 05 完整证据 result 作为 M8 Round 06 baseline，随后连续完成 Round 06–10 和 release candidate。
 
 当前活动 Goal 授予 M6-M8 的 A1+A2，不绑定任何文件 SHA256。禁止真实 API、凭据、费用、remote、push、PR、Pages 和发布；仅在需要 A3/A4、真实安全事件、无法非破坏性合并的用户改动或完成 M8 时停止。
 

@@ -1,0 +1,70 @@
+{
+  "schema_version": "1.0",
+  "round": "05",
+  "verified_at": "2026-08-21T12:00:13+08:00",
+  "timezone": "Asia/Shanghai",
+  "baseline_commit": "252f75b1dc312ed446017e3f3bde777d1f6979c9",
+  "findings_commit": "f2b0637db9140f79f32a6f2352a5292c5ba7da5e",
+  "content_result_commit": "350cba7",
+  "complete_tag": "review-v1-round-05-complete",
+  "evidence_commit": "resolved by complete_tag to avoid a self-referential commit hash",
+  "commands": [
+    {
+      "command": "official OpenAI documentation: agent-approvals-security.md",
+      "exit_code": 0,
+      "assertion": "official page fetched; SHA256 58C06F5BDB41655F810D2C39C41F782FCCD6D77508F709C601DA5FE55CA18ACD matches baseline and source registry"
+    },
+    {
+      "command": "npm run compat:check",
+      "exit_code": 0,
+      "assertion": "source, local, seam, live and sandbox/approval/network evidence axes are explicit"
+    },
+    {
+      "command": "npm run compat:self-test",
+      "exit_code": 0,
+      "assertion": "stale M5, evidence conflation and control-layer conflation canary was rejected"
+    },
+    {
+      "command": "npm run facts:check",
+      "exit_code": 0,
+      "assertion": "16 verified claims; zero pending, conflict, retired or stale claims"
+    },
+    {
+      "command": "npm run docs:check",
+      "exit_code": 0,
+      "assertion": "113 Markdown files and 113 routes passed"
+    },
+    {
+      "command": "npm run verify",
+      "exit_code": 0,
+      "assertion": "113 Markdown/routes, 114 HTML, 33 pytest, types, 16 facts, licenses, secrets, workflows and visual gates passed"
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0,
+      "assertion": "content and evidence have no whitespace errors"
+    }
+  ],
+  "result": {
+    "findings": ["R05-P2-01", "R05-P2-02"],
+    "status": "fixed",
+    "regression_gate": [
+      "scripts/compatibility-check.mjs",
+      "scripts/test-compatibility-check.mjs",
+      "scripts/facts-check.mjs"
+    ],
+    "open_blockers": 0
+  },
+  "environment_ref": "baseline.json",
+  "network": "official OpenAI documentation only; all project verification offline or localhost",
+  "live_model_or_api": false,
+  "a3_used": false,
+  "a4_used": false,
+  "artifact_hashes": {
+    "baseline.json": "3CD11FE6168606944FF09DF89DF0B934E73E1E52CDC5F8ECA7D6D10A648208F2",
+    "findings.md": "C85D06C91BDBEC439B2C01FB6A8882E96664D606DDBA39C40095805DCCF22DC8",
+    "diff.patch": "08F63B7FCBBF5241D7D81B17EDE2FD0E6D628118F7406A88333DE3E9392B18CC",
+    "unresolved.md": "C1ABC9D83273D2B77E8AC220301CA4931778F6AFB8EAB8BED6E6CC36717CD1B0",
+    "docs/reviews/v1/round-05.md": "A1ABE1A604852DF23296D2CFB95892C4F976F65192286B506C253B01503FD4AA"
+  }
+}
