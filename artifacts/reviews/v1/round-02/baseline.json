@@ -1,0 +1,60 @@
+{
+  "schema_version": "1.0",
+  "round": "02",
+  "captured_at": "2026-08-21T10:55:00+08:00",
+  "timezone": "Asia/Shanghai",
+  "baseline_commit": "17c4b9c47ccdc7a56a5866f1ba27331944c4c3fe",
+  "baseline_tag": "review-v1-round-02-baseline",
+  "input_tag": "review-v1-round-01-corrected-v1",
+  "branch": "main",
+  "scope": "学习路径、信息架构和作品集",
+  "rubric_version": "docs/meta/review-method.md@18B7C95A01A6FDFC342F0A79FB65DAE3F6CA7077814CE05DBABDA8B2F168AD3C",
+  "files": {
+    "docs/guide/start.md": "96F729CE444828D6D4AE7539FE6F3CD0379403A2866A679D1B79EE91382B32A9",
+    "docs/guide/prerequisites.md": "68CC18BA9E2E61813A78CE42DECAE330609FF5CC83B02835C65D0992397BFB64",
+    "docs/guide/portfolio.md": "84BFB30B2B515F9CE6B0F6BEAB54CD9F860D8CE1436AE9D838A5D0901D73BBAB",
+    "docs/index.md": "7F2FF71ECBCC63EBF9950016BA9BCCD40E8E6E14CD67894FED927CC642F1ABE7",
+    "docs/.vitepress/config.mts": "35CE15827443AA837D9E975104629596573F6C6FFE83D0BEC611A84D65A164B6"
+  },
+  "reviewer": {
+    "role": "学习体验与信息架构审阅者",
+    "provider": "OpenAI",
+    "model_id": "gpt-5",
+    "model_resolution": "exact deployment snapshot is not exposed by the runtime",
+    "harness": "Codex desktop",
+    "harness_version": "not exposed",
+    "surface": "desktop task",
+    "configuration": "single-agent local review; no subagents"
+  },
+  "instructions": {
+    "system_developer": "runtime-managed; content hash not exposed",
+    "user_goal": "active thread goal dated 2026-08-21; content hash not exposed",
+    "repository": "AGENTS.md@AEE7B90AE9332ED969C07BDCF771F5484DB2F85EA6F0CE3B2F2E0D499DB97B74"
+  },
+  "tools": {
+    "skills": ["security-best-practices", "browser:control-in-app-browser"],
+    "interfaces": ["PowerShell 7", "git", "rg", "apply_patch"],
+    "mcp": []
+  },
+  "environment": {
+    "os": "Microsoft Windows 11 Enterprise 10.0.26200 x64",
+    "node": "v24.14.0",
+    "python": "3.12.10",
+    "uv": "0.11.16",
+    "git": "2.55.0.windows.3",
+    "browser": "Chromium 151.0.7922.34",
+    "package_lock_sha256": "8DA864CF6DE62FEF792411096D39E12B30E767726E533BE1238015C98ED3819C",
+    "uv_lock_sha256": "DA5E9A1DB74A4CE06A47C71809FBA8A0FED2BA557E9BAA4A63824B2BD19BF90F"
+  },
+  "execution": {
+    "offline": true,
+    "network": "disabled",
+    "live_model_or_api": false,
+    "a3_used": false,
+    "a4_used": false
+  },
+  "sampling": {
+    "included": ["three learning routes", "environment prerequisites", "portfolio gates and scoring", "home entrypoints"],
+    "excluded": ["runtime implementation", "product facts", "formal statistics"]
+  }
+}
