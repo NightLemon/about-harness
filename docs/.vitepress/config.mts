@@ -18,6 +18,7 @@ export default defineConfig({
       { text: '知识地图', link: '/guide/roadmap' },
       { text: '模型优化', link: '/optimization/model-fit' },
       { text: 'Harness 指南', link: '/harnesses/comparison' },
+      { text: '实验与评测', link: '/labs/setup' },
       { text: '项目状态', link: '/meta/changelog' }
     ],
     sidebar: [
@@ -123,6 +124,30 @@ export default defineConfig({
           { text: 'Codex', link: '/harnesses/codex' },
           { text: 'Pi', link: '/harnesses/pi' },
           { text: 'Claude Code', link: '/harnesses/claude-code' }
+        ]
+      },
+      {
+        text: '实验教程',
+        items: [
+          { text: '环境准备', link: '/labs/setup' },
+          { text: '离线 Runner', link: '/labs/runner' },
+          { text: 'Coding 案例', link: '/labs/coding' },
+          { text: '浏览器案例', link: '/labs/browser' },
+          { text: '研究案例', link: '/labs/research' },
+          { text: '数据案例', link: '/labs/data' },
+          { text: '文档案例', link: '/labs/document' },
+          { text: '跨 Harness 迁移', link: '/labs/migration' }
+        ]
+      },
+      {
+        text: '评测系统',
+        items: [
+          { text: '评测方法', link: '/evaluation/method' },
+          { text: '任务与运行 Schema', link: '/evaluation/task-schema' },
+          { text: '指标与区间', link: '/evaluation/metrics' },
+          { text: 'Judge 设计', link: '/evaluation/judges' },
+          { text: '回归与晋级', link: '/evaluation/regression' },
+          { text: '结果报告', link: '/evaluation/reporting' }
         ]
       },
       {

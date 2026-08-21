@@ -6,6 +6,14 @@ const registryPath = path.join(root, 'docs', 'references', 'fact-registry.md')
 const docsRoot = path.join(root, 'docs')
 const text = fs.readFileSync(registryPath, 'utf8')
 const errors = []
+const warnings = []
+const maxAgeArgument = process.argv.find((value) => value.startsWith('--max-age='))
+const maxAge = maxAgeArgument ? Number(maxAgeArgument.split('=')[1]) : null
+const asOfText = process.env.FACTS_AS_OF || new Date().toISOString().slice(0, 10)
+const asOf = new Date(`${asOfText}T00:00:00Z`)
+
+if (Number.isNaN(asOf.valueOf())) errors.push(`invalid FACTS_AS_OF date: ${asOfText}`)
+if (maxAge !== null && (!Number.isInteger(maxAge) || maxAge < 0)) errors.push('max age must be a non-negative integer')
 
 const header = '| ID | Claim | Kind | Source | Version | Checked | Volatility | Evidence | Status | Used by |'
 if (!text.includes(header)) errors.push('fact registry header changed; update parser deliberately')
@@ -47,6 +55,16 @@ for (const cells of rows) {
   if (!allowedEvidence.has(evidence)) errors.push(`${id}: invalid evidence ${evidence}`)
   if (!allowedStatus.has(status)) errors.push(`${id}: invalid status ${status}`)
   if (status === 'verified' && evidence === 'E0') errors.push(`${id}: verified fact cannot remain E0`)
+  if (datePattern.test(checked) && !Number.isNaN(asOf.valueOf())) {
+    const checkedAt = new Date(`${checked}T00:00:00Z`)
+    const ageDays = Math.floor((asOf - checkedAt) / 86_400_000)
+    if (ageDays < 0) errors.push(`${id}: checked date ${checked} is after as-of date ${asOfText}`)
+    if (status === 'verified' && ageDays > 30) warnings.push(`${id}: ${ageDays} days old; queued for review`)
+    if (status === 'verified' && ageDays > 90) warnings.push(`${id}: ${ageDays} days old; online page needs an expired notice`)
+    if (maxAge !== null && status === 'verified' && volatility === 'high' && ageDays > maxAge) {
+      errors.push(`${id}: high-volatility fact is ${ageDays} days old; release limit is ${maxAge}`)
+    }
+  }
   if (!routeExists(usedBy)) errors.push(`${id}: Used by route does not exist: ${usedBy}`)
   if (source.startsWith('/') && !routeExists(source)) errors.push(`${id}: source route does not exist: ${source}`)
 }
@@ -74,4 +92,5 @@ if (errors.length) {
 }
 
 const statusCounts = Object.fromEntries([...allowedStatus].map((status) => [status, rows.filter((row) => row[8] === status).length]))
-console.log(`Fact check passed: ${rows.length} claims; ${JSON.stringify(statusCounts)}.`)
+for (const warning of warnings) console.warn(`Warning: ${warning}`)
+console.log(`Fact check passed: ${rows.length} claims; ${JSON.stringify(statusCounts)}; as-of ${asOfText}; stale notices ${warnings.length}.`)

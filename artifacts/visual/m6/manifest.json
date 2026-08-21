@@ -1,0 +1,170 @@
+{
+  "schema_version": "1.0",
+  "evidence": "E1",
+  "generated_at": "2026-08-20T10:54:23.992Z",
+  "base": "/about-harness/",
+  "browser": "Chromium 151.0.7922.34",
+  "assertions": [
+    "navigation",
+    "search",
+    "theme",
+    "tables",
+    "deep-anchor",
+    "mobile-menu",
+    "no-horizontal-page-overflow"
+  ],
+  "records": [
+    {
+      "id": "desktop-1440",
+      "width": 1440,
+      "height": 900,
+      "home": {
+        "viewportWidth": 1440,
+        "clientWidth": 1440,
+        "scrollWidth": 1440,
+        "title": "About Harness",
+        "main": true,
+        "targetTop": null,
+        "tables": []
+      },
+      "table": {
+        "viewportWidth": 1440,
+        "clientWidth": 1440,
+        "scrollWidth": 1440,
+        "title": "评测方法与证据晋级 | About Harness",
+        "main": true,
+        "targetTop": null,
+        "tables": [
+          {
+            "clientWidth": 688,
+            "scrollWidth": 688,
+            "overflowX": "auto"
+          }
+        ]
+      },
+      "anchor": {
+        "viewportWidth": 1440,
+        "clientWidth": 1440,
+        "scrollWidth": 1440,
+        "title": "状态与可靠执行 | About Harness",
+        "main": true,
+        "targetTop": 110,
+        "tables": []
+      },
+      "screenshots": [
+        "desktop-1440-home.png",
+        "desktop-1440-evaluation.png"
+      ]
+    },
+    {
+      "id": "mobile-390",
+      "width": 390,
+      "height": 844,
+      "home": {
+        "viewportWidth": 390,
+        "clientWidth": 390,
+        "scrollWidth": 390,
+        "title": "About Harness",
+        "main": true,
+        "targetTop": null,
+        "tables": []
+      },
+      "table": {
+        "viewportWidth": 390,
+        "clientWidth": 390,
+        "scrollWidth": 390,
+        "title": "评测方法与证据晋级 | About Harness",
+        "main": true,
+        "targetTop": null,
+        "tables": [
+          {
+            "clientWidth": 342,
+            "scrollWidth": 342,
+            "overflowX": "auto"
+          }
+        ]
+      },
+      "anchor": {
+        "viewportWidth": 390,
+        "clientWidth": 390,
+        "scrollWidth": 390,
+        "title": "状态与可靠执行 | About Harness",
+        "main": true,
+        "targetTop": 110,
+        "tables": []
+      },
+      "screenshots": [
+        "mobile-390-home.png",
+        "mobile-390-evaluation.png"
+      ]
+    },
+    {
+      "id": "narrow-320",
+      "width": 320,
+      "height": 700,
+      "home": {
+        "viewportWidth": 320,
+        "clientWidth": 320,
+        "scrollWidth": 320,
+        "title": "About Harness",
+        "main": true,
+        "targetTop": null,
+        "tables": []
+      },
+      "table": {
+        "viewportWidth": 320,
+        "clientWidth": 320,
+        "scrollWidth": 320,
+        "title": "评测方法与证据晋级 | About Harness",
+        "main": true,
+        "targetTop": null,
+        "tables": [
+          {
+            "clientWidth": 272,
+            "scrollWidth": 272,
+            "overflowX": "auto"
+          }
+        ]
+      },
+      "anchor": {
+        "viewportWidth": 320,
+        "clientWidth": 320,
+        "scrollWidth": 320,
+        "title": "状态与可靠执行 | About Harness",
+        "main": true,
+        "targetTop": 110,
+        "tables": []
+      },
+      "screenshots": [
+        "narrow-320-home.png",
+        "narrow-320-evaluation.png"
+      ]
+    }
+  ],
+  "screenshots": [
+    {
+      "file": "desktop-1440-evaluation.png",
+      "sha256": "d3eebd13ab2f020bcbfa0369f0a8a954a3d05aefdf7d559d5cd6e3630d3396cf"
+    },
+    {
+      "file": "desktop-1440-home.png",
+      "sha256": "d967d695b59563a36d26bfce7155a570e382b7422517cf062eb4e89a9d9a4536"
+    },
+    {
+      "file": "mobile-390-evaluation.png",
+      "sha256": "60164f16d28dc87c4a51799b9746ed800774c18dc0f22ccd8f6c42b023499823"
+    },
+    {
+      "file": "mobile-390-home.png",
+      "sha256": "7502000949bedfc713e6bda555a6017d59b38448af41df444a8cd272cc682771"
+    },
+    {
+      "file": "narrow-320-evaluation.png",
+      "sha256": "41e67727ef265586652b7909c87b108d3f7db6aa0dca763d0cc0c386ab25710d"
+    },
+    {
+      "file": "narrow-320-home.png",
+      "sha256": "28a341613ea2ba7c229a6bc4d6e3a94a0b370a8812d85e9707d9896e6ebc8fc4"
+    }
+  ]
+}

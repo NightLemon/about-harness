@@ -9,7 +9,11 @@
     "docs:preview": "vitepress preview docs",
     "docs:check": "node scripts/check-docs.mjs",
     "docs:verify-build": "node scripts/check-built-site.mjs",
+    "docs:project-base": "node scripts/check-project-base.mjs",
+    "docs:visual": "node scripts/visual-check.mjs",
     "facts:check": "node scripts/facts-check.mjs",
+    "facts:release": "node scripts/facts-check.mjs --max-age=30",
+    "links:check": "node scripts/check-external-links.mjs",
     "reviews:check": "node scripts/reviews-check.mjs",
     "checks:self-test": "node scripts/test-m2-checks.mjs",
     "lab:smoke": "uv run --frozen --offline python scripts/lab-smoke.py",
@@ -20,7 +24,13 @@
     "eval:summary": "node scripts/summarize-evals.mjs evals/study.example.json evals/runs.example.jsonl",
     "results:redact": "node scripts/redact-results.mjs lab/results/public",
     "m5:self-test": "node scripts/test-m5-checks.mjs",
-    "check": "npm run docs:check && npm run docs:build && npm run docs:verify-build && npm run facts:check && npm run reviews:check && npm run checks:self-test && npm run labs:all && npm run eval:validate && npm run eval:summary && npm run results:redact && npm run m5:self-test"
+    "licenses:check": "node scripts/licenses-check.mjs",
+    "secrets:check": "node scripts/secrets-check.mjs",
+    "workflows:check": "node scripts/workflows-check.mjs",
+    "pages:smoke": "node scripts/pages-smoke.mjs",
+    "m6:self-test": "node scripts/test-m6-checks.mjs",
+    "check": "npm run docs:check && npm run docs:build && npm run docs:verify-build && npm run facts:check && npm run reviews:check && npm run checks:self-test && npm run labs:all && npm run eval:validate && npm run eval:summary && npm run results:redact && npm run m5:self-test",
+    "verify": "npm run check && npm run docs:project-base && uv run --frozen --offline pytest && uv run --frozen --offline ruff check && npm run lab:pyright && npm run lab:typecheck && npm run facts:release && npm run links:check && npm run licenses:check && npm run secrets:check && npm run workflows:check && npm run docs:visual && npm run m6:self-test"
   },
   "devDependencies": {
     "playwright": "^1.62.1",

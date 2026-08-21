@@ -1,0 +1,18 @@
+{
+  "about-harness-lab@0.1.0": "MIT",
+  "attrs@26.1.0": "MIT",
+  "colorama@0.4.6": "BSD-3-Clause",
+  "iniconfig@2.3.0": "MIT",
+  "jsonschema@4.26.0": "MIT",
+  "jsonschema-specifications@2025.9.1": "MIT",
+  "nodeenv@1.10.0": "BSD-3-Clause",
+  "packaging@26.3": "Apache-2.0 OR BSD-2-Clause",
+  "pluggy@1.6.0": "MIT",
+  "pygments@2.20.0": "BSD-2-Clause",
+  "pyright@1.1.411": "MIT",
+  "pytest@8.4.2": "MIT",
+  "referencing@0.37.0": "MIT",
+  "rpds-py@2026.6.3": "MIT",
+  "ruff@0.16.2": "MIT",
+  "typing-extensions@4.16.0": "PSF-2.0"
+}

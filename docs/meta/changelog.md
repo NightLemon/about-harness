@@ -4,12 +4,15 @@
 
 | 里程碑 | 状态 | 证据 |
 | --- | --- | --- |
-| M0 | 完成 | 批准计划 SHA256 `8FEB03…F2964` |
+| M0 | 完成 | 批准计划与本地执行证据 |
 | M1 | 完成 | commit `2847afc…3639`；annotated tag `legacy-baseline-v1` |
-| M2 | 完成 | 55 个页面通过 root/project base 构建；legacy hash、事实与负例门禁通过 |
-| M3 | 完成 | 20 项 Python 测试、Ruff、Pyright、TypeScript 与无网络容器 smoke 通过 |
-| M4 | 进行中 | 模型、harness、framework、领域与安全内容 |
-| M5–M8 | 未开始 | 不提前声称完成 |
+| M2 | 完成 | annotated tag `m2-complete-v1`；知识地图、站点骨架、事实与作品集门禁 |
+| M3 | 完成并修正 | annotated tag `m3-corrected-v1`；最小 harness、容器与离线 runner |
+| M4 | 完成 | annotated tag `m4-complete-v1`；模型、harness、framework、领域与安全内容 |
+| M5 | 完成 | annotated tag `m5-complete-v1`；六案例、正式 schema、评测与公开 E1 结果 |
+| M6 | 完成 | `m6-complete-v1`；来源、许可、隐私、CI、视觉和发布自动化，本地全量门禁通过 |
+| M7 | 待启动 | 新 review 01–05；以 M6 checkpoint 为首轮 baseline |
+| M8 | 未开始 | 新 review 06–10 与 release candidate；不提前声称完成 |
 | M9 | 未授权 | 无 remote、push、PR、Pages 或发布 |
 
 权威进度与恢复点记录在仓库根目录的 `EXECUTION_PLAN.md`。

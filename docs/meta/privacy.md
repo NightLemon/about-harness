@@ -15,6 +15,17 @@
 
 公开 trace 只保留复现所需事件。工具参数、stdout/stderr、页面内容和模型输出先通过 secret/路径/标识符扫描，再由人工抽查。原始 live trace 默认不进入 `lab/results/public/`。
 
+本地门禁：
+
+```bash
+npm run secrets:check
+npm run results:redact
+```
+
+前者扫描已跟踪与待提交文件中的高置信凭据、私钥和个人绝对路径；后者对公开 JSON 继续检查敏感字段。两个门禁都通过仍不替代人工抽查。
+
+视觉证据只截取本地合成站点和本项目公开页面。截图前关闭账号、通知、浏览器个人资料和其他可能暴露身份的 UI；`artifacts/visual/` 不得保存真实账号或私人网页。
+
 ## 发现泄漏时
 
 立即停止后续里程碑，隔离 artifact，撤销相关凭据，保存不含秘密的取证摘要并请求用户。不要只删除最新文件；Git 历史或构建缓存可能仍包含数据。没有 remote 时仍需检查本地 commit、tag、cache 和截图。

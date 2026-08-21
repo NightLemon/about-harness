@@ -1,17 +1,17 @@
 # Harness 学习文档项目执行计划 v1
 
-状态：**活动 Goal 已绑定批准计划；M1–M5 已完成；M6 进行中；A3/A4 未授权**
+状态：**M1-M6 已完成；M7 待启动；活动 Goal 已授予 M6-M8 的 A1/A2；A3/A4 未授权**
 交付契约批准语句：批准交付契约 v1，请保存执行计划  
-计划修订日期：2026-08-20  
-工作区：C:\Users\lxiang\repos\about-harness
+计划修订日期：2026-08-21
+工作区：仓库根目录（不得记录个人绝对路径）
 
 ## 1. 文档用途与恢复入口
 
-本文件是《Harness 学习文档项目交付契约 v1》的自包含执行计划。未来即使无法访问批准本计划的聊天记录，执行者也应能从本文件恢复范围、交付物、里程碑、验证门禁、授权边界和暂停条件。
+本文件是会在 checkpoint 更新的 living execution plan，不是 Goal 授权锚点。当前活动 Goal 已明确授予 M6-M8 的 A1/A2，且不绑定任何文件 SHA256；本文件更新不会撤销授权。
 
-本计划已获用户批准。用户以 `/goal` 明确引用本文件的当前 SHA256 后，该 Goal 可一次性授予 M4–M8 所需的本地文件修改与验证（A1）以及本地 commit/annotated tag（A2），并持续执行到 M8 完成。真实 API、凭据和费用（A3）以及 remote、push、PR、Pages 和发布（A4）始终需要单独授权。
+Git 历史和 annotated tags 已验收 M1-M5。当前恢复点为 `m5-complete-v1`（commit `6aada53`）；不得重跑 M1-M5，不得删除、移动或覆盖其 commits/tags。若本文件出现 M0、M1-M5 未开始或逐里程碑重新授权等旧措辞，视为计划回退，必须修正后继续 M6，不得据此阻塞。
 
-2026-08-20 恢复裁定：保留现有线性 Git 历史和全部 annotated tags，不删除、不移动、不覆盖，也不重跑 M1–M3。`legacy-baseline-v1` 是有效原始基线；`m3-corrected-v1`（commit `dd419bb`）是当前已验收恢复点。当前 tracked/untracked 改动属于 M4 进行中工作，必须原样保留并从此继续。先前把进度重置为 M0 的未提交计划改写不代表项目回滚，由本裁定取代。
+M6 的 workflow、docs、scripts、package 配置和 visual artifacts 已通过全量本地验证，形成 `m6-complete-v1` checkpoint 后连续进入 M7。A3（真实 API/费用）和 A4（remote/发布）仍未授权。
 
 ## 2. Progress
 
@@ -19,13 +19,13 @@
 
 | 里程碑 | 状态 | 当前说明 |
 | --- | --- | --- |
-| M0 | **已完成** | 执行计划已复核并批准 |
-| M1 | **已完成** | `legacy-baseline-v1` / `m1-complete-v1`；保留且不得重跑 |
+| M0 | **已完成** | 执行计划已批准 |
+| M1 | **已完成** | `legacy-baseline-v1` / `m1-complete-v1`；不得重跑 |
 | M2 | **已完成** | `m2-complete-v1`，result `ade425e` |
-| M3 | **已完成并修正** | `m3-corrected-v1`，恢复点 `dd419bb`；旧 `m3-complete-v1` 保留审计 |
-| M4 | **已完成** | `m4-complete-v1`；模型、harness、framework、领域、安全与事实来源已验证 |
-| M5 | **已完成** | `m5-complete-v1`；六案例、正式 schema、评测、公开结果与负例门禁 |
-| M6 | **进行中** | 来源、许可、隐私、CI、视觉和发布自动化 |
+| M3 | **已完成并修正** | `m3-corrected-v1`，result `dd419bb`；旧完成 tag 保留审计 |
+| M4 | **已完成** | `m4-complete-v1`，result `e7ba394` |
+| M5 | **已完成** | `m5-complete-v1`，result `6aada53` |
+| M6 | **已完成** | 来源、许可、隐私、CI、视觉与发布自动化；`npm run verify` 与本地 Pages smoke 通过 |
 | M7 | 未开始 | 新 review 01–05 |
 | M8 | 未开始 | 新 review 06–10 和 release candidate |
 | M9 | 未开始 | 经用户单独授权后的远程操作与发布 |
@@ -277,27 +277,29 @@
 
 | 层级 | 权限 | 默认状态 | 授权要求 |
 | --- | --- | --- | --- |
-| A0 | 本地只读盘点和计划修订 | 已完成 | M0 已完成 |
-| A1 | 本地修改项目文件和运行本地验证 | 待新 Goal 绑定 | `/goal` 引用本文件当前 SHA256，并明确覆盖 M4–M8 |
-| A2 | 本地 Git commit 和 annotated tag | 待新 Goal 绑定 | 可在同一 `/goal` 中与 A1 一并明确授予 M4–M8 |
+| A0 | 本地只读盘点与计划维护 | 已授权 | 随 M6-M8 持续 |
+| A1 | 本地修改项目文件和运行会写入 artifact/cache 的本地验证 | 已授权 | 当前活动 Goal 一次覆盖 M6-M8 |
+| A2 | 本地 Git commit 和 annotated tag | 已授权 | 当前活动 Goal 一次覆盖 M6-M8，包括 review baseline/result tags |
 | A3 | 真实 API、凭据和费用 | 未授权，预算 0 | 必须指定 provider、凭据方式、数据范围和费用上限 |
 | A4 | remote、push、PR、仓库设置、Pages 和发布 | 未授权 | 必须指定 owner/repo 和允许的外部动作；A1/A2/A3 均不包含 A4 |
 
 规则：
 
-- A1 与 A2 可以由一条明确引用本文件当前 SHA256 的 `/goal` 一次性授予 M4–M8。
-- A3、A4 不能由 Goal、A1、A2、普通里程碑、计划批准或“继续执行”隐含获得。
-- M4–M7 完成后记录 checkpoint 并自动继续；M8 完成后必须停止并等待 A4。
+- A1 与 A2 由当前活动 Goal 明确授予 M6-M8；授权不绑定任何文件 SHA256。
+- A3、A4 不能由 Goal、A1、A2、普通里程碑或“继续执行”隐含获得；A3 和 A4 也不能相互包含。
+- M6、M7 完成后记录 checkpoint 并自动继续；M8 完成后必须暂停。
 - 需要更高层授权时必须保存当前恢复点并停止。
-- M1–M3 已完成，不得重跑；M4–M8 使用新 Goal 授予的 A1+A2；M9 始终需要 A4。
 - 缺少 A2 时可以在 A1 范围内形成未提交 diff，但不能宣告需要 commit/tag 证据的里程碑完成。
-- A3 不包含 A4，A4 也不包含 A3；两者都不允许读取或输出未获授权的凭据。
+- M1-M5 已完成且不得重跑；M6-M8 使用当前活动 Goal 授予的 A1+A2。M9 始终需要 A4。
+- 任何授权都不允许读取、记录或输出未获授权的凭据；费用上限为 0，直到 A3 明确改变。
 
 ## 10. M0–M9 运行手册
 
+依赖顺序固定为 `M0 → M1 → M2 → M3 → M4 → M5 → M6 → M7 → M8 → M9`。M1-M6 已由线性 commits/checkpoint、annotated tags 和验证证据满足；形成 M6 tag 后连续进入 M7，不得回退或重跑 M1-M5。
+
 ### M0：保存并批准执行计划
 
-**状态：已完成，不得重跑。**
+**状态：已完成，不得重跑。以下步骤仅作历史审计。**
 
 **输入**
 
@@ -316,7 +318,7 @@
 3. 对修订前后除本文件以外的工作区源文件计算聚合指纹。
 4. 复核里程碑编号只能使用 M0–M9。
 5. 记录计划批准和最终 SHA256。
-6. 等待 Goal 启动后续里程碑。
+6. 等待已授权 Goal 启动后续里程碑。
 
 **当前已经存在且允许使用的验证**
 
@@ -349,8 +351,8 @@
 
 **恢复规则**
 
-- 现有 M1 commit/tag 已核验为有效且名称无冲突；保留全部对象，不创建第二份 baseline。
-- 当前 M4 内容不属于 M1，不得为了重跑 M1 而 stash、删除、提交或回滚。
+- `legacy-baseline-v1` 指向 `2847afc`，`m1-complete-v1` 指向 `48950fa`；两者已经核验并保留。
+- 当前 M6 改动不属于 M1，不得为了重跑 M1 而 stash、删除、提交或回滚。
 
 **输入**
 
@@ -373,7 +375,7 @@
 3. 在不修改源文件的前提下，只运行该快照当时已经存在且不会写回源文件的验证；记录未运行项与原因。
 4. 再次计算源文件 hash，确认验证没有改变源文件；构建缓存和已忽略 artifact 不属于 baseline 源文件。
 5. 原样将当前源文件创建为初始 baseline commit，commit message 固定为：chore: capture legacy baseline before v1 execution。
-6. 创建 annotated tag：legacy-baseline-v1；若同名 tag 已存在，停止并报告，禁止覆盖、移动或删除。
+6. 创建 annotated tag：`legacy-baseline-v1`；若同名 tag 已存在，停止并报告，禁止覆盖、移动或删除。只有用户明确裁定后才能采用新的不冲突名称。
 7. Tag 注释必须包含：commit SHA、branch、remote 状态、每个文件 SHA256 或可完整恢复的 manifest、聚合 SHA256、验证命令与退出码、audit 摘要和已知风险。
 8. 用 commit tree 和 tag 注释反向核对步骤 1 的文件和 hash。
 9. baseline 完成后才更新 EXECUTION_PLAN.md 的 Progress、Surprises、Decision Log 和 Outcomes，记录 M1 checkpoint；不得移动、改写或改标 legacy reviews、README 或 changelog。
@@ -407,7 +409,7 @@
 
 **完成后状态**
 
-- 已满足：`legacy-baseline-v1` 指向 `2847afc`，`m1-complete-v1` 指向 `48950fa`。当前恢复不再执行本节步骤。
+- 已满足。当前恢复不再执行本节步骤。
 
 ### M2：知识地图、站点骨架、事实注册表和作品集 rubric
 
@@ -488,7 +490,7 @@
 
 **开始授权**
 
-- 历史记录：M3 已由先前 Goal 的 A1+A2 完成并修正；当前恢复不得重跑。A3 从未授予。
+- 历史记录：M3 已由先前 Goal 的 A1+A2 完成并修正；A3 从未授予。
 
 **输入**
 
@@ -559,11 +561,11 @@
 
 ### M4：模型、harness、framework、领域和安全内容
 
-**状态：进行中。** 输入恢复点为 `m3-corrected-v1`（`dd419bb`）；当前工作树中的 tracked/untracked M4 文件必须保留并继续完成。
+**状态：已完成，不得重跑。** 完成记录为 `m4-complete-v1`（`e7ba394`）。
 
 **开始授权**
 
-- 新 Goal 必须引用本文件当前 SHA256，并明确授予 M4–M8 的 A1+A2；事实探针仅限本地/离线，真实 API 与费用仍需 A3。
+- 历史记录：M4 已由先前 Goal 的 A1+A2 完成；事实探针仅限本地/离线，A3 从未授予。
 
 **输入**
 
@@ -628,15 +630,17 @@
 - 事实冲突不强行合并，降级为待核验状态；
 - 使用精确 revert 恢复错误主张，不移动 baseline tags。
 
-**完成后继续**
+**完成后状态**
 
-- 记录并提交 M4 checkpoint；未命中安全、许可、计划范围或 A3/A4 暂停条件时自动进入 M5。
+- 已满足并记录为 `m4-complete-v1`；当前恢复不再执行本节步骤。
 
 ### M5：六个案例、正式 schema 和评测系统
 
+**状态：已完成，不得重跑。** 当前有效结果为 `m5-complete-v1`（`6aada53`）。
+
 **开始授权**
 
-- 引用当前计划 SHA256 的活动 Goal 已明确覆盖 M4–M8 的 A1+A2。默认只允许 E1；E2/E3 真实运行另需 A3。
+- 历史记录：M5 已由先前 Goal 的 A1+A2 完成。只交付 E1；A3 从未授予。
 
 **输入**
 
@@ -698,15 +702,17 @@
 - 集成失败时保留核心 runner，通过 feature flag 禁用单个 integration；
 - 公开结果有污染时立即从工作区隔离，停止后续里程碑并按事件响应处理。
 
-**完成后继续**
+**完成后状态**
 
-- 写入 M5 checkpoint 后自动进入 M6。缺少 A3 时，E2/E3 保持未运行而不是阻断 E1 交付。
+- 已满足并记录为 `m5-complete-v1`。当前从 M6 继续；缺少 A3 时 E2/E3 保持未运行。
 
 ### M6：来源、许可、隐私、CI、视觉和发布自动化
 
+**状态：已完成，待创建 `m6-complete-v1` checkpoint。**
+
 **开始授权**
 
-- 引用当前计划 SHA256 的活动 Goal 已明确覆盖 M4–M8 的 A1+A2。M6 只创建和本地检查发布自动化，不得使用 A4。
+- 当前活动 Goal 已授予 M6-M8 的 A1+A2。M6 只创建和本地检查发布自动化；创建 remote、触发 workflow、Pages 或发布仍需 A4。
 
 **输入**
 
@@ -777,14 +783,16 @@
 
 **完成后继续**
 
-- 写入 M6 checkpoint 后自动进入 M7。任何 workflow 远程运行或 Pages 动作都必须停留到 A4。
+- `npm run verify`、`npm run docs:visual` 和本地 `pages:smoke` 已通过；写入 `m6-complete-v1` checkpoint 后自动进入 M7。任何 workflow 远程运行或 Pages 动作始终停留到 A4。
 
 ### M7：新 review 01–05
 
+**状态：未开始。**
+
 **开始授权**
 
-- 引用当前计划 SHA256 的活动 Goal 已明确覆盖 M4–M8 的 A1+A2，包括 round 01–05 每轮 baseline/result commit 和 annotated tag。
-- Round 01–05 不要求逐轮人工确认。
+- 当前活动 Goal 已覆盖 M7 内容修正、review artifacts，以及 round 01–05 baseline/result commits 和 annotated tags。
+- Round 01–05 连续执行，不逐轮请求确认；A3/A4 均不包含在 M7 中。
 
 **输入**
 
@@ -856,14 +864,16 @@
 
 **完成后继续**
 
-- Round 01–05 之间不要求人工暂停。
-- 写入 M7 checkpoint 并报告五轮证据和未决项，然后自动进入 M8。
+- Round 01–05 之间不要求人工暂停；写入 M7 checkpoint 后自动进入 M8。
 
 ### M8：新 review 06–10 和 release candidate
 
+**状态：未开始。**
+
 **开始授权**
 
-- 引用当前计划 SHA256 的活动 Goal 已明确覆盖 M4–M8 的 A1+A2，包括 round 06–10 和 release candidate 所需 commits/tags；不得使用 A4。
+- 当前活动 Goal 已覆盖 M8 内容修正、review/release artifacts，以及 round 06–10 baseline/result commits、complete tags 和 RC commit/tag。
+- Round 06–10 连续执行，不逐轮请求确认；M8 不得使用 A4。
 
 **输入**
 
@@ -941,12 +951,14 @@
 - RC 不覆盖已有 artifact，使用新版本目录；
 - 不通过降低门禁或删除失败证据来完成 M8。
 
-**完成后是否必须暂停等待用户**
+**完成后必须暂停**
 
-- Round 06–10 之间不要求人工暂停。
+- Round 06–10 之间不要求人工暂停，但每轮仍须满足独立证据要求。
 - **M8 完成后必须暂停。** 报告 RC、十轮证据和拟发布动作，等待单独 A4 授权。
 
 ### M9：经用户单独授权后的远程操作与发布
+
+**状态：未开始。**
 
 **开始授权**
 
@@ -1012,48 +1024,24 @@
 
 ## 11. 稳定命令接口
 
-### 11.1 M0 物理存在但尚未重新验收
+### 11.1 M6 后已验收的稳定接口
 
-2026-08-20 本轮只读检查显示，当前 `package.json` 物理声明：
+以下接口已在 2026-08-21 的 M6 全量验证中通过，可作为 M7/M8 输入：
 
-- npm run docs:dev
-- npm run docs:build
-- npm run docs:preview
-- npm run docs:check
-- npm run docs:verify-build
-- npm run eval:summary
-- npm run check
-- npm run checks:self-test
-- npm run facts:check
-- npm run reviews:check
-- npm run lab:smoke
-- npm run lab:typecheck
-- npm run lab:pyright
+- 文档：`npm run docs:check`、`docs:build`、`docs:verify-build`、`docs:project-base`、`docs:visual`；
+- 事实与 review：`npm run facts:check`、`facts:release`、`links:check`、`reviews:check`；
+- Lab 与评测：`npm run lab:smoke`、`lab:pyright`、`lab:typecheck`、`labs:all`、`eval:validate`、`eval:summary`、`results:redact`；
+- 治理与安全：`npm run licenses:check`、`secrets:check`、`workflows:check`；
+- 正反例：`npm run checks:self-test`、`m5:self-test`、`m6:self-test`；
+- 聚合：`npm run check`、`npm run verify`；
+- Python：`uv sync --frozen`、`uv run --frozen --offline pytest`、`uv run --frozen --offline ruff check`、`uv run --frozen --offline pyright`；
+- 发布烟测：`npm run pages:smoke -- <published-or-local-base-url>`。
 
-后六项来自尚未获本计划验收的现状，不得据此认定 M2/M3 完成，也不是 M1 的强制前置命令。M1 只按用户裁定后的输入快照核对和运行当时实际存在、不会改写源文件的命令。`npm audit` 与 `npm audit --omit=dev` 是直接 npm 操作，不是 `package.json` script；能否在 M1 运行受离线和不改写约束限制。
+`npm run verify` 聚合全部离线 PR 门禁；`docs:project-base` 显式验证 `/about-harness/` base。本地 `pages:smoke` 必须用相同 base 启动 preview。网络外链探针只存在于定时 workflow 模板，当前未运行，也不构成 A4 发布证据。
 
-### 11.2 未来必须创建或重新验收
+### 11.2 M7/M8 命令变更规则
 
-下列命令按目标里程碑创建；已经物理存在的 `facts:check`、`reviews:check`、`lab:smoke`、`lab:typecheck` 和 `lab:pyright` 仍须在对应里程碑重新验收。它们全部**不是 M1 前置条件**：
-
-~~~text
-npm run verify
-npm run docs:visual
-npm run licenses:check
-npm run secrets:check
-npm run labs:all
-npm run eval:validate
-npm run results:redact
-npm run pages:smoke -- <published-url>
-uv sync --frozen
-uv run pytest
-uv run ruff check
-uv run pyright
-~~~
-
-npm run verify 最终聚合全部离线 PR 门禁。项目 Pages 构建必须显式验证 /about-harness/ base。任何跳过的命令都要记录原因和风险。
-
-重新验收清单：`npm run facts:check`、`npm run reviews:check`、`npm run lab:smoke`、`npm run lab:typecheck`、`npm run lab:pyright`、升级后的 `npm run eval:summary`。物理存在不等于接口、负例和证据已经满足本计划。
+M7/M8 原则上复用第 11.1 节接口。只有真实 finding 证明缺少防回归能力时，才可新增命令；新增命令必须在对应 round 的 findings、diff、正反例和 verification 中出现，不能临时降低或绕过已有门禁。
 
 ## 12. 十轮 Review 统一证据契约
 
@@ -1110,18 +1098,14 @@ npm run verify 最终聚合全部离线 PR 门禁。项目 Pages 构建必须显
 
 ### 已知发现
 
-1. 仓库位于 `main`，HEAD 为 `dd419bb`；从 `legacy-baseline-v1` 到 `m3-corrected-v1` 是无分叉的线性历史，相关标签均为 annotated tags。
-2. `legacy-baseline-v1` 指向 `2847afc`，tag 注释包含 54 个源文件 manifest、聚合 SHA256 和现有验证结果，因此可直接作为 M1 原始基线，无需另建或改名。
-3. `m1-complete-v1`、`m2-complete-v1`、`m3-complete-v1` 和 `m3-corrected-v1` 分别指向现有线性提交；M3 修正提交删除误跟踪的 Python cache，旧提交和 tag 保留审计。
-4. 当前工作树已有 M4 的 tracked/untracked 改动，包括 VitePress 配置、harness 指南以及 foundations、frameworks、models、domains、optimization、security 页面；恢复时必须保留并继续，不得重跑 M1 或覆盖工作树。
-5. 先前未提交的计划改写把已完成进度重置为 M0，造成 Goal 哈希失效和虚假的 tag 冲突；本次恢复裁定以实际线性历史、annotated tag 证据和非破坏性原则纠正该状态。
-6. README、changelog 和 legacy review 对旧十轮的自述仍须按第 12 节证据合同核验；现有十轮不计入 v1 新十轮。
-7. 当前没有 remote；A3 和 A4 仍未授权，真实 API、费用、remote、push、PR、Pages 和发布继续禁止。
-8. M4 实际获取 10 个已登记官方/维护来源及 4 个模型目录入口；12 条登记事实均为 E1/verified。DeepSeek docs 在当前环境仍发生 TLS 握手失败，相关价格、alias 与可用性保持 E0。
-9. 本机 Claude Code 为 `2.1.96`；Pi 不在 PATH；桌面应用捆绑的 `codex.exe` 可定位但当前 shell 启动时报“拒绝访问”。因此 M4 只把来源核对与离线职责映射标为 E1，不把 CLI 或模型性能写成已测。
-10. M5 fixture 最初按原始文件字节计算 SHA256，可能受 Windows CRLF checkout 影响；已改为对解析后的 canonical JSON 计算 hash，并用测试证明篡改仍会被拒绝。
-11. Browser Use、LangGraph、PydanticAI、LlamaIndex 在 M5 只实现 dependency-free `offline-contract-seam`；它们验证职责、schema 与安全负例，不冒充第三方 package 或 live 模型执行。
-12. 正式 study 模板满足 20 任务、6 workload、2 配置、3 重复、6 holdout（30%）；示例 run 只有 12 条 E1 配对记录，validator 明示完整矩阵应为 120 条且当前不完整，防止把模板当 E3。
+1. 当前分支为 `main`，HEAD 为 `6aada53`；从 `legacy-baseline-v1` 到 `m5-complete-v1` 是无分叉的线性历史，相关标签均为 annotated tags。
+2. `legacy-baseline-v1` 指向 `2847afc`；`m1-complete-v1` 至 `m5-complete-v1` 分别指向已验收的线性提交，M1-M5 不得重跑。
+3. 当前没有 remote；A3 和 A4 未授权，真实 API、费用、remote、push、PR、Pages 和发布继续禁止。
+4. M4 的 12 条登记事实均为 E1/verified；未运行真实模型性能测试。
+5. M5 的离线集成和 12 条合成配对样例只证明 E1 流程；完整 120-run 正式矩阵未运行。
+6. M6 已产生 workflow、docs、scripts、package 配置和本地 artifacts；全量 `npm run verify` 于 2026-08-21 通过。
+7. M6 本地 Pages smoke 首次因 preview 使用错误 base/旧构建而失败；以 `DOCS_BASE=/about-harness/` 重启 preview 后，16 个路由和 23 个同源资源通过。这是本地服务恢复问题，不是站点 artifact 缺陷。
+8. In-app Browser 可复核 1280px 桌面布局、评测表格与深层锚点；其当前 surface 不提供 viewport capability，因此 1440/390/320 的交互与 overflow 证据由固定 Playwright/Chromium manifest 和截图承担。
 
 后续每次新增发现使用格式：
 
@@ -1156,13 +1140,8 @@ npm run verify 最终聚合全部离线 PR 门禁。项目 Pages 构建必须显
 | 2026-08-20 | A1–A4 分层授权 | commit/API/remote 不得由普通里程碑隐含授权 |
 | 2026-08-20 | 里程碑固定为 M0–M9 | 与批准的交付契约完全一致 |
 | 2026-08-20 | 本地修改、Git 对象、API/费用、remote/发布分为 A1–A4 | A2、A3、A4 均须明确授权，不能由普通里程碑或较低授权隐含获得 |
-| 2026-08-20 | 接受现有 M1–M3 线性历史与 annotated tags | 标签和提交证据有效；删除或重跑会破坏审计链 |
-| 2026-08-20 | `m3-corrected-v1` / `dd419bb` 为恢复点 | 保留旧 M3 tag，同时从修正后的干净结果继续 |
-| 2026-08-20 | 当前工作树认定为 M4 进行中 | 非破坏性保留已有 tracked/untracked 内容，避免丢失工作 |
-| 2026-08-20 | 单一 Goal 授予 M4–M8 的 A1+A2 | 减少重复确认；A3/A4 继续作为硬门禁 |
-| 2026-08-20 | Fixture 使用 canonical JSON SHA256 | 消除 CRLF/格式化导致的跨平台伪漂移，同时保持内容篡改可检测 |
-| 2026-08-20 | 四个 M5 集成先交付 dependency-free E1 seam | 当前无 A3；明确验证接口责任而不伪称真实 framework/model 已运行 |
-| 2026-08-20 | 正式 120-run 设计与 12-run E1 样例分离 | 交付可运行分析接口，但不虚构 E2/E3 数据或补齐未运行矩阵 |
+| 2026-08-20 | 接受现有 M1-M5 线性历史和 annotated tags | commits、tags 和验证证据有效；删除或重跑会破坏审计链 |
+| 2026-08-21 | M6-M8 由当前活动 Goal 一次授予 A1+A2 | 连续执行到 M8；授权不绑定任何文件 SHA256，A3/A4 仍独立禁止 |
 
 新决策必须记录日期、备选方案、选择理由、影响文件和是否需要契约变更。
 
@@ -1171,27 +1150,19 @@ npm run verify 最终聚合全部离线 PR 门禁。项目 Pages 构建必须显
 ### M0 当前结果
 
 - 执行计划已保存并修订为自包含版本。
-- 执行计划已复核并批准。
-- 本轮修订前 `EXECUTION_PLAN.md` 的 SHA256 为 `BE791E6D68A03B3517F3035032F6A36B6F861D19D3AB6580565D2C7446D55EBD`，长度为 59,221 字节。
-- 本轮开始前，按 `git ls-files --cached --others --exclude-standard` 枚举并排除 `EXECUTION_PLAN.md` 后共有 152 个文件，聚合 SHA256 为 `BA25B03DEA17B6EBCE245B93563DCF4AD0550855D138F417DDB3FBFA0592AE3D`。
-- 聚合指纹口径：路径转为反斜杠并排序；每行写为 `相对路径<TAB>大写文件 SHA256`；以 LF 连接、UTF-8 无 BOM 编码且末尾不加换行，再计算 SHA256。
-- 修订后用同一口径复核仍为 152 个文件、聚合 SHA256 `BA25B03DEA17B6EBCE245B93563DCF4AD0550855D138F417DDB3FBFA0592AE3D`，证明本轮未改变 `EXECUTION_PLAN.md` 以外的已跟踪或未忽略文件。最终计划 SHA256 在交付回复中报告，避免把自引用 hash 写回文件导致 hash 再次变化。
-- 本轮没有新建 commit/tag，没有调用 API，没有执行 remote、push、PR、Pages 或发布；开始前已存在的 Git 历史与工作树改动不计为本轮动作。
+- M0 已完成；其初始指纹和授权记录只作历史审计，不控制当前 M6 执行。
 
 ### M1–M9 当前结果
 
 - M1 已完成：`legacy-baseline-v1`（`2847afc`）和 `m1-complete-v1`（`48950fa`）。
 - M2 已完成：`m2-complete-v1`（`ade425e`）。
-- M3 已完成并修正：`m3-complete-v1`（`f61b8c7`）保留审计，当前恢复点为 `m3-corrected-v1`（`dd419bb`）。
-- M4 已完成：新增/重写 foundations、models、harnesses、frameworks、domains、optimization 与 security 页面；导航覆盖全部 M4 主页面；12 条登记事实均为 E1/verified。
-- M4 验证：根路径与 `/about-harness/` base 的 `npm run check` 均通过（95 个 Markdown/路由、96 个 HTML）；20 项 pytest、Ruff、Pyright、TypeScript 与离线 smoke 通过。
-- M4 证据边界：只核对官方文档、固定 Pi commit、本机版本和离线实现；没有真实模型调用、凭据或费用，不存在 E2/E3 性能结论。
-- M4 恢复点：annotated tag `m4-complete-v1`（result SHA 由 Git tag 解析）。
-- M5 已完成：六个固定 fixture、四个离线集成 seam、三份 config、七份 schema、六案例 runner、14 篇 labs/evaluation 页面、20×3 study 模板、评测/脱敏/负例检查和两份公开 E1 结果。
-- M5 验证：六个正例与六个负例通过；27 项 pytest、Ruff、Pyright、TypeScript、离线 smoke、根路径与 `/about-harness/` base 的 `npm run check` 全部通过（109 个 Markdown/路由、110 个 HTML）。
-- M5 证据边界：`offline-replay` 与 12 条合成配对样例只证明 E1 流程；未安装四个第三方 framework，未调用模型/API，完整 120-run 正式矩阵未运行。
-- M5 恢复点：annotated tag `m5-complete-v1`（result SHA 由 Git tag 解析）。
-- M6 进行中；M7–M9 未开始，M9 仍需单独 A4。
+- M3 已完成并修正：`m3-complete-v1`（`f61b8c7`）保留审计，当前结果为 `m3-corrected-v1`（`dd419bb`）。
+- M4 已完成：`m4-complete-v1`（`e7ba394`）。
+- M5 已完成：`m5-complete-v1`（`6aada53`）。
+- M6 已完成：109 个 Markdown/路由、110 个 HTML、27 项 pytest、Ruff、Pyright、TypeScript、事实时效、许可、秘密、workflow、视觉和 canary 门禁通过；本地 Pages smoke 覆盖 16 路由与 23 个同源资源。
+- M6 证据：`artifacts/visual/m6/manifest.json` 和 6 张固定截图；没有远程 workflow run、Pages、真实 API、凭据或费用。
+- M7-M9 尚未完成。M7 在 `m6-complete-v1` 创建后连续启动；M9 仍需单独 A4。
+- 上述 commits 和 annotated tags 是不可移动的恢复证据；本文件的未提交状态变化不得覆盖它们。
 
 ### 后续里程碑记录模板
 
@@ -1224,9 +1195,9 @@ M9 后必须总结：
 
 ## 17. 当前停止点
 
-当前恢复点为 `m5-complete-v1`，M6 正在进行。不得重跑 M1–M5，也不得删除、移动或覆盖任何现有 commit/tag。
+M6 本地实现与全量验证已完成，当前动作是创建 `m6-complete-v1` commit/tag，随后以该结果作为 review 01 baseline 连续进入 M7。M1-M5 已完成且不得重跑。
 
-活动 Goal 已授予 M4–M8 的 A1+A2；M5 checkpoint 后自动继续 M6。Goal 执行期间禁止真实 API、凭据、费用、remote、push、PR、Pages 和发布；完成 M8 或命中安全/许可/范围暂停条件时停止。
+当前活动 Goal 授予 M6-M8 的 A1+A2，不绑定任何文件 SHA256。禁止真实 API、凭据、费用、remote、push、PR、Pages 和发布；仅在需要 A3/A4、真实安全事件、无法非破坏性合并的用户改动或完成 M8 时停止。
 
 ### 待用户确认
 

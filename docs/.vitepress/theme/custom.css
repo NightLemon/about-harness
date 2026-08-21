@@ -20,8 +20,34 @@
 }
 
 .vp-doc table {
-  display: table;
-  width: 100%;
+  display: block;
+  width: max-content;
+  min-width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+}
+
+.vp-doc :target {
+  scroll-margin-top: calc(var(--vp-nav-height) + 1.5rem);
+}
+
+.vp-doc,
+.VPContent,
+.VPDoc .container,
+.VPDoc .content {
+  min-width: 0;
+}
+
+.vp-doc pre,
+.vp-doc code,
+.vp-doc a {
+  overflow-wrap: anywhere;
+}
+
+:where(a, button, input, summary):focus-visible {
+  outline: 3px solid var(--vp-c-brand-2);
+  outline-offset: 3px;
 }
 
 .vp-doc .learning-check {
@@ -31,3 +57,13 @@
   background: linear-gradient(135deg, var(--vp-c-brand-soft), transparent);
 }
 
+@media (max-width: 639px) {
+  .VPHomeHero .name,
+  .VPHomeHero .text {
+    letter-spacing: -0.02em;
+  }
+
+  .vp-doc table {
+    font-size: 0.88rem;
+  }
+}
