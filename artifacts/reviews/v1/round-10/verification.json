@@ -1,0 +1,73 @@
+{
+  "schema_version": "1.0",
+  "round": "10",
+  "verified_at": "2026-08-21T14:10:44+08:00",
+  "timezone": "Asia/Shanghai",
+  "baseline_commit": "621ec3cb48569434a4f283275c7d2ab1083d33c2",
+  "findings_commit": "6294de1d15533538ed244b17e4ac08314f9ac038",
+  "content_result_commit": "dc67e6b68f8f3d5587cff04ca53a0de22b457f32",
+  "complete_tag": "review-v1-round-10-complete",
+  "evidence_commit": "resolved by complete_tag to avoid a self-referential commit hash",
+  "commands": [
+    {
+      "command": "npm run reviews:check",
+      "exit_code": 0,
+      "assertion": "10 legacy hashes and nine completed v1 review chains passed before round-10 evidence was added"
+    },
+    {
+      "command": "npm run checks:self-test",
+      "exit_code": 0,
+      "assertion": "invalid facts plus tampered, empty, and forged review evidence were rejected"
+    },
+    {
+      "command": "npm run facts:check && npm run facts:release",
+      "exit_code": 0,
+      "assertion": "16 non-retired claims have Used by anchors; zero stale high-volatility facts"
+    },
+    {
+      "command": "npm run tutorial:check && npm run tutorial:self-test",
+      "exit_code": 0,
+      "assertion": "Node.js 22+ package/docs/workflow contract passed and Node 24-only canary was rejected"
+    },
+    {
+      "command": "npm run release:self-test",
+      "exit_code": 0,
+      "assertion": "lightweight tags, incomplete rounds, A4 use, and missing release gates were rejected"
+    },
+    {
+      "command": "npm run verify",
+      "exit_code": 0,
+      "assertion": "content result passed 118 routes, 119 HTML, 36 pytest, types, facts, review, licenses, secrets, workflows, nine visual screenshots, and all offline canaries"
+    },
+    {
+      "command": "REVIEWS_ALLOW_PENDING=10 npm run verify",
+      "exit_code": 0,
+      "assertion": "pre-tag evidence passed 119 routes, 120 HTML, 36 pytest, ten structured review records, facts, types, governance, and nine visual screenshots"
+    }
+  ],
+  "result": {
+    "findings": ["R10-P1-01", "R10-P2-02", "R10-P2-03"],
+    "status": "fixed",
+    "regression_gates": [
+      "scripts/reviews-check.mjs",
+      "scripts/test-m2-checks.mjs",
+      "scripts/facts-check.mjs",
+      "scripts/tutorial-check.mjs",
+      "scripts/test-tutorial-check.mjs",
+      "scripts/release-check.mjs",
+      "scripts/test-release-check.mjs"
+    ],
+    "open_blockers": 0
+  },
+  "environment_ref": "baseline.json",
+  "network": "offline tests plus read-only official documentation inspection recorded in baseline.json; no model API",
+  "a3_used": false,
+  "a4_used": false,
+  "artifact_hashes": {
+    "baseline.json": "103EDFBE90BDA9FDAD8EFCB3049D44BA2B3128A77A10D94C9CE4C6EA715D282E",
+    "findings.md": "61F2EA7FD5C0C743E044D4F8E96D277A88F75E15228612851DA1A4AE299B7E18",
+    "diff.patch": "C0529858BB09E37B254761D2E5B16C09D3D9ADD219821B1283AD1F1CB79131F8",
+    "unresolved.md": "B4745E07CD72294B63D29858F6F563955AF5E8B13C77C80D99BD85D439C830F1",
+    "docs/reviews/v1/round-10.md": "A7BC97A59B10CA00BD35FD205525FD5105F52B3A28F9F1497BFC182F44BEDF00"
+  }
+}
