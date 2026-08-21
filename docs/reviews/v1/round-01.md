@@ -19,4 +19,4 @@
 
 ## 验证与边界
 
-`npm run roadmap:check`、`npm run roadmap:self-test` 和 `npm run verify` 均通过。内容结果 commit 为 `becedcd`；完整证据由 annotated tag `review-v1-round-01-complete` 绑定。本轮没有调用真实模型/API，没有产生费用，也没有远程操作。
+`npm run roadmap:check`、`npm run roadmap:self-test` 和 `npm run verify` 均通过。内容结果 commit 为 `becedcd`。首个 `review-v1-round-01-complete` 因 `diff.patch` 空白检查失败而保留为无效审计对象；有效完整证据由 annotated tag `review-v1-round-01-corrected-v1` 绑定。本轮没有调用真实模型/API，没有产生费用，也没有远程操作。

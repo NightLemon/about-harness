@@ -1106,6 +1106,7 @@ M7/M8 原则上复用第 11.1 节接口。只有真实 finding 证明缺少防�
 6. M6 已产生 workflow、docs、scripts、package 配置和本地 artifacts；全量 `npm run verify` 于 2026-08-21 通过。
 7. M6 本地 Pages smoke 首次因 preview 使用错误 base/旧构建而失败；以 `DOCS_BASE=/about-harness/` 重启 preview 后，16 个路由和 23 个同源资源通过。这是本地服务恢复问题，不是站点 artifact 缺陷。
 8. In-app Browser 可复核 1280px 桌面布局、评测表格与深层锚点；其当前 surface 不提供 viewport capability，因此 1440/390/320 的交互与 overflow 证据由固定 Playwright/Chromium manifest 和截图承担。
+9. Round 01 首个 complete tag 之前的 `git diff --check` 报告 `diff.patch` 的上下文空行尾随空格，但命令串未停止。该 tag 保留为无效审计对象；使用 `--unified=0` 重建可检查的 patch，并以新的 corrected tag 验收，后续提交命令必须显式检查退出码。
 
 后续每次新增发现使用格式：
 

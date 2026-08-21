@@ -6,7 +6,8 @@
   "baseline_commit": "999a4c3a88409193b0ce0d9da3635e0c1054a1b8",
   "findings_commit": "9624c51",
   "content_result_commit": "becedcda8efea213d8ac00b1e79348bdb7190002",
-  "complete_tag": "review-v1-round-01-complete",
+  "complete_tag": "review-v1-round-01-corrected-v1",
+  "invalidated_tag": "review-v1-round-01-complete (preserved; diff --check failed on patch-file whitespace)",
   "evidence_commit": "resolved by complete_tag to avoid a self-referential commit hash",
   "commands": [
     {
@@ -38,8 +39,8 @@
   "artifact_hashes": {
     "baseline.json": "75AF7C22428D25BC34EA9DDC85C821E375CF24949C259B10ABA3E8ADB263C1F0",
     "findings.md": "6144BF21FD26B21CA5AB768CDF1DF275F4FAC2E5EE2E797FDCC29B0C26D6AAB2",
-    "diff.patch": "518B4B8F99EE03440852145D45D0B017F3A664C5031F351F6FD2D17AF2CC9632",
-    "unresolved.md": "34DF14066AA203A387C1CBE0C7E0D7C08D5A03170356C7A504702673328C017F",
-    "docs/reviews/v1/round-01.md": "A93E4C69A42D00D9D2504481A15A093DA49B1EFEB8B4E09099831AA190A65408"
+    "diff.patch": "4CD380FC2EDA08950F85AECB4108AE00BDAA746C3ABB2C90352021BC7A788AA3",
+    "unresolved.md": "02B95F95EAB505A7E7A36D884615D724B16F7112FCFF9A66B55EDCC9E74288E8",
+    "docs/reviews/v1/round-01.md": "D9957462D64C97405A72CD1FCDB547C2C51D7A3CC170146B777AB8F35503C006"
   }
 }
