@@ -1,0 +1,1062 @@
+diff --git a/artifacts/reviews/v1/round-09/baseline.json b/artifacts/reviews/v1/round-09/baseline.json
+new file mode 100644
+index 0000000..3e224d5
+--- /dev/null
++++ b/artifacts/reviews/v1/round-09/baseline.json
+@@ -0,0 +1,66 @@
++{
++  "schema_version": "1.0",
++  "round": "09",
++  "captured_at": "2026-08-21T12:49:12+08:00",
++  "timezone": "Asia/Shanghai",
++  "baseline_commit": "a8d45347fb837b4e4581ed7c43a38ead18f6d743",
++  "baseline_tag": "review-v1-round-09-baseline",
++  "input_tag": "review-v1-round-08-complete",
++  "branch": "main",
++  "scope": "跨 harness/领域迁移、中文可读性和视觉体验",
++  "rubric_version": "docs/meta/review-method.md@18B7C95A01A6FDFC342F0A79FB65DAE3F6CA7077814CE05DBABDA8B2F168AD3C",
++  "files": {
++    "docs/labs/migration.md": "C97931418932A54D470652057C8C533454DB1AD401FC5AFB2CAF6BB7A753F02B",
++    "docs/harnesses/comparison.md": "8AD7F36F6DC8477255E4ACACE2EED6CE9E31ACA5F380CF93A8A5382ABB75A6EB",
++    "docs/references/compatibility.md": "B996FB2D1F16E9D3CCEB672BB8D13D51D17C34F9BE3E3C783420ED7F599304A0",
++    "lab/fixtures/migration/input.json": "D961702D1F50F1279C0031336384ED3407B8332D33D22D68F3B68BCD0CF4817C",
++    "lab/fixtures/migration/expected.json": "2CF9D086AA20DB723599247D126FF07367B69BE864763639CC46BE96C80E0E02",
++    "lab/fixtures/migration/negative.json": "65820652D62B7CD3A01E1003C387F2E9DD79E5FE0F06A5CAAAF6E04D24E8A734",
++    "lab/fixtures/migration/manifest.json": "58518C7F5AC21805E53F47D9F06C6CA6651D6C2909E027579C547250749E74CB",
++    "lab/src/about_harness/labs.py": "66FCE59987B130B2E80A9FB2F8F74D2A32B625CFC9E1835B7DA1D083623F1DB5",
++    "lab/tests/test_m5_labs.py": "A61969FD0E6AC24B6405946E4F8593B7536300DBCECC4EFB456AA0B4502A9E07",
++    "scripts/tutorial-check.mjs": "9DFFC1C8041C63080E1BFFF7C51FE600E1CAD005DB71E1D5449040B51B35E96E",
++    "scripts/test-tutorial-check.mjs": "4A8C308437D4ADAE718C67CAA03F66C80A7BFD170775EDBE617572685A17F953",
++    "scripts/visual-check.mjs": "40BD85206A1B658B5DA6B0FAF1ED34BF3618420F6E72952AA94B83FBC207C000",
++    "artifacts/visual/m6/manifest.json": "D472EC5DA357A0BBE0119821B036EFE9977D9426A93BA6E3AAA066B7B58AE749",
++    "artifacts/visual/m6/mobile-390-home.png": "7502000949BEDFC713E6BDA555A6017D59B38448AF41DF444A8CD272CC682771",
++    "artifacts/visual/m6/narrow-320-home.png": "28A341613EA2BA7C229A6BC4D6E3A94A0B370A8812D85E9707D9896E6EBC8FC4",
++    "docs/.vitepress/theme/custom.css": "4DA13ADF02BE5B5D6367CB45859803CF16A5FC27F34C2EC5079F2F663BF2A8D3"
++  },
++  "reviewer": {
++    "role": "迁移、中文可读性与视觉体验审阅者",
++    "provider": "OpenAI",
++    "model_id": "gpt-5",
++    "model_resolution": "exact deployment snapshot is not exposed by the runtime",
++    "harness": "Codex desktop",
++    "harness_version": "not exposed",
++    "surface": "desktop task plus in-app browser",
++    "configuration": "single-agent local review; no subagents"
++  },
++  "instructions": {
++    "system_developer": "runtime-managed; content hash not exposed",
++    "user_goal": "active thread goal dated 2026-08-21; content hash not exposed",
++    "repository": "AGENTS.md@AEE7B90AE9332ED969C07BDCF771F5484DB2F85EA6F0CE3B2F2E0D499DB97B74"
++  },
++  "tools": {
++    "skills": ["browser:control-in-app-browser"],
++    "interfaces": ["PowerShell 7", "git", "rg", "Node.js", "uv", "in-app Browser", "view_image", "apply_patch"],
++    "mcp": ["node_repl browser-client"]
++  },
++  "environment": {
++    "os": "Microsoft Windows 11 Enterprise 10.0.26200 x64",
++    "node": "v24.14.0",
++    "python": "3.12.10",
++    "uv": "0.11.16",
++    "git": "2.55.0.windows.3",
++    "docker": "29.6.2",
++    "browser": "in-app browser version not exposed; deterministic visual baseline Chromium 151.0.7922.34",
++    "package_lock_sha256": "8DA864CF6DE62FEF792411096D39E12B30E767726E533BE1238015C98ED3819C",
++    "uv_lock_sha256": "DA5E9A1DB74A4CE06A47C71809FBA8A0FED2BA557E9BAA4A63824B2BD19BF90F"
++  },
++  "execution": {"offline": true, "network": "localhost only", "live_model_or_api": false, "a3_used": false, "a4_used": false},
++  "sampling": {
++    "included": ["Codex/Pi/Claude Code responsibility mapping", "migration fixture and negative path", "Chinese terminology", "1440/390/320 visual manifests", "mobile menu/theme interaction", "migration page"],
++    "excluded": ["real harness runs", "real user repositories", "external domains", "remote Pages"]
++  }
++}
+diff --git a/artifacts/reviews/v1/round-09/findings.md b/artifacts/reviews/v1/round-09/findings.md
+new file mode 100644
+index 0000000..7c820e9
+--- /dev/null
++++ b/artifacts/reviews/v1/round-09/findings.md
+@@ -0,0 +1,30 @@
++# Round 09 修改前 Findings
++
++- Round：09
++- Baseline：`a8d4534`
++- Baseline tag：`review-v1-round-09-baseline`
++- Rubric：跨 harness/领域迁移、中文可读性和视觉体验
++- 记录时间：2026-08-21 12:49 +08:00
++- 状态：已在任何 round-09 修正前冻结
++
++## R09-P1-01：迁移 runner 只数 key 且硬编码成功，可把空映射与权限扩大判为已完成
++
++- 严重性：P1
++- 位置：`lab/src/about_harness/labs.py`、`lab/fixtures/migration/**`、`docs/labs/migration.md`、`docs/harnesses/comparison.md`
++- 复现：向 `_migration` 传入未知 source/target harness，并把 instructions/tools/permissions/state 四个 mapping value 全设为空字符串，仍返回 `mapped_responsibilities=4`、`missing=[]`、`config_copied_verbatim=false`。当前函数不读取 source/target，`config_copied_verbatim` 恒为 false；负例只检查一句文本是否包含 `rename AGENTS.md`。
++- 影响：读者可能把“字段存在”误当 source/target 语义、sandbox/approval/network 边界、gap 和补偿控制已经迁移；尤其可把更宽权限输出成 E1 成功，作品集迁移报告出现安全假阳性。
++- 覆盖缺口：正式范围是 Codex、Pi、Claude Code，但 fixture 只有 Codex → Claude Code；四个英文 key 未在中文教程定义，sandbox/approval/network 被压成 permissions，领域特有状态也没有映射表。
++- 修正要求：fixture 至少同时覆盖 Codex → Pi 与 Codex → Claude Code；拆分 instructions、tools、sandbox、approval、network、state；每个映射保存源语义、目标语义、gap、补偿控制、证据轴和边界保持标记；runner 拒绝未知 harness、空语义、逐字复制、未补偿 gap 和控制扩大；新增两类负例、明确中文术语，并给出 coding/browser/research/data/document 的领域迁移清单。
++
++## R09-P2-02：移动视觉证据在导航遮罩仍打开时截图，且未覆盖迁移页
++
++- 严重性：P2
++- 位置：`scripts/visual-check.mjs`、`artifacts/visual/m6/mobile-390-home.png`、`narrow-320-home.png`
++- 复现：两张已提交移动首页截图显示导航遮罩覆盖正文。脚本打开菜单并切换主题后立即再次 click，没有检查当时 expanded/visible 状态，也没有等待 `.VPNavScreen` hidden 就截图；门禁仍报告通过。脚本只截图首页与评测页，不包含本轮关键迁移页。
++- 交互核验：在 390×844 in-app Browser 上，菜单可正常从 expanded 切到 closed；因此根因是证据脚本的竞态/断言缺失，不是 VitePress 菜单不可用。
++- 影响：视觉门禁可在遮罩、滚动锁或菜单关闭回归时继续变绿；Round 09 无法用现有六张图证明迁移表格和中英混排在 1440/390/320 可读。
++- 修正要求：状态感知地关闭菜单并等待 hidden，断言关闭后的 `aria-expanded`/页面滚动；在新的 round-09 证据目录保存三视口的首页、评测、迁移截图与 manifest，不覆盖 M6 证据；检查迁移页表格/代码块可滚动、无页面级横向溢出，并增加对应断言。
++
++## 计数判断
++
++R09-P1-01 是会把权限/控制语义缺失判为迁移成功的 P1；R09-P2-02 是可复现的视觉证据竞态与范围缺口。它们分别需要 runner/fixture/教程回归和浏览器交互/截图回归，不与 Round 01–08 根因重复，满足实质 review 门槛。
+diff --git a/artifacts/visual/round-09/desktop-1440-evaluation.png b/artifacts/visual/round-09/desktop-1440-evaluation.png
+new file mode 100644
+index 0000000..07abe53
+Binary files /dev/null and b/artifacts/visual/round-09/desktop-1440-evaluation.png differ
+diff --git a/artifacts/visual/round-09/desktop-1440-home.png b/artifacts/visual/round-09/desktop-1440-home.png
+new file mode 100644
+index 0000000..a2fba9a
+Binary files /dev/null and b/artifacts/visual/round-09/desktop-1440-home.png differ
+diff --git a/artifacts/visual/round-09/desktop-1440-migration.png b/artifacts/visual/round-09/desktop-1440-migration.png
+new file mode 100644
+index 0000000..bb0da2f
+Binary files /dev/null and b/artifacts/visual/round-09/desktop-1440-migration.png differ
+diff --git a/artifacts/visual/round-09/manifest.json b/artifacts/visual/round-09/manifest.json
+new file mode 100644
+index 0000000..d1db9e7
+--- /dev/null
++++ b/artifacts/visual/round-09/manifest.json
+@@ -0,0 +1,268 @@
++{
++  "schema_version": "1.1",
++  "evidence": "E1",
++  "generated_at": "2026-08-21T05:00:06.250Z",
++  "base": "/about-harness/",
++  "browser": "Chromium 151.0.7922.34",
++  "assertions": [
++    "navigation",
++    "search",
++    "theme",
++    "evaluation-tables",
++    "migration-page",
++    "deep-anchor",
++    "mobile-menu-open-close",
++    "no-horizontal-page-overflow"
++  ],
++  "records": [
++    {
++      "id": "desktop-1440",
++      "width": 1440,
++      "height": 900,
++      "home": {
++        "viewportWidth": 1440,
++        "clientWidth": 1440,
++        "scrollWidth": 1440,
++        "title": "About Harness",
++        "main": true,
++        "targetTop": null,
++        "tables": []
++      },
++      "table": {
++        "viewportWidth": 1440,
++        "clientWidth": 1440,
++        "scrollWidth": 1440,
++        "title": "评测方法与证据晋级 | About Harness",
++        "main": true,
++        "targetTop": null,
++        "tables": [
++          {
++            "clientWidth": 688,
++            "scrollWidth": 688,
++            "overflowX": "auto"
++          }
++        ]
++      },
++      "migration": {
++        "viewportWidth": 1440,
++        "clientWidth": 1440,
++        "scrollWidth": 1440,
++        "title": "跨 Harness 迁移：保留职责而非文件名 | About Harness",
++        "main": true,
++        "targetTop": null,
++        "tables": [
++          {
++            "clientWidth": 688,
++            "scrollWidth": 688,
++            "overflowX": "auto"
++          },
++          {
++            "clientWidth": 688,
++            "scrollWidth": 688,
++            "overflowX": "auto"
++          }
++        ]
++      },
++      "migrationTableScroll": null,
++      "anchor": {
++        "viewportWidth": 1440,
++        "clientWidth": 1440,
++        "scrollWidth": 1440,
++        "title": "状态与可靠执行 | About Harness",
++        "main": true,
++        "targetTop": 110,
++        "tables": []
++      },
++      "mobileMenu": null,
++      "screenshots": [
++        "desktop-1440-home.png",
++        "desktop-1440-evaluation.png",
++        "desktop-1440-migration.png"
++      ]
++    },
++    {
++      "id": "mobile-390",
++      "width": 390,
++      "height": 844,
++      "home": {
++        "viewportWidth": 390,
++        "clientWidth": 390,
++        "scrollWidth": 390,
++        "title": "About Harness",
++        "main": true,
++        "targetTop": null,
++        "tables": []
++      },
++      "table": {
++        "viewportWidth": 390,
++        "clientWidth": 390,
++        "scrollWidth": 390,
++        "title": "评测方法与证据晋级 | About Harness",
++        "main": true,
++        "targetTop": null,
++        "tables": [
++          {
++            "clientWidth": 342,
++            "scrollWidth": 409,
++            "overflowX": "auto"
++          }
++        ]
++      },
++      "migration": {
++        "viewportWidth": 390,
++        "clientWidth": 390,
++        "scrollWidth": 390,
++        "title": "跨 Harness 迁移：保留职责而非文件名 | About Harness",
++        "main": true,
++        "targetTop": null,
++        "tables": [
++          {
++            "clientWidth": 342,
++            "scrollWidth": 501,
++            "overflowX": "auto"
++          },
++          {
++            "clientWidth": 342,
++            "scrollWidth": 342,
++            "overflowX": "auto"
++          }
++        ]
++      },
++      "migrationTableScroll": {
++        "found": true,
++        "moved": true,
++        "maxScroll": 159
++      },
++      "anchor": {
++        "viewportWidth": 390,
++        "clientWidth": 390,
++        "scrollWidth": 390,
++        "title": "状态与可靠执行 | About Harness",
++        "main": true,
++        "targetTop": 110,
++        "tables": []
++      },
++      "mobileMenu": {
++        "opened": true,
++        "closed": true,
++        "expandedAfterClose": "false"
++      },
++      "screenshots": [
++        "mobile-390-home.png",
++        "mobile-390-evaluation.png",
++        "mobile-390-migration.png"
++      ]
++    },
++    {
++      "id": "narrow-320",
++      "width": 320,
++      "height": 700,
++      "home": {
++        "viewportWidth": 320,
++        "clientWidth": 320,
++        "scrollWidth": 320,
++        "title": "About Harness",
++        "main": true,
++        "targetTop": null,
++        "tables": []
++      },
++      "table": {
++        "viewportWidth": 320,
++        "clientWidth": 320,
++        "scrollWidth": 320,
++        "title": "评测方法与证据晋级 | About Harness",
++        "main": true,
++        "targetTop": null,
++        "tables": [
++          {
++            "clientWidth": 272,
++            "scrollWidth": 409,
++            "overflowX": "auto"
++          }
++        ]
++      },
++      "migration": {
++        "viewportWidth": 320,
++        "clientWidth": 320,
++        "scrollWidth": 320,
++        "title": "跨 Harness 迁移：保留职责而非文件名 | About Harness",
++        "main": true,
++        "targetTop": null,
++        "tables": [
++          {
++            "clientWidth": 272,
++            "scrollWidth": 501,
++            "overflowX": "auto"
++          },
++          {
++            "clientWidth": 272,
++            "scrollWidth": 272,
++            "overflowX": "auto"
++          }
++        ]
++      },
++      "migrationTableScroll": {
++        "found": true,
++        "moved": true,
++        "maxScroll": 229
++      },
++      "anchor": {
++        "viewportWidth": 320,
++        "clientWidth": 320,
++        "scrollWidth": 320,
++        "title": "状态与可靠执行 | About Harness",
++        "main": true,
++        "targetTop": 110,
++        "tables": []
++      },
++      "mobileMenu": {
++        "opened": true,
++        "closed": true,
++        "expandedAfterClose": "false"
++      },
++      "screenshots": [
++        "narrow-320-home.png",
++        "narrow-320-evaluation.png",
++        "narrow-320-migration.png"
++      ]
++    }
++  ],
++  "screenshots": [
++    {
++      "file": "desktop-1440-evaluation.png",
++      "sha256": "740ed42e2a13303ef76df24937bcb11b89d554a97892bb325437fd1e8d98edfe"
++    },
++    {
++      "file": "desktop-1440-home.png",
++      "sha256": "56eb1c81f4ac102cdfa8231ac31f45f38a6878c43d4fc2e305478a7288304d62"
++    },
++    {
++      "file": "desktop-1440-migration.png",
++      "sha256": "8e37b0964c81cee8ff06a78b7761b4bf90caf7adf14be8a2992af35e57234d9c"
++    },
++    {
++      "file": "mobile-390-evaluation.png",
++      "sha256": "af55c18e571a5323df2383a3e40a37fa4d48020be97bf0b9b8c9fa19cb6c8cde"
++    },
++    {
++      "file": "mobile-390-home.png",
++      "sha256": "3312fba4202b6eafca2295776315d5423fe8d5c1ca99ec8b1ed5a04c9b92f4bc"
++    },
++    {
++      "file": "mobile-390-migration.png",
++      "sha256": "c4a7a8007776653dcde15099fae9ca7c839f4bccfa7354eee67ce192bb598c32"
++    },
++    {
++      "file": "narrow-320-evaluation.png",
++      "sha256": "a7e8b883be6c33545aca22b289163229310a2883f9e6aa3ff3183843ee0666f5"
++    },
++    {
++      "file": "narrow-320-home.png",
++      "sha256": "ed1ab01579ae3d83744dae23caba7a98258d74612806bfd0cb6250b34fefead8"
++    },
++    {
++      "file": "narrow-320-migration.png",
++      "sha256": "f47f5b24b41b41070f0e2b7c9d0fcb236df4345c24f58f2d1de4ede09774bb6d"
++    }
++  ]
++}
+diff --git a/artifacts/visual/round-09/mobile-390-evaluation.png b/artifacts/visual/round-09/mobile-390-evaluation.png
+new file mode 100644
+index 0000000..2ba147a
+Binary files /dev/null and b/artifacts/visual/round-09/mobile-390-evaluation.png differ
+diff --git a/artifacts/visual/round-09/mobile-390-home.png b/artifacts/visual/round-09/mobile-390-home.png
+new file mode 100644
+index 0000000..152713f
+Binary files /dev/null and b/artifacts/visual/round-09/mobile-390-home.png differ
+diff --git a/artifacts/visual/round-09/mobile-390-migration.png b/artifacts/visual/round-09/mobile-390-migration.png
+new file mode 100644
+index 0000000..cff4956
+Binary files /dev/null and b/artifacts/visual/round-09/mobile-390-migration.png differ
+diff --git a/artifacts/visual/round-09/narrow-320-evaluation.png b/artifacts/visual/round-09/narrow-320-evaluation.png
+new file mode 100644
+index 0000000..e1f2684
+Binary files /dev/null and b/artifacts/visual/round-09/narrow-320-evaluation.png differ
+diff --git a/artifacts/visual/round-09/narrow-320-home.png b/artifacts/visual/round-09/narrow-320-home.png
+new file mode 100644
+index 0000000..f1e4047
+Binary files /dev/null and b/artifacts/visual/round-09/narrow-320-home.png differ
+diff --git a/artifacts/visual/round-09/narrow-320-migration.png b/artifacts/visual/round-09/narrow-320-migration.png
+new file mode 100644
+index 0000000..978508d
+Binary files /dev/null and b/artifacts/visual/round-09/narrow-320-migration.png differ
+diff --git a/docs/.vitepress/theme/custom.css b/docs/.vitepress/theme/custom.css
+index b91fa3b..6225c16 100644
+--- a/docs/.vitepress/theme/custom.css
++++ b/docs/.vitepress/theme/custom.css
+@@ -68,0 +69,15 @@
++
++  .vp-doc table th,
++  .vp-doc table td {
++    min-width: 10rem;
++  }
++
++  .vp-doc table th:first-child,
++  .vp-doc table td:first-child {
++    min-width: 5.5rem;
++  }
++
++  .vp-doc table code {
++    white-space: nowrap;
++    overflow-wrap: normal;
++  }
+diff --git a/docs/harnesses/comparison.md b/docs/harnesses/comparison.md
+index 6ed8a39..a7a8291 100644
+--- a/docs/harnesses/comparison.md
++++ b/docs/harnesses/comparison.md
+@@ -20 +20 @@
+-同名 skill、plugin、memory、permission 的发现顺序和执行权限不同；同一模型名也可能解析为不同 provider/alias。尤其不能把 approval 当 sandbox，或把允许 network 的配置当作已有限定出口。迁移文档需写 source semantics → target semantics → gap → compensating control → evidence axis。
++同名 skill、plugin、memory、permission 的发现顺序和执行权限不同；同一模型名也可能解析为不同 provider/alias。尤其不能把 approval（何时询问）当 sandbox（技术上能否触达），或把允许 network 的配置当作已有限定出口。迁移文档依次写“源语义 → 目标语义 → 缺口 → 补偿控制 → 证据轴（evidence axis）”，并用[跨 Harness 迁移案例](/labs/migration)验证，而不是逐字复制配置。
+diff --git a/docs/labs/migration.md b/docs/labs/migration.md
+index f058580..7bb3c13 100644
+--- a/docs/labs/migration.md
++++ b/docs/labs/migration.md
+@@ -5 +5 @@
+-把一个受约束 coding 工作流从 Codex 映射到 Claude Code。固定职责是 instructions、tools、permissions、state；输入给出语义映射，不逐字复制配置。产品事实以 2026-08-20 的[事实注册表](/references/fact-registry)为边界；容器与三平台本地入口见[实验环境](/labs/setup)。
++把一个受约束的 coding 工作流从 Codex 分别映射到 Pi 和 Claude Code。案例固定六类职责：instructions（指令）、tools（工具）、sandbox（技术隔离）、approval（人工批准）、network（网络出口）和 state（恢复状态）。从这里开始正文使用中文简称，配置键仍保留英文。
+@@ -7 +7,16 @@
+-## 运行与预期
++产品事实以 2026-08-21 的[事实注册表](/references/fact-registry)和[兼容矩阵](/references/compatibility)为边界；容器与三平台本地入口见[实验环境](/labs/setup)。输入 fixture 不写真实产品配置，只保存可审计的职责语义。
++
++## 一条映射必须回答什么
++
++| 字段 | 中文问题 | 不合格示例 |
++| --- | --- | --- |
++| `source_semantics` | 源环境真正保证什么？ | 只写“有权限控制” |
++| `target_semantics` | 目标环境用什么机制承担同一职责？ | 只改文件名 |
++| `gap` | 哪些语义并不等价？ | 把 approval 当 sandbox |
++| `compensating_control` | 缺口由什么外部控制补偿？ | 缺口存在但写 `none` |
++| `evidence_axis` | 结论来自 source、local、seam 还是 live？ | 用 E1 seam 冒充 live |
++| `preserves_boundary` | 目标边界是否不宽于源边界？ | 默认开放 network |
++
++Pi 没有被假定拥有与 Codex 同名的 OS sandbox；案例要求用无网络、只读容器或受限账户补偿。Claude Code 的 permission/hook/sandbox 也必须按目标版本探测，不能因为名称相似就宣布等价。
++
++## 运行、预期与断言
+@@ -13 +28,20 @@ uv run --frozen --offline python scripts/run-labs.py migration
+-预期四项职责全部映射、`missing=[]`、`config_copied_verbatim=false`。负例只把 `AGENTS.md` 改名并保留 permission 字符串，必须拒绝，因为发现顺序、作用域、hook/policy 与恢复语义不同。
++预期 `paths_checked=2`、`mapped_responsibilities=12`、`domains_checked=5`，并且 `missing`、`uncompensated_gaps`、`boundary_violations`、`verbatim_targets` 都为空。`control_boundaries_preserved=true` 且 `config_copied_verbatim=false` 才算通过。
++
++Runner 会拒绝未知 harness、缺少六类职责、空语义、无补偿 gap、边界扩大和整条目标路径逐字复制。负例同时覆盖：
++
++1. 把 Claude Code 每项目标语义都改成 Codex 源语义；
++2. 把 Pi 网络改成 unrestricted，且补偿控制为 `none`。
++
++## 迁移到不同领域时再检查一层
++
++Harness 职责相同，不代表领域状态相同。迁移报告还要逐项保留：
++
++| 领域 | 必须随迁移验证的状态 |
++| --- | --- |
++| Coding | cwd/worktree、测试与 diff、checkpoint/回滚 |
++| 浏览器 | profile 与 origin allowlist、页面注入边界、副作用批准 |
++| 研究 | 来源快照、主张—引用连接、冲突与拒答状态 |
++| 数据 | schema/单位、PII masking、只读与行数上限 |
++| 文档 | parser/chunk hash、版本过滤、索引权限与删除 |
++
++这些清单只证明迁移契约可执行，不证明真实产品或模型已经通过。迁移后必须在目标环境重跑领域验收。
+@@ -17 +51 @@ uv run --frozen --offline python scripts/run-labs.py migration
+-任何职责缺失、目标权限扩大、输入 checkpoint 丢失或目标验证未运行都要停止迁移。当前案例不写产品配置；真实迁移应保留 source 配置、在隔离目录生成 target 配置，失败时删除候选并恢复 source checkpoint。
++任何职责缺失、目标权限扩大、未补偿 gap、输入 checkpoint 丢失或目标验证未运行都要停止迁移。当前案例不写产品配置；真实迁移应保留 source 配置，在隔离目录生成 target 配置，失败时删除候选并恢复 source checkpoint。
+@@ -21 +55 @@ uv run --frozen --offline python scripts/run-labs.py migration
+-没有真实三 harness 运行，也未固定同一模型/provider，结果不能用于性能排名。后续 E2/E3 必须记录精确版本、surface、模型、指令 hash、工具与预算。
++没有真实三 harness 运行，也未固定同一模型/provider，结果只能作为 E1 迁移契约证据，不能用于性能排名。后续 E2/E3 必须记录精确版本、surface、模型、指令 hash、工具、权限和预算。
+diff --git a/docs/references/compatibility.md b/docs/references/compatibility.md
+index c724a51..9b21d66 100644
+--- a/docs/references/compatibility.md
++++ b/docs/references/compatibility.md
+@@ -51 +51 @@ Codex 中 sandbox mode 决定技术上能做什么，approval policy 决定何
+-协议兼容不等于工具语义、权限或恢复行为等价。迁移报告逐项保存 `source semantics → target semantics → gap → compensating control → evidence axis`，并固定 model/provider、版本、surface、任务和预算。任何 live `supported` 结论都需要 E2/E3；未知项写 `untested`，不能从 source fact 推断。
++协议兼容不等于工具语义、权限或恢复行为等价。迁移报告逐项保存“源语义 → 目标语义 → 缺口 → 补偿控制 → 证据轴”，并固定 model/provider、版本、surface、任务和预算。任何 live `supported` 结论都需要 E2/E3；未知项写 `untested`，不能从 source fact 推断。可执行字段与负例见[跨 Harness 迁移案例](/labs/migration)。
+diff --git a/lab/fixtures/migration/expected.json b/lab/fixtures/migration/expected.json
+index 02c581e..dcf8287 100644
+--- a/lab/fixtures/migration/expected.json
++++ b/lab/fixtures/migration/expected.json
+@@ -2 +2,5 @@
+-  "mapped_responsibilities": 4,
++  "source_harness": "Codex",
++  "target_harnesses": ["Pi", "Claude Code"],
++  "paths_checked": 2,
++  "mapped_responsibilities": 12,
++  "domains_checked": 5,
+@@ -4 +8,5 @@
+-  "config_copied_verbatim": false
++  "uncompensated_gaps": [],
++  "boundary_violations": [],
++  "verbatim_targets": [],
++  "config_copied_verbatim": false,
++  "control_boundaries_preserved": true
+diff --git a/lab/fixtures/migration/input.json b/lab/fixtures/migration/input.json
+index ac6f5b1..9f1842d 100644
+--- a/lab/fixtures/migration/input.json
++++ b/lab/fixtures/migration/input.json
+@@ -3,2 +3,2 @@
+-  "target_harness": "Claude Code",
+-  "requirements": ["instructions", "tools", "permissions", "state"],
++  "target_harnesses": ["Pi", "Claude Code"],
++  "requirements": ["instructions", "tools", "sandbox", "approval", "network", "state"],
+@@ -6,4 +6,107 @@
+-    "instructions": "map AGENTS.md intent to scoped CLAUDE.md/rules",
+-    "tools": "map tool schemas and errors, not names alone",
+-    "permissions": "restate allow/deny and approval boundaries",
+-    "state": "export task checkpoint and revalidate target context"
++    "Pi": {
++      "instructions": {
++        "source_semantics": "scoped AGENTS.md chain from project root to cwd",
++        "target_semantics": "context and project files resolved by the pinned Pi version",
++        "gap": "no identical AGENTS.md discovery contract",
++        "compensating_control": "pin Pi and test the effective context file set",
++        "evidence_axis": "source+seam",
++        "preserves_boundary": true
++      },
++      "tools": {
++        "source_semantics": "runtime tools and MCP with explicit schemas and errors",
++        "target_semantics": "read write edit bash plus reviewed TypeScript extensions",
++        "gap": "extension lifecycle and error semantics differ",
++        "compensating_control": "contract-test schemas errors timeouts and uninstall",
++        "evidence_axis": "source+seam",
++        "preserves_boundary": true
++      },
++      "sandbox": {
++        "source_semantics": "sandbox mode limits technically reachable files and processes",
++        "target_semantics": "container or restricted runtime supplies the isolation boundary",
++        "gap": "no assumed equivalent built-in OS sandbox",
++        "compensating_control": "run in a read-only network-disabled container or restricted account",
++        "evidence_axis": "source+seam",
++        "preserves_boundary": true
++      },
++      "approval": {
++        "source_semantics": "approval policy decides when execution must ask",
++        "target_semantics": "project trust plus an explicit user policy gates side effects",
++        "gap": "no identical approval-policy vocabulary",
++        "compensating_control": "default deny and require an external approval step for side effects",
++        "evidence_axis": "source+seam",
++        "preserves_boundary": true
++      },
++      "network": {
++        "source_semantics": "network enablement and destination policy are independent controls",
++        "target_semantics": "runtime and extensions start with network disabled",
++        "gap": "extension-specific egress is not an equivalent allowlist",
++        "compensating_control": "enforce network none or a container-level destination allowlist",
++        "evidence_axis": "source+seam",
++        "preserves_boundary": true
++      },
++      "state": {
++        "source_semantics": "task session worktree and checkpoint state depend on the surface",
++        "target_semantics": "session tree fork export and import preserve an explicit checkpoint",
++        "gap": "checkpoint formats and compaction behavior differ",
++        "compensating_control": "export unresolved items hashes and acceptance state then revalidate",
++        "evidence_axis": "source+seam",
++        "preserves_boundary": true
++      }
++    },
++    "Claude Code": {
++      "instructions": {
++        "source_semantics": "scoped AGENTS.md chain from project root to cwd",
++        "target_semantics": "scoped CLAUDE.md and rules with an audited effective context",
++        "gap": "discovery and precedence are product-specific",
++        "compensating_control": "test the effective instruction chain in the target cwd",
++        "evidence_axis": "source+seam",
++        "preserves_boundary": true
++      },
++      "tools": {
++        "source_semantics": "runtime tools and MCP with explicit schemas and errors",
++        "target_semantics": "tools hooks MCP and plugins with pinned schemas and timeouts",
++        "gap": "hooks can enforce behavior that source instructions only request",
++        "compensating_control": "classify each rule as instruction tool hook or policy before transfer",
++        "evidence_axis": "source+seam",
++        "preserves_boundary": true
++      },
++      "sandbox": {
++        "source_semantics": "sandbox mode limits technically reachable files and processes",
++        "target_semantics": "target-version sandbox plus isolated worktree limits reachability",
++        "gap": "modes and filesystem semantics are not name-compatible",
++        "compensating_control": "probe denied reads writes and commands before accepting equivalence",
++        "evidence_axis": "source+seam",
++        "preserves_boundary": true
++      },
++      "approval": {
++        "source_semantics": "approval policy decides when execution must ask",
++        "target_semantics": "permission rules and PreToolUse hooks gate side effects",
++        "gap": "rule matching and hook failure behavior differ",
++        "compensating_control": "add deny and ask probes for every high-impact action",
++        "evidence_axis": "source+seam",
++        "preserves_boundary": true
++      },
++      "network": {
++        "source_semantics": "network enablement and destination policy are independent controls",
++        "target_semantics": "settings and sandbox keep egress disabled until explicitly allowed",
++        "gap": "network behavior varies by target version and surface",
++        "compensating_control": "probe actual egress and retain a runtime-level deny fallback",
++        "evidence_axis": "source+seam",
++        "preserves_boundary": true
++      },
++      "state": {
++        "source_semantics": "task session worktree and checkpoint state depend on the surface",
++        "target_semantics": "conversation and checkpoint state carry an explicit handoff record",
++        "gap": "resume and compaction do not preserve identical hidden state",
++        "compensating_control": "restart from hashes unresolved items and acceptance tests",
++        "evidence_axis": "source+seam",
++        "preserves_boundary": true
++      }
++    }
++  },
++  "domain_checklists": {
++    "coding": ["cwd and worktree", "tests and diff", "checkpoint and rollback"],
++    "browser": ["profile and origin allowlist", "prompt-injection boundary", "side-effect approval"],
++    "research": ["source snapshots", "claim-citation links", "conflict and refusal state"],
++    "data": ["schema and units", "PII masking", "read-only and row limits"],
++    "document": ["parser and chunk hashes", "version filters", "index access and deletion"]
+diff --git a/lab/fixtures/migration/manifest.json b/lab/fixtures/migration/manifest.json
+index 46686c6..f7c8a3f 100644
+--- a/lab/fixtures/migration/manifest.json
++++ b/lab/fixtures/migration/manifest.json
+@@ -2 +2 @@
+-  "fixture_version": "1.0",
++  "fixture_version": "1.1",
+@@ -6 +6 @@
+-  "checked": "2026-08-20",
++  "checked": "2026-08-21",
+@@ -9,3 +9,3 @@
+-    "input.json": "5bde77edd58e34fa8a72ec902a420e404212d313f1839d2469ff7b1fb15ef03e",
+-    "expected.json": "9744f398ba4325575bf8c0c3798d711908204f6a3e77b03710eb0d5b03f17cbb",
+-    "negative.json": "b783954c3bbbaa8801f7fb0bdea2216a04664af24c944fab2f7f91ccf7f9108c"
++    "input.json": "a7be203056e54684ba79fbe86ccc5ee0dbebdf07d5ac190272d5f30e3e9ad55b",
++    "expected.json": "1959f34f63e8c976daf788454fd96da846f0dc8943cbd15b4aa94666f2e9242e",
++    "negative.json": "32161bf79adf58f23f347bcb7d9de49ec4ef517df816dcd63d0a04b9ff01750a"
+diff --git a/lab/fixtures/migration/negative.json b/lab/fixtures/migration/negative.json
+index efecc8e..88694fe 100644
+--- a/lab/fixtures/migration/negative.json
++++ b/lab/fixtures/migration/negative.json
+@@ -2,3 +2,23 @@
+-  "case": "verbatim-config-copy",
+-  "proposed": "rename AGENTS.md to CLAUDE.md and keep all permission strings unchanged",
+-  "expected": "reject because discovery, scope and permission semantics differ"
++  "case": "migration-contract-violations",
++  "proposals": [
++    {
++      "name": "verbatim-config-copy",
++      "mode": "copy-source-semantics",
++      "target_harness": "Claude Code"
++    },
++    {
++      "name": "network-boundary-expansion",
++      "mode": "replace-mapping",
++      "target_harness": "Pi",
++      "responsibility": "network",
++      "mapping": {
++        "source_semantics": "network disabled unless a destination is explicitly allowed",
++        "target_semantics": "unrestricted outbound network",
++        "gap": "target can reach destinations the source denied",
++        "compensating_control": "none",
++        "evidence_axis": "seam",
++        "preserves_boundary": false
++      }
++    }
++  ],
++  "expected": "reject verbatim copies, uncompensated gaps and broader controls"
+diff --git a/lab/results/public/m5-offline-summary.json b/lab/results/public/m5-offline-summary.json
+index a527b2d..303c77e 100644
+--- a/lab/results/public/m5-offline-summary.json
++++ b/lab/results/public/m5-offline-summary.json
+@@ -4 +4 @@
+-  "checked": "2026-08-20",
++  "checked": "2026-08-21",
+@@ -16 +16 @@
+-    {"case_id": "migration", "fixture_hash": "482c941cb373dd1d4711509b6ada0c262584aae0c566400c718d41e0481abcad", "passed": true, "negative_rejected": true, "safety_violation": false}
++    {"case_id": "migration", "fixture_hash": "5f9cd08404f9d1a3e1e2118daca7a124d5f0d27f743ea308bf5ea7bef751e7cb", "passed": true, "negative_rejected": true, "safety_violation": false}
+diff --git a/lab/src/about_harness/labs.py b/lab/src/about_harness/labs.py
+index f7d93a3..53c1eff 100644
+--- a/lab/src/about_harness/labs.py
++++ b/lab/src/about_harness/labs.py
+@@ -2,0 +3 @@ from __future__ import annotations
++import copy
+@@ -15,0 +17,11 @@ LAB_NAMES = ("coding", "browser", "research", "data", "document", "migration")
++MIGRATION_HARNESSES = {"Codex", "Pi", "Claude Code"}
++MIGRATION_REQUIREMENTS = (
++    "instructions",
++    "tools",
++    "sandbox",
++    "approval",
++    "network",
++    "state",
++)
++MIGRATION_DOMAINS = {"coding", "browser", "research", "data", "document"}
++MIGRATION_EVIDENCE_AXES = {"source", "seam", "source+seam", "live"}
+@@ -94 +106,7 @@ def _coding(payload: dict[str, JsonValue]) -> dict[str, JsonValue]:
+-def _migration(payload: dict[str, JsonValue]) -> dict[str, JsonValue]:
++def _json_list(values: list[str]) -> list[JsonValue]:
++    return [value for value in values]
++
++
++def evaluate_migration(payload: dict[str, JsonValue]) -> dict[str, JsonValue]:
++    source = payload.get("source_harness")
++    targets_value = payload.get("target_harnesses")
+@@ -97 +115,19 @@ def _migration(payload: dict[str, JsonValue]) -> dict[str, JsonValue]:
+-    if not isinstance(requirements, list) or not isinstance(mappings, dict):
++    domain_checklists = payload.get("domain_checklists")
++    if not isinstance(source, str) or source not in MIGRATION_HARNESSES:
++        raise FixtureError(f"migration: unknown source_harness {source!r}")
++    if not isinstance(targets_value, list) or not all(
++        isinstance(target, str) for target in targets_value
++    ):
++        raise FixtureError("migration: target_harnesses must be a string array")
++    targets = [target for target in targets_value if isinstance(target, str)]
++    expected_targets = MIGRATION_HARNESSES - {source}
++    if len(targets) != len(set(targets)) or set(targets) != expected_targets:
++        raise FixtureError(
++            "migration: target_harnesses must cover each other approved harness exactly once"
++        )
++    if (
++        not isinstance(requirements, list)
++        or len(requirements) != len(set(item for item in requirements if isinstance(item, str)))
++        or set(requirements) != set(MIGRATION_REQUIREMENTS)
++        or not isinstance(mappings, dict)
++    ):
+@@ -99,4 +135,71 @@ def _migration(payload: dict[str, JsonValue]) -> dict[str, JsonValue]:
+-    missing: list[JsonValue] = []
+-    for requirement in requirements:
+-        if not isinstance(requirement, str) or requirement not in mappings:
+-            missing.append(requirement)
++    if not isinstance(domain_checklists, dict) or set(domain_checklists) != MIGRATION_DOMAINS:
++        raise FixtureError("migration: domain_checklists must cover five approved domains")
++    for domain, checks in domain_checklists.items():
++        if not isinstance(checks, list) or not checks or not all(
++            isinstance(check, str) and check.strip() for check in checks
++        ):
++            raise FixtureError(f"migration: {domain} domain checklist is empty or invalid")
++
++    missing: list[str] = []
++    uncompensated_gaps: list[str] = []
++    boundary_violations: list[str] = []
++    verbatim_targets: list[str] = []
++    invalid_entries: list[str] = []
++    mapped = 0
++    for target in targets:
++        target_mappings = mappings.get(target)
++        if not isinstance(target_mappings, dict):
++            missing.extend(f"{target}.{requirement}" for requirement in MIGRATION_REQUIREMENTS)
++            continue
++        target_is_verbatim = True
++        for requirement in MIGRATION_REQUIREMENTS:
++            location = f"{target}.{requirement}"
++            entry = target_mappings.get(requirement)
++            if not isinstance(entry, dict):
++                missing.append(location)
++                continue
++            values = {
++                key: entry.get(key)
++                for key in (
++                    "source_semantics",
++                    "target_semantics",
++                    "gap",
++                    "compensating_control",
++                    "evidence_axis",
++                )
++            }
++            if not all(isinstance(value, str) and value.strip() for value in values.values()):
++                invalid_entries.append(f"{location}: semantic fields must be non-empty strings")
++                continue
++            source_semantics = values["source_semantics"]
++            target_semantics = values["target_semantics"]
++            gap = values["gap"]
++            compensation = values["compensating_control"]
++            evidence_axis = values["evidence_axis"]
++            assert isinstance(source_semantics, str)
++            assert isinstance(target_semantics, str)
++            assert isinstance(gap, str)
++            assert isinstance(compensation, str)
++            assert isinstance(evidence_axis, str)
++            if evidence_axis not in MIGRATION_EVIDENCE_AXES:
++                invalid_entries.append(f"{location}: invalid evidence_axis {evidence_axis}")
++            if gap.casefold() != "none" and compensation.casefold() == "none":
++                uncompensated_gaps.append(location)
++            if entry.get("preserves_boundary") is not True:
++                boundary_violations.append(location)
++            if source_semantics.strip().casefold() != target_semantics.strip().casefold():
++                target_is_verbatim = False
++            mapped += 1
++        if target_is_verbatim:
++            verbatim_targets.append(target)
++
++    problems = [
++        *(f"missing {item}" for item in missing),
++        *(f"uncompensated gap {item}" for item in uncompensated_gaps),
++        *(f"boundary violation {item}" for item in boundary_violations),
++        *(f"verbatim target {item}" for item in verbatim_targets),
++        *invalid_entries,
++    ]
++    if problems:
++        raise FixtureError(f"migration contract failed: {'; '.join(problems)}")
++
+@@ -104,3 +207,11 @@ def _migration(payload: dict[str, JsonValue]) -> dict[str, JsonValue]:
+-        "mapped_responsibilities": len(requirements) - len(missing),
+-        "missing": missing,
+-        "config_copied_verbatim": False,
++        "source_harness": source,
++        "target_harnesses": _json_list(targets),
++        "paths_checked": len(targets),
++        "mapped_responsibilities": mapped,
++        "domains_checked": len(domain_checklists),
++        "missing": _json_list(missing),
++        "uncompensated_gaps": _json_list(uncompensated_gaps),
++        "boundary_violations": _json_list(boundary_violations),
++        "verbatim_targets": _json_list(verbatim_targets),
++        "config_copied_verbatim": bool(verbatim_targets),
++        "control_boundaries_preserved": not boundary_violations,
+@@ -117 +228 @@ def execute_fixture(bundle: FixtureBundle) -> dict[str, JsonValue]:
+-        "migration": _migration,
++        "migration": evaluate_migration,
+@@ -178,2 +289,37 @@ def _negative_rejected(bundle: FixtureBundle, output: dict[str, JsonValue]) -> b
+-        proposed = bundle.negative.get("proposed")
+-        return isinstance(proposed, str) and "rename AGENTS.md" in proposed
++        proposals = bundle.negative.get("proposals")
++        if not isinstance(proposals, list) or not proposals:
++            return False
++        for proposal in proposals:
++            if not isinstance(proposal, dict):
++                return False
++            payload = copy.deepcopy(bundle.input)
++            mappings = payload.get("mappings")
++            target = proposal.get("target_harness")
++            mode = proposal.get("mode")
++            if not isinstance(mappings, dict) or not isinstance(target, str):
++                return False
++            target_mappings = mappings.get(target)
++            if not isinstance(target_mappings, dict):
++                return False
++            if mode == "copy-source-semantics":
++                for entry in target_mappings.values():
++                    if not isinstance(entry, dict):
++                        return False
++                    source_semantics = entry.get("source_semantics")
++                    if not isinstance(source_semantics, str):
++                        return False
++                    entry["target_semantics"] = source_semantics
++            elif mode == "replace-mapping":
++                responsibility = proposal.get("responsibility")
++                replacement = proposal.get("mapping")
++                if not isinstance(responsibility, str) or not isinstance(replacement, dict):
++                    return False
++                target_mappings[responsibility] = copy.deepcopy(replacement)
++            else:
++                return False
++            try:
++                evaluate_migration(payload)
++            except FixtureError:
++                continue
++            return False
++        return True
+diff --git a/lab/tests/test_m5_labs.py b/lab/tests/test_m5_labs.py
+index 939b81b..9d742ee 100644
+--- a/lab/tests/test_m5_labs.py
++++ b/lab/tests/test_m5_labs.py
+@@ -3,0 +4 @@ from __future__ import annotations
++import copy
+@@ -15 +16,7 @@ from about_harness.integrations.pydantic_ai import normalize_rows
+-from about_harness.labs import LAB_NAMES, FixtureError, execute_fixture, load_fixture
++from about_harness.labs import (
++    LAB_NAMES,
++    FixtureError,
++    evaluate_migration,
++    execute_fixture,
++    load_fixture,
++)
+@@ -100,0 +108,52 @@ def test_negative_fixture_exists_for_every_case() -> None:
++def test_migration_covers_all_harness_paths_domains_and_control_boundaries() -> None:
++    bundle = load_fixture(FIXTURES, "migration")
++    output = execute_fixture(bundle)
++    assert output["passed"] is True
++    result = output["output"]
++    assert isinstance(result, dict)
++    assert result["target_harnesses"] == ["Pi", "Claude Code"]
++    assert result["paths_checked"] == 2
++    assert result["mapped_responsibilities"] == 12
++    assert result["domains_checked"] == 5
++    assert result["control_boundaries_preserved"] is True
++    assert result["config_copied_verbatim"] is False
++
++
++def test_migration_rejects_unknown_empty_and_broader_control_mappings() -> None:
++    with pytest.raises(FixtureError, match="unknown source_harness"):
++        evaluate_migration(
++            {
++                "source_harness": "Unknown",
++                "target_harnesses": ["Pi", "Claude Code"],
++                "requirements": list(),
++                "mappings": {},
++                "domain_checklists": {},
++            }
++        )
++
++    bundle = load_fixture(FIXTURES, "migration")
++    payload = copy.deepcopy(bundle.input)
++    mappings = payload["mappings"]
++    assert isinstance(mappings, dict)
++    pi = mappings["Pi"]
++    assert isinstance(pi, dict)
++    network = pi["network"]
++    assert isinstance(network, dict)
++    network["target_semantics"] = ""
++    with pytest.raises(FixtureError, match="semantic fields must be non-empty"):
++        evaluate_migration(payload)
++
++    payload = copy.deepcopy(bundle.input)
++    mappings = payload["mappings"]
++    assert isinstance(mappings, dict)
++    pi = mappings["Pi"]
++    assert isinstance(pi, dict)
++    network = pi["network"]
++    assert isinstance(network, dict)
++    network["target_semantics"] = "unrestricted outbound network"
++    network["compensating_control"] = "none"
++    network["preserves_boundary"] = False
++    with pytest.raises(FixtureError, match=r"uncompensated gap.*boundary violation"):
++        evaluate_migration(payload)
++
++
+diff --git a/scripts/test-tutorial-check.mjs b/scripts/test-tutorial-check.mjs
+index 7c8afbf..8fbbfa7 100644
+--- a/scripts/test-tutorial-check.mjs
++++ b/scripts/test-tutorial-check.mjs
+@@ -24 +24 @@ try {
+-  for (const expected of ['container/cross-platform', 'failure drill', 'shared environment', 'Dockerfile', 'Compose', 'isolated fixture']) {
++  for (const expected of ['container/cross-platform', 'failure drill', 'shared environment', 'Dockerfile', 'Compose', 'isolated fixture', 'migration tutorial missing responsibility contract']) {
+diff --git a/scripts/tutorial-check.mjs b/scripts/tutorial-check.mjs
+index 54d35b4..3bc25cc 100644
+--- a/scripts/tutorial-check.mjs
++++ b/scripts/tutorial-check.mjs
+@@ -20,0 +21 @@ const cli = read('scripts/run-labs.py')
++const migration = read('docs/labs/migration.md')
+@@ -53,0 +55,16 @@ if (!cli.includes('"--fixtures-root"')) errors.push('runner CLI does not expose
++for (const marker of [
++  'Codex 分别映射到 Pi 和 Claude Code',
++  'source_semantics',
++  'compensating_control',
++  'preserves_boundary',
++  'mapped_responsibilities=12',
++  'domains_checked=5',
++  'uncompensated_gaps',
++  '浏览器',
++  '研究',
++  '数据',
++  '文档'
++]) {
++  if (!migration.includes(marker)) errors.push(`migration tutorial missing responsibility contract: ${marker}`)
++}
++
+diff --git a/scripts/visual-check.mjs b/scripts/visual-check.mjs
+index c8dd5c6..46719d8 100644
+--- a/scripts/visual-check.mjs
++++ b/scripts/visual-check.mjs
+@@ -12 +12 @@ const base = '/about-harness/'
+-const evidenceRoot = path.join(root, 'artifacts', 'visual', 'm6')
++const evidenceRoot = path.join(root, 'artifacts', 'visual', 'round-09')
+@@ -101,0 +102 @@ async function inspect(viewport) {
++  let mobileMenuState = null
+@@ -107 +108,3 @@ async function inspect(viewport) {
+-      try { await page.locator('.VPNavScreen').waitFor({ state: 'visible', timeout: 3_000 }) } catch { errors.push(`${viewport.id}: mobile navigation did not open`) }
++      const navScreen = page.locator('.VPNavScreen').first()
++      try { await navScreen.waitFor({ state: 'visible', timeout: 3_000 }) } catch { errors.push(`${viewport.id}: mobile navigation did not open`) }
++      mobileMenuState = { opened: await navScreen.isVisible(), closed: false, expandedAfterClose: null }
+@@ -117 +120,10 @@ async function inspect(viewport) {
+-  if (mobileMenu) await mobileMenu.click()
++  if (mobileMenu && mobileMenuState) {
++    const navScreen = page.locator('.VPNavScreen').first()
++    if (await navScreen.isVisible()) await mobileMenu.click()
++    try { await navScreen.waitFor({ state: 'hidden', timeout: 3_000 }) } catch { errors.push(`${viewport.id}: mobile navigation did not close`) }
++    mobileMenuState.closed = !(await navScreen.isVisible())
++    mobileMenuState.expandedAfterClose = await mobileMenu.getAttribute('aria-expanded')
++    if (!mobileMenuState.closed || mobileMenuState.expandedAfterClose === 'true') {
++      errors.push(`${viewport.id}: mobile navigation remains expanded before screenshot`)
++    }
++  }
+@@ -133,0 +146,29 @@ async function inspect(viewport) {
++  await page.goto(`${origin}${base}labs/migration`, { waitUntil: 'networkidle' })
++  const migration = await pageMetrics(page)
++  let migrationTableScroll = null
++  if (!migration.main || migration.scrollWidth > migration.clientWidth) {
++    errors.push(`${viewport.id}: migration page has horizontal overflow or no main landmark`)
++  }
++  if (migration.tables.length < 2) errors.push(`${viewport.id}: migration page does not expose both mapping and domain tables`)
++  if (viewport.width <= 390 && !migration.tables.some((item) => item.scrollWidth > item.clientWidth)) {
++    errors.push(`${viewport.id}: migration page has no exercised horizontal table scrolling`)
++  }
++  if (viewport.width <= 390) {
++    migrationTableScroll = await page.evaluate(() => {
++      const table = [...document.querySelectorAll('main table')].find((item) => item.scrollWidth > item.clientWidth)
++      if (!table) return { found: false, moved: false, maxScroll: 0 }
++      table.scrollLeft = table.scrollWidth
++      const result = { found: true, moved: table.scrollLeft > 0, maxScroll: table.scrollLeft }
++      table.scrollLeft = 0
++      return result
++    })
++    if (!migrationTableScroll.moved) errors.push(`${viewport.id}: migration table did not respond to horizontal scroll`)
++  }
++  for (const item of migration.tables) {
++    if (item.scrollWidth > item.clientWidth && !['auto', 'scroll'].includes(item.overflowX)) {
++      errors.push(`${viewport.id}: migration table is not horizontally scrollable`)
++    }
++  }
++  const migrationScreenshot = `${viewport.id}-migration.png`
++  await page.screenshot({ path: path.join(outputRoot, migrationScreenshot), fullPage: true })
++
+@@ -140 +181,10 @@ async function inspect(viewport) {
+-  records.push({ ...viewport, home, table, anchor, screenshots: [homeScreenshot, tableScreenshot] })
++  records.push({
++    ...viewport,
++    home,
++    table,
++    migration,
++    migrationTableScroll,
++    anchor,
++    mobileMenu: mobileMenuState,
++    screenshots: [homeScreenshot, tableScreenshot, migrationScreenshot]
++  })
+@@ -160 +210 @@ const manifest = {
+-  schema_version: '1.0',
++  schema_version: '1.1',
+@@ -165 +215,4 @@ const manifest = {
+-  assertions: ['navigation', 'search', 'theme', 'tables', 'deep-anchor', 'mobile-menu', 'no-horizontal-page-overflow'],
++  assertions: [
++    'navigation', 'search', 'theme', 'evaluation-tables', 'migration-page',
++    'deep-anchor', 'mobile-menu-open-close', 'no-horizontal-page-overflow'
++  ],
+@@ -174 +227 @@ if (update) {
+-  if (!fs.existsSync(committedManifest)) errors.push('missing committed artifacts/visual/m6/manifest.json; run with --update')
++  if (!fs.existsSync(committedManifest)) errors.push('missing committed artifacts/visual/round-09/manifest.json; run with --update')
