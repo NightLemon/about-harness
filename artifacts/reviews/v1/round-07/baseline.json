@@ -1,0 +1,62 @@
+{
+  "schema_version": "1.0",
+  "round": "07",
+  "captured_at": "2026-08-21T12:11:57+08:00",
+  "timezone": "Asia/Shanghai",
+  "baseline_commit": "934015e6bafd57c0b3037c3f039e972180c54345",
+  "baseline_tag": "review-v1-round-07-baseline",
+  "input_tag": "review-v1-round-06-complete",
+  "branch": "main",
+  "scope": "评测、统计、holdout 和数据完整性",
+  "rubric_version": "docs/meta/review-method.md@18B7C95A01A6FDFC342F0A79FB65DAE3F6CA7077814CE05DBABDA8B2F168AD3C",
+  "files": {
+    "scripts/eval-lib.mjs": "BD687B004AE77080A56F2111B428A96A326896D71A158D13E897C9B8DCBA5EB1",
+    "scripts/eval-validate.mjs": "E53DBA386C0AC967FD84DEB0B430CCEDE64D2F6FDAA33A19C6857FA8EBF0EDD4",
+    "scripts/summarize-evals.mjs": "088387F09ACD63766408D9C0D163D60B0FCC6D08C9194171FB9F397C087E62EC",
+    "scripts/test-m5-checks.mjs": "EC84E8768B8BB26160ED4144BC0D539A8F26369784B232C0E64602289952F722",
+    "docs/evaluation/method.md": "710F8999319460A0FE0F2A2F99460B2DC634C33AAC3B745D3F6D756FE188AFFF",
+    "docs/evaluation/metrics.md": "426B0DDA2843F0E79CEE8315280E99FA45DC971627F6750738369BC4403FD322",
+    "docs/evaluation/regression.md": "20940580A6BFD43A67E048E26ECC9ADF6B073B8713B8A101782B0F969CB058A1",
+    "docs/evaluation/reporting.md": "E3F6677FBF401B889C6F57CC2B43A0388F13E95004D105AAEA6EC5D8FD4C69CE",
+    "evals/study.example.json": "E93F580B26785C70BF78796312902B0ACFDF227CC3143290E1CA028AF3DE317B",
+    "evals/runs.example.jsonl": "9ADA661C8ED646BC3C8320F39A434D098495728A5DC7EB362E20B7BC0D9837BD",
+    "lab/schemas/study.json": "24ABE71E8C557D9A6DB51DE0F7575FD31489B2C21BE55FFE5B389C2C51A2DA1D",
+    "lab/schemas/eval-run.json": "FA1189D88E2B4B023C0555B12A2956816681751949A17EEF85BC832184FE1CB4",
+    "package.json": "039986EB670525B06369887EE9DF310FABD3F0E388F82506E175AF8F79E96C2C"
+  },
+  "reviewer": {
+    "role": "评测设计、统计与 holdout 完整性审阅者",
+    "provider": "OpenAI",
+    "model_id": "gpt-5",
+    "model_resolution": "exact deployment snapshot is not exposed by the runtime",
+    "harness": "Codex desktop",
+    "harness_version": "not exposed",
+    "surface": "desktop task",
+    "configuration": "single-agent local review; no subagents"
+  },
+  "instructions": {
+    "system_developer": "runtime-managed; content hash not exposed",
+    "user_goal": "active thread goal dated 2026-08-21; content hash not exposed",
+    "repository": "AGENTS.md@AEE7B90AE9332ED969C07BDCF771F5484DB2F85EA6F0CE3B2F2E0D499DB97B74"
+  },
+  "tools": {
+    "skills": [],
+    "interfaces": ["PowerShell 7", "git", "rg", "Node.js", "apply_patch"],
+    "mcp": []
+  },
+  "environment": {
+    "os": "Microsoft Windows 11 Enterprise 10.0.26200 x64",
+    "node": "v24.14.0",
+    "python": "3.12.10",
+    "uv": "0.11.16",
+    "git": "2.55.0.windows.3",
+    "browser": "not used",
+    "package_lock_sha256": "8DA864CF6DE62FEF792411096D39E12B30E767726E533BE1238015C98ED3819C",
+    "uv_lock_sha256": "DA5E9A1DB74A4CE06A47C71809FBA8A0FED2BA557E9BAA4A63824B2BD19BF90F"
+  },
+  "execution": {"offline": true, "network": "none", "live_model_or_api": false, "a3_used": false, "a4_used": false},
+  "sampling": {
+    "included": ["study design", "logical matrix cells", "config identity", "split summaries", "token/cost metrics", "negative canaries"],
+    "excluded": ["live E2/E3 runs", "model judge", "remote benchmark services"]
+  }
+}
