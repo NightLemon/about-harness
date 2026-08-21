@@ -32,24 +32,25 @@
 3. [上下文工程](/foundations/context)与[工具](/foundations/tools)：理解最常见的性能瓶颈。
 4. [指令与扩展层](/foundations/instructions)：学会把一次要求放进正确的持久层。
 5. [安全与权限](/foundations/security)：建立不能省略的边界。
-6. [模型—Harness 匹配](/optimization/model-fit)与[提示契约](/optimization/prompting)：把知识转成配置决策。
-7. [实验方法](/optimization/experiment)：理解变量、重复、指标与结论边界。
-8. [评测实验室](/practice/evaluation)：亲手比较两个配置并填写适配卡。
+6. [模型适配方法](/models/adaptation)与[协议兼容](/models/protocol-compatibility)：把知识转成指定模型的配置决策。
+7. [实验方法](/optimization/experiment)与[评测方法](/evaluation/method)：理解变量、重复、指标与结论边界。
+8. 从[实验环境](/labs/setup)和[离线 Runner](/labs/runner)开始，选择一个领域案例，产出可验证 artifact。
 
-后续里程碑会把上述临时页面迁入 foundations、implementation、models、evaluation 和 labs 的正式结构；[知识地图](/guide/roadmap)是稳定入口。
+[知识地图](/guide/roadmap)是完整覆盖入口；`foundations/`、`implementation/`、`models/`、`evaluation/` 和 `labs/` 均为当前正式结构。
 
 ### 路线 B：我要优化一个指定模型
 
-1. 填写[模型适配卡](/practice/model-playbook)，记录能力、限制与任务分布。
-2. 在[Harness 横向比较](/harnesses/comparison)中确认目标环境能控制哪些变量。
-3. 用[提示与任务契约](/optimization/prompting)写出可验证任务。
-4. 按[实验方法](/optimization/experiment)每次只改一个主要变量。
-5. 失败时用[问题诊断](/practice/debugging)区分模型失败与 harness 失败。
-6. 用[端到端适配案例](/practice/end-to-end)核对自己的步骤是否完整。
+1. 按[模型适配方法](/models/adaptation)填写适配卡，记录身份、provider、adapter、能力假设、限制与任务分布。
+2. 用[协议兼容](/models/protocol-compatibility)排除消息、工具、流式事件与错误语义不匹配。
+3. 在[Harness 横向比较](/harnesses/comparison)中确认目标环境能控制哪些变量。
+4. 用[提示与任务契约](/optimization/prompting)写出可验证任务。
+5. 按[实验方法](/optimization/experiment)每次只改一个主要变量，并用[评测指标](/evaluation/metrics)记录成功、安全、成本与人工介入。
+6. 失败时用[问题诊断](/optimization/debugging)区分模型、adapter、harness、fixture 与基础设施根因。
+7. 用[跨 Harness 迁移实验](/labs/migration)核对配置职责和结论边界。
 
 ### 路线 C：我要迁移工作流
 
-先阅读[横向比较](/harnesses/comparison)，再进入对应的 [Codex](/harnesses/codex)、[Pi](/harnesses/pi) 或 [Claude Code](/harnesses/claude-code) 页面。迁移时先映射“职责”，不要逐字翻译配置文件。
+先阅读[横向比较](/harnesses/comparison)，再进入对应的 [Codex](/harnesses/codex)、[Pi](/harnesses/pi) 或 [Claude Code](/harnesses/claude-code) 页面，最后运行[迁移案例](/labs/migration)。迁移时先映射“职责”，不要逐字翻译配置文件。
 
 ## 阅读标记
 

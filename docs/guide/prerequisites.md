@@ -6,14 +6,26 @@
 
 ## 环境基线
 
-M3 将提供容器/devcontainer 作为可复现基线，并给出 Windows、macOS、Linux 的本地回退。当前站点只需要 Node.js 22 与 npm：
+项目已经提供 `Dockerfile`、`compose.yaml` 和 devcontainer。容器默认执行无网络、只读文件系统、非 root 的最小 harness smoke；完整站点与评测门禁在本地或 CI 工具链运行。
+
+| 目标 | 必需环境 | 说明 |
+| --- | --- | --- |
+| 阅读或构建站点 | Node.js 22、npm | VitePress、文档、事实和 review 检查 |
+| 运行离线 lab | Python 3.11+（CI 使用 3.12）、uv 0.11.16 | pytest、Ruff、Pyright、六个离线案例 |
+| 运行视觉门禁 | 上述 Node 环境、Playwright Chromium | 1440/390/320 视口、搜索、主题、菜单、表格和锚点 |
+| 最小容器 smoke | Docker Compose 或 devcontainer | `network_mode: none`，不需要凭据 |
+
+首次本地准备：
 
 ```bash
 npm ci
-npm run check
+uv sync --frozen
+npm run verify
 ```
 
-命令失败时停止，不要删除锁文件或盲目升级全部依赖。保存操作系统、Node/npm 版本、命令和退出码，再按[贡献说明](https://github.com/)所列字段形成最小复现；仓库未公开前只保存在本地。
+只验证最小容器 smoke 时运行 `docker compose run --rm lab-smoke`。Windows、macOS、Linux 都使用同一 lockfile；本地没有 uv 时先使用容器 smoke，不要临时改写依赖版本。
+
+命令失败时停止，不要删除锁文件或盲目升级全部依赖。保存操作系统、Node/npm、Python/uv 版本、命令和退出码，再按仓库根目录 `CONTRIBUTING.md` 的字段形成最小复现；仓库未公开前只保存在本地。
 
 ## 概念自检
 
@@ -33,4 +45,4 @@ npm run check
 
 ## 完成条件
 
-你能运行站点检查、解释上述五个问题，并准备一个不含私人数据的练习工作负载，才进入[学习路径](/guide/start)。
+你能运行与目标对应的站点、lab 或容器检查，解释上述五个问题，并准备一个不含私人数据的练习工作负载，才进入[学习路径](/guide/start)。
