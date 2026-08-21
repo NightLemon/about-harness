@@ -13,4 +13,5 @@ V1 十轮正在进行。M7 创建 round 01–05，M8 创建 round 06–10；每�
 | [05](/reviews/v1/round-05) | 完成 | 三个 harness、四个 framework 的事实和兼容性 |
 | [06](/reviews/v1/round-06) | 完成 | 六个教程、容器和跨平台复现 |
 | [07](/reviews/v1/round-07) | 完成 | 评测、统计、holdout 和数据完整性 |
-| 08–10 | 未开始 | 依次按独立 rubric 执行 |
+| [08](/reviews/v1/round-08) | 完成 | 安全、隐私、许可和供应链 |
+| 09–10 | 未开始 | 依次按独立 rubric 执行 |
