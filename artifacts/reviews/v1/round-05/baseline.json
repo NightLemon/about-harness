@@ -1,0 +1,81 @@
+{
+  "schema_version": "1.0",
+  "round": "05",
+  "captured_at": "2026-08-21T11:40:24+08:00",
+  "timezone": "Asia/Shanghai",
+  "baseline_commit": "252f75b",
+  "baseline_tag": "review-v1-round-05-baseline",
+  "input_tag": "review-v1-round-04-complete",
+  "branch": "main",
+  "scope": "三个 coding harness、四个 framework 的事实和兼容性",
+  "rubric_version": "docs/meta/review-method.md@18B7C95A01A6FDFC342F0A79FB65DAE3F6CA7077814CE05DBABDA8B2F168AD3C",
+  "files": {
+    "docs/harnesses/comparison.md": "FBAEEF9FBE0C36AEB6F69A448085857B0110DA4347366A77448F1964078055FA",
+    "docs/harnesses/codex.md": "18280ACF644EE15EE5F2C4F2CDE47F231A5D007663A3C7E2F21E12D6DF4651A0",
+    "docs/harnesses/pi.md": "165815DFD1CFD411BD2D297FC182EE8063A98F272E9BCBEA6EACFF699F23A9F9",
+    "docs/harnesses/claude-code.md": "31C6B0974A2D5B501A8B8E7E2541AE0D89F2C533A4552125AE8AD53391430084",
+    "docs/frameworks/comparison.md": "107F94C5777950AB3F01412B939D2E1BAD0250872AE7BCB1EF9D30F33DA7F9D6",
+    "docs/frameworks/langgraph.md": "F2B0A78527CEED25FB0BA638BB791C6297CCDCAE5A9CD3C135E17A9ECF69B093",
+    "docs/frameworks/openai-agents-sdk.md": "6313A0B95FE7C0D82A0288C01EFFD2AA5CA6DA33DDF252ABCBAE741DF01A6E66",
+    "docs/frameworks/google-adk.md": "1589D98C2B8BA40E59DA59B0F4CD868BE8CC27100CB07E200390C7BBDDCCD8EB",
+    "docs/frameworks/autogen.md": "E5F21E39CCDC188E5AC42ED0C076165A1EE24B3A5F6348E3C073A8C2AC7F87EF",
+    "docs/references/compatibility.md": "5477B8A2543E6466FF8A4FCAB8117939122981E351C89613C80C22167F55861B",
+    "docs/references/fact-registry.md": "52ADD972AF56FA3B439C29C23E0BEEE908CE730223F5C09BBFD866F9D190C07B",
+    "docs/meta/changelog.md": "7365C92E8F18A8E4873090CC513384FF170BF1227BCA48381FC12E0F4074357E",
+    "lab/src/about_harness/integrations/langgraph.py": "ADA611EC535E92E9BF90348F515E79CDBC3172984DE3178E48555FE8F1B2CD98",
+    "lab/src/about_harness/integrations/browser_use.py": "4528BFA273683242C2FEBE2C147B3221785CB9B41293BE1826AB025E83EEFC89"
+  },
+  "sources": {
+    "https://learn.chatgpt.com/docs/agent-approvals-security.md": "58C06F5BDB41655F810D2C39C41F782FCCD6D77508F709C601DA5FE55CA18ACD",
+    "pi-fixed-readme": "CE0F95C3D314DCACB5F2388B956880A86736EDE3C383FD1F8E91BF9056AA134D",
+    "claude-memory": "631411505E6D6C4AB20FB7985C01033231977B2DF388F957A7D6F3D6C354BDED",
+    "claude-settings": "4A0EBD8230F89565507CAB2FC8E5817D90C5A53E26887FF9023897E8ED027135",
+    "langgraph-overview": "F83C53FE1574EA2DB529F048B507F88305ACFDB67F9F63A5D5D58BE35BCB869F",
+    "openai-agents-sdk": "7855BE154BBC3A8F65CFF8BE0DBF0657008218583C729E4EEE93194744E9CE8D",
+    "google-adk": "D9B398FE4F94F4C07BD9D7E4F1E8B2B40A0EF3B9DED9EED46D7DC47FA61195C5",
+    "autogen-overview": "B6DBD2156CB2A0A00AE3C99054A2CEEB98550FF1026C5D48BF2EB335C5C3404E"
+  },
+  "reviewer": {
+    "role": "Coding harness 与 framework 兼容性审阅者",
+    "provider": "OpenAI",
+    "model_id": "gpt-5",
+    "model_resolution": "exact deployment snapshot is not exposed by the runtime",
+    "harness": "Codex desktop",
+    "harness_version": "not exposed",
+    "surface": "desktop task",
+    "configuration": "single-agent local review; no subagents"
+  },
+  "instructions": {
+    "system_developer": "runtime-managed; content hash not exposed",
+    "user_goal": "active thread goal dated 2026-08-21; content hash not exposed",
+    "repository": "AGENTS.md@AEE7B90AE9332ED969C07BDCF771F5484DB2F85EA6F0CE3B2F2E0D499DB97B74"
+  },
+  "tools": {
+    "skills": ["openai-docs"],
+    "interfaces": ["PowerShell 7", "git", "rg", "official documentation GET", "local CLI version probes", "apply_patch"],
+    "mcp": []
+  },
+  "environment": {
+    "os": "Microsoft Windows 11 Enterprise 10.0.26200 x64",
+    "node": "v24.14.0",
+    "python": "3.12.10",
+    "uv": "0.11.16",
+    "git": "2.55.0.windows.3",
+    "claude_code": "2.1.96",
+    "pi": "not installed",
+    "browser": "not used",
+    "package_lock_sha256": "8DA864CF6DE62FEF792411096D39E12B30E767726E533BE1238015C98ED3819C",
+    "uv_lock_sha256": "DA5E9A1DB74A4CE06A47C71809FBA8A0FED2BA557E9BAA4A63824B2BD19BF90F"
+  },
+  "execution": {
+    "offline": false,
+    "network": "official documentation GET only",
+    "live_model_or_api": false,
+    "a3_used": false,
+    "a4_used": false
+  },
+  "sampling": {
+    "included": ["Codex/Pi/Claude Code responsibility map", "framework role boundaries", "M5 offline seams", "fact-level sources", "migration evidence labels"],
+    "excluded": ["live model or harness runs", "pricing", "account availability", "remote CI"]
+  }
+}
