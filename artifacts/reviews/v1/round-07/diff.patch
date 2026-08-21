@@ -1,0 +1,219 @@
+diff --git a/docs/evaluation/method.md b/docs/evaluation/method.md
+index eecb55b..f0f00b4 100644
+--- a/docs/evaluation/method.md
++++ b/docs/evaluation/method.md
+@@ -25 +25 @@ npm run eval:summary
+-重复 run ID、未知任务、split 泄漏、坏 hash、违规 failure type 会失败。出现安全违规、holdout 提前用于调参、费用超预算或环境版本不明时停止，不发布晋级结论。
++重复 run ID、重复 `(task, config, repeat)` 单元、同 config 的模型/版本/指令漂移、未知任务、split 泄漏、坏 hash、违规 failure type 会失败。矩阵 coverage 必须按期望单元计算，不能用总行数代替。出现安全违规、holdout 提前用于调参、费用超预算或环境版本不明时停止，不发布晋级结论。
+diff --git a/docs/evaluation/metrics.md b/docs/evaluation/metrics.md
+index 29a26af..11bf0ea 100644
+--- a/docs/evaluation/metrics.md
++++ b/docs/evaluation/metrics.md
+@@ -16 +16 @@
+-`npm run eval:summary` 输出上述可由 E1 样例计算的部分。12 行小样本只演示分析接口；区间很宽时结论应为“不足”，不能因 6/6 就声称真实成功率 100%。
++`npm run eval:summary` 输出上述可由 E1 样例计算的部分，并把 development/holdout 的 config 与配对结果分开，报告 input/output token 总量、矩阵缺口和晋级阻断原因。12 行小样本没有 holdout run，`holdout=null`、`promotion_eligible=false` 才是正确结果；区间很宽时结论应为“不足”，不能因 6/6 就声称真实成功率 100%。
+diff --git a/docs/evaluation/regression.md b/docs/evaluation/regression.md
+index ef791e4..7503091 100644
+--- a/docs/evaluation/regression.md
++++ b/docs/evaluation/regression.md
+@@ -13 +13 @@
+-模型 alias、harness/adapter、工具 schema、指令、依赖、fixture 或业务任务分布变化都触发受影响回归。只要 hash 变化，就不能把新 run 与旧配置无条件合并。
++模型 alias、harness/adapter、工具 schema、指令、依赖、fixture 或业务任务分布变化都触发受影响回归。同一 `config_id` 内的 config version、model、harness、instruction hash 与 evidence 必须一致；任一身份字段变化就建立新 config ID，不能把新 run 与旧配置合并。
+diff --git a/docs/evaluation/reporting.md b/docs/evaluation/reporting.md
+index 8819f95..bb68ece 100644
+--- a/docs/evaluation/reporting.md
++++ b/docs/evaluation/reporting.md
+@@ -5 +5 @@
+-报告写明 workload、任务抽样、模型/provider/adapter/harness、版本、surface、指令/config/fixture hash、重复、split、失败处理、指标、区间、安全、成本、排除项与证据等级。结论句必须带边界，例如“在这 20 个锁定任务和预算内”。
++报告写明 workload、任务抽样、模型/provider/adapter/harness、版本、surface、指令/config/fixture hash、重复、split、矩阵缺口、失败处理、指标、区间、安全、token/费用、排除项与证据等级。Development 与 holdout 必须分开；矩阵不完整、证据低于目标或存在安全违规时明确 `promotion_eligible=false`。结论句必须带边界，例如“在这 20 个锁定任务和预算内”。
+diff --git a/docs/evaluation/task-schema.md b/docs/evaluation/task-schema.md
+index ef9e162..584f881 100644
+--- a/docs/evaluation/task-schema.md
++++ b/docs/evaluation/task-schema.md
+@@ -26 +26 @@ npm run eval:validate
+-正例必须同时通过 JSON Schema 和 runner 契约；反例覆盖缺字段、坏预算、重复 ID、错误 split 与 hash。Schema 演进新增版本，不原地改写历史 artifact；读取器迁移失败时保留旧版本并停止发布。
++正例必须同时通过 JSON Schema 和 runner 契约；`input_tokens`、`output_tokens` 是必填非负整数。反例覆盖缺字段、坏预算、重复 ID、重复逻辑单元、config identity 漂移、错误 split 与 hash。Schema 演进新增版本，不原地改写历史 artifact；读取器迁移失败时保留旧版本并停止发布。
+diff --git a/lab/schemas/eval-run.json b/lab/schemas/eval-run.json
+index 3dcbb1c..c14aab3 100644
+--- a/lab/schemas/eval-run.json
++++ b/lab/schemas/eval-run.json
+@@ -18,0 +19,2 @@
++    "input_tokens",
++    "output_tokens",
+diff --git a/scripts/eval-lib.mjs b/scripts/eval-lib.mjs
+index 5360379..29c38cc 100644
+--- a/scripts/eval-lib.mjs
++++ b/scripts/eval-lib.mjs
+@@ -6 +6 @@ export const RUN_REQUIRED = [
+-  'human_turns', 'failure_type', 'fixture_hash', 'evidence', 'model_id',
++  'input_tokens', 'output_tokens', 'human_turns', 'failure_type', 'fixture_hash', 'evidence', 'model_id',
+@@ -76,0 +77,2 @@ export function assertRuns(rows, study) {
++  const cells = new Set()
++  const configIdentities = new Map()
+@@ -92,0 +95,16 @@ export function assertRuns(rows, study) {
++    const cell = `${row.task_id}#${row.config_id}#${row.repeat}`
++    if (cells.has(cell)) throw new Error(`${row.run_id}: duplicate matrix cell ${cell}`)
++    cells.add(cell)
++
++    const identity = JSON.stringify({
++      config_version: row.config_version,
++      model_id: row.model_id,
++      harness_version: row.harness_version,
++      instruction_hash: row.instruction_hash,
++      evidence: row.evidence
++    })
++    const previousIdentity = configIdentities.get(row.config_id)
++    if (previousIdentity && previousIdentity !== identity) {
++      throw new Error(`${row.run_id}: config identity drift for ${row.config_id}`)
++    }
++    configIdentities.set(row.config_id, identity)
+@@ -98,0 +117,4 @@ export function assertRuns(rows, study) {
++    for (const key of ['input_tokens', 'output_tokens']) {
++      numberAtLeast(row, key)
++      if (!Number.isInteger(row[key])) throw new Error(`${row.run_id}: ${key} must be an integer`)
++    }
+@@ -112 +134,10 @@ export function assertRuns(rows, study) {
+-  return ids
++  const expectedCells = []
++  for (const task of study.tasks) {
++    for (const config of study.configs) {
++      for (let repeat = 1; repeat <= study.repeats; repeat += 1) {
++        expectedCells.push(`${task.task_id}#${config}#${repeat}`)
++      }
++    }
++  }
++  const missingCells = expectedCells.filter((cell) => !cells.has(cell))
++  return { ids, cells, expectedCells, missingCells, configIdentities }
+diff --git a/scripts/eval-validate.mjs b/scripts/eval-validate.mjs
+index 7b3872f..923f195 100644
+--- a/scripts/eval-validate.mjs
++++ b/scripts/eval-validate.mjs
+@@ -13 +13 @@ try {
+-  assertRuns(rows, study)
++  const coverage = assertRuns(rows, study)
+@@ -25 +25,3 @@ try {
+-    sample_matrix_complete: rows.length === expectedRows,
++    unique_matrix_cells: coverage.cells.size,
++    missing_matrix_cells: coverage.missingCells.length,
++    sample_matrix_complete: coverage.missingCells.length === 0,
+diff --git a/scripts/summarize-evals.mjs b/scripts/summarize-evals.mjs
+index d1ddf83..9dc7517 100644
+--- a/scripts/summarize-evals.mjs
++++ b/scripts/summarize-evals.mjs
+@@ -12 +12 @@ assertStudy(study)
+-assertRuns(rows, study)
++const coverage = assertRuns(rows, study)
+@@ -14,3 +14,2 @@ assertRuns(rows, study)
+-const grouped = Map.groupBy(rows, (row) => row.config_id)
+-const configs = {}
+-for (const [config, runs] of grouped) {
++function summarizeRuns(runs) {
++  if (runs.length === 0) return null
+@@ -18 +17 @@ for (const [config, runs] of grouped) {
+-  configs[config] = {
++  return {
+@@ -27,0 +27,2 @@ for (const [config, runs] of grouped) {
++    input_tokens_total: runs.reduce((sum, row) => sum + row.input_tokens, 0),
++    output_tokens_total: runs.reduce((sum, row) => sum + row.output_tokens, 0),
+@@ -39 +40,12 @@ for (const [config, runs] of grouped) {
+-const pairKeys = new Set(rows.map((row) => `${row.task_id}#${row.repeat}`))
++const grouped = Map.groupBy(rows, (row) => row.config_id)
++const configs = {}
++for (const [config, runs] of grouped) {
++  configs[config] = {
++    ...summarizeRuns(runs),
++    by_split: {
++      development: summarizeRuns(runs.filter((row) => row.split === 'development')),
++      holdout: summarizeRuns(runs.filter((row) => row.split === 'holdout'))
++    }
++  }
++}
++
+@@ -42,13 +54,18 @@ const baseline = study.configs[0]
+-for (const candidate of study.configs.slice(1)) {
+-  let wins = 0
+-  let losses = 0
+-  let ties = 0
+-  for (const key of pairKeys) {
+-    const [taskId, repeatText] = key.split('#')
+-    const repeat = Number(repeatText)
+-    const a = rows.find((row) => row.task_id === taskId && row.repeat === repeat && row.config_id === baseline)
+-    const b = rows.find((row) => row.task_id === taskId && row.repeat === repeat && row.config_id === candidate)
+-    if (!a || !b) continue
+-    if (b.passed && !a.passed) wins += 1
+-    else if (!b.passed && a.passed) losses += 1
+-    else ties += 1
++for (const split of ['development', 'holdout']) {
++  const splitRows = rows.filter((row) => row.split === split)
++  const pairKeys = new Set(splitRows.map((row) => `${row.task_id}#${row.repeat}`))
++  for (const candidate of study.configs.slice(1)) {
++    let wins = 0
++    let losses = 0
++    let ties = 0
++    for (const key of pairKeys) {
++      const [taskId, repeatText] = key.split('#')
++      const repeat = Number(repeatText)
++      const a = splitRows.find((row) => row.task_id === taskId && row.repeat === repeat && row.config_id === baseline)
++      const b = splitRows.find((row) => row.task_id === taskId && row.repeat === repeat && row.config_id === candidate)
++      if (!a || !b) continue
++      if (b.passed && !a.passed) wins += 1
++      else if (!b.passed && a.passed) losses += 1
++      else ties += 1
++    }
++    pairwise.push({ split, baseline, candidate, wins, losses, ties, complete_pairs: wins + losses + ties })
+@@ -56 +72,0 @@ for (const candidate of study.configs.slice(1)) {
+-  pairwise.push({ baseline, candidate, wins, losses, ties, complete_pairs: wins + losses + ties })
+@@ -58,0 +75,4 @@ for (const candidate of study.configs.slice(1)) {
++const evidenceMatchesTarget = rows.every((row) => row.evidence === study.evidence_target)
++const noSafetyViolations = rows.every((row) => row.safety_violation === false)
++const matrixComplete = coverage.missingCells.length === 0
++
+@@ -62,0 +83,12 @@ console.log(JSON.stringify({
++  matrix: {
++    expected_cells: coverage.expectedCells.length,
++    observed_cells: coverage.cells.size,
++    missing_cells: coverage.missingCells.length,
++    complete: matrixComplete
++  },
++  promotion_eligible: matrixComplete && evidenceMatchesTarget && noSafetyViolations,
++  promotion_blockers: [
++    ...(!matrixComplete ? ['incomplete_matrix'] : []),
++    ...(!evidenceMatchesTarget ? ['evidence_below_target'] : []),
++    ...(!noSafetyViolations ? ['safety_violation'] : [])
++  ],
+diff --git a/scripts/test-m5-checks.mjs b/scripts/test-m5-checks.mjs
+index 64e6b5f..77479a4 100644
+--- a/scripts/test-m5-checks.mjs
++++ b/scripts/test-m5-checks.mjs
+@@ -19,0 +20,28 @@ try {
++  const rows = goodRuns.split(/\r?\n/).map((line) => JSON.parse(line))
++  const logicalDuplicate = { ...rows[0], run_id: 'different-id-same-cell' }
++  const duplicateCell = path.join(temp, 'duplicate-cell.jsonl')
++  fs.writeFileSync(duplicateCell, `${goodRuns}\n${JSON.stringify(logicalDuplicate)}\n`, 'utf8')
++  const duplicateCellResult = spawnSync(process.execPath, ['scripts/eval-validate.mjs', study, duplicateCell], { encoding: 'utf8' })
++  if (duplicateCellResult.status === 0 || !duplicateCellResult.stderr.includes('duplicate matrix cell')) {
++    throw new Error('eval validator did not reject a duplicate logical matrix cell')
++  }
++
++  const driftRows = rows.map((row, index) => index === 3 ? { ...row, instruction_hash: 'f'.repeat(64) } : row)
++  const drift = path.join(temp, 'config-drift.jsonl')
++  fs.writeFileSync(drift, `${driftRows.map((row) => JSON.stringify(row)).join('\n')}\n`, 'utf8')
++  const driftResult = spawnSync(process.execPath, ['scripts/eval-validate.mjs', study, drift], { encoding: 'utf8' })
++  if (driftResult.status === 0 || !driftResult.stderr.includes('config identity drift')) {
++    throw new Error('eval validator did not reject config identity drift')
++  }
++
++  const summaryResult = spawnSync(process.execPath, ['scripts/summarize-evals.mjs', study, path.resolve('evals/runs.example.jsonl')], { encoding: 'utf8' })
++  if (summaryResult.status !== 0) throw new Error(`eval summary failed: ${summaryResult.stderr}`)
++  const summary = JSON.parse(summaryResult.stdout)
++  if (summary.matrix.complete || summary.promotion_eligible) throw new Error('incomplete E1 sample became promotion eligible')
++  if (!summary.configs['offline-default'].by_split.development || summary.configs['offline-default'].by_split.holdout !== null) {
++    throw new Error('eval summary does not preserve development/holdout boundaries')
++  }
++  if (summary.configs['offline-default'].input_tokens_total !== 0 || summary.configs['offline-default'].output_tokens_total !== 0) {
++    throw new Error('eval summary does not report token totals')
++  }
++
+@@ -29 +57 @@ try {
+-  console.log('M5 checker negative tests passed: duplicate runs and secret canaries were rejected.')
++  console.log('M5 checker negative tests passed: duplicate cells, config drift, split leakage, promotion, and secret canaries were checked.')

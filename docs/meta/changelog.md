@@ -12,7 +12,7 @@
 | M5 | 完成 | annotated tag `m5-complete-v1`；六案例、正式 schema、评测与公开 E1 结果 |
 | M6 | 完成 | `m6-complete-v1`；来源、许可、隐私、CI、视觉和发布自动化，本地全量门禁通过 |
 | M7 | 完成 | Round 01–05 的 findings、修正、验证、result commit 与 annotated tags |
-| M8 | 进行中 | Round 06 完成；Round 07–10 与 release candidate 待执行 |
+| M8 | 进行中 | Round 06–07 完成；Round 08–10 与 release candidate 待执行 |
 | M9 | 未授权 | 无 remote、push、PR、Pages 或发布 |
 
 权威进度与恢复点记录在仓库根目录的 `EXECUTION_PLAN.md`。
@@ -46,6 +46,7 @@
 | [04](/reviews/v1/round-04) | 完成 | Responses 工具循环、reasoning state 与 effort 证据防回归 |
 | [05](/reviews/v1/round-05) | 完成 | 四轴兼容证据与 sandbox/approval/network 职责防回归 |
 | [06](/reviews/v1/round-06) | 完成 | 临时 fixture CLI、六案例容器与跨平台教程防回归 |
-| 07–10 | 未开始 | M8 创建 |
+| [07](/reviews/v1/round-07) | 完成 | 逻辑矩阵唯一性、split/token 汇总与晋级阻断防回归 |
+| 08–10 | 未开始 | M8 创建 |
 
 只有文档记录、artifact 证据、result commit 与 annotated tag 同时存在，状态才改为完成。
