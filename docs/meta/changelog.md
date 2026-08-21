@@ -11,7 +11,7 @@
 | M4 | 完成 | annotated tag `m4-complete-v1`；模型、harness、framework、领域与安全内容 |
 | M5 | 完成 | annotated tag `m5-complete-v1`；六案例、正式 schema、评测与公开 E1 结果 |
 | M6 | 完成 | `m6-complete-v1`；来源、许可、隐私、CI、视觉和发布自动化，本地全量门禁通过 |
-| M7 | 待启动 | 新 review 01–05；以 M6 checkpoint 为首轮 baseline |
+| M7 | 进行中 | Round 01 完成；Round 02–05 待执行 |
 | M8 | 未开始 | 新 review 06–10 与 release candidate；不提前声称完成 |
 | M9 | 未授权 | 无 remote、push、PR、Pages 或发布 |
 
@@ -40,7 +40,8 @@
 
 | 轮次 | 状态 | 记录 |
 | --- | --- | --- |
-| 01–05 | 未开始 | M7 创建 |
+| [01](/reviews/v1/round-01) | 完成 | 知识地图覆盖与 stale milestone 防回归 |
+| 02–05 | 未开始 | M7 创建 |
 | 06–10 | 未开始 | M8 创建 |
 
 只有文档记录、artifact 证据、result commit 与 annotated tag 同时存在，状态才改为完成。

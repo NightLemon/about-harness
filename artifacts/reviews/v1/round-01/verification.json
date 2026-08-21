@@ -1,0 +1,45 @@
+{
+  "schema_version": "1.0",
+  "round": "01",
+  "verified_at": "2026-08-21T10:50:00+08:00",
+  "timezone": "Asia/Shanghai",
+  "baseline_commit": "999a4c3a88409193b0ce0d9da3635e0c1054a1b8",
+  "findings_commit": "9624c51",
+  "content_result_commit": "becedcda8efea213d8ac00b1e79348bdb7190002",
+  "complete_tag": "review-v1-round-01-complete",
+  "evidence_commit": "resolved by complete_tag to avoid a self-referential commit hash",
+  "commands": [
+    {
+      "command": "npm run roadmap:check",
+      "exit_code": 0,
+      "assertion": "45 approved routes linked; stale M3/M4 placeholders absent"
+    },
+    {
+      "command": "npm run roadmap:self-test",
+      "exit_code": 0,
+      "assertion": "missing routes and stale milestone canary rejected"
+    },
+    {
+      "command": "npm run verify",
+      "exit_code": 0,
+      "assertion": "109 Markdown/routes, 110 HTML, 27 pytest, types, facts, licenses, secrets, workflows and visual gates passed"
+    }
+  ],
+  "result": {
+    "finding": "R01-P2-01",
+    "status": "fixed",
+    "regression_gate": ["scripts/roadmap-check.mjs", "scripts/test-roadmap-check.mjs"],
+    "open_blockers": 0
+  },
+  "environment_ref": "baseline.json",
+  "network": "offline; localhost-only visual checks inherited from npm run verify",
+  "a3_used": false,
+  "a4_used": false,
+  "artifact_hashes": {
+    "baseline.json": "75AF7C22428D25BC34EA9DDC85C821E375CF24949C259B10ABA3E8ADB263C1F0",
+    "findings.md": "6144BF21FD26B21CA5AB768CDF1DF275F4FAC2E5EE2E797FDCC29B0C26D6AAB2",
+    "diff.patch": "518B4B8F99EE03440852145D45D0B017F3A664C5031F351F6FD2D17AF2CC9632",
+    "unresolved.md": "34DF14066AA203A387C1CBE0C7E0D7C08D5A03170356C7A504702673328C017F",
+    "docs/reviews/v1/round-01.md": "A93E4C69A42D00D9D2504481A15A093DA49B1EFEB8B4E09099831AA190A65408"
+  }
+}

@@ -1,6 +1,6 @@
 # Harness 学习文档项目执行计划 v1
 
-状态：**M1-M6 已完成；M7 待启动；活动 Goal 已授予 M6-M8 的 A1/A2；A3/A4 未授权**
+状态：**M1-M6 已完成；M7 进行中（Round 01 完成）；活动 Goal 已授予 M6-M8 的 A1/A2；A3/A4 未授权**
 交付契约批准语句：批准交付契约 v1，请保存执行计划  
 计划修订日期：2026-08-21
 工作区：仓库根目录（不得记录个人绝对路径）
@@ -26,7 +26,7 @@ M6 的 workflow、docs、scripts、package 配置和 visual artifacts 已通过�
 | M4 | **已完成** | `m4-complete-v1`，result `e7ba394` |
 | M5 | **已完成** | `m5-complete-v1`，result `6aada53` |
 | M6 | **已完成** | 来源、许可、隐私、CI、视觉与发布自动化；`npm run verify` 与本地 Pages smoke 通过 |
-| M7 | 未开始 | 新 review 01–05 |
+| M7 | **进行中** | Round 01 完成；Round 02–05 待执行 |
 | M8 | 未开始 | 新 review 06–10 和 release candidate |
 | M9 | 未开始 | 经用户单独授权后的远程操作与发布 |
 
