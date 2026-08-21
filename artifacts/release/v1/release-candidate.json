@@ -1,21 +1,21 @@
 {
   "schema_version": "1.0",
-  "release_id": "v1-rc1",
-  "created_at": "2026-08-21T14:16:18+08:00",
+  "release_id": "v1-rc2",
+  "created_at": "2026-08-21T15:07:59+08:00",
   "source_commit": "5054f44578b6c29d83601b513a0c3d6b98ae4ec2",
-  "release_tag": "release-v1-rc1",
-  "milestone_tag": "m8-complete-v1",
+  "release_tag": "release-v1-rc2",
+  "milestone_tag": "m8-corrected-v2",
   "evidence_level": "E1",
-  "publication_status": "not-published",
+  "publication_status": "pending-publication",
   "site": {
     "base": "/about-harness/",
-    "local_smoke_url": "http://127.0.0.1:4174/about-harness/",
+    "local_smoke_url": "http://127.0.0.1:4175/about-harness/",
     "published_url": null
   },
   "authorization": {
     "a3_used": false,
-    "a4_used": false,
-    "remote_operations": false
+    "a4_used": true,
+    "remote_operations": true
   },
   "review_rounds": [
     {
@@ -131,23 +131,37 @@
     "privacy": "docs/meta/privacy.md",
     "dependency_security": "docs/meta/dependency-security.md",
     "workflows": [".github/workflows/ci.yml", ".github/workflows/deploy.yml", ".github/workflows/facts.yml"],
+    "publication_scope": [
+      "package.json",
+      "docs/.vitepress/config.mts",
+      "docs/.vitepress/publication-scope.mjs",
+      "scripts/check-built-site.mjs",
+      "scripts/pages-smoke.mjs",
+      "scripts/serve-pages.mjs"
+    ],
     "visual_manifests": ["artifacts/visual/m6/manifest.json", "artifacts/visual/round-09/manifest.json"],
     "public_results": ["lab/results/public/m5-offline-summary.json", "lab/results/public/m5-offline-trace-sample.json"]
   },
   "known_limitations_path": "artifacts/release/v1/known-limitations.md",
   "verification_path": "artifacts/release/v1/verification.json",
   "artifact_hashes": {
-    "lab/schemas/release-candidate.schema.json": "585A236F4B7E85EE1C57E6C907532C6FAB5CF5FD3A57F1FFB31724964FF43C0A",
-    "artifacts/release/v1/verification.json": "3C781649DBF4A59DE3F22AF4953A00CCDE97356FF2D3B5722933126D2BE5ACF4",
-    "artifacts/release/v1/known-limitations.md": "63744960B7F203626663D5A4CBBEA29271C8887FDB96BD2D77E3C2DB6146DAB5",
+    "lab/schemas/release-candidate.schema.json": "6D7D680C68F9D7B7D2AF97F9B31CF956D3524830D82EA02D5517F21D6B2AF75B",
+    "artifacts/release/v1/verification.json": "D11DF176DBE70597DF708A0C562AF674243349B86C189F12F33F6B96C7DF7E91",
+    "artifacts/release/v1/known-limitations.md": "99C072EBB772DCE348FDBB40DB93A86DC05D27531A6A579B620552D18C4A960A",
     "docs/references/fact-registry.md": "B1918BA304C2A88F82B1947182755F62693A8A4A2C4A999D7B02C17A5C1A7DED",
     "LICENSE": "43323F0A35F2FFF272C6C8349A19BFCCCDA39C1D8ADD8FC00502A320458F3940",
     "LICENSE-DOCS": "E35821A79472205FAFF37A9F63D06FD5ED20F71F089537E92577A773693AF731",
     "docs/meta/privacy.md": "6D9E5C212C243FFF1DE6A0259C55913E124D877A1A852269B680AF44E247D52F",
     "docs/meta/dependency-security.md": "53BFF031E14CE67FBC67B9FB28F6A03C8148AA23A851D91DABFAFE224B4C722E",
-    ".github/workflows/ci.yml": "F9114B49E5505FE24CA5833EA3478C24CE573ECF64C3774F4CD531D604288D97",
-    ".github/workflows/deploy.yml": "E4FBA436661F3D32C3697F817EFBA9DB803AA87EC1B40A62A68C5C2592D3C3A8",
+    ".github/workflows/ci.yml": "B48AE49ED79CC0F53AE3832A9D2B71662FC6530B208E8352915B901983934808",
+    ".github/workflows/deploy.yml": "344D9968E7E2E2C11AA56B3546739BFF04C44627D4F9822E70792C99B1DB73DE",
     ".github/workflows/facts.yml": "D879A3C3151CEA34A99843488245A125664267085308F41879728F4A76048CFB",
+    "package.json": "497D527DF445A171399C859E1F8190AB7FB01DD88D91615BE615DC3809F1287C",
+    "docs/.vitepress/config.mts": "84D961E9D00B094551B7F40B49C6CF2201D011DC53CA1ADA2878F14EC9681CFA",
+    "docs/.vitepress/publication-scope.mjs": "37AEE8E67DC57BDA829322889D95FFAF097C8EFD870EA10952558A1403156436",
+    "scripts/check-built-site.mjs": "6020167D9CA5BB2B4F4BCC943256D73FB86DDDC8939626B7548BF19F3CBB822D",
+    "scripts/pages-smoke.mjs": "BFAE97BBCD2CE75F3F04EC9A66A5FE3261798736CF957D1B3D30A43E05190219",
+    "scripts/serve-pages.mjs": "C155B5272CEC7610796D4C76C6B5B97072AC3458E0A88843FF7E85577EA30CAD",
     "artifacts/visual/m6/manifest.json": "D472EC5DA357A0BBE0119821B036EFE9977D9426A93BA6E3AAA066B7B58AE749",
     "artifacts/visual/round-09/manifest.json": "50BBE6BA625147B6D3DF4FCDABD51FC7E0E9490917AABD5924261A192C45A586",
     "lab/results/public/m5-offline-summary.json": "15BAF225F8F8FB77A8DECDDE837F2D932B0DC37EA9F07A189A2AB17159DDA474",

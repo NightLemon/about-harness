@@ -48,6 +48,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@${pinnedSha}
+      - run: npm run pages:check
+  governance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@${pinnedSha}
+        with:
+          fetch-depth: 0
       - run: npm run verify
 `
   const validDeploy = `name: Deploy
@@ -59,7 +66,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - run: npm run verify
+      - run: npm run pages:check
   deploy:
     needs: build
     permissions:
@@ -89,6 +96,20 @@ jobs:
   const validWorkflow = run('workflows-check.mjs', [temp])
   if (validWorkflow.status !== 0) throw new Error(`workflow checker rejected the valid least-privilege fixture: ${validWorkflow.stderr}`)
 
+  write('.github/workflows/ci.yml', validCi.replace('        with:\n          fetch-depth: 0\n', ''))
+  const shallowGovernance = run('workflows-check.mjs', [temp])
+  if (shallowGovernance.status === 0 || !shallowGovernance.stderr.includes('governance job must run npm run verify with full Git history')) {
+    throw new Error('workflow checker did not reject shallow review-evidence validation')
+  }
+
+  write('.github/workflows/ci.yml', validCi)
+  write('.github/workflows/deploy.yml', validDeploy.replace('npm run pages:check', 'npm run verify'))
+  const coupledDeploy = run('workflows-check.mjs', [temp])
+  if (coupledDeploy.status === 0 || !coupledDeploy.stderr.includes('must not couple Pages publication')) {
+    throw new Error('workflow checker did not reject a Pages job coupled to Git-history governance')
+  }
+
+  write('.github/workflows/deploy.yml', validDeploy)
   write('.github/workflows/ci.yml', validCi.replace(`actions/checkout@${pinnedSha}`, 'actions/checkout@v4'))
   const unpinnedWorkflow = run('workflows-check.mjs', [temp])
   if (unpinnedWorkflow.status === 0 || !unpinnedWorkflow.stderr.includes('not pinned')) {

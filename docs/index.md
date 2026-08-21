@@ -39,8 +39,8 @@ features:
 
 这套方法把“感觉某模型更聪明”改写为可检查的工程问题。你将完成知识地图、最小 harness、模型适配卡、配对实验、安全边界和跨 harness 迁移报告六项作品。
 
-先读[学习路径](/guide/start)，核对[前置知识](/guide/prerequisites)与[知识地图](/guide/roadmap)，再按[作品集 rubric](/guide/portfolio)收集证据。当前项目状态与新十轮 review 进度见[迭代记录](/meta/changelog)。
+先读[学习路径](/guide/start)，核对[前置知识](/guide/prerequisites)与[知识地图](/guide/roadmap)，再按[作品集 rubric](/guide/portfolio)收集证据。
 
 ::: warning 证据边界
-旧有十轮记录只作为 legacy 材料，不计入 v1。当前未获真实 API 或费用授权；未注明 E2/E3 的性能主张不得解释为真实模型比较结果。
+本站实验与样例当前只提供 E1 离线证据。当前未获真实 API 或费用授权；未注明 E2/E3 的性能主张不得解释为真实模型比较结果。
 :::

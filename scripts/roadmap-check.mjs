@@ -22,7 +22,7 @@ if (!fs.existsSync(roadmapPath)) {
     '/domains/research', '/domains/data', '/domains/document', '/labs/setup',
     '/evaluation/method', '/evaluation/task-schema', '/evaluation/metrics',
     '/evaluation/judges', '/evaluation/regression', '/evaluation/reporting',
-    '/security/threat-model', '/references/fact-registry', '/meta/review-method',
+    '/security/threat-model', '/references/fact-registry',
     '/meta/dependency-security', '/meta/privacy', '/meta/publishing', '/meta/maintenance',
     '/guide/portfolio'
   ]
@@ -30,7 +30,6 @@ if (!fs.existsSync(roadmapPath)) {
   for (const route of requiredRoutes) {
     if (!text.includes(`](${route})`)) errors.push(`knowledge map does not link required route: ${route}`)
   }
-
   const stalePatterns = [
     /M3\/M4\s*会补齐/,
     /将在\s*M3[^\n]*M4/,
