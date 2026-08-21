@@ -1,0 +1,59 @@
+{
+  "schema_version": "1.0",
+  "round": "03",
+  "verified_at": "2026-08-21T11:22:43+08:00",
+  "timezone": "Asia/Shanghai",
+  "baseline_commit": "d4603b08e5cd09851107864d991c5506be19f382",
+  "findings_commit": "e94a655",
+  "content_result_commit": "bcf22da2cb951c487e94146cb5eeb920e8521657",
+  "complete_tag": "review-v1-round-03-complete",
+  "evidence_commit": "resolved by complete_tag to avoid a self-referential commit hash",
+  "commands": [
+    {
+      "command": "uv run --frozen --offline pytest -q lab/tests/test_loop.py lab/tests/test_contracts_and_schema.py",
+      "exit_code": 0,
+      "assertion": "20 targeted contract, budget, retry, checkpoint and loop tests passed"
+    },
+    {
+      "command": "uv run --frozen --offline ruff check lab/src/about_harness lab/tests",
+      "exit_code": 0,
+      "assertion": "Python implementation and tests passed lint"
+    },
+    {
+      "command": "uv run --frozen --offline pyright",
+      "exit_code": 0,
+      "assertion": "strict Python type check reported zero errors"
+    },
+    {
+      "command": "npm run verify",
+      "exit_code": 0,
+      "assertion": "111 Markdown/routes, 112 HTML, 33 pytest, types, facts, licenses, secrets, workflows and visual gates passed"
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0,
+      "assertion": "content result has no whitespace errors"
+    }
+  ],
+  "result": {
+    "findings": ["R03-P1-01", "R03-P2-02"],
+    "status": "fixed",
+    "regression_gate": [
+      "lab/tests/test_loop.py",
+      "lab/tests/test_contracts_and_schema.py",
+      "uv run --frozen --offline pyright"
+    ],
+    "open_blockers": 0
+  },
+  "environment_ref": "baseline.json",
+  "network": "offline; localhost-only visual checks inherited from npm run verify",
+  "a3_used": false,
+  "a4_used": false,
+  "artifact_hashes": {
+    "baseline.json": "84131B459913B0C09EFA09DECA46CC55F7DC6763FB16C8EAC6EB3515070C0604",
+    "findings.md": "5435D824E06EE87C742E72FE4A8D40F0EDE9EB9DDD3797A3983A0F772334DE55",
+    "diff.patch": "1A8D39F94289EA9D2163FD3EB3A5F49DEA367A6318E0323B3AAF88500EAE300D",
+    "unresolved.md": "7A5AEE7DF8A23BFF05E1606A4F79BF27906332A80AC46EF463AB49D584E9AD96",
+    "docs/reviews/v1/round-03.md": "CDA169523B989F5D525970FC91FFB4E0FAE615DD60C59F3DE2197928958EB1E9"
+  }
+}

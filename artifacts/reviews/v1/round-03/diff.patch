@@ -1,0 +1,210 @@
+diff --git a/docs/foundations/state-reliability.md b/docs/foundations/state-reliability.md
+index f055bdf..744be4d 100644
+--- a/docs/foundations/state-reliability.md
++++ b/docs/foundations/state-reliability.md
+@@ -11 +11,3 @@ Run 至少经历 created、running、waiting-approval、stopping、completed、f
+-分别设置模型、工具、步骤和总 run timeout。只有限流、短暂网络或明确可恢复的资源冲突进入有限指数退避；认证、schema、拒权、注入与确定性测试失败立即停止。
++分别设置模型、工具、步骤和总 run timeout。只有限流、短暂网络或明确可恢复的资源冲突进入有限指数退避；退避事件记录的 `delay_ms` 必须和实际 sleeper 一致。认证、schema、拒权、注入与确定性测试失败立即停止。
++
++本项目的最小 runner 只在 adapter/tool 调用边界检查总 run deadline；它不能强制终止任意阻塞的 Python callable。生产 adapter 与 tool executor 必须自己实现可中断的单调用 timeout，或使用可终止的进程/容器隔离。把“调用返回后发现超时”写成“已中断调用”属于错误证据。
+diff --git a/docs/implementation/minimal-harness-python.md b/docs/implementation/minimal-harness-python.md
+index d92d687..7d70b24 100644
+--- a/docs/implementation/minimal-harness-python.md
++++ b/docs/implementation/minimal-harness-python.md
+@@ -14 +14 @@
+-| `loop.py` | 继续、完成、预算、取消、timeout、checkpoint | 任一门禁先于副作用 |
++| `loop.py` | 继续、完成、预算、取消、总 deadline、checkpoint | 任一控制面字段先验证再使用 |
+@@ -36 +36 @@ Fake adapter 先返回 `echo` ToolCall。Policy 确认工具在 task allowlist 
+-运行以下已自动化场景：空 goal/schema 错误、未授权工具、重复幂等键、两次临时失败后成功、无限 action、预算耗尽、timeout、并发取消、checkpoint 恢复、过期/污染记忆，以及 trace 中的 token 和用户路径。
++运行以下已自动化场景：空 goal/schema 错误、负数或非有限成本、错误 adapter 返回、未授权工具、重复幂等键、带实际 sleeper 的两次指数退避、无限 action、预算耗尽、总 deadline、并发取消、checkpoint 恢复、坏 checkpoint、过期/污染记忆，以及 trace 中的 token 和用户路径。
+@@ -51 +51 @@ uv run pytest -q lab/tests/test_memory_context_trace.py
+-实现故意省略 provider client、真实 token 计量、分布式队列和持久数据库。完成后阅读[Adapter 契约](/implementation/adapter-contract)和[测试策略](/implementation/testing)，再把自己的工作负载写成固定 fixture。
++实现故意省略 provider client、真实 token 计量、分布式队列和持久数据库。总 deadline 只在调用边界检查，不能抢占任意阻塞 Python callable；真实 adapter/tool 必须提供单调用 timeout 或进程隔离。完成后阅读[Adapter 契约](/implementation/adapter-contract)和[测试策略](/implementation/testing)，再把自己的工作负载写成固定 fixture。
+diff --git a/docs/implementation/testing.md b/docs/implementation/testing.md
+index 2529ccd..f8b6327 100644
+--- a/docs/implementation/testing.md
++++ b/docs/implementation/testing.md
+@@ -26 +26 @@ npm run lab:smoke
+-完成、max steps、model/cost budget、timeout、取消、拒权、tool error、invalid action 都要有断言。恢复测试同时断言 adapter position、幂等缓存和 checkpoint，防止“恢复”重复副作用。
++完成、max steps、model/cost budget、非有限成本、调用边界 timeout、取消、拒权、tool error、错误类型 action 都要有断言。重试测试同时断言 trace 延迟和 sleeper 收到的实际延迟；恢复测试同时断言 adapter position、幂等缓存和 checkpoint，防止“恢复”重复副作用。
+diff --git a/lab/src/about_harness/adapters/fake.py b/lab/src/about_harness/adapters/fake.py
+index 4dd4a72..b4b1a32 100644
+--- a/lab/src/about_harness/adapters/fake.py
++++ b/lab/src/about_harness/adapters/fake.py
+@@ -23 +23 @@ class FakeAdapter:
+-        return Action(kind="invalid")
++        raise ValueError("fake adapter exhausted without a completion action")
+diff --git a/lab/src/about_harness/contracts.py b/lab/src/about_harness/contracts.py
+index 0460eae..8a5c923 100644
+--- a/lab/src/about_harness/contracts.py
++++ b/lab/src/about_harness/contracts.py
+@@ -2,0 +3 @@ from __future__ import annotations
++import math
+@@ -16,0 +18,21 @@ def _new_json_object() -> dict[str, JsonValue]:
++def _is_positive_int(value: object) -> bool:
++    return isinstance(value, int) and not isinstance(value, bool) and value >= 1
++
++
++def _is_non_negative_int(value: object) -> bool:
++    return isinstance(value, int) and not isinstance(value, bool) and value >= 0
++
++
++def _is_finite_non_negative_number(value: object) -> bool:
++    return (
++        isinstance(value, (int, float))
++        and not isinstance(value, bool)
++        and math.isfinite(float(value))
++        and value >= 0
++    )
++
++
++def _is_json_object(value: object) -> bool:
++    return isinstance(value, dict)
++
++
+@@ -46 +68,2 @@ class Budgets:
+-        if self.max_steps < 1 or self.max_model_calls < 1 or self.timeout_ms < 1:
++        counters = (self.max_steps, self.max_model_calls, self.timeout_ms)
++        if any(not _is_positive_int(value) for value in counters):
+@@ -48,2 +71,2 @@ class Budgets:
+-        if self.max_cost_usd < 0:
+-            raise ContractError("cost budget cannot be negative")
++        if not _is_finite_non_negative_number(self.max_cost_usd):
++            raise ContractError("cost budget must be finite and non-negative")
+@@ -127,0 +151,10 @@ class Action:
++    def __post_init__(self) -> None:
++        if self.kind not in {"tool", "complete"}:
++            raise ContractError(f"unsupported action kind: {self.kind}")
++        if self.kind == "tool" and self.tool_call is None:
++            raise ContractError("tool action requires a tool call")
++        if self.kind == "complete" and self.tool_call is not None:
++            raise ContractError("complete action cannot contain a tool call")
++        if not _is_finite_non_negative_number(self.cost_usd):
++            raise ContractError("action cost must be finite and non-negative")
++
+@@ -153,0 +187,13 @@ class RunCheckpoint:
++    def __post_init__(self) -> None:
++        counters = (self.step, self.model_calls, self.tool_calls, self.reused_tool_calls)
++        if any(not _is_non_negative_int(value) for value in counters):
++            raise ContractError("checkpoint counters must be non-negative integers")
++        if self.tool_calls + self.reused_tool_calls != self.step:
++            raise ContractError("checkpoint tool counters must equal completed steps")
++        if self.model_calls < self.step:
++            raise ContractError("checkpoint model calls cannot be lower than completed steps")
++        if not _is_finite_non_negative_number(self.cost_usd):
++            raise ContractError("checkpoint cost must be finite and non-negative")
++        if not _is_json_object(self.adapter_state):
++            raise ContractError("checkpoint adapter_state must be an object")
++
+diff --git a/lab/src/about_harness/loop.py b/lab/src/about_harness/loop.py
+index 05b8b03..b0dc34d 100644
+--- a/lab/src/about_harness/loop.py
++++ b/lab/src/about_harness/loop.py
+@@ -10,0 +11,2 @@ from about_harness.contracts import (
++    Action,
++    ContractError,
+@@ -25,0 +28,6 @@ Clock = Callable[[], float]
++def _require_action(value: object) -> Action:
++    if not isinstance(value, Action):
++        raise ContractError(f"adapter returned {type(value).__name__}, expected Action")
++    return value
++
++
+@@ -94 +102 @@ class HarnessRunner:
+-                action = self.adapter.next_action(task, recorder.events)
++                action = _require_action(self.adapter.next_action(task, recorder.events))
+diff --git a/lab/src/about_harness/retry.py b/lab/src/about_harness/retry.py
+index 85fd483..aebf082 100644
+--- a/lab/src/about_harness/retry.py
++++ b/lab/src/about_harness/retry.py
+@@ -2,0 +3 @@ from __future__ import annotations
++import time
+@@ -33 +34 @@ def run_with_retry(
+-    sleep: Callable[[float], None] | None = None,
++    sleep: Callable[[float], None] = time.sleep,
+@@ -44,2 +45 @@ def run_with_retry(
+-            if sleep:
+-                sleep(delay / 1_000)
++            sleep(delay / 1_000)
+diff --git a/lab/src/about_harness/tools.py b/lab/src/about_harness/tools.py
+index f836c59..a69aa17 100644
+--- a/lab/src/about_harness/tools.py
++++ b/lab/src/about_harness/tools.py
+@@ -2,0 +3 @@ from __future__ import annotations
++import time
+@@ -10,0 +12 @@ RetryObserver = Callable[[int, int, str], None]
++Sleeper = Callable[[float], None]
+@@ -35,0 +38 @@ class ToolRegistry:
++    sleeper: Sleeper = time.sleep
+@@ -54 +57,6 @@ class ToolRegistry:
+-        value, attempts = run_with_retry(lambda: handler(call.arguments), retry, on_retry=on_retry)
++        value, attempts = run_with_retry(
++            lambda: handler(call.arguments),
++            retry,
++            on_retry=on_retry,
++            sleep=self.sleeper,
++        )
+diff --git a/lab/tests/test_contracts_and_schema.py b/lab/tests/test_contracts_and_schema.py
+index 1e96ece..0d83fa9 100644
+--- a/lab/tests/test_contracts_and_schema.py
++++ b/lab/tests/test_contracts_and_schema.py
+@@ -4,0 +5 @@ import json
++import math
+@@ -9 +10 @@ import pytest
+-from about_harness.contracts import Budgets, ContractError, TaskSpec
++from about_harness.contracts import Action, Budgets, ContractError, RunCheckpoint, TaskSpec
+@@ -61,0 +63,15 @@ def test_budget_rejects_negative_cost() -> None:
++
++
++@pytest.mark.parametrize("value", [-1.0, math.inf, -math.inf, math.nan])
++def test_budget_and_action_reject_unsafe_costs(value: float) -> None:
++    with pytest.raises(ContractError):
++        Budgets(max_cost_usd=value)
++    with pytest.raises(ContractError):
++        Action.complete("unsafe", cost_usd=value)
++
++
++def test_checkpoint_rejects_inconsistent_or_negative_counters() -> None:
++    with pytest.raises(ContractError):
++        RunCheckpoint(-1, 0, 0, 0, 0.0, {})
++    with pytest.raises(ContractError):
++        RunCheckpoint(2, 2, 1, 0, 0.0, {})
+diff --git a/lab/tests/test_loop.py b/lab/tests/test_loop.py
+index e35f1ea..34f6680 100644
+--- a/lab/tests/test_loop.py
++++ b/lab/tests/test_loop.py
+@@ -4,0 +5 @@ from dataclasses import dataclass
++from typing import cast
+@@ -85,0 +87 @@ def test_retry_and_idempotency_prevent_duplicate_side_effects() -> None:
++    sleeps: list[float] = []
+@@ -94 +96 @@ def test_retry_and_idempotency_prevent_duplicate_side_effects() -> None:
+-    registry = ToolRegistry()
++    registry = ToolRegistry(sleeper=sleeps.append)
+@@ -98 +100 @@ def test_retry_and_idempotency_prevent_duplicate_side_effects() -> None:
+-    runner = HarnessRunner(adapter, registry, retry=RetryPolicy(max_attempts=3, base_backoff_ms=0))
++    runner = HarnessRunner(adapter, registry, retry=RetryPolicy(max_attempts=3, base_backoff_ms=10))
+@@ -104,0 +107,24 @@ def test_retry_and_idempotency_prevent_duplicate_side_effects() -> None:
++    assert sleeps == [0.01, 0.02]
++
++
++@dataclass(slots=True)
++class WrongTypeAdapter:
++    name: str = "wrong-type"
++
++    def next_action(self, task: TaskSpec, trace: tuple[TraceEvent, ...]) -> Action:
++        del task, trace
++        return cast(Action, {"kind": "complete"})
++
++    def snapshot(self) -> dict[str, JsonValue]:
++        return {}
++
++    def restore(self, state: dict[str, JsonValue]) -> None:
++        assert state == {}
++
++
++def test_wrong_adapter_return_is_classified_as_invalid_action() -> None:
++    result = HarnessRunner(WrongTypeAdapter(), ToolRegistry()).run(task())
++    assert result.status is RunStatus.FAILED
++    assert result.stop_reason is StopReason.INVALID_ACTION
++    assert result.error is not None
++    assert "expected Action" in result.error
