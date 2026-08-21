@@ -115,4 +115,4 @@
 - 为 benchmark 写特殊提示，却把结论推广到全部真实工作。
 - 只比最终代码，不比危险动作、延迟和维护成本。
 
-下一步：用[模型适配卡](/practice/model-playbook)固定假设，再按[实验方法](/optimization/experiment)运行。
+下一步：用[指定模型适配方法](/models/adaptation)固定适配卡，再按[实验方法](/optimization/experiment)运行。

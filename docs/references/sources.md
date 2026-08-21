@@ -8,8 +8,10 @@ M4 已在 2026-08-20 实际获取下列官方页面或固定仓库内容，并�
 
 ## OpenAI / Codex
 
-核对日期：**2026-08-20**。
+核对日期：**2026-08-21**。
 
+- [Function calling](https://developers.openai.com/api/docs/guides/function-calling)：function tool 定义、tool call、应用侧执行、`call_id` 与结果回传流程。
+- [Reasoning models](https://developers.openai.com/api/docs/guides/reasoning)：model-dependent effort、reasoning item 连续性、`previous_response_id` 与手工回放。
 - [Models](https://learn.chatgpt.com/docs/models)：当前 Codex/ChatGPT Work 模型、推理档位与本地默认配置。
 - [Codex best practices](https://learn.chatgpt.com/guides/best-practices)：任务结构、`AGENTS.md`、配置、验证、MCP、skills 与长任务。
 - [Custom instructions with AGENTS.md](https://learn.chatgpt.com/docs/agent-configuration/agents-md)：发现顺序、override、大小限制与验证方式。
@@ -83,6 +85,8 @@ M4 已在 2026-08-20 实际获取下列官方页面或固定仓库内容，并�
 
 | Fact ID | 响应 SHA256 |
 | --- | --- |
+| `openai-function-calling` | `5CD1C0A3003C24F013E25F9921EB5A34DCE79564EA51CC12592F2AF0141206ED` |
+| `openai-reasoning-items` / `openai-reasoning-effort` | `281CE961285BCBF93DA783DA9A0EFF3030B521A0C4F6B549E4355BE8FD84F771` |
 | `codex-agents-md` | `9D1F87A2D1CB55B4782B95ABE710692B35B9659789C2DB31A22C7074A3383E8E` |
 | `codex-config` | `46D88F56B56542FF72E50B851D5E011DD01009815C4845137036868320C188A2` |
 | `claude-memory` | `631411505E6D6C4AB20FB7985C01033231977B2DF388F957A7D6F3D6C354BDED` |

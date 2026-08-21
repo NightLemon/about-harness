@@ -8,7 +8,7 @@
 
 ## 第二步：协议兼容
 
-探测 message roles、system/developer 语义、工具 schema、并行 tool calls、streaming、stop reason、usage、context 与错误分类。请求成功但 tool arguments 丢失仍是不兼容。
+探测 message roles、system/developer 语义、工具 schema、并行 tool calls、streaming、stop reason、usage、context、错误分类和状态载体。请求成功但 tool arguments、call ID、typed output item 或 opaque continuation state 丢失仍是不兼容。
 
 ## 第三步：能力与工作负载
 
@@ -24,4 +24,4 @@ E1 证明 harness 流程；E2 证明目标环境窄范围可用；E3 才能支�
 
 ## 适配卡最小字段
 
-身份、协议、工作负载、能力假设、探针、默认/工程/候选配置、任务级结果、安全事件、成本/延迟、路由/回退、证据等级、已知限制与复核日期。
+身份、协议、state carrier、工作负载、能力假设、探针、默认/工程/候选配置、任务级结果、安全事件、成本/延迟、路由/回退、证据等级、已知限制与复核日期。
