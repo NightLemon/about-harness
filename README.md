@@ -4,9 +4,9 @@
 
 ## 当前状态
 
-项目正在按 [`EXECUTION_PLAN.md`](EXECUTION_PLAN.md) 重建。仓库中旧有的十轮记录已原样迁入 `docs/reviews/legacy/`，但因缺少冻结 baseline、逐轮 diff、result commit/tag 和环境元数据，**不计入 v1 的十轮审阅**。新的 v1 review 只有在证据契约全部满足后才会标记完成。
+项目已按 [`EXECUTION_PLAN.md`](EXECUTION_PLAN.md) 完成 M8 本地 release candidate。仓库中旧有的十轮记录已原样迁入 `docs/reviews/legacy/`，因缺少冻结 baseline、逐轮 diff、result commit/tag 和环境元数据，**不计入 v1 的十轮审阅**；新的 v1 review 01–10 已分别由 baseline、findings、content、evidence commits 和 annotated tags 验收。
 
-当前阶段不会调用真实模型 API、使用凭据、产生费用或执行远程发布。所有模型性能结论默认最高为离线 E1，除非文档明确给出 E2/E3 证据。
+当前 release candidate 仍未发布：没有调用真实模型 API、使用凭据、产生费用、配置 remote、push、PR 或 Pages。所有模型性能结论默认最高为离线 E1，除非文档明确给出 E2/E3 证据。
 
 ## 本地运行
 

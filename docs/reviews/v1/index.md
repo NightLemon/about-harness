@@ -1,6 +1,6 @@
 # V1 审阅状态
 
-V1 十轮正在进行。M7 创建 round 01–05，M8 创建 round 06–10；每轮只有满足[审阅证据契约](/meta/review-method)后才显示为完成。
+V1 十轮已经完成。M7 创建 round 01–05，M8 创建 round 06–10；每轮只有满足[审阅证据契约](/meta/review-method)后才显示为完成。
 
 禁止预建十份“完成”文件或复制相同发现凑数。机器证据将保存在 `artifacts/reviews/v1/round-NN/`，并由 result commit 与 annotated tag 绑定。
 
@@ -15,4 +15,4 @@ V1 十轮正在进行。M7 创建 round 01–05，M8 创建 round 06–10；每�
 | [07](/reviews/v1/round-07) | 完成 | 评测、统计、holdout 和数据完整性 |
 | [08](/reviews/v1/round-08) | 完成 | 安全、隐私、许可和供应链 |
 | [09](/reviews/v1/round-09) | 完成 | 迁移、中文可读性和视觉体验 |
-| 10 | 未开始 | 发布、来源时效、全局一致性和最终主张 |
+| [10](/reviews/v1/round-10) | 完成 | 发布、来源时效、全局一致性和最终主张 |

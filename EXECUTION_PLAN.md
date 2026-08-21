@@ -1,6 +1,6 @@
 # Harness 学习文档项目执行计划 v1
 
-状态：**M1-M7 已完成；M8 进行中（Round 06–09 完成，Round 10 待执行）；活动 Goal 已授予 M6-M8 的 A1/A2；A3/A4 未授权**
+状态：**M1-M8 已完成；本地 `v1-rc1` 已冻结且未发布；M9 未授权；A3/A4 未授权**
 交付契约批准语句：批准交付契约 v1，请保存执行计划  
 计划修订日期：2026-08-21
 工作区：仓库根目录（不得记录个人绝对路径）
@@ -11,7 +11,7 @@
 
 Git 历史和 annotated tags 已验收 M1-M5。当前恢复点为 `m5-complete-v1`（commit `6aada53`）；不得重跑 M1-M5，不得删除、移动或覆盖其 commits/tags。若本文件出现 M0、M1-M5 未开始或逐里程碑重新授权等旧措辞，视为计划回退，必须修正后继续 M6，不得据此阻塞。
 
-M6 已由 `m6-complete-v1`（`999a4c3`）冻结；M7 Round 01–05 已由各自 annotated complete tag 和 `m7-complete-v1` 绑定。M8 Round 06–09 已完成，当前下一步是 Round 10。A3（真实 API/费用）和 A4（remote/发布）仍未授权。
+M6 已由 `m6-complete-v1`（`999a4c3`）冻结；M7 Round 01–05 已由各自 annotated complete tag 和 `m7-complete-v1` 绑定。M8 Round 06–10、`release-v1-rc1` 与 `m8-complete-v1` 已形成完整本地恢复链。A3（真实 API/费用）和 A4（remote/发布）仍未授权。
 
 ## 2. Progress
 
@@ -27,7 +27,7 @@ M6 已由 `m6-complete-v1`（`999a4c3`）冻结；M7 Round 01–05 已由各自 
 | M5 | **已完成** | `m5-complete-v1`，result `6aada53` |
 | M6 | **已完成** | 来源、许可、隐私、CI、视觉与发布自动化；`npm run verify` 与本地 Pages smoke 通过 |
 | M7 | **已完成** | Round 01–05 完成；`m7-complete-v1` |
-| M8 | **进行中** | Round 06–09 完成；Round 10 待执行，之后形成 release candidate |
+| M8 | **已完成** | Round 06–10 与本地 `v1-rc1`；`release-v1-rc1` / `m8-complete-v1` |
 | M9 | 未开始 | 经用户单独授权后的远程操作与发布 |
 
 进度记录格式：
@@ -868,7 +868,7 @@ M6 已由 `m6-complete-v1`（`999a4c3`）冻结；M7 Round 01–05 已由各自 
 
 ### M8：新 review 06–10 和 release candidate
 
-**状态：进行中；Round 06–09 完成，Round 10 待执行。**
+**状态：已完成。** Round 06–10 均由独立 evidence commit 和 annotated complete tag 验收；本地 RC 由 `release-v1-rc1` 与 `m8-complete-v1` 共同冻结。
 
 **开始授权**
 
@@ -933,7 +933,7 @@ M6 已由 `m6-complete-v1`（`999a4c3`）冻结；M7 Round 01–05 已由各自 
 
 **需要创建但尚不存在的命令**
 
-- 原则上无；release candidate 只组合既有稳定门禁，不临时发明未测试的发布检查。
+- Round 10 的 `R10-P1-01` 证明既有门禁无法验证十轮 lineage 和 RC 完整性，因此新增 `npm run release:check` 与 `npm run release:self-test`。两者有 schema、lightweight-tag/缺轮/A4/缺 gate 负例，不替代 `npm run verify`。
 
 **验收证据**
 
@@ -1036,6 +1036,7 @@ M6 已由 `m6-complete-v1`（`999a4c3`）冻结；M7 Round 01–05 已由各自 
 - 聚合：`npm run check`、`npm run verify`；
 - Python：`uv sync --frozen`、`uv run --frozen --offline pytest`、`uv run --frozen --offline ruff check`、`uv run --frozen --offline pyright`；
 - 发布烟测：`npm run pages:smoke -- <published-or-local-base-url>`。
+- Release candidate：`npm run release:check`、`npm run release:self-test`。
 
 `npm run verify` 聚合全部离线 PR 门禁；`docs:project-base` 显式验证 `/about-harness/` base。本地 `pages:smoke` 必须用相同 base 启动 preview。网络外链探针只存在于定时 workflow 模板，当前未运行，也不构成 A4 发布证据。
 
@@ -1115,6 +1116,8 @@ M7/M8 原则上复用第 11.1 节接口。只有真实 finding 证明缺少防�
 15. Round 07 发现不同 run ID 可重复占用同一逻辑单元，同一 config 也可混合身份，且 summary 混合 development/holdout；现已用期望 cell 集、config identity、split/token 指标和晋级阻断修复。E1 样例明确报告 108 个缺口和 `promotion_eligible=false`。
 16. Round 08 发现公开结果门禁会静默忽略 JSONL/未知格式，且 workflow 顶层 Pages/OIDC 写权限与可变基础镜像破坏 fail-closed、最小权限和可复现声明；现已加入 JSON/JSONL allowlist、敏感键规范化、格式/权限/镜像 canary，并把写权限收窄到 deploy job。固定 digest 来自 Round 06 实际解析；本轮离线缓存无 source ref，因此没有把未执行的容器重建写成新证据。
 17. Round 09 发现迁移 runner 只数 key，未知 harness、空语义与权限扩大可被判为成功；移动视觉证据又可能在菜单遮罩未关闭时生成且遗漏迁移页。现已建立 Codex→Pi/Claude Code 的六职责契约、边界负例，以及 1440/390/320 三视口九截图与实际表滚动门禁；证据仍限定为 E1。
+18. Round 10 发现 review 门禁只数文件、事实 `Used by` 未绑定正文锚点、Node 22/24 主张冲突。现已验证十轮 commit/tag/diff/hash lineage，要求 16 条非 retired 事实逐项锚定，统一 Node.js 22+ 与 CI 22 基线，并增加 release schema/check/self-test；三项 finding 均由 fail-closed canary 和全量 `npm run verify` 验收。
+19. RC 本地 preview 首次尝试的 4173 端口已被既有进程占用；没有终止未知进程，改用 4174 服务当前 `/about-harness/` artifact。16 路由与 23 同源资源通过；端口恢复不构成线上 Pages 证据。
 
 后续每次新增发现使用格式：
 
@@ -1151,6 +1154,9 @@ M7/M8 原则上复用第 11.1 节接口。只有真实 finding 证明缺少防�
 | 2026-08-20 | 本地修改、Git 对象、API/费用、remote/发布分为 A1–A4 | A2、A3、A4 均须明确授权，不能由普通里程碑或较低授权隐含获得 |
 | 2026-08-20 | 接受现有 M1-M5 线性历史和 annotated tags | commits、tags 和验证证据有效；删除或重跑会破坏审计链 |
 | 2026-08-21 | M6-M8 由当前活动 Goal 一次授予 A1+A2 | 连续执行到 M8；授权不绑定任何文件 SHA256，A3/A4 仍独立禁止 |
+| 2026-08-21 | 因 R10-P1-01 新增 release schema/check/self-test | 既有“组合稳定门禁”不足以证明十轮 lineage 与 RC 完整性；新增门禁必须有伪造证据负例 |
+| 2026-08-21 | Node.js 支持范围统一为 22+，workflow 以 22 为最低发布基线 | lockfile 锁依赖而不锁 runtime；单次证据继续记录实际 Node 版本 |
+| 2026-08-21 | M8 只形成未发布的 E1 本地 RC 并暂停 | A3/A4 均未授权；真实模型证据和远程发布不能由 RC 完成状态隐含获得 |
 
 新决策必须记录日期、备选方案、选择理由、影响文件和是否需要契约变更。
 
@@ -1170,7 +1176,10 @@ M7/M8 原则上复用第 11.1 节接口。只有真实 finding 证明缺少防�
 - M5 已完成：`m5-complete-v1`（`6aada53`）。
 - M6 已完成：109 个 Markdown/路由、110 个 HTML、27 项 pytest、Ruff、Pyright、TypeScript、事实时效、许可、秘密、workflow、视觉和 canary 门禁通过；本地 Pages smoke 覆盖 16 路由与 23 个同源资源。
 - M6 证据：`artifacts/visual/m6/manifest.json` 和 6 张固定截图；没有远程 workflow run、Pages、真实 API、凭据或费用。
-- M7 已完成：Round 01–05 由各自 annotated complete tag 和 `m7-complete-v1` 绑定。M8 Round 06–09 已完成；Round 09 内容结果为 `dc71b0d`，下一轮为 Round 10；M9 尚未完成且仍需单独 A4。
+- M7 已完成：Round 01–05 由各自 annotated complete tag 和 `m7-complete-v1` 绑定。
+- M8 已完成：Round 06–10 连续可追溯；Round 10 evidence 为 `5054f44` / `review-v1-round-10-complete`。本地 `v1-rc1` 绑定十轮、30 天事实、许可、隐私、workflow、视觉、公开 E1 结果、全量验证和已知限制。
+- RC 验证：119 routes、120 HTML、36 pytest、Ruff、Pyright、TypeScript、16 条事实、十轮 lineage、9 张三视口截图；本地 Pages smoke 覆盖 16 路由与 23 个同源资源。
+- M9 未开始且仍需单独 A4；RC 的 `publication_status` 为 `not-published`，A3/A4 均未使用。
 - 上述 commits 和 annotated tags 是不可移动的恢复证据；本文件的未提交状态变化不得覆盖它们。
 
 ### 后续里程碑记录模板
@@ -1204,9 +1213,9 @@ M9 后必须总结：
 
 ## 17. 当前停止点
 
-M1-M7 已完成且不得重跑。M8 Round 06–09 已完成，当前动作是在 Round 09 完整证据 result 上冻结 Round 10 baseline，随后完成 Round 10 和 release candidate。
+M1-M8 已完成且不得重跑或移动其 tags。当前恢复入口为本地 `release-v1-rc1` / `m8-complete-v1`；十轮最后 evidence 为 `review-v1-round-10-complete`。
 
-当前活动 Goal 授予 M6-M8 的 A1+A2，不绑定任何文件 SHA256。禁止真实 API、凭据、费用、remote、push、PR、Pages 和发布；仅在需要 A3/A4、真实安全事件、无法非破坏性合并的用户改动或完成 M8 时停止。
+按活动 Goal 的停止条件，M8 完成后立即暂停。禁止真实 API、凭据、费用、remote、push、PR、Pages 和发布。任何 M9 动作必须先取得独立 A4；若要运行 E2/E3，还必须另取 A3。
 
 ### 待用户确认
 

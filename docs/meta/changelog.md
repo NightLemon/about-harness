@@ -12,7 +12,7 @@
 | M5 | 完成 | annotated tag `m5-complete-v1`；六案例、正式 schema、评测与公开 E1 结果 |
 | M6 | 完成 | `m6-complete-v1`；来源、许可、隐私、CI、视觉和发布自动化，本地全量门禁通过 |
 | M7 | 完成 | Round 01–05 的 findings、修正、验证、result commit 与 annotated tags |
-| M8 | 进行中 | Round 06–09 完成；Round 10 与 release candidate 待执行 |
+| M8 | 完成 | Round 06–10 与本地 `v1-rc1` release candidate；`release-v1-rc1` / `m8-complete-v1` |
 | M9 | 未授权 | 无 remote、push、PR、Pages 或发布 |
 
 权威进度与恢复点记录在仓库根目录的 `EXECUTION_PLAN.md`。
@@ -49,6 +49,6 @@
 | [07](/reviews/v1/round-07) | 完成 | 逻辑矩阵唯一性、split/token 汇总与晋级阻断防回归 |
 | [08](/reviews/v1/round-08) | 完成 | JSON/JSONL 脱敏 fail-closed、镜像 digest 与 workflow 权限 scope 防回归 |
 | [09](/reviews/v1/round-09) | 完成 | 两条迁移路径、六类职责、边界负例与三视口迁移视觉防回归 |
-| [10](/reviews/v1/round-10) | 验证中 | 发布证据链、事实逐项锚点与 Node.js 22+ 基线防回归；complete tag 待创建 |
+| [10](/reviews/v1/round-10) | 完成 | 发布证据链、事实逐项锚点、Node.js 22+ 基线与 RC fail-closed 防回归 |
 
 只有文档记录、artifact 证据、result commit 与 annotated tag 同时存在，状态才改为完成。

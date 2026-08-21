@@ -1,0 +1,79 @@
+{
+  "schema_version": "1.0",
+  "verified_at": "2026-08-21T14:16:18+08:00",
+  "timezone": "Asia/Shanghai",
+  "source_commit": "5054f44578b6c29d83601b513a0c3d6b98ae4ec2",
+  "commands": [
+    {
+      "id": "verify",
+      "command": "npm run verify",
+      "exit_code": 0,
+      "assertion": "119 routes, 120 HTML, 36 pytest, Ruff, Pyright, TypeScript, 16 facts, ten review chains, governance, and nine visual screenshots passed"
+    },
+    {
+      "id": "reviews",
+      "command": "npm run reviews:check",
+      "exit_code": 0,
+      "assertion": "10 legacy hashes and ten structured v1 review chains have valid lineage and annotated tags"
+    },
+    {
+      "id": "facts",
+      "command": "npm run facts:release",
+      "exit_code": 0,
+      "assertion": "16 verified claims, zero stale notices, zero high-volatility facts beyond 30 days"
+    },
+    {
+      "id": "licenses",
+      "command": "npm run licenses:check",
+      "exit_code": 0,
+      "assertion": "MIT/CC BY 4.0 repository boundary and locked dependency policy passed"
+    },
+    {
+      "id": "secrets",
+      "command": "npm run secrets:check",
+      "exit_code": 0,
+      "assertion": "315 tracked or candidate files passed secret and privacy scanning"
+    },
+    {
+      "id": "workflows",
+      "command": "npm run workflows:check",
+      "exit_code": 0,
+      "assertion": "required workflows use scoped least privilege and pinned actions/images"
+    },
+    {
+      "id": "visual",
+      "command": "npm run docs:visual",
+      "exit_code": 0,
+      "assertion": "1440, 390, and 320 viewports produced nine screenshots under /about-harness/"
+    },
+    {
+      "id": "release_self_test",
+      "command": "npm run release:self-test",
+      "exit_code": 0,
+      "assertion": "lightweight tags, incomplete rounds, A4 use, and missing gates were rejected"
+    },
+    {
+      "id": "pages_smoke",
+      "command": "npm run pages:smoke -- http://127.0.0.1:4174/about-harness/",
+      "exit_code": 0,
+      "assertion": "16 key routes and 23 same-origin assets passed against the current project-base build"
+    }
+  ],
+  "result": {
+    "status": "passed",
+    "evidence_level": "E1",
+    "publication_status": "not-published",
+    "review_rounds": 10,
+    "open_p0": 0,
+    "open_p1": 0,
+    "blocking_p2": 0,
+    "a3_used": false,
+    "a4_used": false
+  },
+  "surprises": [
+    {
+      "event": "preview port 4173 was already in use",
+      "recovery": "left the unknown process untouched and served the current build on 127.0.0.1:4174"
+    }
+  ]
+}
