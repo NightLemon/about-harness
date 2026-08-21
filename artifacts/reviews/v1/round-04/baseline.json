@@ -1,0 +1,66 @@
+{
+  "schema_version": "1.0",
+  "round": "04",
+  "captured_at": "2026-08-21T11:28:09+08:00",
+  "timezone": "Asia/Shanghai",
+  "baseline_commit": "916d9247bd8c42b3416c368b4b1e3fd4c7ed11ca",
+  "baseline_tag": "review-v1-round-04-baseline",
+  "input_tag": "review-v1-round-03-complete",
+  "branch": "main",
+  "scope": "模型、provider、协议和调优方法",
+  "rubric_version": "docs/meta/review-method.md@18B7C95A01A6FDFC342F0A79FB65DAE3F6CA7077814CE05DBABDA8B2F168AD3C",
+  "files": {
+    "docs/models/openai.md": "B68B21E1A1C1013AABCDF31AA8EF4E13393A8EB3B55994462D213739BA62E73E",
+    "docs/models/adaptation.md": "E7CC92B6E06F89B665CC179BDF2F49AFD0EE65CCB7784CAD44C8115515E7C6BE",
+    "docs/models/protocol-compatibility.md": "6972A484C833D9EC6043616015D6E60DC5D220140A1E7CAA6314D42BEDD2E1F5",
+    "docs/models/reasoning-budget.md": "A6302282170CA08DF9EC779195B45D2E42C6180DDE0AFECDFB512470145EAD1D",
+    "docs/optimization/model-fit.md": "E3778B9831BEC81ECD242F8A1208AE511821E40D8491F5A7259E213A7B74AB17",
+    "docs/references/fact-registry.md": "496BC1D54CF40CE5D4D7908D0D31B0D6A1F27A10824A6AABD5D0CE48E7E9C209",
+    "docs/references/sources.md": "2C53701BFAA831E8D0777221F4F63C4D22CEFB5E5AB4735B3487D9E28149F237"
+  },
+  "sources": {
+    "https://developers.openai.com/api/docs/guides/function-calling.md": "5CD1C0A3003C24F013E25F9921EB5A34DCE79564EA51CC12592F2AF0141206ED",
+    "https://developers.openai.com/api/docs/guides/reasoning.md": "281CE961285BCBF93DA783DA9A0EFF3030B521A0C4F6B549E4355BE8FD84F771"
+  },
+  "reviewer": {
+    "role": "模型协议与调优方法审阅者",
+    "provider": "OpenAI",
+    "model_id": "gpt-5",
+    "model_resolution": "exact deployment snapshot is not exposed by the runtime",
+    "harness": "Codex desktop",
+    "harness_version": "not exposed",
+    "surface": "desktop task",
+    "configuration": "single-agent local review; no subagents"
+  },
+  "instructions": {
+    "system_developer": "runtime-managed; content hash not exposed",
+    "user_goal": "active thread goal dated 2026-08-21; content hash not exposed",
+    "repository": "AGENTS.md@AEE7B90AE9332ED969C07BDCF771F5484DB2F85EA6F0CE3B2F2E0D499DB97B74"
+  },
+  "tools": {
+    "skills": ["openai-docs"],
+    "interfaces": ["PowerShell 7", "git", "rg", "official OpenAI documentation", "apply_patch"],
+    "mcp": []
+  },
+  "environment": {
+    "os": "Microsoft Windows 11 Enterprise 10.0.26200 x64",
+    "node": "v24.14.0",
+    "python": "3.12.10",
+    "uv": "0.11.16",
+    "git": "2.55.0.windows.3",
+    "browser": "not used",
+    "package_lock_sha256": "8DA864CF6DE62FEF792411096D39E12B30E767726E533BE1238015C98ED3819C",
+    "uv_lock_sha256": "DA5E9A1DB74A4CE06A47C71809FBA8A0FED2BA557E9BAA4A63824B2BD19BF90F"
+  },
+  "execution": {
+    "offline": false,
+    "network": "official documentation GET only",
+    "live_model_or_api": false,
+    "a3_used": false,
+    "a4_used": false
+  },
+  "sampling": {
+    "included": ["OpenAI identity and surface boundary", "Responses function calling flow", "reasoning item continuity", "reasoning effort tuning", "generic compatibility probe"],
+    "excluded": ["live model behavior", "pricing and account availability", "other provider deep facts", "universal model ranking"]
+  }
+}
