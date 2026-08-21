@@ -1,0 +1,66 @@
+{
+  "schema_version": "1.0",
+  "round": "09",
+  "captured_at": "2026-08-21T12:49:12+08:00",
+  "timezone": "Asia/Shanghai",
+  "baseline_commit": "a8d45347fb837b4e4581ed7c43a38ead18f6d743",
+  "baseline_tag": "review-v1-round-09-baseline",
+  "input_tag": "review-v1-round-08-complete",
+  "branch": "main",
+  "scope": "跨 harness/领域迁移、中文可读性和视觉体验",
+  "rubric_version": "docs/meta/review-method.md@18B7C95A01A6FDFC342F0A79FB65DAE3F6CA7077814CE05DBABDA8B2F168AD3C",
+  "files": {
+    "docs/labs/migration.md": "C97931418932A54D470652057C8C533454DB1AD401FC5AFB2CAF6BB7A753F02B",
+    "docs/harnesses/comparison.md": "8AD7F36F6DC8477255E4ACACE2EED6CE9E31ACA5F380CF93A8A5382ABB75A6EB",
+    "docs/references/compatibility.md": "B996FB2D1F16E9D3CCEB672BB8D13D51D17C34F9BE3E3C783420ED7F599304A0",
+    "lab/fixtures/migration/input.json": "D961702D1F50F1279C0031336384ED3407B8332D33D22D68F3B68BCD0CF4817C",
+    "lab/fixtures/migration/expected.json": "2CF9D086AA20DB723599247D126FF07367B69BE864763639CC46BE96C80E0E02",
+    "lab/fixtures/migration/negative.json": "65820652D62B7CD3A01E1003C387F2E9DD79E5FE0F06A5CAAAF6E04D24E8A734",
+    "lab/fixtures/migration/manifest.json": "58518C7F5AC21805E53F47D9F06C6CA6651D6C2909E027579C547250749E74CB",
+    "lab/src/about_harness/labs.py": "66FCE59987B130B2E80A9FB2F8F74D2A32B625CFC9E1835B7DA1D083623F1DB5",
+    "lab/tests/test_m5_labs.py": "A61969FD0E6AC24B6405946E4F8593B7536300DBCECC4EFB456AA0B4502A9E07",
+    "scripts/tutorial-check.mjs": "9DFFC1C8041C63080E1BFFF7C51FE600E1CAD005DB71E1D5449040B51B35E96E",
+    "scripts/test-tutorial-check.mjs": "4A8C308437D4ADAE718C67CAA03F66C80A7BFD170775EDBE617572685A17F953",
+    "scripts/visual-check.mjs": "40BD85206A1B658B5DA6B0FAF1ED34BF3618420F6E72952AA94B83FBC207C000",
+    "artifacts/visual/m6/manifest.json": "D472EC5DA357A0BBE0119821B036EFE9977D9426A93BA6E3AAA066B7B58AE749",
+    "artifacts/visual/m6/mobile-390-home.png": "7502000949BEDFC713E6BDA555A6017D59B38448AF41DF444A8CD272CC682771",
+    "artifacts/visual/m6/narrow-320-home.png": "28A341613EA2BA7C229A6BC4D6E3A94A0B370A8812D85E9707D9896E6EBC8FC4",
+    "docs/.vitepress/theme/custom.css": "4DA13ADF02BE5B5D6367CB45859803CF16A5FC27F34C2EC5079F2F663BF2A8D3"
+  },
+  "reviewer": {
+    "role": "迁移、中文可读性与视觉体验审阅者",
+    "provider": "OpenAI",
+    "model_id": "gpt-5",
+    "model_resolution": "exact deployment snapshot is not exposed by the runtime",
+    "harness": "Codex desktop",
+    "harness_version": "not exposed",
+    "surface": "desktop task plus in-app browser",
+    "configuration": "single-agent local review; no subagents"
+  },
+  "instructions": {
+    "system_developer": "runtime-managed; content hash not exposed",
+    "user_goal": "active thread goal dated 2026-08-21; content hash not exposed",
+    "repository": "AGENTS.md@AEE7B90AE9332ED969C07BDCF771F5484DB2F85EA6F0CE3B2F2E0D499DB97B74"
+  },
+  "tools": {
+    "skills": ["browser:control-in-app-browser"],
+    "interfaces": ["PowerShell 7", "git", "rg", "Node.js", "uv", "in-app Browser", "view_image", "apply_patch"],
+    "mcp": ["node_repl browser-client"]
+  },
+  "environment": {
+    "os": "Microsoft Windows 11 Enterprise 10.0.26200 x64",
+    "node": "v24.14.0",
+    "python": "3.12.10",
+    "uv": "0.11.16",
+    "git": "2.55.0.windows.3",
+    "docker": "29.6.2",
+    "browser": "in-app browser version not exposed; deterministic visual baseline Chromium 151.0.7922.34",
+    "package_lock_sha256": "8DA864CF6DE62FEF792411096D39E12B30E767726E533BE1238015C98ED3819C",
+    "uv_lock_sha256": "DA5E9A1DB74A4CE06A47C71809FBA8A0FED2BA557E9BAA4A63824B2BD19BF90F"
+  },
+  "execution": {"offline": true, "network": "localhost only", "live_model_or_api": false, "a3_used": false, "a4_used": false},
+  "sampling": {
+    "included": ["Codex/Pi/Claude Code responsibility mapping", "migration fixture and negative path", "Chinese terminology", "1440/390/320 visual manifests", "mobile menu/theme interaction", "migration page"],
+    "excluded": ["real harness runs", "real user repositories", "external domains", "remote Pages"]
+  }
+}
