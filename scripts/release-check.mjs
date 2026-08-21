@@ -14,6 +14,23 @@ function sha256(file) {
   return crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex').toUpperCase()
 }
 
+function portableTextHashes(file) {
+  const bytes = fs.readFileSync(file)
+  const hashes = new Set([crypto.createHash('sha256').update(bytes).digest('hex').toUpperCase()])
+  if (bytes.includes(0)) return hashes
+  const text = bytes.toString('utf8')
+  const lf = text.replace(/\r\n/g, '\n')
+  const crlf = lf.replace(/\n/g, '\r\n')
+  for (const value of [lf, crlf]) {
+    hashes.add(crypto.createHash('sha256').update(value, 'utf8').digest('hex').toUpperCase())
+  }
+  return hashes
+}
+
+function artifactHashMatches(file, expected) {
+  return portableTextHashes(file).has(expected)
+}
+
 function safeFile(rel, label) {
   if (typeof rel !== 'string' || !rel || path.isAbsolute(rel) || rel.split(/[\\/]/).includes('..')) {
     errors.push(`${label}: unsafe or missing relative path`)
@@ -283,12 +300,12 @@ for (const rel of requiredReportPaths) {
   }
   const expected = manifest.artifact_hashes?.[rel]
   if (!/^[0-9A-F]{64}$/.test(expected || '')) errors.push(`release manifest: artifact_hashes omit ${rel}`)
-  else if (file && sha256(file) !== expected) errors.push(`release manifest: artifact hash mismatch for ${rel}`)
+  else if (file && !artifactHashMatches(file, expected)) errors.push(`release manifest: artifact hash mismatch for ${rel}`)
 }
 for (const [rel, expected] of Object.entries(manifest.artifact_hashes || {})) {
   if (!/^[0-9A-F]{64}$/.test(expected || '')) errors.push(`release manifest: invalid SHA256 for ${rel}`)
   const file = safeFile(rel, 'release artifact hash')
-  if (file && /^[0-9A-F]{64}$/.test(expected || '') && sha256(file) !== expected) errors.push(`release manifest: artifact hash mismatch for ${rel}`)
+  if (file && /^[0-9A-F]{64}$/.test(expected || '') && !artifactHashMatches(file, expected)) errors.push(`release manifest: artifact hash mismatch for ${rel}`)
 }
 
 const limitationsFile = safeFile(manifest.known_limitations_path, 'release known limitations')
@@ -305,6 +322,9 @@ else {
   const releaseTagCommit = annotatedTagCommit(manifest.release_tag, 'release candidate', allowPendingTags)
   const milestoneTagCommit = annotatedTagCommit(manifest.milestone_tag, 'M8 checkpoint', allowPendingTags)
   if (releaseTagCommit && milestoneTagCommit && releaseTagCommit !== milestoneTagCommit) errors.push('release and M8 tags point to different commits')
+  const headCommit = git(['rev-parse', 'HEAD']).stdout.trim().toLowerCase()
+  if (releaseTagCommit && releaseTagCommit !== headCommit) errors.push('release candidate tag must point to HEAD')
+  if (milestoneTagCommit && milestoneTagCommit !== headCommit) errors.push('M8 checkpoint tag must point to HEAD')
   if (sourceCommit && releaseTagCommit) requireAncestor(sourceCommit, releaseTagCommit, 'release candidate')
   const remotes = git(['remote']).stdout.trim()
   if (!manifest.authorization?.a4_used && remotes) errors.push('release candidate: Git remotes exist before A4')

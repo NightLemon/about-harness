@@ -159,10 +159,16 @@ This E1-only canary has more than two hundred characters so the checker must ins
   git(['tag', manifest.release_tag])
   git(['tag', manifest.milestone_tag])
 
+  const portableHashCanary = path.join(temp, reports.privacy)
+  fs.writeFileSync(portableHashCanary, fs.readFileSync(portableHashCanary, 'utf8').replace(/\r?\n/g, '\r\n'))
+
   const lightweight = runCheck()
   const lightweightOutput = `${lightweight.stdout}${lightweight.stderr}`
   if (lightweight.status === 0 || !lightweightOutput.includes('is not an annotated tag')) {
     throw new Error('release-check accepted lightweight review/release tags')
+  }
+  if (lightweightOutput.includes(`artifact hash mismatch for ${reports.privacy}`)) {
+    throw new Error('release-check rejected a text artifact only because its checkout line endings changed')
   }
 
   manifest.review_rounds = []
