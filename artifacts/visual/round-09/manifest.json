@@ -1,0 +1,268 @@
+{
+  "schema_version": "1.1",
+  "evidence": "E1",
+  "generated_at": "2026-08-21T05:00:06.250Z",
+  "base": "/about-harness/",
+  "browser": "Chromium 151.0.7922.34",
+  "assertions": [
+    "navigation",
+    "search",
+    "theme",
+    "evaluation-tables",
+    "migration-page",
+    "deep-anchor",
+    "mobile-menu-open-close",
+    "no-horizontal-page-overflow"
+  ],
+  "records": [
+    {
+      "id": "desktop-1440",
+      "width": 1440,
+      "height": 900,
+      "home": {
+        "viewportWidth": 1440,
+        "clientWidth": 1440,
+        "scrollWidth": 1440,
+        "title": "About Harness",
+        "main": true,
+        "targetTop": null,
+        "tables": []
+      },
+      "table": {
+        "viewportWidth": 1440,
+        "clientWidth": 1440,
+        "scrollWidth": 1440,
+        "title": "评测方法与证据晋级 | About Harness",
+        "main": true,
+        "targetTop": null,
+        "tables": [
+          {
+            "clientWidth": 688,
+            "scrollWidth": 688,
+            "overflowX": "auto"
+          }
+        ]
+      },
+      "migration": {
+        "viewportWidth": 1440,
+        "clientWidth": 1440,
+        "scrollWidth": 1440,
+        "title": "跨 Harness 迁移：保留职责而非文件名 | About Harness",
+        "main": true,
+        "targetTop": null,
+        "tables": [
+          {
+            "clientWidth": 688,
+            "scrollWidth": 688,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 688,
+            "scrollWidth": 688,
+            "overflowX": "auto"
+          }
+        ]
+      },
+      "migrationTableScroll": null,
+      "anchor": {
+        "viewportWidth": 1440,
+        "clientWidth": 1440,
+        "scrollWidth": 1440,
+        "title": "状态与可靠执行 | About Harness",
+        "main": true,
+        "targetTop": 110,
+        "tables": []
+      },
+      "mobileMenu": null,
+      "screenshots": [
+        "desktop-1440-home.png",
+        "desktop-1440-evaluation.png",
+        "desktop-1440-migration.png"
+      ]
+    },
+    {
+      "id": "mobile-390",
+      "width": 390,
+      "height": 844,
+      "home": {
+        "viewportWidth": 390,
+        "clientWidth": 390,
+        "scrollWidth": 390,
+        "title": "About Harness",
+        "main": true,
+        "targetTop": null,
+        "tables": []
+      },
+      "table": {
+        "viewportWidth": 390,
+        "clientWidth": 390,
+        "scrollWidth": 390,
+        "title": "评测方法与证据晋级 | About Harness",
+        "main": true,
+        "targetTop": null,
+        "tables": [
+          {
+            "clientWidth": 342,
+            "scrollWidth": 409,
+            "overflowX": "auto"
+          }
+        ]
+      },
+      "migration": {
+        "viewportWidth": 390,
+        "clientWidth": 390,
+        "scrollWidth": 390,
+        "title": "跨 Harness 迁移：保留职责而非文件名 | About Harness",
+        "main": true,
+        "targetTop": null,
+        "tables": [
+          {
+            "clientWidth": 342,
+            "scrollWidth": 501,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 342,
+            "scrollWidth": 342,
+            "overflowX": "auto"
+          }
+        ]
+      },
+      "migrationTableScroll": {
+        "found": true,
+        "moved": true,
+        "maxScroll": 159
+      },
+      "anchor": {
+        "viewportWidth": 390,
+        "clientWidth": 390,
+        "scrollWidth": 390,
+        "title": "状态与可靠执行 | About Harness",
+        "main": true,
+        "targetTop": 110,
+        "tables": []
+      },
+      "mobileMenu": {
+        "opened": true,
+        "closed": true,
+        "expandedAfterClose": "false"
+      },
+      "screenshots": [
+        "mobile-390-home.png",
+        "mobile-390-evaluation.png",
+        "mobile-390-migration.png"
+      ]
+    },
+    {
+      "id": "narrow-320",
+      "width": 320,
+      "height": 700,
+      "home": {
+        "viewportWidth": 320,
+        "clientWidth": 320,
+        "scrollWidth": 320,
+        "title": "About Harness",
+        "main": true,
+        "targetTop": null,
+        "tables": []
+      },
+      "table": {
+        "viewportWidth": 320,
+        "clientWidth": 320,
+        "scrollWidth": 320,
+        "title": "评测方法与证据晋级 | About Harness",
+        "main": true,
+        "targetTop": null,
+        "tables": [
+          {
+            "clientWidth": 272,
+            "scrollWidth": 409,
+            "overflowX": "auto"
+          }
+        ]
+      },
+      "migration": {
+        "viewportWidth": 320,
+        "clientWidth": 320,
+        "scrollWidth": 320,
+        "title": "跨 Harness 迁移：保留职责而非文件名 | About Harness",
+        "main": true,
+        "targetTop": null,
+        "tables": [
+          {
+            "clientWidth": 272,
+            "scrollWidth": 501,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 272,
+            "scrollWidth": 272,
+            "overflowX": "auto"
+          }
+        ]
+      },
+      "migrationTableScroll": {
+        "found": true,
+        "moved": true,
+        "maxScroll": 229
+      },
+      "anchor": {
+        "viewportWidth": 320,
+        "clientWidth": 320,
+        "scrollWidth": 320,
+        "title": "状态与可靠执行 | About Harness",
+        "main": true,
+        "targetTop": 110,
+        "tables": []
+      },
+      "mobileMenu": {
+        "opened": true,
+        "closed": true,
+        "expandedAfterClose": "false"
+      },
+      "screenshots": [
+        "narrow-320-home.png",
+        "narrow-320-evaluation.png",
+        "narrow-320-migration.png"
+      ]
+    }
+  ],
+  "screenshots": [
+    {
+      "file": "desktop-1440-evaluation.png",
+      "sha256": "740ed42e2a13303ef76df24937bcb11b89d554a97892bb325437fd1e8d98edfe"
+    },
+    {
+      "file": "desktop-1440-home.png",
+      "sha256": "56eb1c81f4ac102cdfa8231ac31f45f38a6878c43d4fc2e305478a7288304d62"
+    },
+    {
+      "file": "desktop-1440-migration.png",
+      "sha256": "8e37b0964c81cee8ff06a78b7761b4bf90caf7adf14be8a2992af35e57234d9c"
+    },
+    {
+      "file": "mobile-390-evaluation.png",
+      "sha256": "af55c18e571a5323df2383a3e40a37fa4d48020be97bf0b9b8c9fa19cb6c8cde"
+    },
+    {
+      "file": "mobile-390-home.png",
+      "sha256": "3312fba4202b6eafca2295776315d5423fe8d5c1ca99ec8b1ed5a04c9b92f4bc"
+    },
+    {
+      "file": "mobile-390-migration.png",
+      "sha256": "c4a7a8007776653dcde15099fae9ca7c839f4bccfa7354eee67ce192bb598c32"
+    },
+    {
+      "file": "narrow-320-evaluation.png",
+      "sha256": "a7e8b883be6c33545aca22b289163229310a2883f9e6aa3ff3183843ee0666f5"
+    },
+    {
+      "file": "narrow-320-home.png",
+      "sha256": "ed1ab01579ae3d83744dae23caba7a98258d74612806bfd0cb6250b34fefead8"
+    },
+    {
+      "file": "narrow-320-migration.png",
+      "sha256": "f47f5b24b41b41070f0e2b7c9d0fcb236df4345c24f58f2d1de4ede09774bb6d"
+    }
+  ]
+}

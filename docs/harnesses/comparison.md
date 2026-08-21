@@ -17,7 +17,7 @@
 
 ## 不可逐字复制
 
-同名 skill、plugin、memory、permission 的发现顺序和执行权限不同；同一模型名也可能解析为不同 provider/alias。尤其不能把 approval 当 sandbox，或把允许 network 的配置当作已有限定出口。迁移文档需写 source semantics → target semantics → gap → compensating control → evidence axis。
+同名 skill、plugin、memory、permission 的发现顺序和执行权限不同；同一模型名也可能解析为不同 provider/alias。尤其不能把 approval（何时询问）当 sandbox（技术上能否触达），或把允许 network 的配置当作已有限定出口。迁移文档依次写“源语义 → 目标语义 → 缺口 → 补偿控制 → 证据轴（evidence axis）”，并用[跨 Harness 迁移案例](/labs/migration)验证，而不是逐字复制配置。
 
 ## 选择维度
 

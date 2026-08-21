@@ -1,13 +1,13 @@
 {
-  "fixture_version": "1.0",
+  "fixture_version": "1.1",
   "case_id": "migration",
   "source": "project-synthetic",
   "license": "CC-BY-4.0",
-  "checked": "2026-08-20",
+  "checked": "2026-08-21",
   "contains_personal_data": false,
   "files": {
-    "input.json": "5bde77edd58e34fa8a72ec902a420e404212d313f1839d2469ff7b1fb15ef03e",
-    "expected.json": "9744f398ba4325575bf8c0c3798d711908204f6a3e77b03710eb0d5b03f17cbb",
-    "negative.json": "b783954c3bbbaa8801f7fb0bdea2216a04664af24c944fab2f7f91ccf7f9108c"
+    "input.json": "a7be203056e54684ba79fbe86ccc5ee0dbebdf07d5ac190272d5f30e3e9ad55b",
+    "expected.json": "1959f34f63e8c976daf788454fd96da846f0dc8943cbd15b4aa94666f2e9242e",
+    "negative.json": "32161bf79adf58f23f347bcb7d9de49ec4ef517df816dcd63d0a04b9ff01750a"
   }
 }

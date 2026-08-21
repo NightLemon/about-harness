@@ -1,5 +1,13 @@
 {
-  "mapped_responsibilities": 4,
+  "source_harness": "Codex",
+  "target_harnesses": ["Pi", "Claude Code"],
+  "paths_checked": 2,
+  "mapped_responsibilities": 12,
+  "domains_checked": 5,
   "missing": [],
-  "config_copied_verbatim": false
+  "uncompensated_gaps": [],
+  "boundary_violations": [],
+  "verbatim_targets": [],
+  "config_copied_verbatim": false,
+  "control_boundaries_preserved": true
 }

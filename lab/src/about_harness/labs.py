@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import hashlib
 import json
 from dataclasses import dataclass
@@ -13,6 +14,17 @@ from about_harness.integrations.llama_index import answer_from_latest
 from about_harness.integrations.pydantic_ai import normalize_rows
 
 LAB_NAMES = ("coding", "browser", "research", "data", "document", "migration")
+MIGRATION_HARNESSES = {"Codex", "Pi", "Claude Code"}
+MIGRATION_REQUIREMENTS = (
+    "instructions",
+    "tools",
+    "sandbox",
+    "approval",
+    "network",
+    "state",
+)
+MIGRATION_DOMAINS = {"coding", "browser", "research", "data", "document"}
+MIGRATION_EVIDENCE_AXES = {"source", "seam", "source+seam", "live"}
 
 
 class FixtureError(ValueError):
@@ -91,19 +103,118 @@ def _coding(payload: dict[str, JsonValue]) -> dict[str, JsonValue]:
     }
 
 
-def _migration(payload: dict[str, JsonValue]) -> dict[str, JsonValue]:
+def _json_list(values: list[str]) -> list[JsonValue]:
+    return [value for value in values]
+
+
+def evaluate_migration(payload: dict[str, JsonValue]) -> dict[str, JsonValue]:
+    source = payload.get("source_harness")
+    targets_value = payload.get("target_harnesses")
     requirements = payload.get("requirements")
     mappings = payload.get("mappings")
-    if not isinstance(requirements, list) or not isinstance(mappings, dict):
+    domain_checklists = payload.get("domain_checklists")
+    if not isinstance(source, str) or source not in MIGRATION_HARNESSES:
+        raise FixtureError(f"migration: unknown source_harness {source!r}")
+    if not isinstance(targets_value, list) or not all(
+        isinstance(target, str) for target in targets_value
+    ):
+        raise FixtureError("migration: target_harnesses must be a string array")
+    targets = [target for target in targets_value if isinstance(target, str)]
+    expected_targets = MIGRATION_HARNESSES - {source}
+    if len(targets) != len(set(targets)) or set(targets) != expected_targets:
+        raise FixtureError(
+            "migration: target_harnesses must cover each other approved harness exactly once"
+        )
+    if (
+        not isinstance(requirements, list)
+        or len(requirements) != len(set(item for item in requirements if isinstance(item, str)))
+        or set(requirements) != set(MIGRATION_REQUIREMENTS)
+        or not isinstance(mappings, dict)
+    ):
         raise FixtureError("migration input is invalid")
-    missing: list[JsonValue] = []
-    for requirement in requirements:
-        if not isinstance(requirement, str) or requirement not in mappings:
-            missing.append(requirement)
+    if not isinstance(domain_checklists, dict) or set(domain_checklists) != MIGRATION_DOMAINS:
+        raise FixtureError("migration: domain_checklists must cover five approved domains")
+    for domain, checks in domain_checklists.items():
+        if not isinstance(checks, list) or not checks or not all(
+            isinstance(check, str) and check.strip() for check in checks
+        ):
+            raise FixtureError(f"migration: {domain} domain checklist is empty or invalid")
+
+    missing: list[str] = []
+    uncompensated_gaps: list[str] = []
+    boundary_violations: list[str] = []
+    verbatim_targets: list[str] = []
+    invalid_entries: list[str] = []
+    mapped = 0
+    for target in targets:
+        target_mappings = mappings.get(target)
+        if not isinstance(target_mappings, dict):
+            missing.extend(f"{target}.{requirement}" for requirement in MIGRATION_REQUIREMENTS)
+            continue
+        target_is_verbatim = True
+        for requirement in MIGRATION_REQUIREMENTS:
+            location = f"{target}.{requirement}"
+            entry = target_mappings.get(requirement)
+            if not isinstance(entry, dict):
+                missing.append(location)
+                continue
+            values = {
+                key: entry.get(key)
+                for key in (
+                    "source_semantics",
+                    "target_semantics",
+                    "gap",
+                    "compensating_control",
+                    "evidence_axis",
+                )
+            }
+            if not all(isinstance(value, str) and value.strip() for value in values.values()):
+                invalid_entries.append(f"{location}: semantic fields must be non-empty strings")
+                continue
+            source_semantics = values["source_semantics"]
+            target_semantics = values["target_semantics"]
+            gap = values["gap"]
+            compensation = values["compensating_control"]
+            evidence_axis = values["evidence_axis"]
+            assert isinstance(source_semantics, str)
+            assert isinstance(target_semantics, str)
+            assert isinstance(gap, str)
+            assert isinstance(compensation, str)
+            assert isinstance(evidence_axis, str)
+            if evidence_axis not in MIGRATION_EVIDENCE_AXES:
+                invalid_entries.append(f"{location}: invalid evidence_axis {evidence_axis}")
+            if gap.casefold() != "none" and compensation.casefold() == "none":
+                uncompensated_gaps.append(location)
+            if entry.get("preserves_boundary") is not True:
+                boundary_violations.append(location)
+            if source_semantics.strip().casefold() != target_semantics.strip().casefold():
+                target_is_verbatim = False
+            mapped += 1
+        if target_is_verbatim:
+            verbatim_targets.append(target)
+
+    problems = [
+        *(f"missing {item}" for item in missing),
+        *(f"uncompensated gap {item}" for item in uncompensated_gaps),
+        *(f"boundary violation {item}" for item in boundary_violations),
+        *(f"verbatim target {item}" for item in verbatim_targets),
+        *invalid_entries,
+    ]
+    if problems:
+        raise FixtureError(f"migration contract failed: {'; '.join(problems)}")
+
     return {
-        "mapped_responsibilities": len(requirements) - len(missing),
-        "missing": missing,
-        "config_copied_verbatim": False,
+        "source_harness": source,
+        "target_harnesses": _json_list(targets),
+        "paths_checked": len(targets),
+        "mapped_responsibilities": mapped,
+        "domains_checked": len(domain_checklists),
+        "missing": _json_list(missing),
+        "uncompensated_gaps": _json_list(uncompensated_gaps),
+        "boundary_violations": _json_list(boundary_violations),
+        "verbatim_targets": _json_list(verbatim_targets),
+        "config_copied_verbatim": bool(verbatim_targets),
+        "control_boundaries_preserved": not boundary_violations,
     }
 
 
@@ -114,7 +225,7 @@ def execute_fixture(bundle: FixtureBundle) -> dict[str, JsonValue]:
         "research": resolve_versioned_claims,
         "data": normalize_rows,
         "document": answer_from_latest,
-        "migration": _migration,
+        "migration": evaluate_migration,
     }
     output = handlers[bundle.name](bundle.input)
     negative_rejected = _negative_rejected(bundle, output)
@@ -175,6 +286,41 @@ def _negative_rejected(bundle: FixtureBundle, output: dict[str, JsonValue]) -> b
             and proposed not in citations
         )
     if bundle.name == "migration":
-        proposed = bundle.negative.get("proposed")
-        return isinstance(proposed, str) and "rename AGENTS.md" in proposed
+        proposals = bundle.negative.get("proposals")
+        if not isinstance(proposals, list) or not proposals:
+            return False
+        for proposal in proposals:
+            if not isinstance(proposal, dict):
+                return False
+            payload = copy.deepcopy(bundle.input)
+            mappings = payload.get("mappings")
+            target = proposal.get("target_harness")
+            mode = proposal.get("mode")
+            if not isinstance(mappings, dict) or not isinstance(target, str):
+                return False
+            target_mappings = mappings.get(target)
+            if not isinstance(target_mappings, dict):
+                return False
+            if mode == "copy-source-semantics":
+                for entry in target_mappings.values():
+                    if not isinstance(entry, dict):
+                        return False
+                    source_semantics = entry.get("source_semantics")
+                    if not isinstance(source_semantics, str):
+                        return False
+                    entry["target_semantics"] = source_semantics
+            elif mode == "replace-mapping":
+                responsibility = proposal.get("responsibility")
+                replacement = proposal.get("mapping")
+                if not isinstance(responsibility, str) or not isinstance(replacement, dict):
+                    return False
+                target_mappings[responsibility] = copy.deepcopy(replacement)
+            else:
+                return False
+            try:
+                evaluate_migration(payload)
+            except FixtureError:
+                continue
+            return False
+        return True
     return False

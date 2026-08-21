@@ -48,4 +48,4 @@ Codex 中 sandbox mode 决定技术上能做什么，approval policy 决定何�
 
 ## 迁移验收
 
-协议兼容不等于工具语义、权限或恢复行为等价。迁移报告逐项保存 `source semantics → target semantics → gap → compensating control → evidence axis`，并固定 model/provider、版本、surface、任务和预算。任何 live `supported` 结论都需要 E2/E3；未知项写 `untested`，不能从 source fact 推断。
+协议兼容不等于工具语义、权限或恢复行为等价。迁移报告逐项保存“源语义 → 目标语义 → 缺口 → 补偿控制 → 证据轴”，并固定 model/provider、版本、surface、任务和预算。任何 live `supported` 结论都需要 E2/E3；未知项写 `untested`，不能从 source fact 推断。可执行字段与负例见[跨 Harness 迁移案例](/labs/migration)。

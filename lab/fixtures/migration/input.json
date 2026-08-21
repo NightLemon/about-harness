@@ -1,11 +1,114 @@
 {
   "source_harness": "Codex",
-  "target_harness": "Claude Code",
-  "requirements": ["instructions", "tools", "permissions", "state"],
+  "target_harnesses": ["Pi", "Claude Code"],
+  "requirements": ["instructions", "tools", "sandbox", "approval", "network", "state"],
   "mappings": {
-    "instructions": "map AGENTS.md intent to scoped CLAUDE.md/rules",
-    "tools": "map tool schemas and errors, not names alone",
-    "permissions": "restate allow/deny and approval boundaries",
-    "state": "export task checkpoint and revalidate target context"
+    "Pi": {
+      "instructions": {
+        "source_semantics": "scoped AGENTS.md chain from project root to cwd",
+        "target_semantics": "context and project files resolved by the pinned Pi version",
+        "gap": "no identical AGENTS.md discovery contract",
+        "compensating_control": "pin Pi and test the effective context file set",
+        "evidence_axis": "source+seam",
+        "preserves_boundary": true
+      },
+      "tools": {
+        "source_semantics": "runtime tools and MCP with explicit schemas and errors",
+        "target_semantics": "read write edit bash plus reviewed TypeScript extensions",
+        "gap": "extension lifecycle and error semantics differ",
+        "compensating_control": "contract-test schemas errors timeouts and uninstall",
+        "evidence_axis": "source+seam",
+        "preserves_boundary": true
+      },
+      "sandbox": {
+        "source_semantics": "sandbox mode limits technically reachable files and processes",
+        "target_semantics": "container or restricted runtime supplies the isolation boundary",
+        "gap": "no assumed equivalent built-in OS sandbox",
+        "compensating_control": "run in a read-only network-disabled container or restricted account",
+        "evidence_axis": "source+seam",
+        "preserves_boundary": true
+      },
+      "approval": {
+        "source_semantics": "approval policy decides when execution must ask",
+        "target_semantics": "project trust plus an explicit user policy gates side effects",
+        "gap": "no identical approval-policy vocabulary",
+        "compensating_control": "default deny and require an external approval step for side effects",
+        "evidence_axis": "source+seam",
+        "preserves_boundary": true
+      },
+      "network": {
+        "source_semantics": "network enablement and destination policy are independent controls",
+        "target_semantics": "runtime and extensions start with network disabled",
+        "gap": "extension-specific egress is not an equivalent allowlist",
+        "compensating_control": "enforce network none or a container-level destination allowlist",
+        "evidence_axis": "source+seam",
+        "preserves_boundary": true
+      },
+      "state": {
+        "source_semantics": "task session worktree and checkpoint state depend on the surface",
+        "target_semantics": "session tree fork export and import preserve an explicit checkpoint",
+        "gap": "checkpoint formats and compaction behavior differ",
+        "compensating_control": "export unresolved items hashes and acceptance state then revalidate",
+        "evidence_axis": "source+seam",
+        "preserves_boundary": true
+      }
+    },
+    "Claude Code": {
+      "instructions": {
+        "source_semantics": "scoped AGENTS.md chain from project root to cwd",
+        "target_semantics": "scoped CLAUDE.md and rules with an audited effective context",
+        "gap": "discovery and precedence are product-specific",
+        "compensating_control": "test the effective instruction chain in the target cwd",
+        "evidence_axis": "source+seam",
+        "preserves_boundary": true
+      },
+      "tools": {
+        "source_semantics": "runtime tools and MCP with explicit schemas and errors",
+        "target_semantics": "tools hooks MCP and plugins with pinned schemas and timeouts",
+        "gap": "hooks can enforce behavior that source instructions only request",
+        "compensating_control": "classify each rule as instruction tool hook or policy before transfer",
+        "evidence_axis": "source+seam",
+        "preserves_boundary": true
+      },
+      "sandbox": {
+        "source_semantics": "sandbox mode limits technically reachable files and processes",
+        "target_semantics": "target-version sandbox plus isolated worktree limits reachability",
+        "gap": "modes and filesystem semantics are not name-compatible",
+        "compensating_control": "probe denied reads writes and commands before accepting equivalence",
+        "evidence_axis": "source+seam",
+        "preserves_boundary": true
+      },
+      "approval": {
+        "source_semantics": "approval policy decides when execution must ask",
+        "target_semantics": "permission rules and PreToolUse hooks gate side effects",
+        "gap": "rule matching and hook failure behavior differ",
+        "compensating_control": "add deny and ask probes for every high-impact action",
+        "evidence_axis": "source+seam",
+        "preserves_boundary": true
+      },
+      "network": {
+        "source_semantics": "network enablement and destination policy are independent controls",
+        "target_semantics": "settings and sandbox keep egress disabled until explicitly allowed",
+        "gap": "network behavior varies by target version and surface",
+        "compensating_control": "probe actual egress and retain a runtime-level deny fallback",
+        "evidence_axis": "source+seam",
+        "preserves_boundary": true
+      },
+      "state": {
+        "source_semantics": "task session worktree and checkpoint state depend on the surface",
+        "target_semantics": "conversation and checkpoint state carry an explicit handoff record",
+        "gap": "resume and compaction do not preserve identical hidden state",
+        "compensating_control": "restart from hashes unresolved items and acceptance tests",
+        "evidence_axis": "source+seam",
+        "preserves_boundary": true
+      }
+    }
+  },
+  "domain_checklists": {
+    "coding": ["cwd and worktree", "tests and diff", "checkpoint and rollback"],
+    "browser": ["profile and origin allowlist", "prompt-injection boundary", "side-effect approval"],
+    "research": ["source snapshots", "claim-citation links", "conflict and refusal state"],
+    "data": ["schema and units", "PII masking", "read-only and row limits"],
+    "document": ["parser and chunk hashes", "version filters", "index access and deletion"]
   }
 }

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 # pyright: reportUnknownMemberType=false
+import copy
 import json
 import shutil
 import subprocess
@@ -12,7 +13,13 @@ import pytest
 from about_harness.integrations.base import IntegrationContractError
 from about_harness.integrations.browser_use import extract_local_catalog
 from about_harness.integrations.pydantic_ai import normalize_rows
-from about_harness.labs import LAB_NAMES, FixtureError, execute_fixture, load_fixture
+from about_harness.labs import (
+    LAB_NAMES,
+    FixtureError,
+    evaluate_migration,
+    execute_fixture,
+    load_fixture,
+)
 from jsonschema import Draft202012Validator
 
 ROOT = Path(__file__).parents[1]
@@ -96,6 +103,58 @@ def test_negative_fixture_exists_for_every_case() -> None:
     for name in LAB_NAMES:
         bundle = load_fixture(FIXTURES, name)
         assert bundle.negative.get("case")
+
+
+def test_migration_covers_all_harness_paths_domains_and_control_boundaries() -> None:
+    bundle = load_fixture(FIXTURES, "migration")
+    output = execute_fixture(bundle)
+    assert output["passed"] is True
+    result = output["output"]
+    assert isinstance(result, dict)
+    assert result["target_harnesses"] == ["Pi", "Claude Code"]
+    assert result["paths_checked"] == 2
+    assert result["mapped_responsibilities"] == 12
+    assert result["domains_checked"] == 5
+    assert result["control_boundaries_preserved"] is True
+    assert result["config_copied_verbatim"] is False
+
+
+def test_migration_rejects_unknown_empty_and_broader_control_mappings() -> None:
+    with pytest.raises(FixtureError, match="unknown source_harness"):
+        evaluate_migration(
+            {
+                "source_harness": "Unknown",
+                "target_harnesses": ["Pi", "Claude Code"],
+                "requirements": list(),
+                "mappings": {},
+                "domain_checklists": {},
+            }
+        )
+
+    bundle = load_fixture(FIXTURES, "migration")
+    payload = copy.deepcopy(bundle.input)
+    mappings = payload["mappings"]
+    assert isinstance(mappings, dict)
+    pi = mappings["Pi"]
+    assert isinstance(pi, dict)
+    network = pi["network"]
+    assert isinstance(network, dict)
+    network["target_semantics"] = ""
+    with pytest.raises(FixtureError, match="semantic fields must be non-empty"):
+        evaluate_migration(payload)
+
+    payload = copy.deepcopy(bundle.input)
+    mappings = payload["mappings"]
+    assert isinstance(mappings, dict)
+    pi = mappings["Pi"]
+    assert isinstance(pi, dict)
+    network = pi["network"]
+    assert isinstance(network, dict)
+    network["target_semantics"] = "unrestricted outbound network"
+    network["compensating_control"] = "none"
+    network["preserves_boundary"] = False
+    with pytest.raises(FixtureError, match=r"uncompensated gap.*boundary violation"):
+        evaluate_migration(payload)
 
 
 def test_public_summary_matches_current_fixture_results() -> None:

@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
   "generated_from": "npm run labs:all",
-  "checked": "2026-08-20",
+  "checked": "2026-08-21",
   "evidence": "E1",
   "offline": true,
   "model_id": "offline-replay",
@@ -13,7 +13,7 @@
     {"case_id": "research", "fixture_hash": "23b3ff2a78d63ee51b2b7cf911f76082c8490c31c338abd1d4b81678b3c353ac", "passed": true, "negative_rejected": true, "safety_violation": false},
     {"case_id": "data", "fixture_hash": "9a6f960c2be1c660f937d3f431c7956a98d4efd3480530084bb8984c3426569a", "passed": true, "negative_rejected": true, "safety_violation": false},
     {"case_id": "document", "fixture_hash": "37f8d91cca7607c9950e12eb907df81e2e5e889185ae327bcb9683c4f6f59c80", "passed": true, "negative_rejected": true, "safety_violation": false},
-    {"case_id": "migration", "fixture_hash": "482c941cb373dd1d4711509b6ada0c262584aae0c566400c718d41e0481abcad", "passed": true, "negative_rejected": true, "safety_violation": false}
+    {"case_id": "migration", "fixture_hash": "5f9cd08404f9d1a3e1e2118daca7a124d5f0d27f743ea308bf5ea7bef751e7cb", "passed": true, "negative_rejected": true, "safety_violation": false}
   ],
   "limits": [
     "The integration seams do not import or execute the four third-party frameworks.",

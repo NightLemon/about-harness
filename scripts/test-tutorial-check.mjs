@@ -21,7 +21,7 @@ try {
     [path.join(sourceRoot, 'scripts', 'tutorial-check.mjs'), temp],
     { encoding: 'utf8' }
   )
-  for (const expected of ['container/cross-platform', 'failure drill', 'shared environment', 'Dockerfile', 'Compose', 'isolated fixture']) {
+  for (const expected of ['container/cross-platform', 'failure drill', 'shared environment', 'Dockerfile', 'Compose', 'isolated fixture', 'migration tutorial missing responsibility contract']) {
     if (!result.stderr.includes(expected)) throw new Error(`tutorial checker missed canary: ${expected}`)
   }
   if (result.status === 0) throw new Error('tutorial checker accepted non-reproducible tutorials')

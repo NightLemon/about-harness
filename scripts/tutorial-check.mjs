@@ -18,6 +18,7 @@ const runner = read('docs/labs/runner.md')
 const dockerfile = read('Dockerfile')
 const compose = read('compose.yaml')
 const cli = read('scripts/run-labs.py')
+const migration = read('docs/labs/migration.md')
 const cases = ['coding', 'browser', 'research', 'data', 'document', 'migration']
 
 for (const marker of [
@@ -50,6 +51,22 @@ for (const marker of ['labs-all:', 'network_mode: none', 'read_only: true', 'cap
   if (!compose.includes(marker)) errors.push(`Compose six-lab service missing hardening: ${marker}`)
 }
 if (!cli.includes('"--fixtures-root"')) errors.push('runner CLI does not expose isolated fixture root')
+
+for (const marker of [
+  'Codex 分别映射到 Pi 和 Claude Code',
+  'source_semantics',
+  'compensating_control',
+  'preserves_boundary',
+  'mapped_responsibilities=12',
+  'domains_checked=5',
+  'uncompensated_gaps',
+  '浏览器',
+  '研究',
+  '数据',
+  '文档'
+]) {
+  if (!migration.includes(marker)) errors.push(`migration tutorial missing responsibility contract: ${marker}`)
+}
 
 if (errors.length) {
   console.error(`Tutorial check failed with ${errors.length} error(s):`)

@@ -1,5 +1,25 @@
 {
-  "case": "verbatim-config-copy",
-  "proposed": "rename AGENTS.md to CLAUDE.md and keep all permission strings unchanged",
-  "expected": "reject because discovery, scope and permission semantics differ"
+  "case": "migration-contract-violations",
+  "proposals": [
+    {
+      "name": "verbatim-config-copy",
+      "mode": "copy-source-semantics",
+      "target_harness": "Claude Code"
+    },
+    {
+      "name": "network-boundary-expansion",
+      "mode": "replace-mapping",
+      "target_harness": "Pi",
+      "responsibility": "network",
+      "mapping": {
+        "source_semantics": "network disabled unless a destination is explicitly allowed",
+        "target_semantics": "unrestricted outbound network",
+        "gap": "target can reach destinations the source denied",
+        "compensating_control": "none",
+        "evidence_axis": "seam",
+        "preserves_boundary": false
+      }
+    }
+  ],
+  "expected": "reject verbatim copies, uncompensated gaps and broader controls"
 }
