@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import time
 from collections.abc import Callable
 from dataclasses import dataclass, field
 
@@ -8,6 +9,7 @@ from about_harness.retry import RetryPolicy, run_with_retry
 
 ToolHandler = Callable[[dict[str, JsonValue]], JsonValue]
 RetryObserver = Callable[[int, int, str], None]
+Sleeper = Callable[[float], None]
 
 
 class ToolError(RuntimeError):
@@ -33,6 +35,7 @@ def _new_cache() -> dict[str, JsonValue]:
 class ToolRegistry:
     handlers: dict[str, ToolHandler] = field(default_factory=_new_handlers)
     _cache: dict[str, JsonValue] = field(default_factory=_new_cache)
+    sleeper: Sleeper = time.sleep
 
     def register(self, name: str, handler: ToolHandler) -> None:
         if not name or name in self.handlers:
@@ -51,7 +54,12 @@ class ToolRegistry:
         handler = self.handlers.get(call.name)
         if handler is None:
             raise ToolError(f"tool is not registered: {call.name}")
-        value, attempts = run_with_retry(lambda: handler(call.arguments), retry, on_retry=on_retry)
+        value, attempts = run_with_retry(
+            lambda: handler(call.arguments),
+            retry,
+            on_retry=on_retry,
+            sleep=self.sleeper,
+        )
         self._cache[call.idempotency_key] = value
         return ToolExecution(value, False, attempts)
 

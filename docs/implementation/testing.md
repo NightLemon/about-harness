@@ -23,7 +23,7 @@ npm run lab:smoke
 
 ## 必测停止路径
 
-完成、max steps、model/cost budget、timeout、取消、拒权、tool error、invalid action 都要有断言。恢复测试同时断言 adapter position、幂等缓存和 checkpoint，防止“恢复”重复副作用。
+完成、max steps、model/cost budget、非有限成本、调用边界 timeout、取消、拒权、tool error、错误类型 action 都要有断言。重试测试同时断言 trace 延迟和 sleeper 收到的实际延迟；恢复测试同时断言 adapter position、幂等缓存和 checkpoint，防止“恢复”重复副作用。
 
 ## 负例与回滚
 

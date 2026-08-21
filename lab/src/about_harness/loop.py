@@ -8,6 +8,8 @@ from dataclasses import dataclass, field
 
 from about_harness.adapters.base import Adapter
 from about_harness.contracts import (
+    Action,
+    ContractError,
     JsonValue,
     RunCheckpoint,
     RunResult,
@@ -21,6 +23,12 @@ from about_harness.tools import ToolError, ToolRegistry
 from about_harness.trace import TraceRecorder
 
 Clock = Callable[[], float]
+
+
+def _require_action(value: object) -> Action:
+    if not isinstance(value, Action):
+        raise ContractError(f"adapter returned {type(value).__name__}, expected Action")
+    return value
 
 
 @dataclass(slots=True)
@@ -91,7 +99,7 @@ class HarnessRunner:
                     current_checkpoint,
                 )
             try:
-                action = self.adapter.next_action(task, recorder.events)
+                action = _require_action(self.adapter.next_action(task, recorder.events))
             except Exception as exc:  # adapter is an explicit trust boundary
                 return self._result(
                     identifier,

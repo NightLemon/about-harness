@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import time
 from collections.abc import Callable
 from dataclasses import dataclass
 from typing import TypeVar
@@ -30,7 +31,7 @@ def run_with_retry(
     policy: RetryPolicy,
     *,
     on_retry: Callable[[int, int, str], None] | None = None,
-    sleep: Callable[[float], None] | None = None,
+    sleep: Callable[[float], None] = time.sleep,
 ) -> tuple[T, int]:
     for attempt in range(1, policy.max_attempts + 1):
         try:
@@ -41,6 +42,5 @@ def run_with_retry(
             delay = policy.delay_ms(attempt)
             if on_retry:
                 on_retry(attempt, delay, str(exc))
-            if sleep:
-                sleep(delay / 1_000)
+            sleep(delay / 1_000)
     raise AssertionError("retry loop exhausted without returning or raising")

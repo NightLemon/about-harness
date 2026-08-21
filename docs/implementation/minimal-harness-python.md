@@ -11,7 +11,7 @@
 | 文件 | 责任 | 失败时停止点 |
 | --- | --- | --- |
 | `contracts.py` | task/action/result 与预算 | schema/类型不合法即拒绝 |
-| `loop.py` | 继续、完成、预算、取消、timeout、checkpoint | 任一门禁先于副作用 |
+| `loop.py` | 继续、完成、预算、取消、总 deadline、checkpoint | 任一控制面字段先验证再使用 |
 | `policies.py` | allowlist、敏感参数与审批 | 拒权产生 trace |
 | `tools.py` | 工具注册、重试与幂等缓存 | 未注册/最终失败即停止 |
 | `trace.py` | 有序事件、耗时与脱敏 | secret/path 不得输出 |
@@ -33,7 +33,7 @@ Fake adapter 先返回 `echo` ToolCall。Policy 确认工具在 task allowlist �
 
 ## 失败与攻击练习
 
-运行以下已自动化场景：空 goal/schema 错误、未授权工具、重复幂等键、两次临时失败后成功、无限 action、预算耗尽、timeout、并发取消、checkpoint 恢复、过期/污染记忆，以及 trace 中的 token 和用户路径。
+运行以下已自动化场景：空 goal/schema 错误、负数或非有限成本、错误 adapter 返回、未授权工具、重复幂等键、带实际 sleeper 的两次指数退避、无限 action、预算耗尽、总 deadline、并发取消、checkpoint 恢复、坏 checkpoint、过期/污染记忆，以及 trace 中的 token 和用户路径。
 
 ```bash
 uv run pytest -q lab/tests/test_loop.py
@@ -48,4 +48,4 @@ uv run pytest -q lab/tests/test_memory_context_trace.py
 
 ## 适用边界与下一步
 
-实现故意省略 provider client、真实 token 计量、分布式队列和持久数据库。完成后阅读[Adapter 契约](/implementation/adapter-contract)和[测试策略](/implementation/testing)，再把自己的工作负载写成固定 fixture。
+实现故意省略 provider client、真实 token 计量、分布式队列和持久数据库。总 deadline 只在调用边界检查，不能抢占任意阻塞 Python callable；真实 adapter/tool 必须提供单调用 timeout 或进程隔离。完成后阅读[Adapter 契约](/implementation/adapter-contract)和[测试策略](/implementation/testing)，再把自己的工作负载写成固定 fixture。

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import math
 from dataclasses import asdict, dataclass, field
 from enum import StrEnum
 from typing import TypeAlias
@@ -12,6 +13,27 @@ SCHEMA_VERSION = "1.0"
 
 def _new_json_object() -> dict[str, JsonValue]:
     return {}
+
+
+def _is_positive_int(value: object) -> bool:
+    return isinstance(value, int) and not isinstance(value, bool) and value >= 1
+
+
+def _is_non_negative_int(value: object) -> bool:
+    return isinstance(value, int) and not isinstance(value, bool) and value >= 0
+
+
+def _is_finite_non_negative_number(value: object) -> bool:
+    return (
+        isinstance(value, (int, float))
+        and not isinstance(value, bool)
+        and math.isfinite(float(value))
+        and value >= 0
+    )
+
+
+def _is_json_object(value: object) -> bool:
+    return isinstance(value, dict)
 
 
 class ContractError(ValueError):
@@ -43,10 +65,11 @@ class Budgets:
     max_cost_usd: float = 0.0
 
     def __post_init__(self) -> None:
-        if self.max_steps < 1 or self.max_model_calls < 1 or self.timeout_ms < 1:
+        counters = (self.max_steps, self.max_model_calls, self.timeout_ms)
+        if any(not _is_positive_int(value) for value in counters):
             raise ContractError("step, model-call, and timeout budgets must be positive")
-        if self.max_cost_usd < 0:
-            raise ContractError("cost budget cannot be negative")
+        if not _is_finite_non_negative_number(self.max_cost_usd):
+            raise ContractError("cost budget must be finite and non-negative")
 
 
 @dataclass(frozen=True, slots=True)
@@ -125,6 +148,16 @@ class Action:
     output: JsonValue = None
     cost_usd: float = 0.0
 
+    def __post_init__(self) -> None:
+        if self.kind not in {"tool", "complete"}:
+            raise ContractError(f"unsupported action kind: {self.kind}")
+        if self.kind == "tool" and self.tool_call is None:
+            raise ContractError("tool action requires a tool call")
+        if self.kind == "complete" and self.tool_call is not None:
+            raise ContractError("complete action cannot contain a tool call")
+        if not _is_finite_non_negative_number(self.cost_usd):
+            raise ContractError("action cost must be finite and non-negative")
+
     @classmethod
     def tool(cls, call: ToolCall, *, cost_usd: float = 0.0) -> Action:
         return cls(kind="tool", tool_call=call, cost_usd=cost_usd)
@@ -150,6 +183,19 @@ class RunCheckpoint:
     reused_tool_calls: int
     cost_usd: float
     adapter_state: dict[str, JsonValue]
+
+    def __post_init__(self) -> None:
+        counters = (self.step, self.model_calls, self.tool_calls, self.reused_tool_calls)
+        if any(not _is_non_negative_int(value) for value in counters):
+            raise ContractError("checkpoint counters must be non-negative integers")
+        if self.tool_calls + self.reused_tool_calls != self.step:
+            raise ContractError("checkpoint tool counters must equal completed steps")
+        if self.model_calls < self.step:
+            raise ContractError("checkpoint model calls cannot be lower than completed steps")
+        if not _is_finite_non_negative_number(self.cost_usd):
+            raise ContractError("checkpoint cost must be finite and non-negative")
+        if not _is_json_object(self.adapter_state):
+            raise ContractError("checkpoint adapter_state must be an object")
 
     def to_dict(self) -> dict[str, JsonValue]:
         return dict(asdict(self))

@@ -2,11 +2,12 @@ from __future__ import annotations
 
 # pyright: reportUnknownMemberType=false
 import json
+import math
 from pathlib import Path
 from typing import Any
 
 import pytest
-from about_harness.contracts import Budgets, ContractError, TaskSpec
+from about_harness.contracts import Action, Budgets, ContractError, RunCheckpoint, TaskSpec
 from jsonschema import Draft202012Validator
 
 ROOT = Path(__file__).parents[1]
@@ -59,3 +60,18 @@ def test_all_schemas_are_valid_draft_2020_12() -> None:
 def test_budget_rejects_negative_cost() -> None:
     with pytest.raises(ContractError):
         Budgets(max_cost_usd=-0.01)
+
+
+@pytest.mark.parametrize("value", [-1.0, math.inf, -math.inf, math.nan])
+def test_budget_and_action_reject_unsafe_costs(value: float) -> None:
+    with pytest.raises(ContractError):
+        Budgets(max_cost_usd=value)
+    with pytest.raises(ContractError):
+        Action.complete("unsafe", cost_usd=value)
+
+
+def test_checkpoint_rejects_inconsistent_or_negative_counters() -> None:
+    with pytest.raises(ContractError):
+        RunCheckpoint(-1, 0, 0, 0, 0.0, {})
+    with pytest.raises(ContractError):
+        RunCheckpoint(2, 2, 1, 0, 0.0, {})

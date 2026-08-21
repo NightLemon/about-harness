@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import threading
 from dataclasses import dataclass
+from typing import cast
 
 from about_harness.adapters.fake import FakeAdapter
 from about_harness.contracts import (
@@ -83,6 +84,7 @@ def test_permission_denial_stops_before_tool_execution() -> None:
 
 def test_retry_and_idempotency_prevent_duplicate_side_effects() -> None:
     attempts = 0
+    sleeps: list[float] = []
 
     def flaky(arguments: dict[str, JsonValue]) -> JsonValue:
         nonlocal attempts
@@ -91,17 +93,41 @@ def test_retry_and_idempotency_prevent_duplicate_side_effects() -> None:
             raise RetryableError("temporary")
         return arguments["value"]
 
-    registry = ToolRegistry()
+    registry = ToolRegistry(sleeper=sleeps.append)
     registry.register("flaky", flaky)
     duplicate = call(name="flaky", key="stable-key")
     adapter = FakeAdapter((Action.tool(duplicate), Action.tool(duplicate), Action.complete("done")))
-    runner = HarnessRunner(adapter, registry, retry=RetryPolicy(max_attempts=3, base_backoff_ms=0))
+    runner = HarnessRunner(adapter, registry, retry=RetryPolicy(max_attempts=3, base_backoff_ms=10))
     result = runner.run(task(tools=("flaky",)))
     assert result.status is RunStatus.COMPLETED
     assert attempts == 3
     assert result.metrics["tool_calls"] == 1
     assert result.metrics["reused_tool_calls"] == 1
     assert len([event for event in result.trace if event.kind == "retry"]) == 2
+    assert sleeps == [0.01, 0.02]
+
+
+@dataclass(slots=True)
+class WrongTypeAdapter:
+    name: str = "wrong-type"
+
+    def next_action(self, task: TaskSpec, trace: tuple[TraceEvent, ...]) -> Action:
+        del task, trace
+        return cast(Action, {"kind": "complete"})
+
+    def snapshot(self) -> dict[str, JsonValue]:
+        return {}
+
+    def restore(self, state: dict[str, JsonValue]) -> None:
+        assert state == {}
+
+
+def test_wrong_adapter_return_is_classified_as_invalid_action() -> None:
+    result = HarnessRunner(WrongTypeAdapter(), ToolRegistry()).run(task())
+    assert result.status is RunStatus.FAILED
+    assert result.stop_reason is StopReason.INVALID_ACTION
+    assert result.error is not None
+    assert "expected Action" in result.error
 
 
 def test_checkpoint_restores_adapter_position() -> None:

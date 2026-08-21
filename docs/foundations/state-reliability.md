@@ -8,7 +8,9 @@ Run 至少经历 created、running、waiting-approval、stopping、completed、f
 
 ## Timeout、重试与退避
 
-分别设置模型、工具、步骤和总 run timeout。只有限流、短暂网络或明确可恢复的资源冲突进入有限指数退避；认证、schema、拒权、注入与确定性测试失败立即停止。
+分别设置模型、工具、步骤和总 run timeout。只有限流、短暂网络或明确可恢复的资源冲突进入有限指数退避；退避事件记录的 `delay_ms` 必须和实际 sleeper 一致。认证、schema、拒权、注入与确定性测试失败立即停止。
+
+本项目的最小 runner 只在 adapter/tool 调用边界检查总 run deadline；它不能强制终止任意阻塞的 Python callable。生产 adapter 与 tool executor 必须自己实现可中断的单调用 timeout，或使用可终止的进程/容器隔离。把“调用返回后发现超时”写成“已中断调用”属于错误证据。
 
 ## 幂等与副作用
 

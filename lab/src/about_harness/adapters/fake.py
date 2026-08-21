@@ -20,7 +20,7 @@ class FakeAdapter:
             return action
         if self.repeat_last and self.actions:
             return self.actions[-1]
-        return Action(kind="invalid")
+        raise ValueError("fake adapter exhausted without a completion action")
 
     def snapshot(self) -> dict[str, JsonValue]:
         return {"index": self.index}
