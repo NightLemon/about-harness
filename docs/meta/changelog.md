@@ -49,6 +49,6 @@
 | [07](/reviews/v1/round-07) | 完成 | 逻辑矩阵唯一性、split/token 汇总与晋级阻断防回归 |
 | [08](/reviews/v1/round-08) | 完成 | JSON/JSONL 脱敏 fail-closed、镜像 digest 与 workflow 权限 scope 防回归 |
 | [09](/reviews/v1/round-09) | 完成 | 两条迁移路径、六类职责、边界负例与三视口迁移视觉防回归 |
-| 10 | 未开始 | M8 创建 |
+| [10](/reviews/v1/round-10) | 验证中 | 发布证据链、事实逐项锚点与 Node.js 22+ 基线防回归；complete tag 待创建 |
 
 只有文档记录、artifact 证据、result commit 与 annotated tag 同时存在，状态才改为完成。
