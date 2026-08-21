@@ -38,6 +38,7 @@ try {
   }
 
   const pinnedSha = 'a'.repeat(40)
+  const deployPagesSha = 'd6db90164ac5ed86f2b6aed7e0febac5b3c0c03e'
   const validCi = `name: CI
 on:
   pull_request:
@@ -74,7 +75,7 @@ jobs:
       id-token: write
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/deploy-pages@${pinnedSha}
+      - uses: actions/deploy-pages@${deployPagesSha}
 `
   const validFacts = `name: Facts
 on:
@@ -127,6 +128,13 @@ jobs:
   const topLevelDeployWrite = run('workflows-check.mjs', [temp])
   if (topLevelDeployWrite.status === 0 || !topLevelDeployWrite.stderr.includes('workflow scope must not grant pages: write')) {
     throw new Error('workflow checker did not reject workflow-level Pages/OIDC write permissions')
+  }
+
+  write('.github/workflows/deploy.yml', validDeploy)
+  write('.github/workflows/deploy.yml', validDeploy.replace(deployPagesSha, 'c'.repeat(40)))
+  const unregisteredReleasePin = run('workflows-check.mjs', [temp])
+  if (unregisteredReleasePin.status === 0 || !unregisteredReleasePin.stderr.includes('does not match its registered release pin')) {
+    throw new Error('workflow checker did not reject an unregistered deploy-pages commit')
   }
 
   write('.github/workflows/deploy.yml', validDeploy)

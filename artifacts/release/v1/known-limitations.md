@@ -4,7 +4,7 @@
 
 - 当前 release candidate 的最高证据等级是 **E1**：固定 fixture、fake/replay、离线 runner、容器/本地门禁和只读来源核对。它不能证明真实模型、provider 或线上产品组合的质量。
 - **A3 未使用**：没有读取凭据、调用真实模型 API 或产生费用。E2 烟测与 E3 正式比较均未运行。
-- **A4 已用于发布准备**：已经创建公开 remote、推送 RC1 历史与 tags、启用 branch protection 和 Pages，并观察到首次 workflow 的浅克隆失败。RC2 仍为 **pending-publication（尚未发布）**；在新的 PR、CI、deploy 与线上 smoke 全部通过前，不得声称已发布成功。
+- **A4 已用于发布准备**：已经创建公开 remote、推送 RC1/RC2 历史与 tags、启用 branch protection 和 Pages。RC1 因浅克隆失败，RC2 的公开 artifact 构建通过但 deploy action pin 无法解析。RC3 仍为 **pending-publication（尚未发布）**；在新的 PR、CI、deploy 与线上 smoke 全部通过前，不得声称已发布成功。
 - 20-task × 3-repeat 的正式矩阵要求 120 个 cells；当前公开 E1 样例只有 12 个，缺少 108 个，因此 `promotion_eligible=false`，不得形成模型排行榜或“最优配置”结论。
 
 ## 运行与事实限制
@@ -18,4 +18,4 @@
 
 - 公开构建只包含 85 个学习页面；`docs/reviews/**`、`meta/changelog` 与 `meta/review-method` 保留在仓库治理范围，不进入 Pages artifact。本地 smoke 不证明真实 Pages origin、响应头或 deploy workflow 结果。
 - VitePress preview 会把 artifact 挂到根路径，不能模拟项目 Pages 的 `/about-harness/` clean URL。RC2 使用仓库内的项目路径感知静态服务在 4175 端口完成本地 smoke；端口本身不是发布事实。
-- RC1 tag 保持原位；RC2 用新的 commit 与 annotated tags 记录本次恢复。不得 force push、移动公开 tag 或在部署阶段临时篡改 artifact。
+- RC1 与 RC2 tags 均保持原位；RC3 用新的 commit 与 annotated tags 记录 action pin 恢复。不得 force push、移动公开 tag 或在部署阶段临时篡改 artifact。
