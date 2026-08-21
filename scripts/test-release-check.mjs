@@ -43,6 +43,10 @@ try {
     privacy: 'docs/meta/privacy.md',
     dependency_security: 'docs/meta/dependency-security.md',
     workflows: ['.github/workflows/ci.yml', '.github/workflows/deploy.yml', '.github/workflows/facts.yml'],
+    publication_scope: [
+      'package.json', 'docs/.vitepress/config.mts', 'docs/.vitepress/publication-scope.mjs',
+      'scripts/check-built-site.mjs', 'scripts/pages-smoke.mjs', 'scripts/serve-pages.mjs'
+    ],
     visual_manifests: ['artifacts/visual/m6/manifest.json', 'artifacts/visual/round-09/manifest.json'],
     public_results: ['lab/results/public/m5-offline-summary.json', 'lab/results/public/m5-offline-trace-sample.json']
   }
@@ -57,6 +61,7 @@ try {
     reports.privacy,
     reports.dependency_security,
     ...reports.workflows,
+    ...reports.publication_scope,
     ...reports.visual_manifests,
     ...reports.public_results
   ]) write(rel, `self-test report ${rel}\n`)
@@ -107,6 +112,7 @@ This E1-only canary has more than two hundred characters so the checker must ins
     ['workflows', 'npm run workflows:check'],
     ['visual', 'npm run docs:visual'],
     ['release_self_test', 'npm run release:self-test'],
+    ['pages', 'npm run pages:check'],
     ['pages_smoke', 'npm run pages:smoke -- http://127.0.0.1:4173/about-harness/']
   ].map(([id, command]) => ({ id, command, exit_code: 0 }))
   write(verificationPath, JSON.stringify({ schema_version: '1.0', source_commit: base, commands }, null, 2))
@@ -120,6 +126,7 @@ This E1-only canary has more than two hundred characters so the checker must ins
     reports.privacy,
     reports.dependency_security,
     ...reports.workflows,
+    ...reports.publication_scope,
     ...reports.visual_manifests,
     ...reports.public_results
   ]
@@ -166,12 +173,12 @@ This E1-only canary has more than two hundred characters so the checker must ins
   write(verificationPath, JSON.stringify(verification, null, 2))
   const malformed = runCheck()
   const malformedOutput = `${malformed.stdout}${malformed.stderr}`
-  for (const marker of ['exactly 10 entries', 'authorization must keep A3, A4', 'missing required gate verify']) {
+  for (const marker of ['exactly 10 entries', 'A4 and remote_operations must be matching booleans', 'missing required gate verify']) {
     if (!malformedOutput.includes(marker)) throw new Error(`release-check missed malformed RC canary: ${marker}`)
   }
   if (malformed.status === 0) throw new Error('release-check accepted a malformed release candidate')
 
-  console.log('Release checker negative tests passed: lightweight tags, incomplete rounds, A4 use, and missing gates were rejected.')
+  console.log('Release checker negative tests passed: lightweight tags, incomplete rounds, inconsistent authorization, and missing gates were rejected.')
 } finally {
   fs.rmSync(temp, { recursive: true, force: true })
 }

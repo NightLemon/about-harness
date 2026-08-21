@@ -28,9 +28,9 @@
     "created_at": { "type": "string", "format": "date-time" },
     "source_commit": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
     "release_tag": { "type": "string", "pattern": "^release-v1-rc[1-9][0-9]*$" },
-    "milestone_tag": { "const": "m8-complete-v1" },
+    "milestone_tag": { "type": "string", "pattern": "^m8-(complete-v1|corrected-v[2-9][0-9]*)$" },
     "evidence_level": { "const": "E1" },
-    "publication_status": { "const": "not-published" },
+    "publication_status": { "enum": ["not-published", "pending-publication"] },
     "site": {
       "type": "object",
       "additionalProperties": false,
@@ -38,7 +38,7 @@
       "properties": {
         "base": { "const": "/about-harness/" },
         "local_smoke_url": { "type": "string", "pattern": "^http://127\\.0\\.0\\.1:[0-9]+/about-harness/$" },
-        "published_url": { "type": "null" }
+        "published_url": { "anyOf": [{ "type": "null" }, { "type": "string", "format": "uri" }] }
       }
     },
     "authorization": {
@@ -47,8 +47,8 @@
       "required": ["a3_used", "a4_used", "remote_operations"],
       "properties": {
         "a3_used": { "const": false },
-        "a4_used": { "const": false },
-        "remote_operations": { "const": false }
+        "a4_used": { "type": "boolean" },
+        "remote_operations": { "type": "boolean" }
       }
     },
     "review_rounds": {
@@ -94,13 +94,14 @@
     "reports": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["facts_registry", "licenses", "privacy", "dependency_security", "workflows", "visual_manifests", "public_results"],
+      "required": ["facts_registry", "licenses", "privacy", "dependency_security", "workflows", "publication_scope", "visual_manifests", "public_results"],
       "properties": {
         "facts_registry": { "type": "string" },
         "licenses": { "type": "array", "minItems": 2, "items": { "type": "string" } },
         "privacy": { "type": "string" },
         "dependency_security": { "type": "string" },
         "workflows": { "type": "array", "minItems": 3, "items": { "type": "string" } },
+        "publication_scope": { "type": "array", "minItems": 2, "items": { "type": "string" } },
         "visual_manifests": { "type": "array", "minItems": 2, "items": { "type": "string" } },
         "public_results": { "type": "array", "minItems": 2, "items": { "type": "string" } }
       }

@@ -1,3 +1,5 @@
+import { publicSmokeRoutes } from '../docs/.vitepress/publication-scope.mjs'
+
 const baseInput = process.argv[2]
 if (!baseInput) {
   console.error('Usage: node scripts/pages-smoke.mjs <published-or-local-base-url>')
@@ -14,12 +16,7 @@ try {
   process.exit(2)
 }
 
-const routes = [
-  '', 'guide/start', 'guide/roadmap', 'implementation/minimal-harness-python',
-  'models/adaptation', 'harnesses/codex', 'harnesses/pi', 'harnesses/claude-code',
-  'labs/coding', 'labs/browser', 'labs/research', 'labs/data', 'labs/document',
-  'labs/migration', 'reviews/v1', 'meta/publishing'
-]
+const routes = publicSmokeRoutes
 const errors = []
 const visitedAssets = new Set()
 

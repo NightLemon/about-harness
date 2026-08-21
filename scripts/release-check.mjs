@@ -128,14 +128,22 @@ if (manifest.schema_version !== '1.0') errors.push('release manifest: schema_ver
 if (!/^v1-rc[1-9][0-9]*$/.test(manifest.release_id || '')) errors.push('release manifest: invalid release_id')
 if (Number.isNaN(Date.parse(manifest.created_at || ''))) errors.push('release manifest: invalid created_at')
 if (!/^release-v1-rc[1-9][0-9]*$/.test(manifest.release_tag || '')) errors.push('release manifest: invalid release_tag')
-if (manifest.milestone_tag !== 'm8-complete-v1') errors.push('release manifest: milestone_tag must be m8-complete-v1')
+if (!/^m8-(complete-v1|corrected-v[2-9][0-9]*)$/.test(manifest.milestone_tag || '')) errors.push('release manifest: invalid M8 milestone_tag')
 if (manifest.evidence_level !== 'E1') errors.push('release manifest: evidence_level must remain E1 without A3')
-if (manifest.publication_status !== 'not-published') errors.push('release manifest: publication_status must be not-published before A4')
+if (!['not-published', 'pending-publication'].includes(manifest.publication_status)) errors.push('release manifest: invalid pre-publication status')
 if (manifest.site?.base !== '/about-harness/') errors.push('release manifest: site base must be /about-harness/')
 if (!/^http:\/\/127\.0\.0\.1:\d+\/about-harness\/$/.test(manifest.site?.local_smoke_url || '')) errors.push('release manifest: invalid local Pages smoke URL')
-if (manifest.site?.published_url !== null) errors.push('release manifest: published_url must be null before A4')
-if (manifest.authorization?.a3_used !== false || manifest.authorization?.a4_used !== false || manifest.authorization?.remote_operations !== false) {
-  errors.push('release manifest: authorization must keep A3, A4, and remote operations false')
+if (manifest.site?.published_url !== null) errors.push('release manifest: published_url must remain null until deployment succeeds')
+if (manifest.authorization?.a3_used !== false) errors.push('release manifest: A3 must remain false without real API authorization')
+if (typeof manifest.authorization?.a4_used !== 'boolean' ||
+    manifest.authorization?.a4_used !== manifest.authorization?.remote_operations) {
+  errors.push('release manifest: A4 and remote_operations must be matching booleans')
+}
+if (manifest.authorization?.a4_used && manifest.publication_status !== 'pending-publication') {
+  errors.push('release manifest: A4 release candidate must be pending-publication')
+}
+if (!manifest.authorization?.a4_used && manifest.publication_status !== 'not-published') {
+  errors.push('release manifest: local release candidate must be not-published')
 }
 
 const sourceCommit = resolveCommit(manifest.source_commit, 'release manifest source_commit')
@@ -202,6 +210,7 @@ const requiredCommands = {
   workflows: (value) => value === 'npm run workflows:check',
   visual: (value) => value === 'npm run docs:visual',
   release_self_test: (value) => value === 'npm run release:self-test',
+  pages: (value) => value === 'npm run pages:check',
   pages_smoke: (value) => /^npm run pages:smoke -- http:\/\/127\.0\.0\.1:\d+\/about-harness\/$/.test(value)
 }
 if (releaseVerification) {
@@ -246,6 +255,12 @@ const requiredReportPaths = [
   '.github/workflows/ci.yml',
   '.github/workflows/deploy.yml',
   '.github/workflows/facts.yml',
+  'package.json',
+  'docs/.vitepress/config.mts',
+  'docs/.vitepress/publication-scope.mjs',
+  'scripts/check-built-site.mjs',
+  'scripts/pages-smoke.mjs',
+  'scripts/serve-pages.mjs',
   'artifacts/visual/m6/manifest.json',
   'artifacts/visual/round-09/manifest.json',
   'lab/results/public/m5-offline-summary.json',
@@ -257,6 +272,7 @@ const declaredReports = new Set([
   reports.privacy,
   reports.dependency_security,
   ...(Array.isArray(reports.workflows) ? reports.workflows : []),
+  ...(Array.isArray(reports.publication_scope) ? reports.publication_scope : []),
   ...(Array.isArray(reports.visual_manifests) ? reports.visual_manifests : []),
   ...(Array.isArray(reports.public_results) ? reports.public_results : [])
 ])
@@ -291,7 +307,8 @@ else {
   if (releaseTagCommit && milestoneTagCommit && releaseTagCommit !== milestoneTagCommit) errors.push('release and M8 tags point to different commits')
   if (sourceCommit && releaseTagCommit) requireAncestor(sourceCommit, releaseTagCommit, 'release candidate')
   const remotes = git(['remote']).stdout.trim()
-  if (remotes) errors.push('release candidate: Git remotes exist before A4')
+  if (!manifest.authorization?.a4_used && remotes) errors.push('release candidate: Git remotes exist before A4')
+  if (manifest.authorization?.a4_used && !remotes) errors.push('release candidate: A4 remote operations are claimed but no Git remote exists')
   const status = git(['status', '--porcelain=v1', '-uall']).stdout.split(/\r?\n/).filter(Boolean)
   const unexpected = status.filter((line) => line !== '?? ACTIVE_GOAL.md')
   if (unexpected.length) errors.push(`release candidate: worktree is not clean (${unexpected.join(', ')})`)
@@ -303,4 +320,4 @@ if (errors.length) {
   process.exit(1)
 }
 
-console.log('Release check passed: v1-rc1 binds 10 annotated review chains, 30-day facts, local Pages evidence, governance reports, and A3/A4 boundaries.')
+console.log(`Release check passed: ${manifest.release_id} binds 10 annotated review chains, 30-day facts, scoped public Pages evidence, governance reports, and A3/A4 boundaries.`)

@@ -1,10 +1,12 @@
 import { defineConfig } from 'vitepress'
+import { publicationExcludes } from './publication-scope.mjs'
 
 export default defineConfig({
   lang: 'zh-CN',
   title: 'About Harness',
   description: '从模型到 agent 工作环境：系统学习、配置、实验与评测 AI agent harness',
   base: process.env.DOCS_BASE || '/',
+  srcExclude: publicationExcludes,
   cleanUrls: true,
   lastUpdated: true,
   head: [
@@ -18,8 +20,7 @@ export default defineConfig({
       { text: '知识地图', link: '/guide/roadmap' },
       { text: '模型优化', link: '/optimization/model-fit' },
       { text: 'Harness 指南', link: '/harnesses/comparison' },
-      { text: '实验与评测', link: '/labs/setup' },
-      { text: '项目状态', link: '/meta/changelog' }
+      { text: '实验与评测', link: '/labs/setup' }
     ],
     sidebar: [
       {
@@ -167,10 +168,6 @@ export default defineConfig({
           { text: '资料来源', link: '/references/sources' },
           { text: '事实注册表', link: '/references/fact-registry' },
           { text: '兼容性矩阵', link: '/references/compatibility' },
-          { text: '审阅方法', link: '/meta/review-method' },
-          { text: '迭代记录', link: '/meta/changelog' },
-          { text: 'V1 Review 状态', link: '/reviews/v1' },
-          { text: 'Legacy Review 说明', link: '/reviews/legacy' },
           { text: '站点依赖安全', link: '/meta/dependency-security' },
           { text: '隐私与公开结果', link: '/meta/privacy' },
           { text: '维护与事实刷新', link: '/meta/maintenance' },

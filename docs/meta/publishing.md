@@ -1,6 +1,6 @@
 # 发布到 GitHub Pages
 
-仓库提供 `.github/workflows/deploy.yml` 模板。工作流会运行完整离线门禁、构建 VitePress，并根据仓库类型选择 base path：`<owner>.github.io` 使用 `/`，普通项目仓库使用 `/<repo>/`。模板存在不代表已经发布；M9 获得 A4 前不得连接 remote、触发 workflow 或配置 Pages。
+仓库提供 `.github/workflows/deploy.yml`。工作流只运行公开学习站点门禁、构建 VitePress，并以普通项目仓库的 `/about-harness/` 作为 base path。十轮 review 的历史与 tags 由独立 CI 校验，不进入 Pages artifact，也不作为静态发布依赖。
 
 ## 首次发布
 
@@ -10,16 +10,17 @@
 4. 手动运行或等待 `Deploy documentation` workflow。
 5. 打开 workflow 输出的 Pages URL，检查首页、内部链接、搜索、深色模式与移动端导航。
 
-本项目不会自动创建远程仓库或推送；这些动作会影响外部账号，应由仓库所有者明确执行或授权。
+创建远程仓库、push、PR、Pages 与发布都会影响外部账号，必须获得单独 A4 授权。
 
 ## 发布前检查
 
 ```bash
 npm ci
-uv sync --frozen
 npx playwright install chromium
-npm run verify
+npm run pages:check
 ```
+
+仓库维护者可另外运行 `npm run verify` 校验实现、实验与 review 治理证据；该完整历史门禁不改变公开静态 artifact。
 
 还要检查：
 
@@ -39,7 +40,11 @@ npm run verify
 ```bash
 npm run docs:project-base
 npm run docs:visual
+npm run pages:serve -- --port 4175
+npm run pages:smoke -- http://127.0.0.1:4175/about-harness/
 ```
+
+`pages:serve` 只用于本地验证，会按 GitHub Pages 的项目路径和 clean URL 规则读取已构建 artifact；完成 smoke 后用 `Ctrl+C` 停止。
 
 M9 发布后再对真实 URL 运行：
 
@@ -47,7 +52,7 @@ M9 发布后再对真实 URL 运行：
 npm run pages:smoke -- https://<owner>.github.io/about-harness/
 ```
 
-Smoke 检查首页、学习路径、最小 harness、模型适配、三个 coding harness、六案例、review 状态、发布说明和同源静态资源。任一路由或资源失败都不能宣告发布成功。
+Smoke 检查首页、学习路径、最小 harness、模型适配、三个 coding harness、六案例、发布说明和同源静态资源。任一路由或资源失败都不能宣告发布成功。
 
 ## 静态 Pages 的响应头边界
 

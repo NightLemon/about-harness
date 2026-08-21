@@ -40,6 +40,8 @@
     "licenses:check": "node scripts/licenses-check.mjs",
     "secrets:check": "node scripts/secrets-check.mjs",
     "workflows:check": "node scripts/workflows-check.mjs",
+    "pages:check": "npm run docs:project-base && npm run roadmap:check && npm run learning:check && npm run model:check && npm run compat:check && npm run tutorial:check && npm run facts:release && npm run links:check && npm run licenses:check && npm run secrets:check && npm run workflows:check && npm run docs:visual",
+    "pages:serve": "node scripts/serve-pages.mjs",
     "pages:smoke": "node scripts/pages-smoke.mjs",
     "m6:self-test": "node scripts/test-m6-checks.mjs",
     "release:check": "node scripts/release-check.mjs",

@@ -73,9 +73,9 @@ Agent harness 把概率模型包在一个可执行、可约束、可观察、可
 
 ## 第七层：安全、事实与发布
 
-安全覆盖 prompt injection、secret、数据流、供应链和事件响应；治理覆盖来源、许可、依赖、review 证据、GitHub Pages 和维护周期。易变事实发布前 30 天内复核，超过 90 天的在线页面必须显示过期提示。
+安全覆盖 prompt injection、secret、数据流、供应链和事件响应；治理覆盖来源、许可、依赖、GitHub Pages 和维护周期。易变事实发布前 30 天内复核，超过 90 天的在线页面必须显示过期提示。
 
-入口：[威胁模型](/security/threat-model)、[事实注册表](/references/fact-registry)、[审阅方法](/meta/review-method)、[依赖安全](/meta/dependency-security)、[隐私](/meta/privacy)、[发布](/meta/publishing)、[维护](/meta/maintenance)。
+入口：[威胁模型](/security/threat-model)、[事实注册表](/references/fact-registry)、[依赖安全](/meta/dependency-security)、[隐私](/meta/privacy)、[发布](/meta/publishing)、[维护](/meta/maintenance)。
 
 ## 完成检查
 

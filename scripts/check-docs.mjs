@@ -1,5 +1,6 @@
 import fs from 'node:fs'
 import path from 'node:path'
+import { isPublishedMarkdown } from '../docs/.vitepress/publication-scope.mjs'
 
 const root = process.cwd()
 const docsRoot = path.join(root, 'docs')
@@ -129,7 +130,9 @@ for (const sourceFile of [
 
 for (const [route, count] of inbound) {
   if (route === '/') continue
-  if (count === 0) errors.push(`${pages.get(route).rel}: orphan page (no internal or navigation link)`)
+  const page = pages.get(route)
+  const relativeDoc = toPosix(path.relative(docsRoot, page.file))
+  if (count === 0 && isPublishedMarkdown(relativeDoc)) errors.push(`${page.rel}: orphan page (no internal or navigation link)`)
 }
 
 const changelog = fs.readFileSync(path.join(docsRoot, 'meta', 'changelog.md'), 'utf8')

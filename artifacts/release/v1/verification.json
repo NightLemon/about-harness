@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "verified_at": "2026-08-21T14:16:18+08:00",
+  "verified_at": "2026-08-21T15:07:59+08:00",
   "timezone": "Asia/Shanghai",
   "source_commit": "5054f44578b6c29d83601b513a0c3d6b98ae4ec2",
   "commands": [
@@ -8,7 +8,7 @@
       "id": "verify",
       "command": "npm run verify",
       "exit_code": 0,
-      "assertion": "119 routes, 120 HTML, 36 pytest, Ruff, Pyright, TypeScript, 16 facts, ten review chains, governance, and nine visual screenshots passed"
+      "assertion": "119 repository routes, 85 public learning pages, 86 public HTML files, 36 pytest, Ruff, Pyright, TypeScript, 16 facts, ten review chains, governance, and nine visual screenshots passed"
     },
     {
       "id": "reviews",
@@ -32,13 +32,13 @@
       "id": "secrets",
       "command": "npm run secrets:check",
       "exit_code": 0,
-      "assertion": "315 tracked or candidate files passed secret and privacy scanning"
+      "assertion": "320 tracked or candidate files passed secret and privacy scanning"
     },
     {
       "id": "workflows",
       "command": "npm run workflows:check",
       "exit_code": 0,
-      "assertion": "required workflows use scoped least privilege and pinned actions/images"
+      "assertion": "review governance uses full history while Pages uses a learning-site-only gate; permissions and dependencies are pinned"
     },
     {
       "id": "visual",
@@ -50,30 +50,40 @@
       "id": "release_self_test",
       "command": "npm run release:self-test",
       "exit_code": 0,
-      "assertion": "lightweight tags, incomplete rounds, A4 use, and missing gates were rejected"
+      "assertion": "lightweight tags, incomplete rounds, inconsistent authorization, and missing gates were rejected"
+    },
+    {
+      "id": "pages",
+      "command": "npm run pages:check",
+      "exit_code": 0,
+      "assertion": "85 public learning pages passed route, fact, source, security, workflow, build, and visual checks without review-history coupling"
     },
     {
       "id": "pages_smoke",
-      "command": "npm run pages:smoke -- http://127.0.0.1:4174/about-harness/",
+      "command": "npm run pages:smoke -- http://127.0.0.1:4175/about-harness/",
       "exit_code": 0,
-      "assertion": "16 key routes and 23 same-origin assets passed against the current project-base build"
+      "assertion": "15 public learning routes and 22 same-origin assets passed against the current project-base build"
     }
   ],
   "result": {
     "status": "passed",
     "evidence_level": "E1",
-    "publication_status": "not-published",
+    "publication_status": "pending-publication",
     "review_rounds": 10,
     "open_p0": 0,
     "open_p1": 0,
     "blocking_p2": 0,
     "a3_used": false,
-    "a4_used": false
+    "a4_used": true
   },
   "surprises": [
     {
-      "event": "preview port 4173 was already in use",
-      "recovery": "left the unknown process untouched and served the current build on 127.0.0.1:4174"
+      "event": "VitePress preview mounted the project-base artifact at root and returned 404 for clean URLs under /about-harness/",
+      "recovery": "added a project-path and clean-URL-aware local static server, then passed smoke on 127.0.0.1:4175"
+    },
+    {
+      "event": "the first GitHub Actions runs used a shallow checkout and could not resolve review history or annotated tags",
+      "recovery": "separated the public Pages gate from review governance and required full history only in the independent CI workflow"
     }
   ]
 }

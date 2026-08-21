@@ -1,5 +1,6 @@
 import fs from 'node:fs'
 import path from 'node:path'
+import { isPublishedMarkdown, nonPublicRoutes } from '../docs/.vitepress/publication-scope.mjs'
 
 const root = process.cwd()
 const docsRoot = path.join(root, 'docs')
@@ -37,7 +38,7 @@ if (!fs.existsSync(dist)) {
 }
 
 const htmlFiles = walk(dist, (file) => file.endsWith('.html'))
-const sourcePages = walk(docsRoot, (file) => file.endsWith('.md') && !file.includes(`${path.sep}.vitepress${path.sep}`))
+const sourcePages = walk(docsRoot, (file) => isPublishedMarkdown(path.relative(docsRoot, file)))
 const renderedPages = htmlFiles.filter((file) => path.basename(file) !== '404.html')
 
 if (renderedPages.length !== sourcePages.length) {
@@ -60,6 +61,12 @@ for (const file of htmlFiles) {
     const output = outputForUrl(url)
     if (output && !fs.existsSync(output)) errors.push(`${rel}: built link has no artifact: ${url}`)
   }
+}
+
+for (const route of nonPublicRoutes) {
+  const flat = path.join(dist, `${route}.html`)
+  const directory = path.join(dist, route)
+  if (fs.existsSync(flat) || fs.existsSync(directory)) errors.push(`non-public governance route was rendered: /${route}`)
 }
 
 const index = fs.readFileSync(path.join(dist, 'index.html'), 'utf8')
