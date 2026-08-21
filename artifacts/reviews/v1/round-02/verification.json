@@ -1,0 +1,53 @@
+{
+  "schema_version": "1.0",
+  "round": "02",
+  "verified_at": "2026-08-21T11:10:48+08:00",
+  "timezone": "Asia/Shanghai",
+  "baseline_commit": "17c4b9c47ccdc7a56a5866f1ba27331944c4c3fe",
+  "findings_commit": "58c542a",
+  "content_result_commit": "ca9c6c9bed1499d4e9ab85adf44bc5d6e324296b",
+  "complete_tag": "review-v1-round-02-complete",
+  "evidence_commit": "resolved by complete_tag to avoid a self-referential commit hash",
+  "commands": [
+    {
+      "command": "npm run learning:check",
+      "exit_code": 0,
+      "assertion": "formal learning routes, current environment markers, and scoring anchors are present"
+    },
+    {
+      "command": "npm run learning:self-test",
+      "exit_code": 0,
+      "assertion": "legacy routes, stale milestones, environment gaps, and rubric gaps are rejected"
+    },
+    {
+      "command": "npm run verify",
+      "exit_code": 0,
+      "assertion": "110 Markdown/routes, 111 HTML, 27 pytest, types, facts, licenses, secrets, workflows and visual gates passed"
+    },
+    {
+      "command": "git diff --check -- round-02 source files",
+      "exit_code": 0,
+      "assertion": "content result has no whitespace errors"
+    }
+  ],
+  "result": {
+    "finding": "R02-P2-01",
+    "status": "fixed",
+    "regression_gate": [
+      "scripts/learning-path-check.mjs",
+      "scripts/test-learning-path-check.mjs"
+    ],
+    "open_blockers": 0
+  },
+  "environment_ref": "baseline.json",
+  "network": "offline; localhost-only visual checks inherited from npm run verify",
+  "a3_used": false,
+  "a4_used": false,
+  "artifact_hashes": {
+    "baseline.json": "13736F3F2DCB93FD6E5BCF94072D53BF6D3528A584A60E52E36E362917D8D94A",
+    "findings.md": "98FF4BFE0FB36076B7AD903C20C3F999FF0307E6FE7C284DE660E5FBE3A88FBE",
+    "diff.patch": "B4ED04D73B2D8390EEBDAEFDFECB40DAF417900EA0C774714CC36771BBBAE3CF",
+    "unresolved.md": "B389A8D8840D91CCE3D5F368E7D3D5B3E430C5FC4C81E8E012F7B1EDE4F0241B",
+    "docs/reviews/v1/round-02.md": "8EEB5653623099C1DA44CFFCDC169FC884B7E734716C2E6341A70D69D128A59A"
+  }
+}

@@ -1,0 +1,171 @@
+diff --git a/docs/guide/portfolio.md b/docs/guide/portfolio.md
+index 94f9f38..a5d0525 100644
+--- a/docs/guide/portfolio.md
++++ b/docs/guide/portfolio.md
+@@ -32,0 +33,13 @@
++### 统一评分锚点
++
++四个维度都先按 0–100 原始分评分，再乘对应权重。评分者可在锚点之间取值，但必须引用具体 artifact：
++
++| 原始分锚点 | 可观察条件 |
++| ---: | --- |
++| 0 分 | 产物缺失，或核心结论与保存证据直接冲突 |
++| 50 分 | 有产物和主张，但环境、失败记录、复现命令或适用边界明显不完整 |
++| 75 分 | 固定版本与输入可复现，主张有对应证据，失败和边界被如实记录 |
++| 100 分 | 在 75 分基础上还有独立复核、防回归门禁、迁移验证及成本/安全权衡 |
++
++加权总分为 `正确性×0.40 + 因果解释与证据×0.25 + 迁移性×0.20 + 效率与成本×0.15`。任何维度原始分低于 60，即使加权总分达到 80 也不通过。两次独立检查必须逐维给出分数、证据路径和差异理由，不能只给总分。
++
+diff --git a/docs/guide/prerequisites.md b/docs/guide/prerequisites.md
+index 5665d96..af50672 100644
+--- a/docs/guide/prerequisites.md
++++ b/docs/guide/prerequisites.md
+@@ -9 +9,10 @@
+-M3 将提供容器/devcontainer 作为可复现基线，并给出 Windows、macOS、Linux 的本地回退。当前站点只需要 Node.js 22 与 npm：
++项目已经提供 `Dockerfile`、`compose.yaml` 和 devcontainer。容器默认执行无网络、只读文件系统、非 root 的最小 harness smoke；完整站点与评测门禁在本地或 CI 工具链运行。
++
++| 目标 | 必需环境 | 说明 |
++| --- | --- | --- |
++| 阅读或构建站点 | Node.js 22、npm | VitePress、文档、事实和 review 检查 |
++| 运行离线 lab | Python 3.11+（CI 使用 3.12）、uv 0.11.16 | pytest、Ruff、Pyright、六个离线案例 |
++| 运行视觉门禁 | 上述 Node 环境、Playwright Chromium | 1440/390/320 视口、搜索、主题、菜单、表格和锚点 |
++| 最小容器 smoke | Docker Compose 或 devcontainer | `network_mode: none`，不需要凭据 |
++
++首次本地准备：
+@@ -13 +22,2 @@ npm ci
+-npm run check
++uv sync --frozen
++npm run verify
+@@ -16 +26,3 @@ npm run check
+-命令失败时停止，不要删除锁文件或盲目升级全部依赖。保存操作系统、Node/npm 版本、命令和退出码，再按[贡献说明](https://github.com/)所列字段形成最小复现；仓库未公开前只保存在本地。
++只验证最小容器 smoke 时运行 `docker compose run --rm lab-smoke`。Windows、macOS、Linux 都使用同一 lockfile；本地没有 uv 时先使用容器 smoke，不要临时改写依赖版本。
++
++命令失败时停止，不要删除锁文件或盲目升级全部依赖。保存操作系统、Node/npm、Python/uv 版本、命令和退出码，再按仓库根目录 `CONTRIBUTING.md` 的字段形成最小复现；仓库未公开前只保存在本地。
+@@ -36 +48 @@ npm run check
+-你能运行站点检查、解释上述五个问题，并准备一个不含私人数据的练习工作负载，才进入[学习路径](/guide/start)。
++你能运行与目标对应的站点、lab 或容器检查，解释上述五个问题，并准备一个不含私人数据的练习工作负载，才进入[学习路径](/guide/start)。
+diff --git a/docs/guide/start.md b/docs/guide/start.md
+index bf89525..70ff2d1 100644
+--- a/docs/guide/start.md
++++ b/docs/guide/start.md
+@@ -35,3 +35,3 @@
+-6. [模型—Harness 匹配](/optimization/model-fit)与[提示契约](/optimization/prompting)：把知识转成配置决策。
+-7. [实验方法](/optimization/experiment)：理解变量、重复、指标与结论边界。
+-8. [评测实验室](/practice/evaluation)：亲手比较两个配置并填写适配卡。
++6. [模型适配方法](/models/adaptation)与[协议兼容](/models/protocol-compatibility)：把知识转成指定模型的配置决策。
++7. [实验方法](/optimization/experiment)与[评测方法](/evaluation/method)：理解变量、重复、指标与结论边界。
++8. 从[实验环境](/labs/setup)和[离线 Runner](/labs/runner)开始，选择一个领域案例，产出可验证 artifact。
+@@ -39 +39 @@
+-后续里程碑会把上述临时页面迁入 foundations、implementation、models、evaluation 和 labs 的正式结构；[知识地图](/guide/roadmap)是稳定入口。
++[知识地图](/guide/roadmap)是完整覆盖入口；`foundations/`、`implementation/`、`models/`、`evaluation/` 和 `labs/` 均为当前正式结构。
+@@ -43,6 +43,7 @@
+-1. 填写[模型适配卡](/practice/model-playbook)，记录能力、限制与任务分布。
+-2. 在[Harness 横向比较](/harnesses/comparison)中确认目标环境能控制哪些变量。
+-3. 用[提示与任务契约](/optimization/prompting)写出可验证任务。
+-4. 按[实验方法](/optimization/experiment)每次只改一个主要变量。
+-5. 失败时用[问题诊断](/practice/debugging)区分模型失败与 harness 失败。
+-6. 用[端到端适配案例](/practice/end-to-end)核对自己的步骤是否完整。
++1. 按[模型适配方法](/models/adaptation)填写适配卡，记录身份、provider、adapter、能力假设、限制与任务分布。
++2. 用[协议兼容](/models/protocol-compatibility)排除消息、工具、流式事件与错误语义不匹配。
++3. 在[Harness 横向比较](/harnesses/comparison)中确认目标环境能控制哪些变量。
++4. 用[提示与任务契约](/optimization/prompting)写出可验证任务。
++5. 按[实验方法](/optimization/experiment)每次只改一个主要变量，并用[评测指标](/evaluation/metrics)记录成功、安全、成本与人工介入。
++6. 失败时用[问题诊断](/optimization/debugging)区分模型、adapter、harness、fixture 与基础设施根因。
++7. 用[跨 Harness 迁移实验](/labs/migration)核对配置职责和结论边界。
+@@ -52 +53 @@
+-先阅读[横向比较](/harnesses/comparison)，再进入对应的 [Codex](/harnesses/codex)、[Pi](/harnesses/pi) 或 [Claude Code](/harnesses/claude-code) 页面。迁移时先映射“职责”，不要逐字翻译配置文件。
++先阅读[横向比较](/harnesses/comparison)，再进入对应的 [Codex](/harnesses/codex)、[Pi](/harnesses/pi) 或 [Claude Code](/harnesses/claude-code) 页面，最后运行[迁移案例](/labs/migration)。迁移时先映射“职责”，不要逐字翻译配置文件。
+diff --git a/package.json b/package.json
+index cc36a5d..64c9ad1 100644
+--- a/package.json
++++ b/package.json
+@@ -19,0 +20,2 @@
++    "learning:check": "node scripts/learning-path-check.mjs",
++    "learning:self-test": "node scripts/test-learning-path-check.mjs",
+@@ -35 +37 @@
+-    "verify": "npm run check && npm run roadmap:check && npm run roadmap:self-test && npm run docs:project-base && uv run --frozen --offline pytest && uv run --frozen --offline ruff check && npm run lab:pyright && npm run lab:typecheck && npm run facts:release && npm run links:check && npm run licenses:check && npm run secrets:check && npm run workflows:check && npm run docs:visual && npm run m6:self-test"
++    "verify": "npm run check && npm run roadmap:check && npm run roadmap:self-test && npm run learning:check && npm run learning:self-test && npm run docs:project-base && uv run --frozen --offline pytest && uv run --frozen --offline ruff check && npm run lab:pyright && npm run lab:typecheck && npm run facts:release && npm run links:check && npm run licenses:check && npm run secrets:check && npm run workflows:check && npm run docs:visual && npm run m6:self-test"
+diff --git a/scripts/learning-path-check.mjs b/scripts/learning-path-check.mjs
+new file mode 100644
+index 0000000..a7547f3
+--- /dev/null
++++ b/scripts/learning-path-check.mjs
+@@ -0,0 +1,47 @@
++import fs from 'node:fs'
++import path from 'node:path'
++
++const root = path.resolve(process.argv[2] || '.')
++const errors = []
++
++function read(rel) {
++  const file = path.join(root, rel)
++  if (!fs.existsSync(file)) {
++    errors.push(`missing ${rel}`)
++    return ''
++  }
++  return fs.readFileSync(file, 'utf8')
++}
++
++const start = read('docs/guide/start.md')
++const prerequisites = read('docs/guide/prerequisites.md')
++const portfolio = read('docs/guide/portfolio.md')
++
++for (const route of [
++  '/models/adaptation', '/models/protocol-compatibility', '/harnesses/comparison',
++  '/optimization/prompting', '/optimization/experiment', '/optimization/debugging',
++  '/evaluation/method', '/evaluation/metrics', '/labs/setup', '/labs/runner', '/labs/migration'
++]) {
++  if (!start.includes(`](${route})`)) errors.push(`learning path does not link formal route: ${route}`)
++}
++
++if (/\]\(\/practice\//.test(start)) errors.push('learning path still promotes a legacy /practice/ route')
++if (/后续里程碑会|M3\s*将提供/.test(`${start}\n${prerequisites}`)) {
++  errors.push('learning entrypoints contain a stale future-milestone placeholder')
++}
++
++for (const marker of ['Node.js 22', 'Python 3.11+', 'uv 0.11.16', 'Docker Compose', 'npm run verify']) {
++  if (!prerequisites.includes(marker)) errors.push(`prerequisites missing environment marker: ${marker}`)
++}
++
++for (const marker of ['0 分', '50 分', '75 分', '100 分', '加权总分', '原始分低于 60']) {
++  if (!portfolio.includes(marker)) errors.push(`portfolio rubric missing scoring anchor: ${marker}`)
++}
++
++if (errors.length) {
++  console.error(`Learning-path check failed with ${errors.length} error(s):`)
++  for (const error of errors) console.error(`- ${error}`)
++  process.exit(1)
++}
++
++console.log('Learning-path check passed: formal routes, current environments, and scoring anchors are complete.')
+diff --git a/scripts/test-learning-path-check.mjs b/scripts/test-learning-path-check.mjs
+new file mode 100644
+index 0000000..d38f0e4
+--- /dev/null
++++ b/scripts/test-learning-path-check.mjs
+@@ -0,0 +1,25 @@
++import { spawnSync } from 'node:child_process'
++import fs from 'node:fs'
++import os from 'node:os'
++import path from 'node:path'
++
++const sourceRoot = process.cwd()
++const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'about-harness-learning-'))
++
++try {
++  const guide = path.join(temp, 'docs', 'guide')
++  fs.mkdirSync(guide, { recursive: true })
++  fs.writeFileSync(path.join(guide, 'start.md'), '# Start\n\n[旧实验](/practice/evaluation)\n\n后续里程碑会迁移。\n')
++  fs.writeFileSync(path.join(guide, 'prerequisites.md'), '# Prerequisites\n\nM3 将提供容器。\n')
++  fs.writeFileSync(path.join(guide, 'portfolio.md'), '# Portfolio\n\n总分 80。\n')
++  const result = spawnSync(process.execPath, [path.join(sourceRoot, 'scripts', 'learning-path-check.mjs'), temp], {
++    encoding: 'utf8'
++  })
++  for (const expected of ['legacy /practice/', 'future-milestone', 'environment marker', 'scoring anchor']) {
++    if (!result.stderr.includes(expected)) throw new Error(`learning-path checker missed canary: ${expected}`)
++  }
++  if (result.status === 0) throw new Error('learning-path checker accepted an obsolete learning route')
++  console.log('Learning-path checker negative test passed: legacy routes, stale milestones, environment gaps, and rubric gaps were rejected.')
++} finally {
++  fs.rmSync(temp, { recursive: true, force: true })
++}

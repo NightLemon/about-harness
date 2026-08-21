@@ -1,6 +1,6 @@
 # Harness 学习文档项目执行计划 v1
 
-状态：**M1-M6 已完成；M7 进行中（Round 01 完成）；活动 Goal 已授予 M6-M8 的 A1/A2；A3/A4 未授权**
+状态：**M1-M6 已完成；M7 进行中（Round 01–02 完成）；活动 Goal 已授予 M6-M8 的 A1/A2；A3/A4 未授权**
 交付契约批准语句：批准交付契约 v1，请保存执行计划  
 计划修订日期：2026-08-21
 工作区：仓库根目录（不得记录个人绝对路径）
@@ -11,7 +11,7 @@
 
 Git 历史和 annotated tags 已验收 M1-M5。当前恢复点为 `m5-complete-v1`（commit `6aada53`）；不得重跑 M1-M5，不得删除、移动或覆盖其 commits/tags。若本文件出现 M0、M1-M5 未开始或逐里程碑重新授权等旧措辞，视为计划回退，必须修正后继续 M6，不得据此阻塞。
 
-M6 的 workflow、docs、scripts、package 配置和 visual artifacts 已通过全量本地验证，形成 `m6-complete-v1` checkpoint 后连续进入 M7。A3（真实 API/费用）和 A4（remote/发布）仍未授权。
+M6 已由 `m6-complete-v1`（`999a4c3`）冻结；M7 Round 01 有效结果为 `review-v1-round-01-corrected-v1`，Round 02 内容结果为 `ca9c6c9`，完整证据由 `review-v1-round-02-complete` 绑定。当前下一步是 Round 03。A3（真实 API/费用）和 A4（remote/发布）仍未授权。
 
 ## 2. Progress
 
@@ -26,7 +26,7 @@ M6 的 workflow、docs、scripts、package 配置和 visual artifacts 已通过�
 | M4 | **已完成** | `m4-complete-v1`，result `e7ba394` |
 | M5 | **已完成** | `m5-complete-v1`，result `6aada53` |
 | M6 | **已完成** | 来源、许可、隐私、CI、视觉与发布自动化；`npm run verify` 与本地 Pages smoke 通过 |
-| M7 | **进行中** | Round 01 完成；Round 02–05 待执行 |
+| M7 | **进行中** | Round 01–02 完成；Round 03–05 待执行 |
 | M8 | 未开始 | 新 review 06–10 和 release candidate |
 | M9 | 未开始 | 经用户单独授权后的远程操作与发布 |
 
@@ -787,7 +787,7 @@ M6 的 workflow、docs、scripts、package 配置和 visual artifacts 已通过�
 
 ### M7：新 review 01–05
 
-**状态：未开始。**
+**状态：进行中；Round 01–02 完成，Round 03–05 待执行。**
 
 **开始授权**
 
@@ -1107,6 +1107,7 @@ M7/M8 原则上复用第 11.1 节接口。只有真实 finding 证明缺少防�
 7. M6 本地 Pages smoke 首次因 preview 使用错误 base/旧构建而失败；以 `DOCS_BASE=/about-harness/` 重启 preview 后，16 个路由和 23 个同源资源通过。这是本地服务恢复问题，不是站点 artifact 缺陷。
 8. In-app Browser 可复核 1280px 桌面布局、评测表格与深层锚点；其当前 surface 不提供 viewport capability，因此 1440/390/320 的交互与 overflow 证据由固定 Playwright/Chromium manifest 和截图承担。
 9. Round 01 首个 complete tag 之前的 `git diff --check` 报告 `diff.patch` 的上下文空行尾随空格，但命令串未停止。该 tag 保留为无效审计对象；使用 `--unified=0` 重建可检查的 patch，并以新的 corrected tag 验收，后续提交命令必须显式检查退出码。
+10. Round 02 发现正式学习入口仍回流 legacy `/practice/`、环境页保留未来时态且作品集缺少统一评分锚点；修正后新增 learning-path 正反例门禁并由全量 `npm run verify` 验收。
 
 后续每次新增发现使用格式：
 
@@ -1162,7 +1163,7 @@ M7/M8 原则上复用第 11.1 节接口。只有真实 finding 证明缺少防�
 - M5 已完成：`m5-complete-v1`（`6aada53`）。
 - M6 已完成：109 个 Markdown/路由、110 个 HTML、27 项 pytest、Ruff、Pyright、TypeScript、事实时效、许可、秘密、workflow、视觉和 canary 门禁通过；本地 Pages smoke 覆盖 16 路由与 23 个同源资源。
 - M6 证据：`artifacts/visual/m6/manifest.json` 和 6 张固定截图；没有远程 workflow run、Pages、真实 API、凭据或费用。
-- M7-M9 尚未完成。M7 在 `m6-complete-v1` 创建后连续启动；M9 仍需单独 A4。
+- M7 进行中：Round 01 由 `review-v1-round-01-corrected-v1` 绑定，Round 02 内容结果为 `ca9c6c9`、完整证据由 `review-v1-round-02-complete` 绑定；Round 03–05 待执行。M8-M9 尚未完成，M9 仍需单独 A4。
 - 上述 commits 和 annotated tags 是不可移动的恢复证据；本文件的未提交状态变化不得覆盖它们。
 
 ### 后续里程碑记录模板
@@ -1196,7 +1197,7 @@ M9 后必须总结：
 
 ## 17. 当前停止点
 
-M6 本地实现与全量验证已完成，当前动作是创建 `m6-complete-v1` commit/tag，随后以该结果作为 review 01 baseline 连续进入 M7。M1-M5 已完成且不得重跑。
+M1-M6 已完成且不得重跑。M7 Round 01–02 已完成，当前动作是以 Round 02 完整证据 result 作为 Round 03 baseline，连续完成 Round 03–05 后进入 M8。
 
 当前活动 Goal 授予 M6-M8 的 A1+A2，不绑定任何文件 SHA256。禁止真实 API、凭据、费用、remote、push、PR、Pages 和发布；仅在需要 A3/A4、真实安全事件、无法非破坏性合并的用户改动或完成 M8 时停止。
 
