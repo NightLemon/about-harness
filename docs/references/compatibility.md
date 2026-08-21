@@ -1,29 +1,51 @@
 # 兼容性与责任矩阵
 
-本页不声称所有组合已经运行。`已定义` 表示文档或接口有明确映射，`E1` 表示离线 fake/replay 已验证，`E2/E3` 需要独立真实 API 与费用授权。
+本页不声称所有组合已经运行。同一个“支持”必须拆成四个证据轴，不能用一格 E1 同时代表产品文档和真实执行：
 
-## Harness 与核心职责
+| 证据轴 | 回答的问题 | 合法状态 |
+| --- | --- | --- |
+| Source fact | 官方文档/维护仓库是否声明该能力？ | `verified / conflict / pending` + 来源、版本、日期 |
+| Local surface | 目标 CLI/app/package 是否在当前环境可用？ | `probed / present-unprobed / missing / untested` |
+| Project seam | 本项目是否用 fake/replay/contract seam 验证职责？ | `E1 / not-implemented` + fixture/test |
+| Live evidence | 目标产品与模型是否真实运行？ | `E2 / E3 / untested` + 精确版本和费用授权 |
 
-| 责任 | Codex | Pi | Claude Code | 当前证据 |
+“Source verified + Project seam E1”只证明职责映射可执行，不证明上游产品、账号、模型或 provider 在当前环境可用。
+
+## Coding Harness 证据
+
+| 对象 | Source fact | Local surface | Project seam | Live evidence | 当前边界 |
+| --- | --- | --- | --- | --- | --- |
+| Codex | OpenAI Docs，rolling，2026-08-21 | Codex desktop task 可用；精确 harness 版本未暴露 | migration fixture E1 | untested | AGENTS/config/sandbox/approval/network 为不同控制层；模型质量未测 |
+| Pi | 固定 README `496185f`，2026-08-20 | `pi` CLI missing | migration fixture E1 | untested | 默认工具、session、context 与 extension 只按固定源码映射 |
+| Claude Code | 官方文档 rolling，2026-08-20 | CLI `2.1.96` probed | migration fixture E1 | untested | 只验证版本存在；未运行模型、hook、permission 或 sandbox 行为 |
+
+## Harness 职责迁移
+
+| 责任 | Codex | Pi | Claude Code | Gap / compensating control |
 | --- | --- | --- | --- | --- |
-| 项目持久指令 | `AGENTS.md`/override 分层链 | context files / `AGENTS.md` | `CLAUDE.md`/rules 与 auto memory | 官方页/固定 README，E1 |
-| 工具与扩展 | skills、MCP、plugins/subagents | 默认四工具；skills/templates/extensions/packages | tools、skills、hooks、plugins/subagents | 官方页/固定 README，E1 |
-| 权限与审批 | permission profile、sandbox、approval；项目 trust 影响 project config | project trust；扩展需自行实现更强 policy | permission rules、sandbox、hooks | 文档职责映射，E1；未做 live 探针 |
-| 状态、压缩与恢复 | 随 surface 变化，需目标版本探针 | JSONL tree、resume/fork/compaction | conversation/context 能力需目标版本探针 | Pi 为固定 README E1；其余窄事实 E0 |
-| 非交互/自动化 surface | 需目标 CLI/app 版本核验 | CLI print/JSON/RPC 需按固定文档逐项验证 | 需目标 CLI 版本核验 | 未运行目标版本，E0 |
+| 持久指令 | AGENTS/override 分层 | context files / AGENTS（按固定版本） | CLAUDE.md/rules 与 auto memory | 保存加载顺序、作用域、大小限制；不能逐字复制 |
+| Sandbox | OS/runtime sandbox | 最小核心不假设等价 OS sandbox | 产品 sandbox（按目标版本核验） | 缺失时用容器/受限用户/隔离 worktree 补偿 |
+| Approval/permission | approval policy + permission profile | project trust 与自建 policy | permission rules/hooks | “会询问”不等于技术上无法执行 |
+| Network | 独立 network 开关/策略 | 由运行环境与扩展控制 | sandbox/settings（按版本核验） | 默认拒绝；显式 allowlist 并保存实际出口证据 |
+| 扩展 | skills、MCP、plugins/subagents | skills/templates/extensions/packages | tools、skills、hooks、plugins/subagents | 逐项审计 schema、权限、来源、timeout 与卸载 |
+| 状态/恢复 | task/session/worktree 随 surface 变化 | JSONL tree、resume/fork/compaction | conversation/context 随版本变化 | 保存 checkpoint、压缩点、幂等状态和未决项 |
+
+Codex 中 sandbox mode 决定技术上能做什么，approval policy 决定何时必须询问；network 还需独立启用和约束。[FACT:codex-sandbox-approval] 迁移到其他 harness 时必须分别找到等价控制或记录 gap。
 
 ## Framework 与领域代表
 
-| 对象 | 在本项目中的角色 | 目标案例 | 当前状态 |
-| --- | --- | --- | --- |
-| LangGraph | 状态图与研究 agent 代表 | 冲突来源研究 | M4 文档核验 E1；M5 集成待完成 |
-| OpenAI Agents SDK | 通用 agent SDK | framework 对照 | M4 文档核验 E1；无 live run |
-| Google ADK | 通用 agent 开发工具包 | framework 对照 | M4 文档核验 E1；无 live run |
-| AutoGen | 多 agent framework | framework 对照 | M4 文档核验 E1；无 live run |
-| Browser Use | 浏览器 agent 集成 | 本地合成站点 | 待 M5 |
-| PydanticAI | 结构化数据 agent 集成 | schema 漂移 | 待 M5 |
-| LlamaIndex | 文档检索 agent 集成 | 版本化问答 | 待 M5 |
+| 对象 | Source fact | Local/upstream | Project seam | Live evidence |
+| --- | --- | --- | --- | --- |
+| LangGraph | verified：低层有状态 orchestration/runtime | upstream package 未安装 | M5 offline seam E1：研究冲突来源 | untested |
+| OpenAI Agents SDK | verified：code-first agent runtime 组件 | upstream package 未安装 | not-implemented；只有职责文档 | untested |
+| Google ADK | verified：agent/tool/session/runtime 等构件 | upstream package 未安装 | not-implemented；只有职责文档 | untested |
+| AutoGen | verified：AgentChat/Core/Extensions/Studio 分层 | upstream package 未安装 | not-implemented；只有职责文档 | untested |
+| Browser Use | source 入口已列，具体版本未锁定 | upstream package 未安装 | M5 offline seam E1：本地合成页面与注入拒绝 | untested |
+| PydanticAI | source 入口已列，具体版本未锁定 | upstream package 未安装 | M5 offline seam E1：schema 漂移与敏感字段 | untested |
+| LlamaIndex | source 入口已列，具体版本未锁定 | upstream package 未安装 | M5 offline seam E1：版本化文档问答 | untested |
 
-## 解释约束
+`lab/src/about_harness/integrations/` 中的文件是稳定 contract seam，不 import 或冒充上游 framework。它们已经完成 M5 E1，但 upstream package 和真实模型仍未运行。
 
-协议兼容不等于工具语义、权限或恢复行为等价；同名配置也不能逐字迁移。任何“支持”结论都需写明模型、provider、adapter、版本、surface、已测操作与未测范围。
+## 迁移验收
+
+协议兼容不等于工具语义、权限或恢复行为等价。迁移报告逐项保存 `source semantics → target semantics → gap → compensating control → evidence axis`，并固定 model/provider、版本、surface、任务和预算。任何 live `supported` 结论都需要 E2/E3；未知项写 `untested`，不能从 source fact 推断。

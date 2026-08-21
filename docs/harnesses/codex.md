@@ -1,6 +1,6 @@
 # 在 Codex 中适配指定模型
 
-核对日期：2026-08-20。官方来源：[AGENTS.md](https://learn.chatgpt.com/docs/agent-configuration/agents-md)、[Customization](https://learn.chatgpt.com/docs/customization/overview)、[Config basics](https://learn.chatgpt.com/docs/config-file/config-basic)。本页不保证账号可用模型、价格或默认值。
+核对日期：2026-08-21。官方来源：[AGENTS.md](https://learn.chatgpt.com/docs/agent-configuration/agents-md)、[Customization](https://learn.chatgpt.com/docs/customization/overview)、[Config basics](https://learn.chatgpt.com/docs/config-file/config-basic)、[Agent approvals & security](https://learn.chatgpt.com/docs/agent-approvals-security)。本页不保证账号可用模型、价格或默认值。
 
 ## 先画控制面
 
@@ -17,6 +17,16 @@ Codex 的可调层包括 task prompt、目录分层 AGENTS.md、memory、skills�
 官方配置从高到低为 CLI/`--config`、可信项目的 `.codex/config.toml`（root 到 cwd）、profile、用户 `~/.codex/config.toml`、system、内置默认。未信任项目跳过 project-scoped config/hooks/rules。[FACT:codex-config]
 
 因此实验报告必须保存 surface、cwd、trust、CLI override、profile 和 config 摘要；只写“用了 Codex”不可复现。
+
+## Sandbox、Approval 与 Network
+
+OpenAI Docs 将三者分为不同控制层：[FACT:codex-sandbox-approval]
+
+- **Sandbox mode** 决定命令技术上能读写哪些位置；
+- **Approval policy** 决定何时必须停下询问，不会自动创建 OS 隔离；
+- **Network** 是否启用及允许哪些目标另行配置，不能从 workspace write 或“已批准”推断。
+
+实验必须分别记录这三项的有效配置和实际 surface。迁移自其他 harness 时，若目标只有询问机制而没有等价 sandbox，应写 gap 并用容器、受限账户或隔离 worktree 补偿，不能把名称相近当安全等价。
 
 ## 指定模型优化流程
 

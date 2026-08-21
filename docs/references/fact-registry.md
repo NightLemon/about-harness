@@ -19,6 +19,7 @@
 | review-legacy | legacy 十轮缺少 v1 所需的冻结 baseline、逐轮 diff 与 result tag，因此不计入 v1 | repository | /reviews/legacy/ | legacy-baseline-v1 | 2026-08-20 | low | E1 | verified | /meta/changelog |
 | codex-agents-md | Codex 项目指令的发现、作用域与覆盖行为 | product | https://learn.chatgpt.com/docs/agent-configuration/agents-md | rolling | 2026-08-20 | high | E1 | verified | /harnesses/codex |
 | codex-config | Codex 配置层、字段与 surface 行为 | product | https://learn.chatgpt.com/docs/config-file/config-basic | rolling | 2026-08-20 | high | E1 | verified | /harnesses/codex |
+| codex-sandbox-approval | Codex sandbox mode、approval policy 与 network 是相互配合但职责独立的控制层 | product | https://learn.chatgpt.com/docs/agent-approvals-security | rolling | 2026-08-21 | high | E1 | verified | /harnesses/codex |
 | openai-function-calling | OpenAI function/tool calling 由模型请求、应用执行并用 call ID 回传结果组成 | product | https://developers.openai.com/api/docs/guides/function-calling | rolling | 2026-08-21 | high | E1 | verified | /models/openai |
 | openai-reasoning-items | Responses reasoning model 的连续 function calling 需要保留相关 reasoning/function/output items，可用 previous response ID 或完整回放 | product | https://developers.openai.com/api/docs/guides/reasoning | rolling | 2026-08-21 | high | E1 | verified | /models/openai |
 | openai-reasoning-effort | Reasoning effort 的支持值和默认值依具体模型而异 | product | https://developers.openai.com/api/docs/guides/reasoning | rolling | 2026-08-21 | high | E1 | verified | /models/openai |
