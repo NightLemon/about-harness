@@ -54,7 +54,30 @@ try {
   if (redactResult.status === 0 || !redactResult.stderr.includes('redaction failed')) {
     throw new Error('redaction checker did not reject the canary secret')
   }
-  console.log('M5 checker negative tests passed: duplicate cells, config drift, split leakage, promotion, and secret canaries were checked.')
+
+  const jsonlDir = path.join(temp, 'public-jsonl')
+  fs.mkdirSync(jsonlDir)
+  fs.writeFileSync(path.join(jsonlDir, 'safe.jsonl'), `${JSON.stringify({ run_id: 'safe-run', status: 'passed' })}\n`)
+  const safeJsonlResult = spawnSync(process.execPath, ['scripts/redact-results.mjs', jsonlDir], { encoding: 'utf8' })
+  if (safeJsonlResult.status !== 0 || !safeJsonlResult.stdout.includes('1 JSON/JSONL file')) {
+    throw new Error(`redaction checker did not accept safe JSONL: ${safeJsonlResult.stderr}`)
+  }
+
+  fs.writeFileSync(path.join(jsonlDir, 'leak.jsonl'), `${JSON.stringify({ rawPrompt: 'private source material' })}\n`)
+  const jsonlLeakResult = spawnSync(process.execPath, ['scripts/redact-results.mjs', jsonlDir], { encoding: 'utf8' })
+  if (jsonlLeakResult.status === 0 || !jsonlLeakResult.stderr.includes('forbidden key rawPrompt')) {
+    throw new Error('redaction checker did not reject a normalized raw-prompt key in JSONL')
+  }
+
+  const unsupportedDir = path.join(temp, 'public-unsupported')
+  fs.mkdirSync(unsupportedDir)
+  fs.writeFileSync(path.join(unsupportedDir, 'trace.log'), 'raw model transcript without a recognized token pattern\n')
+  const unsupportedResult = spawnSync(process.execPath, ['scripts/redact-results.mjs', unsupportedDir], { encoding: 'utf8' })
+  if (unsupportedResult.status === 0 || !unsupportedResult.stderr.includes('unsupported public artifact format .log')) {
+    throw new Error('redaction checker did not fail closed on an unsupported public artifact')
+  }
+
+  console.log('M5 checker negative tests passed: matrix integrity, promotion, JSON/JSONL redaction, and unsupported-format canaries were checked.')
 } finally {
   fs.rmSync(temp, { recursive: true, force: true })
 }

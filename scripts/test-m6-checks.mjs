@@ -37,13 +37,85 @@ try {
     throw new Error('license checker did not reject a copyleft canary')
   }
 
-  for (const name of ['ci.yml', 'deploy.yml', 'facts.yml']) {
-    write(`.github/workflows/${name}`, `name: bad\non: [pull_request]\npermissions:\n  contents: read\njobs:\n  test:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n`)
-  }
-  const workflow = run('workflows-check.mjs', [temp])
-  if (workflow.status === 0 || !workflow.stderr.includes('not pinned')) {
+  const pinnedSha = 'a'.repeat(40)
+  const validCi = `name: CI
+on:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@${pinnedSha}
+      - run: npm run verify
+`
+  const validDeploy = `name: Deploy
+on:
+  push:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - run: npm run verify
+  deploy:
+    needs: build
+    permissions:
+      pages: write
+      id-token: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/deploy-pages@${pinnedSha}
+`
+  const validFacts = `name: Facts
+on:
+  schedule:
+    - cron: '17 3 1 */3 *'
+permissions:
+  contents: read
+jobs:
+  facts:
+    runs-on: ubuntu-latest
+    steps:
+      - run: npm run links:check -- --network
+`
+  write('.github/workflows/ci.yml', validCi)
+  write('.github/workflows/deploy.yml', validDeploy)
+  write('.github/workflows/facts.yml', validFacts)
+  write('Dockerfile', `FROM python:3.12-slim@sha256:${'b'.repeat(64)}\n`)
+
+  const validWorkflow = run('workflows-check.mjs', [temp])
+  if (validWorkflow.status !== 0) throw new Error(`workflow checker rejected the valid least-privilege fixture: ${validWorkflow.stderr}`)
+
+  write('.github/workflows/ci.yml', validCi.replace(`actions/checkout@${pinnedSha}`, 'actions/checkout@v4'))
+  const unpinnedWorkflow = run('workflows-check.mjs', [temp])
+  if (unpinnedWorkflow.status === 0 || !unpinnedWorkflow.stderr.includes('not pinned')) {
     throw new Error('workflow checker did not reject an unpinned action')
   }
+
+  write('.github/workflows/ci.yml', validCi.replace('    runs-on: ubuntu-latest', '    permissions:\n      contents: write\n    runs-on: ubuntu-latest'))
+  const writePermission = run('workflows-check.mjs', [temp])
+  if (writePermission.status === 0 || !writePermission.stderr.includes('job verify has forbidden write permission contents')) {
+    throw new Error('workflow checker did not reject a job-level write permission')
+  }
+
+  write('.github/workflows/ci.yml', validCi)
+  write('.github/workflows/deploy.yml', validDeploy.replace('permissions:\n  contents: read', 'permissions:\n  contents: read\n  pages: write\n  id-token: write'))
+  const topLevelDeployWrite = run('workflows-check.mjs', [temp])
+  if (topLevelDeployWrite.status === 0 || !topLevelDeployWrite.stderr.includes('workflow scope must not grant pages: write')) {
+    throw new Error('workflow checker did not reject workflow-level Pages/OIDC write permissions')
+  }
+
+  write('.github/workflows/deploy.yml', validDeploy)
+  write('Dockerfile', 'FROM python:3.12-slim\n')
+  const mutableImage = run('workflows-check.mjs', [temp])
+  if (mutableImage.status === 0 || !mutableImage.stderr.includes('mutable container image')) {
+    throw new Error('workflow checker did not reject a mutable container image')
+  }
+
+  write('Dockerfile', `FROM python:3.12-slim@sha256:${'b'.repeat(64)}\n`)
 
   write('docs/references/fact-registry.md', `# Registry
 
@@ -57,7 +129,7 @@ try {
     throw new Error('fact checker did not reject a stale high-volatility fact')
   }
 
-  console.log('M6 checker negative tests passed: secret, license, workflow and fact-age canaries were rejected.')
+  console.log('M6 checker negative tests passed: secret, license, scoped workflow, mutable-image and fact-age canaries were rejected.')
 } finally {
   fs.rmSync(temp, { recursive: true, force: true })
 }

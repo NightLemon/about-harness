@@ -13,12 +13,34 @@ const forbidden = [
   { name: 'Windows user path', pattern: /[A-Za-z]:\\Users\\[^\\\s"}]+/ },
   { name: 'Unix home path', pattern: /\/(?:home|Users)\/[^/\s"}]+/ }
 ]
-const forbiddenKeys = new Set(['raw_trace', 'raw_prompt', 'credential', 'authorization'])
+const allowedExtensions = new Set(['.json', '.jsonl'])
+const forbiddenKeys = new Set([
+  'rawtrace',
+  'rawprompt',
+  'credential',
+  'authorization',
+  'apikey',
+  'password',
+  'secret',
+  'cookie',
+  'privatekey'
+])
 
-function walk(dir) {
+function normalizeKey(key) {
+  return key.normalize('NFKC').replace(/[^\p{L}\p{N}]/gu, '').toLowerCase()
+}
+
+function walk(dir, findings) {
   return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
     const full = path.join(dir, entry.name)
-    return entry.isDirectory() ? walk(full) : [full]
+    if (entry.isSymbolicLink()) {
+      findings.push(`${full}: symbolic links are not allowed in public results`)
+      return []
+    }
+    if (entry.isDirectory()) return walk(full, findings)
+    if (entry.isFile()) return [full]
+    findings.push(`${full}: unsupported non-regular public artifact`)
+    return []
   })
 }
 
@@ -27,22 +49,46 @@ function inspectKeys(value, location, findings) {
     value.forEach((item, index) => inspectKeys(item, `${location}[${index}]`, findings))
   } else if (value && typeof value === 'object') {
     for (const [key, item] of Object.entries(value)) {
-      if (forbiddenKeys.has(key.toLowerCase())) findings.push(`${location}: forbidden key ${key}`)
+      if (forbiddenKeys.has(normalizeKey(key))) findings.push(`${location}: forbidden key ${key}`)
       inspectKeys(item, `${location}.${key}`, findings)
     }
   }
 }
 
-const files = walk(root).filter((file) => file.endsWith('.json'))
 const findings = []
+if (!fs.existsSync(root) || fs.lstatSync(root).isSymbolicLink() || !fs.lstatSync(root).isDirectory()) {
+  console.error(`Public result redaction failed:\n${root}: expected a real public results directory (not a file or symbolic link)`)
+  process.exit(1)
+}
+
+const files = walk(root, findings).sort((left, right) => left.localeCompare(right))
 for (const file of files) {
-  const text = fs.readFileSync(file, 'utf8')
-  let value
-  try { value = JSON.parse(text) } catch (error) {
-    findings.push(`${file}: invalid JSON: ${error.message}`)
+  const extension = path.extname(file).toLowerCase()
+  if (!allowedExtensions.has(extension)) {
+    findings.push(`${file}: unsupported public artifact format ${extension || '<none>'}; only .json and .jsonl are allowed`)
     continue
   }
-  inspectKeys(value, file, findings)
+
+  const text = fs.readFileSync(file, 'utf8')
+  if (extension === '.json') {
+    try {
+      inspectKeys(JSON.parse(text), file, findings)
+    } catch (error) {
+      findings.push(`${file}: invalid JSON: ${error.message}`)
+    }
+  } else {
+    const lines = text.split(/\r?\n/)
+    for (const [index, line] of lines.entries()) {
+      if (!line.trim()) continue
+      const location = `${file}:${index + 1}`
+      try {
+        inspectKeys(JSON.parse(line), location, findings)
+      } catch (error) {
+        findings.push(`${location}: invalid JSONL record: ${error.message}`)
+      }
+    }
+  }
+
   for (const rule of forbidden) {
     if (rule.pattern.test(text)) findings.push(`${file}: ${rule.name}`)
   }
@@ -52,4 +98,4 @@ if (findings.length) {
   console.error(['Public result redaction failed:', ...findings].join('\n'))
   process.exit(1)
 }
-console.log(`Public result redaction passed: ${files.length} JSON file(s).`)
+console.log(`Public result redaction passed: ${files.length} JSON/JSONL file(s).`)

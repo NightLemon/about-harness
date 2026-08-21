@@ -8,7 +8,9 @@ Agent 扩展、MCP server、CLI、browser、container image、Python/npm depende
 
 ## 锁定与更新
 
-Node/Python 使用 lock；容器使用 digest；Actions 固定完整 SHA；滚动仓库引用 commit。自动更新只提出 PR/本地 diff，经过 clean build、测试、许可、secret 和行为审计后晋级。
+Node/Python 使用 lock；容器基础镜像同时保留可读 tag 并固定 `sha256` digest；Actions 固定完整 SHA；滚动仓库引用 commit。`deploy.yml` 的 workflow 顶层只授予 `contents: read`，仅最终 `deploy` job 获得 `pages: write` 与 `id-token: write`，构建 job 不持有发布或 OIDC 权限。自动更新只提出 PR/本地 diff，经过 clean build、测试、许可、secret、权限 scope 和行为审计后晋级。
+
+本地 `npm run workflows:check` 必须拒绝可变容器 tag、非完整 Action SHA、workflow 顶层写权限、CI/facts/build job 的写权限，以及 deploy job 之外的 Pages/OIDC 权限；命令接口以 `package.json` 为准。
 
 ## 扩展专项
 
