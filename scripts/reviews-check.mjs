@@ -229,4 +229,10 @@ if (errors.length) {
   process.exit(1)
 }
 
-console.log(`Review check passed: 10 legacy hashes preserved; ${v1Rounds.length} v1 round record(s) have structured evidence${hasGit ? ', lineage and annotated tags' : ''}.`)
+const pendingNote = allowPending
+  ? `; round-${allowPending} complete tag is explicitly pending while its pre-tag evidence is validated`
+  : ''
+const gitEvidence = hasGit
+  ? allowPending ? ', verified commit/diff lineage and annotated baseline tags' : ', verified lineage and required annotated tags'
+  : ''
+console.log(`Review check passed: 10 legacy hashes preserved; ${v1Rounds.length} v1 round record(s) have structured evidence${gitEvidence}${pendingNote}.`)
