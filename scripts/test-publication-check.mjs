@@ -17,12 +17,28 @@ function expectFailure(name, mutate, marker) {
   }
 }
 
+function expectWorktreeIndependence() {
+  const candidate = 'artifacts/release/v1/release-candidate.json'
+  const bytes = fs.readFileSync(candidate)
+  try {
+    fs.appendFileSync(candidate, '\n')
+    const result = spawnSync(process.execPath, ['scripts/publication-check.mjs'], { encoding: 'utf8' })
+    if (result.status !== 0) {
+      throw new Error(`publication checker depends on mutable worktree bytes: ${result.stderr}`)
+    }
+  } finally {
+    fs.writeFileSync(candidate, bytes)
+  }
+}
+
 try {
   expectFailure('published-sha', (value) => { value.source_commit = 'f'.repeat(40) }, 'source_commit does not resolve exactly')
   expectFailure('candidate-hash', (value) => { value.release_candidate.sha256 = 'F'.repeat(64) }, 'release candidate SHA256 mismatch')
+  expectFailure('candidate-tag', (value) => { value.release_candidate.release_tag = 'release-v1-missing' }, 'must remain an annotated tag')
   expectFailure('deploy-result', (value) => { value.workflows.deploy.conclusion = 'failure' }, 'deploy workflow mismatch')
   expectFailure('http-status', (value) => { value.site.http_status = 503 }, 'Pages URL and recorded HTTP 200 are required')
-  console.log('Publication checker negative tests passed: source, RC hash, workflow result, and HTTP status fail closed.')
+  expectWorktreeIndependence()
+  console.log('Publication checker tests passed: immutable RC bytes are cross-platform; source, tag, hash, workflow, and HTTP canaries fail closed.')
 } finally {
   fs.rmSync(temp, { recursive: true, force: true })
 }
