@@ -124,17 +124,20 @@ for (let round = 1; round <= 10; round += 1) {
 }
 
 const v1Rounds = fs.existsSync(v1Dir)
-  ? fs.readdirSync(v1Dir).filter((name) => /^round-\d{2}\.md$/.test(name)).sort()
+  ? fs.readdirSync(v1Dir)
+      .filter((name) => /^round-\d{2,}\.md$/.test(name))
+      .sort((left, right) => Number(left.match(/\d+/)[0]) - Number(right.match(/\d+/)[0]))
   : []
 
 for (let index = 0; index < v1Rounds.length; index += 1) {
   const expected = `round-${String(index + 1).padStart(2, '0')}.md`
-  if (v1Rounds[index] !== expected || index >= 10) errors.push(`v1 reviews must be contiguous round-01 through round-10; found ${v1Rounds[index]}`)
+  if (v1Rounds[index] !== expected) errors.push(`v1 reviews must be contiguous from round-01; expected ${expected}, found ${v1Rounds[index]}`)
 }
 
 let previousEvidenceCommit = null
 for (const name of v1Rounds) {
-  const id = name.match(/\d{2}/)[0]
+  const id = name.match(/\d{2,}/)[0]
+  const roundNumber = Number(id)
   const label = `round-${id}`
   const artifactDir = path.join(root, 'artifacts', 'reviews', 'v1', label)
   const docPath = path.join(v1Dir, name)
@@ -156,8 +159,15 @@ for (const name of v1Rounds) {
   const findingsCommit = resolveCommit(verification.findings_commit, `${label} findings_commit`)
   const contentResultCommit = resolveCommit(verification.content_result_commit, `${label} content_result_commit`)
   if (baselineMetadataCommit && baselineCommit && baselineMetadataCommit !== baselineCommit) errors.push(`${label}: baseline commit differs between metadata files`)
-  if (previousEvidenceCommit && baselineCommit && previousEvidenceCommit !== baselineCommit) {
+  if (previousEvidenceCommit && baselineCommit && roundNumber <= 10 && previousEvidenceCommit !== baselineCommit) {
     errors.push(`${label}: baseline is not the previous round evidence commit`)
+  }
+  if (previousEvidenceCommit && baselineCommit && roundNumber > 10) {
+    const inputEvidenceCommit = resolveCommit(baseline.input_evidence_commit, `${label} input_evidence_commit`)
+    if (inputEvidenceCommit && inputEvidenceCommit !== previousEvidenceCommit) {
+      errors.push(`${label}: input_evidence_commit is not the previous round evidence commit`)
+    }
+    requireAncestor(previousEvidenceCommit, baselineCommit, `${label} post-release baseline`)
   }
   if (!baseline.baseline_tag || !verification.complete_tag) errors.push(`${label}: missing baseline/complete tag metadata`)
   if (!Array.isArray(verification.commands) || !verification.commands.length || verification.commands.some((item) => item.exit_code !== 0)) {
@@ -235,4 +245,4 @@ const pendingNote = allowPending
 const gitEvidence = hasGit
   ? allowPending ? ', verified commit/diff lineage and annotated baseline tags' : ', verified lineage and required annotated tags'
   : ''
-console.log(`Review check passed: 10 legacy hashes preserved; ${v1Rounds.length} v1 round record(s) have structured evidence${gitEvidence}${pendingNote}.`)
+console.log(`Review check passed: 10 legacy hashes preserved; ${v1Rounds.length} contiguous v1 round record(s) have structured evidence${gitEvidence}${pendingNote}.`)
