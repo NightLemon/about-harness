@@ -42,12 +42,35 @@ def test_task_dataclass_and_json_schema_accept_same_positive_fixture() -> None:
 
 @pytest.mark.parametrize(
     ("field", "value"),
-    [("goal", ""), ("allowed_tools", ["echo", "echo"]), ("budgets", {"max_steps": 0})],
+    [
+        ("task_id", "bad task id"),
+        ("goal", ""),
+        ("goal", "x" * 4001),
+        ("allowed_tools", ["echo", "echo"]),
+        ("allowed_tools", [""]),
+        ("budgets", {"max_steps": 0}),
+        (
+            "budgets",
+            {"max_steps": 10001, "max_model_calls": 3, "timeout_ms": 1000},
+        ),
+    ],
 )
 def test_invalid_tasks_are_rejected(field: str, value: object) -> None:
     data = valid_task()
     data[field] = value
     with pytest.raises((ContractError, ValueError)):
+        TaskSpec.from_dict(data)
+
+
+def test_task_rejects_unknown_top_level_and_budget_fields() -> None:
+    data = valid_task()
+    data["unexpected"] = True
+    with pytest.raises(ContractError):
+        TaskSpec.from_dict(data)
+
+    data = valid_task()
+    data["budgets"]["unexpected"] = 1
+    with pytest.raises(ContractError):
         TaskSpec.from_dict(data)
 
 

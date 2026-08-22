@@ -32,6 +32,7 @@
     "lab:smoke": "uv run --frozen --offline python scripts/lab-smoke.py",
     "lab:pyright": "uv run --frozen --offline pyright",
     "lab:typecheck": "tsc -p lab/ts/tsconfig.json",
+    "lab:ts-runtime-test": "node scripts/test-ts-runtime.mjs",
     "labs:all": "uv run --frozen --offline python scripts/run-labs.py all",
     "eval:validate": "node scripts/eval-validate.mjs evals/study.example.json evals/runs.example.jsonl",
     "eval:summary": "node scripts/summarize-evals.mjs evals/study.example.json evals/runs.example.jsonl",
@@ -46,7 +47,7 @@
     "m6:self-test": "node scripts/test-m6-checks.mjs",
     "release:check": "node scripts/release-check.mjs",
     "release:self-test": "node scripts/test-release-check.mjs",
-    "check": "npm run docs:check && npm run docs:build && npm run docs:verify-build && npm run facts:check && npm run reviews:check && npm run checks:self-test && npm run labs:all && npm run eval:validate && npm run eval:summary && npm run results:redact && npm run m5:self-test",
+    "check": "npm run docs:check && npm run docs:build && npm run docs:verify-build && npm run facts:check && npm run reviews:check && npm run checks:self-test && npm run labs:all && npm run lab:ts-runtime-test && npm run eval:validate && npm run eval:summary && npm run results:redact && npm run m5:self-test",
     "verify": "npm run check && npm run roadmap:check && npm run roadmap:self-test && npm run learning:check && npm run learning:self-test && npm run model:check && npm run model:self-test && npm run compat:check && npm run compat:self-test && npm run tutorial:check && npm run tutorial:self-test && npm run docs:project-base && uv run --frozen --offline pytest && uv run --frozen --offline ruff check && npm run lab:pyright && npm run lab:typecheck && npm run facts:release && npm run links:check && npm run licenses:check && npm run secrets:check && npm run workflows:check && npm run docs:visual && npm run m6:self-test"
   },
   "devDependencies": {
