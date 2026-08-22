@@ -1,17 +1,17 @@
 # Harness 学习文档项目执行计划 v1
 
-状态：**M1-M8 已完成；本地 `v1-rc1` 已冻结且未发布；M9 未授权；A3/A4 未授权**
+状态：**M0-M9 已完成；`release-v1-rc3` 已发布到 GitHub Pages；A3 未授权且预算为 0；A4 仅在已批准的 M9 范围内使用完毕**
 交付契约批准语句：批准交付契约 v1，请保存执行计划  
 计划修订日期：2026-08-21
 工作区：仓库根目录（不得记录个人绝对路径）
 
 ## 1. 文档用途与恢复入口
 
-本文件是会在 checkpoint 更新的 living execution plan，不是 Goal 授权锚点。当前活动 Goal 已明确授予 M6-M8 的 A1/A2，且不绑定任何文件 SHA256；本文件更新不会撤销授权。
+本文件是会在 checkpoint 更新的 living execution plan，不是 Goal 授权锚点。M6-M8 的 A1/A2 和 M9 的 A4 均来自各自独立的用户授权；里程碑完成不把这些授权扩展到后续版本、真实 API 或新的远程操作。
 
-Git 历史和 annotated tags 已验收 M1-M5。当前恢复点为 `m5-complete-v1`（commit `6aada53`）；不得重跑 M1-M5，不得删除、移动或覆盖其 commits/tags。若本文件出现 M0、M1-M5 未开始或逐里程碑重新授权等旧措辞，视为计划回退，必须修正后继续 M6，不得据此阻塞。
+Git 历史和 annotated tags 已验收 M1-M8。远程恢复点为 `origin/main` 的 `e13bd93c5f82fe0d84494d45883cd121fb2b80c3`，annotated tags `release-v1-rc3` 与 `m8-corrected-v3` 均指向该 commit；不得删除、移动或覆盖既有审计 commits/tags。若恢复时本文件与远程事实冲突，以只读核验后的 GitHub commit、tag、workflow 和 deployment 证据为准，并记录差异。
 
-M6 已由 `m6-complete-v1`（`999a4c3`）冻结；M7 Round 01–05 已由各自 annotated complete tag 和 `m7-complete-v1` 绑定。M8 Round 06–10、`release-v1-rc1` 与 `m8-complete-v1` 已形成完整本地恢复链。A3（真实 API/费用）和 A4（remote/发布）仍未授权。
+M6 已由 `m6-complete-v1`（`999a4c3`）冻结；M7 Round 01–05 已由各自 annotated complete tag 和 `m7-complete-v1` 绑定。M8 Round 06–10、`release-v1-rc1` 与 `m8-complete-v1` 形成原始 RC 恢复链，后续发布准备修正保留为 RC2/RC3 新 tags，没有移动 RC1。M9 已在公开仓库 `NightLemon/about-harness` 完成。A3（真实 API/费用）始终未授权、未使用。
 
 ## 2. Progress
 
@@ -27,8 +27,8 @@ M6 已由 `m6-complete-v1`（`999a4c3`）冻结；M7 Round 01–05 已由各自 
 | M5 | **已完成** | `m5-complete-v1`，result `6aada53` |
 | M6 | **已完成** | 来源、许可、隐私、CI、视觉与发布自动化；`npm run verify` 与本地 Pages smoke 通过 |
 | M7 | **已完成** | Round 01–05 完成；`m7-complete-v1` |
-| M8 | **已完成** | Round 06–10 与本地 `v1-rc1`；`release-v1-rc1` / `m8-complete-v1` |
-| M9 | 未开始 | 经用户单独授权后的远程操作与发布 |
+| M8 | **已完成并修正** | Round 06–10 与 RC1 恢复链保留；发布准备修正形成 `release-v1-rc3` / `m8-corrected-v3` |
+| M9 | **已完成** | 公开仓库、PR 门禁、分支保护和 Pages 发布完成；线上 smoke 与人工视觉抽查通过 |
 
 进度记录格式：
 
@@ -278,19 +278,19 @@ M6 已由 `m6-complete-v1`（`999a4c3`）冻结；M7 Round 01–05 已由各自 
 | 层级 | 权限 | 默认状态 | 授权要求 |
 | --- | --- | --- | --- |
 | A0 | 本地只读盘点与计划维护 | 已授权 | 随 M6-M8 持续 |
-| A1 | 本地修改项目文件和运行会写入 artifact/cache 的本地验证 | 已授权 | 当前活动 Goal 一次覆盖 M6-M8 |
-| A2 | 本地 Git commit 和 annotated tag | 已授权 | 当前活动 Goal 一次覆盖 M6-M8，包括 review baseline/result tags |
+| A1 | 本地修改项目文件和运行会写入 artifact/cache 的本地验证 | 已授权并使用 | 覆盖 M6-M8；M9 完成后的本计划结果回填由用户再次批准 |
+| A2 | 本地 Git commit 和 annotated tag | 已授权并使用 | 覆盖 M6-M8 和已明确批准的 M9 发布准备对象；本次计划回填已由用户另行批准提交 |
 | A3 | 真实 API、凭据和费用 | 未授权，预算 0 | 必须指定 provider、凭据方式、数据范围和费用上限 |
-| A4 | remote、push、PR、仓库设置、Pages 和发布 | 未授权 | 必须指定 owner/repo 和允许的外部动作；A1/A2/A3 均不包含 A4 |
+| A4 | remote、push、PR、仓库设置、Pages 和发布 | 已单独授权并在 M9 使用完毕 | 仅限公开仓库 `NightLemon/about-harness` 的 M9；不自动授权后续远程变更 |
 
 规则：
 
-- A1 与 A2 由当前活动 Goal 明确授予 M6-M8；授权不绑定任何文件 SHA256。
+- A1 与 A2 曾明确授予 M6-M8；授权不绑定任何文件 SHA256。
 - A3、A4 不能由 Goal、A1、A2、普通里程碑或“继续执行”隐含获得；A3 和 A4 也不能相互包含。
 - M6、M7 完成后记录 checkpoint 并自动继续；M8 完成后必须暂停。
 - 需要更高层授权时必须保存当前恢复点并停止。
 - 缺少 A2 时可以在 A1 范围内形成未提交 diff，但不能宣告需要 commit/tag 证据的里程碑完成。
-- M1-M5 已完成且不得重跑；M6-M8 使用当前活动 Goal 授予的 A1+A2。M9 始终需要 A4。
+- M1-M8 已完成且不得重跑；M9 使用了用户单独授予的 A4。A4 随本次 M9 完成而关闭，下一次 remote、push、PR、Pages 或发布仍需重新确认范围。
 - 任何授权都不允许读取、记录或输出未获授权的凭据；费用上限为 0，直到 A3 明确改变。
 
 ## 10. M0–M9 运行手册
@@ -958,11 +958,11 @@ M6 已由 `m6-complete-v1`（`999a4c3`）冻结；M7 Round 01–05 已由各自 
 
 ### M9：经用户单独授权后的远程操作与发布
 
-**状态：未开始。**
+**状态：已完成（2026-08-21，Asia/Shanghai）。**
 
 **开始授权**
 
-- 必须获得 A4，明确 owner/repo、允许的 remote、push、PR、Pages 和发布动作。
+- 已通过用户的独立 M9 授权确认公开仓库、remote、push、PR、Pages、合并和发布动作；目标为 `NightLemon/about-harness`。
 - A4 不自动包含 A3；真实 API 仍需单独授权。
 - 如果 M9 需要修改内容，停止并返回 M8；不得在发布阶段临时修正文档。
 
@@ -991,6 +991,18 @@ M6 已由 `m6-complete-v1`（`999a4c3`）冻结；M7 Round 01–05 已由各自 
 7. 运行线上 pages:smoke 和人工视觉抽查。
 8. 保存 URL、PR、workflow run、deployment、SHA 和 smoke 证据。
 9. 发布成功后在任务报告中给出 Outcomes；M9 不修改本地内容文件。若要把结果回填本文件，须另获 A1，若要提交该回填还须另获 A2；任何失败不得宣告完成。
+
+**实际结果（2026-08-21）**
+
+- 公开仓库为 <https://github.com/NightLemon/about-harness>，默认分支 `main`，Issues 已启用。
+- PR [#1](https://github.com/NightLemon/about-harness/pull/1) 至 [#4](https://github.com/NightLemon/about-harness/pull/4) 均经 `verify` 与 `governance` 通过后 squash merge；没有 force push。
+- `main` 启用严格 `verify` 必过、线性历史、会话解决、禁止 force push/删除并对管理员生效的保护；`governance` 独立验证完整历史和 review tags，不作为公开学习站点的历史依赖。
+- 最终远程 SHA 为 `e13bd93c5f82fe0d84494d45883cd121fb2b80c3`；annotated tags `release-v1-rc3` 与 `m8-corrected-v3` 指向该 commit，RC1/RC2 tags 未移动。
+- Pages 地址为 <https://nightlemon.github.io/about-harness/>。Deploy workflow run [32459945521](https://github.com/NightLemon/about-harness/actions/runs/32459945521) 和 deploy job `96704937100` 成功；最终 CI run [32459945445](https://github.com/NightLemon/about-harness/actions/runs/32459945445) 的 `verify` 与 `governance` 均成功。
+- 发布 artifact 含首页和 85 个学习页面，不含 `docs/reviews/**`、`/meta/changelog` 或 `/meta/review-method`；这三个公开路由实测返回 404。`npm run pages:check` 不依赖 review Git 历史。
+- 线上 `npm run pages:smoke -- https://nightlemon.github.io/about-harness/` 通过 15 路由和 22 个同源资源；首页返回 200 和 `text/html; charset=utf-8`。
+- 人工浏览器抽查通过首页导航、搜索“评测”、明暗主题、无页面横向溢出和深层锚点（目标 top 110px）。固定 Playwright 证据另覆盖 1440、390、320 三视口、移动菜单和宽表横向滚动。
+- 未使用真实模型 API、凭据或费用；没有越过 A3。部分 Actions 仍显示 Node.js 20 action runtime 弃用提示，但 runner 已强制 Node.js 24 且本次构建、验证和部署成功，该提示为后续依赖维护项。
 
 **当时已经存在的验证命令**
 
@@ -1093,15 +1105,23 @@ M7/M8 原则上复用第 11.1 节接口。只有真实 finding 证明缺少防�
 - Review 中断：回到该轮 baseline tag，不创建 complete tag。
 - 发布失败：保留上一成功部署，返回 M8，不在 M9 临时修改内容。
 
+### 13.4 M9 完成后的恢复点
+
+- 本地与远程已知良好 commit：`e13bd93c5f82fe0d84494d45883cd121fb2b80c3`。
+- 已发布且不可移动的恢复 tags：`release-v1-rc3`、`m8-corrected-v3`；RC1/RC2 和十轮 review tags 继续保留审计。
+- 已知良好 Pages workflow：run `32459945521`；已知良好 CI workflow：run `32459945445`。
+- Pages 失败时先核对 workflow artifact、`/about-harness/` base 和 `npm run pages:smoke`，不得移动 release tag 或 force push；内容修正使用新分支、PR、commit 和递增 tag。
+- 本次 `EXECUTION_PLAN.md` 是 M9 后经批准的本地结果回填，不属于已发布学习站点，也不改变远程 SHA。已经结束的 M6-M8 `ACTIVE_GOAL.md` 原文归档为 `artifacts/goals/active-goal-m6-m8.md`，不得继续作为当前授权控制面。
+
 ## 14. Surprises & Discoveries
 
 本节记录改变计划或风险判断的事实；不得只记录成功。
 
 ### 已知发现
 
-1. 当前分支为 `main`，HEAD 为 `6aada53`；从 `legacy-baseline-v1` 到 `m5-complete-v1` 是无分叉的线性历史，相关标签均为 annotated tags。
+1. M9 验收时本地 HEAD 与 `origin/main` 均为 `e13bd93`；本次计划回填提交是其本地后继，不改变远程恢复点。从 `legacy-baseline-v1` 到 M8 的审计链和 M9 的四个 squash merge 可追溯，相关 release/checkpoint 标签均为 annotated tags。
 2. `legacy-baseline-v1` 指向 `2847afc`；`m1-complete-v1` 至 `m5-complete-v1` 分别指向已验收的线性提交，M1-M5 不得重跑。
-3. 当前没有 remote；A3 和 A4 未授权，真实 API、费用、remote、push、PR、Pages 和发布继续禁止。
+3. 已存在 `origin=https://github.com/NightLemon/about-harness.git`；A4 仅在单独批准的 M9 范围内用于 remote、PR、仓库设置、Pages 和发布并已用毕。A3 始终未授权，真实 API、凭据和费用仍禁止。
 4. M4 的 12 条登记事实均为 E1/verified；未运行真实模型性能测试。
 5. M5 的离线集成和 12 条合成配对样例只证明 E1 流程；完整 120-run 正式矩阵未运行。
 6. M6 已产生 workflow、docs、scripts、package 配置和本地 artifacts；全量 `npm run verify` 于 2026-08-21 通过。
@@ -1118,6 +1138,11 @@ M7/M8 原则上复用第 11.1 节接口。只有真实 finding 证明缺少防�
 17. Round 09 发现迁移 runner 只数 key，未知 harness、空语义与权限扩大可被判为成功；移动视觉证据又可能在菜单遮罩未关闭时生成且遗漏迁移页。现已建立 Codex→Pi/Claude Code 的六职责契约、边界负例，以及 1440/390/320 三视口九截图与实际表滚动门禁；证据仍限定为 E1。
 18. Round 10 发现 review 门禁只数文件、事实 `Used by` 未绑定正文锚点、Node 22/24 主张冲突。现已验证十轮 commit/tag/diff/hash lineage，要求 16 条非 retired 事实逐项锚定，统一 Node.js 22+ 与 CI 22 基线，并增加 release schema/check/self-test；三项 finding 均由 fail-closed canary 和全量 `npm run verify` 验收。
 19. RC 本地 preview 首次尝试的 4173 端口已被既有进程占用；没有终止未知进程，改用 4174 服务当前 `/about-harness/` artifact。16 路由与 23 同源资源通过；端口恢复不构成线上 Pages 证据。
+20. 首次 Pages 发布若携带 review、changelog 和 review-method，会把内部治理证据误当学习内容；PR #1 将构建面收敛为首页加 85 个学习页面，并使 `pages:check` 与 review Git 历史解耦。线上三个排除路由均返回 404。
+21. 跨 checkout 的 CRLF/LF 差异会使直接文件字节 hash 破坏 release 复现；PR #2 将 RC hash 规范化并加入换行可移植负例。既有 RC1 tag 未移动，修正使用 RC2。
+22. `actions/deploy-pages@v4.0.5` 的初始 pin SHA 不对应该 release；PR #3 改为 `d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e` 并增加 action pin 与浅克隆负例，形成 RC3，未移动 RC1/RC2。
+23. RC3 artifact 列表仍有 Windows 路径 hash 规范化差异；PR #4 修正后，最终 `main` 为 `e13bd93`，CI run `32459945445` 与 Pages run `32459945521` 均成功，线上 smoke 为 15 路由和 22 个同源资源。
+24. GitHub Actions 显示部分第三方 action 的 Node.js 20 runtime 弃用提示；当前 runner 已强制 Node.js 24，未影响成功结果。后续维护应升级对应 action release，并继续以 immutable SHA pin 与 canary 验证。
 
 后续每次新增发现使用格式：
 
@@ -1157,6 +1182,10 @@ M7/M8 原则上复用第 11.1 节接口。只有真实 finding 证明缺少防�
 | 2026-08-21 | 因 R10-P1-01 新增 release schema/check/self-test | 既有“组合稳定门禁”不足以证明十轮 lineage 与 RC 完整性；新增门禁必须有伪造证据负例 |
 | 2026-08-21 | Node.js 支持范围统一为 22+，workflow 以 22 为最低发布基线 | lockfile 锁依赖而不锁 runtime；单次证据继续记录实际 Node 版本 |
 | 2026-08-21 | M8 只形成未发布的 E1 本地 RC 并暂停 | A3/A4 均未授权；真实模型证据和远程发布不能由 RC 完成状态隐含获得 |
+| 2026-08-21 | M9 A4 仅授权公开仓库 `NightLemon/about-harness` 的创建/配置、push、PR、保护、Pages 与发布 | 用户分别确认 M9、仓库可创建以及最终执行；A3 仍独立禁止，M9 完成不构成后续远程授权 |
+| 2026-08-21 | GitHub Pages 只发布学习内容，不发布十轮 review 历史、changelog 或 review 方法 | 用户明确学习站点只需学习相关内容；治理证据保留在仓库和独立 `governance` job |
+| 2026-08-21 | `verify` 是 branch protection 必过的公开站点门禁，`governance` 独立核验完整历史与 tags | Pages/公开验证不依赖历史深度，同时保留项目内部十轮审计证据 |
+| 2026-08-21 | 已发布 RC tag 不移动，发布准备错误用 PR 和 RC2/RC3 递增修正 | 保持恢复链可审计，避免通过改写 tag 掩盖 release pin 与跨平台 hash 缺陷 |
 
 新决策必须记录日期、备选方案、选择理由、影响文件和是否需要契约变更。
 
@@ -1177,9 +1206,11 @@ M7/M8 原则上复用第 11.1 节接口。只有真实 finding 证明缺少防�
 - M6 已完成：109 个 Markdown/路由、110 个 HTML、27 项 pytest、Ruff、Pyright、TypeScript、事实时效、许可、秘密、workflow、视觉和 canary 门禁通过；本地 Pages smoke 覆盖 16 路由与 23 个同源资源。
 - M6 证据：`artifacts/visual/m6/manifest.json` 和 6 张固定截图；没有远程 workflow run、Pages、真实 API、凭据或费用。
 - M7 已完成：Round 01–05 由各自 annotated complete tag 和 `m7-complete-v1` 绑定。
-- M8 已完成：Round 06–10 连续可追溯；Round 10 evidence 为 `5054f44` / `review-v1-round-10-complete`。本地 `v1-rc1` 绑定十轮、30 天事实、许可、隐私、workflow、视觉、公开 E1 结果、全量验证和已知限制。
-- RC 验证：119 routes、120 HTML、36 pytest、Ruff、Pyright、TypeScript、16 条事实、十轮 lineage、9 张三视口截图；本地 Pages smoke 覆盖 16 路由与 23 个同源资源。
-- M9 未开始且仍需单独 A4；RC 的 `publication_status` 为 `not-published`，A3/A4 均未使用。
+- M8 已完成：Round 06–10 连续可追溯；Round 10 evidence 为 `5054f44` / `review-v1-round-10-complete`。本地 `v1-rc1` 绑定十轮、30 天事实、许可、隐私、workflow、视觉、公开 E1 结果、全量验证和已知限制；发布准备缺陷通过 RC2/RC3 新 commits/tags 修正，RC1 未移动。
+- RC 验证：119 routes、120 HTML、36 pytest、Ruff、Pyright、TypeScript、16 条事实、十轮 lineage、9 张三视口截图；原始本地 Pages smoke 覆盖 16 路由与 23 个同源资源。最终公开 artifact 收敛为首页加 85 个学习页面（86 HTML）。
+- M9 已完成：最终 SHA `e13bd93`，公开仓库、四个 PR、严格 branch protection、Pages 和 Issues 已配置；CI run `32459945445` 与 deploy run `32459945521` 成功，线上 smoke 覆盖 15 路由和 22 个同源资源。
+- M9 人工验收通过首页导航、搜索、主题、桌面无横向溢出和深层锚点；固定 Playwright manifest 通过 1440/390/320 三视口、移动菜单与表格横向滚动。review/changelog/review-method 未发布且线上返回 404。
+- A4 仅在批准的 M9 范围内使用；A3 未使用，真实 API、凭据和费用为 0。远程后续变更仍需新的范围确认。
 - 上述 commits 和 annotated tags 是不可移动的恢复证据；本文件的未提交状态变化不得覆盖它们。
 
 ### 后续里程碑记录模板
@@ -1211,13 +1242,22 @@ M9 后必须总结：
 - 下一次 30/90 天事实刷新日期；
 - 未完成范围和不应被误解为已完成的事项。
 
+### 项目最终回顾（2026-08-21）
+
+- 学习路径、知识地图、作品集 rubric、最小 harness、模型/harness/framework/领域/安全内容、六个案例与评测系统已形成可导航、可构建、可离线验证的中文学习项目。
+- 六个案例、容器、离线 runner、schema 与评测汇总可在锁定工具链下复现；公开结果和模型性能主张仍仅为 E1。没有执行 E2 真实烟测或 E3 正式比较，不应把本站解释为真实模型排行榜。
+- 新十轮满足 baseline/result commit、annotated tag、findings、diff、hash、命令、环境和 reviewer 元数据证据合同；这些治理材料保留在仓库，但按用户决定不进入 Pages 学习站点。
+- 产品事实在 2026-08-21 的 30 天发布窗口内通过；下一次 30 天刷新截止日为 2026-09-20，若未刷新则最迟于 2026-11-19 按 90 天规则显示过期。
+- 残余维护风险为第三方 action 的 Node.js 20 runtime 弃用提示、上游产品事实变化和 E2/E3 空缺；当前 Node.js 24 runner、immutable action pins、分离的 `verify`/`governance` 与 fail-closed canary 已覆盖本次发布风险。
+- 最终交付 URL 为 <https://nightlemon.github.io/about-harness/>，远程 SHA 为 `e13bd93c5f82fe0d84494d45883cd121fb2b80c3`，release tag 为 `release-v1-rc3`。
+
 ## 17. 当前停止点
 
-M1-M8 已完成且不得重跑或移动其 tags。当前恢复入口为本地 `release-v1-rc1` / `m8-complete-v1`；十轮最后 evidence 为 `review-v1-round-10-complete`。
+M0-M9 已完成。远程恢复入口为 `origin/main` 的 `e13bd93c5f82fe0d84494d45883cd121fb2b80c3`、`release-v1-rc3` 与 `m8-corrected-v3`；十轮最后 evidence 为 `review-v1-round-10-complete`。既有 RC1/RC2 与里程碑/review tags 不得移动。
 
-按活动 Goal 的停止条件，M8 完成后立即暂停。禁止真实 API、凭据、费用、remote、push、PR、Pages 和发布。任何 M9 动作必须先取得独立 A4；若要运行 E2/E3，还必须另取 A3。
+项目在成功 Pages 发布和线上验收后停止。A4 只覆盖已完成的 M9，不授权新的 remote、push、PR、仓库设置或发布；A3 仍未授权，真实 API、凭据、费用、E2 和 E3 继续禁止，除非用户另行明确授权。
 
 ### 待用户确认
 
 - 若未来需要 E2/E3：具体模型、provider、凭据提供方式、允许的数据范围和费用上限；默认预算仍为 0。
-- M9 前：GitHub owner/repo、仓库可见性、默认分支，以及允许的 remote、push、PR、Pages、合并和发布动作。
+- 若开始下一版本或维护发布：新的范围、目标 SHA/tag、允许的 remote/PR/Pages 动作，以及是否更新 Node runtime 已弃用的 action 依赖。
