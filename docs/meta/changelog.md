@@ -51,6 +51,6 @@ M0–M9 的完整执行计划已关闭并原样归档到 `artifacts/plans/execut
 | [09](/reviews/v1/round-09) | 完成 | 两条迁移路径、六类职责、边界负例与三视口迁移视觉防回归 |
 | [10](/reviews/v1/round-10) | 完成 | 发布证据链、事实逐项锚点、Node.js 22+ 基线与 RC fail-closed 防回归 |
 | [11](/reviews/v1/round-11) | 完成 | 发布后复核、运行时契约、fixture lineage、事实状态与 review 延续 |
-| [12](/reviews/v1/round-12) | 进行中 | 已结束 Goal/计划归档、review 状态一致性与 release clean-worktree 门禁 |
+| [12](/reviews/v1/round-12) | 完成 | 已结束 Goal/计划归档、review 状态一致性与 release clean-worktree 门禁 |
 
 只有文档记录、artifact 证据、result commit 与 annotated tag 同时存在，状态才改为完成。

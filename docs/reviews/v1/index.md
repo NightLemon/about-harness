@@ -1,6 +1,6 @@
 # V1 审阅状态
 
-V1 的原定十轮已经完成。M7 创建 round 01–05，M8 创建 round 06–10；发布后的 Round 11 已完成运行时契约、fixture lineage、publication 与 review 可持续性复核。Round 12 正在收口已结束 Goal/计划、状态文案与 release clean-worktree 门禁。每轮只有满足[审阅证据契约](/meta/review-method)后才显示为完成。
+V1 的原定十轮已经完成。M7 创建 round 01–05，M8 创建 round 06–10；发布后的 Round 11 已完成运行时契约、fixture lineage、publication 与 review 可持续性复核，Round 12 已完成已结束 Goal/计划、状态文案与 release clean-worktree 门禁收口。每轮只有满足[审阅证据契约](/meta/review-method)后才显示为完成。
 
 禁止预建十份“完成”文件或复制相同发现凑数。机器证据将保存在 `artifacts/reviews/v1/round-NN/`，并由 result commit 与 annotated tag 绑定。
 
@@ -17,4 +17,4 @@ V1 的原定十轮已经完成。M7 创建 round 01–05，M8 创建 round 06–
 | [09](/reviews/v1/round-09) | 完成 | 迁移、中文可读性和视觉体验 |
 | [10](/reviews/v1/round-10) | 完成 | 发布、来源时效、全局一致性和最终主张 |
 | [11](/reviews/v1/round-11) | 完成 | 发布后复核、运行时契约、评测 lineage 与 review 可持续性 |
-| [12](/reviews/v1/round-12) | 进行中 | 已结束 Goal/计划归档、review 状态一致性与 release clean-worktree 门禁 |
+| [12](/reviews/v1/round-12) | 完成 | 已结束 Goal/计划归档、review 状态一致性与 release clean-worktree 门禁 |
