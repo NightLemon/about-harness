@@ -50,6 +50,6 @@
 | [08](/reviews/v1/round-08) | 完成 | JSON/JSONL 脱敏 fail-closed、镜像 digest 与 workflow 权限 scope 防回归 |
 | [09](/reviews/v1/round-09) | 完成 | 两条迁移路径、六类职责、边界负例与三视口迁移视觉防回归 |
 | [10](/reviews/v1/round-10) | 完成 | 发布证据链、事实逐项锚点、Node.js 22+ 基线与 RC fail-closed 防回归 |
-| [11](/reviews/v1/round-11) | 进行中 | 发布后复核、运行时契约、fixture lineage、事实状态与 review 延续 |
+| [11](/reviews/v1/round-11) | 完成 | 发布后复核、运行时契约、fixture lineage、事实状态与 review 延续 |
 
 只有文档记录、artifact 证据、result commit 与 annotated tag 同时存在，状态才改为完成。
