@@ -4,7 +4,7 @@
 
 ## 当前状态
 
-M0–M9 与 V1 Review Round 01–11 已完成；原 living [`EXECUTION_PLAN.md`](EXECUTION_PLAN.md) 已关闭并保留为简短状态入口，完整历史计划和已结束 Goal 均已归档，不能作为后续授权。Round 12 正在收口治理状态与 release clean-worktree 门禁。仓库中旧有的十轮记录已原样迁入 `docs/reviews/legacy/`，因缺少冻结 baseline、逐轮 diff、result commit/tag 和环境元数据，**不计入 v1 的审阅**。
+M0–M9 与 V1 Review Round 01–12 已完成；原 living [`EXECUTION_PLAN.md`](EXECUTION_PLAN.md) 已关闭并保留为简短状态入口，完整历史计划和已结束 Goal 均已归档，不能作为后续授权。仓库中旧有的十轮记录已原样迁入 `docs/reviews/legacy/`，因缺少冻结 baseline、逐轮 diff、result commit/tag 和环境元数据，**不计入 v1 的审阅**。
 
 V1 学习站点已从 commit `e13bd93` 发布到 <https://nightlemon.github.io/about-harness/>；CI、Deploy 与 2026-08-22 的 HTTP 200 记录见 [`publication-result.json`](artifacts/release/v1/publication-result.json)。RC3 的 `pending-publication` 保留为发布前历史快照。发布没有调用真实模型 API、使用模型凭据或产生费用；所有模型性能结论默认最高为离线 E1，除非文档明确给出 E2/E3 证据。
 
