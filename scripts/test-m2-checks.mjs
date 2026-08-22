@@ -1,4 +1,5 @@
 import { spawnSync } from 'node:child_process'
+import crypto from 'node:crypto'
 import fs from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
@@ -17,6 +18,24 @@ function run(script) {
     cwd: tempRoot,
     encoding: 'utf8'
   })
+}
+
+function runAt(cwd, script, env = {}) {
+  return spawnSync(process.execPath, [path.join(sourceRoot, 'scripts', script)], {
+    cwd,
+    encoding: 'utf8',
+    env: { ...process.env, ...env }
+  })
+}
+
+function writeAt(root, rel, content) {
+  const file = path.join(root, rel)
+  fs.mkdirSync(path.dirname(file), { recursive: true })
+  fs.writeFileSync(file, content)
+}
+
+function hashAt(root, rel) {
+  return crypto.createHash('sha256').update(fs.readFileSync(path.join(root, rel))).digest('hex').toUpperCase()
 }
 
 try {
@@ -113,7 +132,82 @@ try {
   }
   if (forgedReview.status === 0) throw new Error('reviews-check accepted forged non-empty v1 evidence')
 
-  console.log('M2 checker negative tests passed: invalid facts and tampered, empty, or forged review evidence were rejected.')
+  const round11Root = path.join(tempRoot, 'round11-structured')
+  fs.cpSync(path.join(sourceRoot, 'docs', 'reviews', 'legacy'), path.join(round11Root, 'docs', 'reviews', 'legacy'), { recursive: true })
+  writeAt(round11Root, 'README.md', '# Structured Round 11 fixture\n')
+  writeAt(round11Root, 'docs/meta/changelog.md', '# Changelog\n\nlegacy rounds 不计入 v1\n')
+  for (let round = 1; round <= 10; round += 1) {
+    const id = String(round).padStart(2, '0')
+    writeAt(round11Root, `docs/reviews/round-${id}.md`, `# Old route ${id}\n`)
+  }
+  for (let round = 1; round <= 11; round += 1) {
+    const id = String(round).padStart(2, '0')
+    const label = `round-${id}`
+    const artifactRoot = `artifacts/reviews/v1/${label}`
+    const commit = (round % 16).toString(16).repeat(40)
+    writeAt(round11Root, `docs/reviews/v1/${label}.md`, `# Structured ${label}\n`)
+    writeAt(round11Root, `${artifactRoot}/baseline.json`, JSON.stringify({
+      round: id,
+      baseline_commit: commit,
+      baseline_tag: `review-v1-${label}-baseline`,
+      ...(round > 10 ? { input_evidence_commit: 'a'.repeat(40) } : {})
+    }))
+    writeAt(round11Root, `${artifactRoot}/findings.md`, `# Finding\n\nR${id}-P2-01: substantive canary\n`)
+    writeAt(round11Root, `${artifactRoot}/diff.patch`, `diff --git a/example-${id}.md b/example-${id}.md\n--- a/example-${id}.md\n+++ b/example-${id}.md\n@@ -1 +1 @@\n-old\n+new\n`)
+    writeAt(round11Root, `${artifactRoot}/unresolved.md`, '# Counts\n\n- 开放 P0：0\n- 开放 P1：0\n- 开放 P2：0\n- 开放 P3：0\n')
+    const hashes = {}
+    for (const rel of ['baseline.json', 'findings.md', 'diff.patch', 'unresolved.md']) {
+      hashes[rel] = hashAt(round11Root, `${artifactRoot}/${rel}`)
+    }
+    hashes[`docs/reviews/v1/${label}.md`] = hashAt(round11Root, `docs/reviews/v1/${label}.md`)
+    writeAt(round11Root, `${artifactRoot}/verification.json`, JSON.stringify({
+      round: id,
+      baseline_commit: commit,
+      findings_commit: commit,
+      content_result_commit: commit,
+      complete_tag: `review-v1-${label}-complete`,
+      commands: [{ command: 'structured canary', exit_code: 0 }],
+      result: { open_blockers: 0 },
+      artifact_hashes: hashes
+    }))
+  }
+  const elevenRounds = runAt(round11Root, 'reviews-check.mjs')
+  if (elevenRounds.status !== 0 || !elevenRounds.stdout.includes('11 contiguous v1 round')) {
+    throw new Error(`reviews-check did not accept structured Round 11+ evidence: ${elevenRounds.stderr}`)
+  }
+  const round10Doc = fs.readFileSync(path.join(round11Root, 'docs', 'reviews', 'v1', 'round-10.md'), 'utf8')
+  fs.rmSync(path.join(round11Root, 'docs', 'reviews', 'v1', 'round-10.md'))
+  const gapResult = runAt(round11Root, 'reviews-check.mjs')
+  if (gapResult.status === 0 || !gapResult.stderr.includes('must be contiguous from round-01')) {
+    throw new Error('reviews-check accepted a gap before Round 11')
+  }
+  writeAt(round11Root, 'docs/reviews/v1/round-10.md', round10Doc)
+
+  const ancestorRoot = path.join(tempRoot, 'round11-ancestor')
+  fs.cpSync(path.join(sourceRoot, 'docs', 'reviews'), path.join(ancestorRoot, 'docs', 'reviews'), { recursive: true })
+  fs.cpSync(path.join(sourceRoot, 'artifacts', 'reviews'), path.join(ancestorRoot, 'artifacts', 'reviews'), { recursive: true })
+  fs.mkdirSync(path.join(ancestorRoot, 'artifacts', 'visual', 'round-09'), { recursive: true })
+  fs.cpSync(path.join(sourceRoot, 'artifacts', 'visual', 'round-09', 'manifest.json'), path.join(ancestorRoot, 'artifacts', 'visual', 'round-09', 'manifest.json'))
+  fs.cpSync(path.join(sourceRoot, 'README.md'), path.join(ancestorRoot, 'README.md'))
+  fs.mkdirSync(path.join(ancestorRoot, 'docs', 'meta'), { recursive: true })
+  fs.cpSync(path.join(sourceRoot, 'docs', 'meta', 'changelog.md'), path.join(ancestorRoot, 'docs', 'meta', 'changelog.md'))
+  fs.cpSync(path.join(sourceRoot, '.git'), path.join(ancestorRoot, '.git'), { recursive: true })
+  for (const name of ['diff.patch', 'verification.json', 'unresolved.md']) {
+    fs.cpSync(
+      path.join(ancestorRoot, 'artifacts', 'reviews', 'v1', 'round-10', name),
+      path.join(ancestorRoot, 'artifacts', 'reviews', 'v1', 'round-11', name)
+    )
+  }
+  const badBaselineFile = path.join(ancestorRoot, 'artifacts', 'reviews', 'v1', 'round-11', 'baseline.json')
+  const badBaseline = JSON.parse(fs.readFileSync(badBaselineFile, 'utf8'))
+  badBaseline.baseline_commit = '2847afc147704e453476f083c52e058e2f5e3639'
+  fs.writeFileSync(badBaselineFile, JSON.stringify(badBaseline), 'utf8')
+  const badAncestor = runAt(ancestorRoot, 'reviews-check.mjs', { REVIEWS_ALLOW_PENDING: '11' })
+  if (badAncestor.status === 0 || !badAncestor.stderr.includes('round-11 post-release baseline') || !badAncestor.stderr.includes('is not an ancestor')) {
+    throw new Error(`reviews-check did not reject a forged post-release baseline ancestor: ${badAncestor.stderr}`)
+  }
+
+  console.log('M2 checker negative tests passed: facts, Round 11 continuity, post-release ancestry, and forged review evidence were checked.')
 } finally {
   fs.rmSync(tempRoot, { recursive: true, force: true })
 }
