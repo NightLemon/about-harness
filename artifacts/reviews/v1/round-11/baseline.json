@@ -1,0 +1,101 @@
+{
+  "schema_version": "1.0",
+  "round": "11",
+  "captured_at": "2026-08-22T17:31:18+08:00",
+  "timezone": "Asia/Shanghai",
+  "baseline_commit": "06a44ef06f7f3b7d14b286f6ae2ea9370d080790",
+  "baseline_tag": "review-v1-round-11-baseline",
+  "input_tag": "review-v1-round-10-complete",
+  "input_evidence_commit": "5054f44578b6c29d83601b513a0c3d6b98ae4ec2",
+  "branch": "codex/review-round-11",
+  "scope": "发布后全局复核、TypeScript 契约、评测 fixture lineage、事实状态与 review 可持续性",
+  "rubric_version": "docs/meta/review-method.md@18B7C95A01A6FDFC342F0A79FB65DAE3F6CA7077814CE05DBABDA8B2F168AD3C",
+  "files": {
+    "lab/ts/contracts.ts": "54BF284C325F3BFB51C82BABD98DA01FAE88A5F1C18ADAB5E627B2DBFDFFE1D9",
+    "lab/ts/minimal-loop.ts": "E570FAE61830062708B27EA37F5EC37A7DEAACEC3D9B9B39127B57AA818B8485",
+    "lab/schemas/task.json": "57BE54D86566833DD222A5BA25846EE4D19F5D0F23590B0FBC7A12EFA3B888DC",
+    "scripts/eval-validate.mjs": "F64FDB84899A22EB7F696DFD15AC68AEF848C3E4C326BE12F1ED17CF4993F41B",
+    "scripts/eval-lib.mjs": "E2C7E3DF2758C419F0987F91091DE9B436BE5BD3BBF3509663C3CA7E86CBAFAE",
+    "evals/tasks.example.jsonl": "44E7A24A6790C7701D8C7A6E0283667EF40D739EDED602AB39CC69EE9292F1A7",
+    "evals/runs.example.jsonl": "9ADA661C8ED646BC3C8320F39A434D098495728A5DC7EB362E20B7BC0D9837BD",
+    "lab/fixtures/migration/manifest.json": "8623637F553A832FF22CF4778F6A44EDE03FF70868F73819191F697A9D358572",
+    "README.md": "A1D0486723C510DDCFC3E2F2DC8E1246D5C28EE91AC5D51FDEA2A3CEEB20B8ED",
+    "docs/models/deepseek.md": "143813E6F13F2572D4055E932F1B9F1576A6D0ECC324A9BD126DB2933F63FE5A",
+    "docs/references/fact-registry.md": "B1918BA304C2A88F82B1947182755F62693A8A4A2C4A999D7B02C17A5C1A7DED",
+    "scripts/facts-check.mjs": "42542573E818BBD5C98AD15A345E24519254ED47D72A0B5097078D99C6921CC6",
+    "scripts/reviews-check.mjs": "9149FF7F5F7F021ED73859D5D73660F8DB4CAD2F751AA13FFA9EF1CE8E00AB75",
+    "scripts/release-check.mjs": "D815D0DCC465798E137A8A9DEFEE0525631A3AB73870E5897D1BED95C448DCEC",
+    "artifacts/release/v1/release-candidate.json": "C8D3CFAFA9A09BDA182D654EC3A05F7E8C272D127E7DAEFFC0D8E8A3B1192A02",
+    "artifacts/release/v1/verification.json": "872532368205968D69871A129AC75ACE328ABFC9505BC6639E256C3D6C40FC88",
+    "artifacts/release/v1/known-limitations.md": "9943F5407A44E783EB806B2E8C122E8F27DE6919B4217DC711ADD77240ABB1D7",
+    "docs/meta/changelog.md": "310ABD8BE1D32D5CBDB4E23672C6441ED65E08CA65E142FBCE89A9CE8EA02A47",
+    "docs/reviews/v1/index.md": "9FD218D6F400B84D17A2D331E89FE3098C166F346C4C48BC88C35C8D9553490E",
+    "package.json": "45D850277BFE13B8DF526440060CA34D43F192BD0C4803E641623ECCF7A045C0"
+  },
+  "observations": {
+    "typescript_runtime_probe": [
+      "duplicate allowed_tools: accepted",
+      "empty tool name: accepted",
+      "NaN max_cost_usd: accepted",
+      "Infinity max_cost_usd: accepted",
+      "NaN action cost can pass the greater-than budget test and reach completed with NaN metrics"
+    ],
+    "migration_task_fixture_hash": "482c941cb373dd1d4711509b6ada0c262584aae0c566400c718d41e0481abcad",
+    "current_migration_fixture_hash": "5f9cd08404f9d1a3e1e2118daca7a124d5f0d27f743ea308bf5ea7bef751e7cb",
+    "facts_check": "16 claims; verified=16; pending=0",
+    "publication_probe": "https://nightlemon.github.io/about-harness/ returned HTTP 200 on 2026-08-22",
+    "review_limit": "scripts/reviews-check.mjs rejects every v1 round after round-10"
+  },
+  "reviewer": {
+    "role": "发布后全局、契约、评测 lineage、事实和 review 治理复核者",
+    "provider": "OpenAI",
+    "model_id": "GPT-5",
+    "model_resolution": "exact deployment snapshot is not exposed by the runtime",
+    "harness": "Codex desktop",
+    "harness_version": "not exposed",
+    "surface": "desktop task",
+    "configuration": "single-agent local review; no subagents"
+  },
+  "instructions": {
+    "system_developer": "runtime-managed; content hash not exposed",
+    "user_plan": "V1 Round 11 复核与修复计划 dated 2026-08-22; content hash not exposed",
+    "repository": "AGENTS.md@AEE7B90AE9332ED969C07BDCF771F5484DB2F85EA6F0CE3B2F2E0D499DB97B74"
+  },
+  "tools": {
+    "skills": [],
+    "interfaces": ["PowerShell 7", "git", "rg", "Node.js", "uv", "curl", "apply_patch"]
+  },
+  "environment": {
+    "os": "Microsoft Windows 11 Enterprise 10.0.26200 x64",
+    "node": "v24.14.0",
+    "python": "3.11.15 via uv project environment",
+    "uv": "0.11.16",
+    "git": "2.55.0.windows.3",
+    "package_lock_sha256": "598EBC3F0DB6F5B820410BBCD4F92284051FDE2A2F680505334E5E9FBD38E707",
+    "uv_lock_sha256": "DA5E9A1DB74A4CE06A47C71809FBA8A0FED2BA557E9BAA4A63824B2BD19BF90F"
+  },
+  "execution": {
+    "offline_tests": true,
+    "publication_read_only_probe": true,
+    "live_model_or_api": false,
+    "a3_used": false,
+    "a4_write_used": false
+  },
+  "sampling": {
+    "included": [
+      "all top-level learning and governance areas",
+      "TypeScript and Python runtime contracts",
+      "task/run/fixture lineage",
+      "release candidate versus publication state",
+      "fact registry and pending claims",
+      "all v1 review records and checker logic",
+      "page-length inventory and existing visual gates"
+    ],
+    "excluded": [
+      "real model APIs and paid runs",
+      "remote writes, pushes, PRs, Pages changes or releases",
+      "new E2/E3 comparison evidence",
+      "full manual accessibility audit"
+    ]
+  }
+}
