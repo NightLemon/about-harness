@@ -1,16 +1,19 @@
-import { assertRuns, assertStudy, readJson, readJsonl } from './eval-lib.mjs'
+import { assertFixtureLineage, assertRuns, assertStudy, readJson, readJsonl } from './eval-lib.mjs'
 
-const [studyFile, runFile] = process.argv.slice(2)
-if (!studyFile || !runFile) {
-  console.error('Usage: node scripts/eval-validate.mjs <study.json> <runs.jsonl>')
+const [taskFile, fixtureRefFile, studyFile, runFile] = process.argv.slice(2)
+if (!taskFile || !fixtureRefFile || !studyFile || !runFile) {
+  console.error('Usage: node scripts/eval-validate.mjs <tasks.jsonl> <fixture-refs.json> <study.json> <runs.jsonl>')
   process.exit(2)
 }
 
 try {
+  const tasks = readJsonl(taskFile)
+  const fixtureRefs = readJson(fixtureRefFile)
   const study = readJson(studyFile)
   const rows = readJsonl(runFile)
   const design = assertStudy(study)
   const coverage = assertRuns(rows, study)
+  const lineage = assertFixtureLineage(tasks, fixtureRefs, rows, design.taskIds)
   const expectedRows = study.tasks.length * study.configs.length * study.repeats
   console.log(JSON.stringify({
     schema_version: '1.0',
@@ -21,6 +24,7 @@ try {
     configs: study.configs.length,
     repeats: study.repeats,
     sample_rows: rows.length,
+    fixture_refs: lineage.refs.size,
     formal_matrix_rows: expectedRows,
     unique_matrix_cells: coverage.cells.size,
     missing_matrix_cells: coverage.missingCells.length,

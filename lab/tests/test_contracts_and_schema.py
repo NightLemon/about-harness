@@ -75,7 +75,7 @@ def test_task_rejects_unknown_top_level_and_budget_fields() -> None:
 
 
 def test_all_schemas_are_valid_draft_2020_12() -> None:
-    for name in ("task", "run", "trace", "result", "config", "eval-run", "study"):
+    for name in ("task", "run", "trace", "result", "config", "eval-run", "study", "fixture-lineage"):
         schema = json.loads((SCHEMAS / f"{name}.json").read_text(encoding="utf-8"))
         Draft202012Validator.check_schema(schema)
 

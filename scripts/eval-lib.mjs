@@ -1,3 +1,5 @@
+import crypto from 'node:crypto'
+import { spawnSync } from 'node:child_process'
 import fs from 'node:fs'
 
 export const RUN_REQUIRED = [
@@ -141,6 +143,89 @@ export function assertRuns(rows, study) {
   }
   const missingCells = expectedCells.filter((cell) => !cells.has(cell))
   return { ids, cells, expectedCells, missingCells, configIdentities }
+}
+
+function canonicalJson(value) {
+  if (Array.isArray(value)) return `[${value.map((item) => canonicalJson(item)).join(',')}]`
+  if (value !== null && typeof value === 'object') {
+    return `{${Object.keys(value).sort().map((key) => `${JSON.stringify(key)}:${canonicalJson(value[key])}`).join(',')}}`
+  }
+  return JSON.stringify(value)
+}
+
+function sha256(value) {
+  return crypto.createHash('sha256').update(value).digest('hex')
+}
+
+function gitObject(commit, fixturePath, filename) {
+  const result = spawnSync('git', ['show', `${commit}:${fixturePath}/${filename}`], { encoding: 'utf8' })
+  if (result.status !== 0) throw new Error(`fixture ref cannot resolve ${commit.slice(0, 7)}:${fixturePath}/${filename}`)
+  try {
+    return JSON.parse(result.stdout)
+  } catch (error) {
+    throw new Error(`fixture ref contains invalid JSON at ${fixturePath}/${filename}: ${error.message}`)
+  }
+}
+
+function fixtureHashAtRef(ref) {
+  if (!/^[a-f0-9]{40}$/.test(ref.commit || '')) throw new Error(`${ref.ref_id}: commit must be a full lowercase Git SHA`)
+  if (!/^lab\/fixtures\/[a-z0-9-]+$/.test(ref.path || '') || ref.path.split('/').includes('..')) {
+    throw new Error(`${ref.ref_id}: invalid fixture path`)
+  }
+  const resolved = spawnSync('git', ['rev-parse', '--verify', `${ref.commit}^{commit}`], { encoding: 'utf8' })
+  if (resolved.status !== 0 || resolved.stdout.trim() !== ref.commit) throw new Error(`${ref.ref_id}: fixture commit does not resolve exactly`)
+  const manifest = gitObject(ref.commit, ref.path, 'manifest.json')
+  const rows = []
+  for (const filename of ['input.json', 'expected.json', 'negative.json']) {
+    const value = gitObject(ref.commit, ref.path, filename)
+    const actual = sha256(Buffer.from(canonicalJson(value), 'utf8'))
+    if (manifest.files?.[filename] !== actual) throw new Error(`${ref.ref_id}: historical manifest hash mismatch for ${filename}`)
+    rows.push(`${filename}\t${actual}`)
+  }
+  return sha256(Buffer.from(rows.join('\n'), 'utf8'))
+}
+
+export function assertFixtureLineage(tasks, registry, runs, studyTaskIds) {
+  if (registry?.schema_version !== '1.0' || !Array.isArray(registry.refs)) {
+    throw new Error('fixture reference registry must use schema_version 1.0 and contain refs')
+  }
+  const refs = new Map()
+  for (const ref of registry.refs) {
+    if (typeof ref?.ref_id !== 'string' || !ref.ref_id || refs.has(ref.ref_id)) {
+      throw new Error(`invalid or duplicate fixture ref: ${ref?.ref_id}`)
+    }
+    if (typeof ref.task_id !== 'string' || !studyTaskIds.has(ref.task_id)) {
+      throw new Error(`${ref.ref_id}: unknown study task_id ${ref.task_id}`)
+    }
+    if (!/^[a-f0-9]{64}$/.test(ref.fixture_hash || '')) throw new Error(`${ref.ref_id}: invalid fixture_hash`)
+    const actual = fixtureHashAtRef(ref)
+    if (actual !== ref.fixture_hash) throw new Error(`${ref.ref_id}: fixture hash does not match immutable ref`)
+    refs.set(ref.ref_id, ref)
+  }
+
+  const taskMap = new Map()
+  for (const task of tasks) {
+    if (typeof task?.task_id !== 'string' || taskMap.has(task.task_id)) {
+      throw new Error(`invalid or duplicate task fixture lineage: ${task?.task_id}`)
+    }
+    const refId = task.metadata?.fixture_ref
+    const taskHash = task.metadata?.fixture_hash
+    const ref = refs.get(refId)
+    if (!ref) throw new Error(`${task.task_id}: unknown fixture_ref ${refId}`)
+    if (ref.task_id !== task.task_id) throw new Error(`${task.task_id}: fixture_ref belongs to ${ref.task_id}`)
+    if (taskHash !== ref.fixture_hash) throw new Error(`${task.task_id}: task fixture_hash does not match fixture_ref`)
+    taskMap.set(task.task_id, task)
+  }
+  if (taskMap.size !== refs.size) throw new Error('task and fixture reference counts differ')
+
+  for (const run of runs) {
+    const task = taskMap.get(run.task_id)
+    if (!task) throw new Error(`${run.run_id}: no task fixture lineage for ${run.task_id}`)
+    if (run.fixture_hash !== task.metadata.fixture_hash) {
+      throw new Error(`${run.run_id}: run fixture_hash does not match task fixture lineage`)
+    }
+  }
+  return { refs, taskMap }
 }
 
 export function percentile(values, p) {
