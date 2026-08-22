@@ -14,8 +14,7 @@ function sha256(file) {
   return crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex').toUpperCase()
 }
 
-function portableTextHashes(file) {
-  const bytes = fs.readFileSync(file)
+function portableTextHashesFromBytes(bytes) {
   const hashes = new Set([crypto.createHash('sha256').update(bytes).digest('hex').toUpperCase()])
   if (bytes.includes(0)) return hashes
   const text = bytes.toString('utf8')
@@ -28,7 +27,7 @@ function portableTextHashes(file) {
 }
 
 function artifactHashMatches(file, expected) {
-  return portableTextHashes(file).has(expected)
+  return portableTextHashesFromBytes(fs.readFileSync(file)).has(expected)
 }
 
 function safeFile(rel, label) {
@@ -122,6 +121,29 @@ function requireAncestor(older, newer, label) {
 
 const schema = readJson(schemaRel, 'release schema')
 const manifest = readJson(manifestRel, 'release manifest')
+const historicalReleaseCommit = manifest && hasGit
+  ? annotatedTagCommit(manifest.release_tag, 'release candidate', allowPendingTags)
+  : null
+
+function historicalBytes(rel, label) {
+  if (!historicalReleaseCommit) return null
+  const result = spawnSync('git', ['show', `${historicalReleaseCommit}:${rel}`], { cwd: root, encoding: null })
+  if (result.status !== 0) {
+    errors.push(`${label}: ${rel} is missing from historical release tag`)
+    return null
+  }
+  return result.stdout
+}
+
+function historicalText(rel, label) {
+  const bytes = historicalBytes(rel, label)
+  return bytes === null ? null : bytes.toString('utf8')
+}
+
+function historicalArtifactHashMatches(rel, currentFile, expected) {
+  const bytes = historicalBytes(rel, 'release artifact hash')
+  return bytes === null ? artifactHashMatches(currentFile, expected) : portableTextHashesFromBytes(bytes).has(expected)
+}
 
 if (schema) {
   if (schema.$schema !== 'https://json-schema.org/draft/2020-12/schema') errors.push('release schema: unexpected JSON Schema dialect')
@@ -250,7 +272,8 @@ if (facts.max_age_days !== 30 || facts.stale_high !== 0 || !Number.isInteger(fac
 }
 const registryFile = safeFile(manifest.reports?.facts_registry, 'release facts registry')
 if (registryFile && /^\d{4}-\d{2}-\d{2}$/.test(facts.as_of || '')) {
-  const rows = fs.readFileSync(registryFile, 'utf8').split(/\r?\n/).filter((line) => /^\| [a-z0-9][a-z0-9-]+ \|/.test(line))
+  const registryText = historicalText(manifest.reports.facts_registry, 'release facts registry') ?? fs.readFileSync(registryFile, 'utf8')
+  const rows = registryText.split(/\r?\n/).filter((line) => /^\| [a-z0-9][a-z0-9-]+ \|/.test(line))
   const parsed = rows.map((line) => line.slice(1, -1).split('|').map((cell) => cell.trim()))
   const verified = parsed.filter((cells) => cells[8] === 'verified')
   if (verified.length !== facts.verified_claims) errors.push('release manifest: verified_claims does not match fact registry')
@@ -300,12 +323,12 @@ for (const rel of requiredReportPaths) {
   }
   const expected = manifest.artifact_hashes?.[rel]
   if (!/^[0-9A-F]{64}$/.test(expected || '')) errors.push(`release manifest: artifact_hashes omit ${rel}`)
-  else if (file && !artifactHashMatches(file, expected)) errors.push(`release manifest: artifact hash mismatch for ${rel}`)
+  else if (file && !historicalArtifactHashMatches(rel, file, expected)) errors.push(`release manifest: artifact hash mismatch for ${rel}`)
 }
 for (const [rel, expected] of Object.entries(manifest.artifact_hashes || {})) {
   if (!/^[0-9A-F]{64}$/.test(expected || '')) errors.push(`release manifest: invalid SHA256 for ${rel}`)
   const file = safeFile(rel, 'release artifact hash')
-  if (file && /^[0-9A-F]{64}$/.test(expected || '') && !artifactHashMatches(file, expected)) errors.push(`release manifest: artifact hash mismatch for ${rel}`)
+  if (file && /^[0-9A-F]{64}$/.test(expected || '') && !historicalArtifactHashMatches(rel, file, expected)) errors.push(`release manifest: artifact hash mismatch for ${rel}`)
 }
 
 const limitationsFile = safeFile(manifest.known_limitations_path, 'release known limitations')
@@ -319,12 +342,12 @@ if (limitationsFile) {
 
 if (!hasGit) errors.push('release validation requires a Git worktree')
 else {
-  const releaseTagCommit = annotatedTagCommit(manifest.release_tag, 'release candidate', allowPendingTags)
+  const releaseTagCommit = historicalReleaseCommit
   const milestoneTagCommit = annotatedTagCommit(manifest.milestone_tag, 'M8 checkpoint', allowPendingTags)
   if (releaseTagCommit && milestoneTagCommit && releaseTagCommit !== milestoneTagCommit) errors.push('release and M8 tags point to different commits')
   const headCommit = git(['rev-parse', 'HEAD']).stdout.trim().toLowerCase()
-  if (releaseTagCommit && releaseTagCommit !== headCommit) errors.push('release candidate tag must point to HEAD')
-  if (milestoneTagCommit && milestoneTagCommit !== headCommit) errors.push('M8 checkpoint tag must point to HEAD')
+  if (releaseTagCommit) requireAncestor(releaseTagCommit, headCommit, 'historical release candidate')
+  if (milestoneTagCommit) requireAncestor(milestoneTagCommit, headCommit, 'historical M8 checkpoint')
   if (sourceCommit && releaseTagCommit) requireAncestor(sourceCommit, releaseTagCommit, 'release candidate')
   const remotes = git(['remote']).stdout.trim()
   if (!manifest.authorization?.a4_used && remotes) errors.push('release candidate: Git remotes exist before A4')
@@ -340,4 +363,4 @@ if (errors.length) {
   process.exit(1)
 }
 
-console.log(`Release check passed: ${manifest.release_id} binds 10 annotated review chains, 30-day facts, scoped public Pages evidence, governance reports, and A3/A4 boundaries.`)
+console.log(`Release check passed: historical ${manifest.release_id} binds 10 annotated review chains, 30-day facts, scoped public Pages evidence, governance reports, and A3/A4 boundaries.`)
