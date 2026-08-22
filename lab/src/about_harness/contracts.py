@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import math
+import re
 from dataclasses import asdict, dataclass, field
 from enum import StrEnum
 from typing import TypeAlias
@@ -68,6 +69,10 @@ class Budgets:
         counters = (self.max_steps, self.max_model_calls, self.timeout_ms)
         if any(not _is_positive_int(value) for value in counters):
             raise ContractError("step, model-call, and timeout budgets must be positive")
+        if self.max_steps > 10_000 or self.max_model_calls > 10_000:
+            raise ContractError("step and model-call budgets cannot exceed 10000")
+        if self.timeout_ms > 86_400_000:
+            raise ContractError("timeout budget cannot exceed 86400000 ms")
         if not _is_finite_non_negative_number(self.max_cost_usd):
             raise ContractError("cost budget must be finite and non-negative")
 
@@ -86,19 +91,25 @@ class TaskSpec:
     def __post_init__(self) -> None:
         if self.schema_version != SCHEMA_VERSION:
             raise ContractError(f"unsupported task schema: {self.schema_version}")
-        if not self.task_id or len(self.task_id) > 128:
-            raise ContractError("task_id must contain 1-128 characters")
-        if not self.goal.strip():
-            raise ContractError("goal cannot be empty")
+        if re.fullmatch(r"[a-zA-Z0-9][a-zA-Z0-9._-]{0,127}", self.task_id) is None:
+            raise ContractError("task_id must match the public task schema")
+        if not self.goal.strip() or len(self.goal) > 4_000:
+            raise ContractError("goal must contain 1-4000 characters")
+        if any(not tool for tool in self.allowed_tools):
+            raise ContractError("allowed_tools cannot contain an empty name")
         if len(set(self.allowed_tools)) != len(self.allowed_tools):
             raise ContractError("allowed_tools must be unique")
 
     @classmethod
     def from_dict(cls, data: dict[str, JsonValue]) -> TaskSpec:
         required = {"schema_version", "task_id", "goal", "allowed_tools", "budgets"}
+        allowed_fields = required | {"input", "acceptance", "metadata"}
         missing = required.difference(data)
         if missing:
             raise ContractError(f"missing task fields: {sorted(missing)}")
+        unknown = set(data).difference(allowed_fields)
+        if unknown:
+            raise ContractError(f"unknown task fields: {sorted(unknown)}")
         allowed = data["allowed_tools"]
         budget_data = data["budgets"]
         if not isinstance(allowed, list) or not all(isinstance(item, str) for item in allowed):
@@ -106,6 +117,11 @@ class TaskSpec:
         allowed_tools = tuple(item for item in allowed if isinstance(item, str))
         if not isinstance(budget_data, dict):
             raise ContractError("budgets must be an object")
+        unknown_budgets = set(budget_data).difference(
+            {"max_steps", "max_model_calls", "timeout_ms", "max_cost_usd"}
+        )
+        if unknown_budgets:
+            raise ContractError(f"unknown budget fields: {sorted(unknown_budgets)}")
         try:
             budgets = Budgets(
                 max_steps=_required_int(budget_data, "max_steps"),

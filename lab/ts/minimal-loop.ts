@@ -5,12 +5,13 @@ import {
   type RunResult,
   type TaskSpec,
   type ToolCall,
-  type TraceEvent
+  type TraceEvent,
+  validateAction
 } from './contracts.js'
 
 export interface Adapter {
   readonly name: string
-  nextAction(task: TaskSpec, trace: readonly TraceEvent[]): Action
+  nextAction(task: TaskSpec, trace: readonly TraceEvent[]): unknown
 }
 
 export type ToolHandler = (arguments_: Record<string, JsonValue>) => JsonValue
@@ -57,7 +58,12 @@ export class MinimalLoop {
       if (now() - started >= task.budgets.timeout_ms) return result('stopped', 'timeout', null)
       if (modelCalls >= task.budgets.max_model_calls) return result('stopped', 'model_budget', null)
 
-      const action = this.adapter.nextAction(task, trace)
+      let action: Action
+      try {
+        action = validateAction(this.adapter.nextAction(task, trace))
+      } catch {
+        return result('failed', 'invalid_action', null)
+      }
       modelCalls += 1
       cost += action.cost_usd
       record('model_action', { kind: action.kind, model_calls: modelCalls, cost_usd: cost })
