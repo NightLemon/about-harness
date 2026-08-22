@@ -34,7 +34,7 @@
     "lab:typecheck": "tsc -p lab/ts/tsconfig.json",
     "lab:ts-runtime-test": "node scripts/test-ts-runtime.mjs",
     "labs:all": "uv run --frozen --offline python scripts/run-labs.py all",
-    "eval:validate": "node scripts/eval-validate.mjs evals/study.example.json evals/runs.example.jsonl",
+    "eval:validate": "node scripts/eval-validate.mjs evals/tasks.example.jsonl evals/fixture-refs.example.json evals/study.example.json evals/runs.example.jsonl",
     "eval:summary": "node scripts/summarize-evals.mjs evals/study.example.json evals/runs.example.jsonl",
     "results:redact": "node scripts/redact-results.mjs lab/results/public",
     "m5:self-test": "node scripts/test-m5-checks.mjs",

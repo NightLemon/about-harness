@@ -1,0 +1,11 @@
+{
+  "schema_version": "1.0",
+  "refs": [
+    {"ref_id":"coding-m5","task_id":"coding-01","commit":"6aada534e8b331c1ed1936e1e7426766a5256622","path":"lab/fixtures/coding","fixture_hash":"7f4caeb33ce09877f8ff4a14d08555619212d1d9c4d8d519fecda4849d258c9c"},
+    {"ref_id":"browser-m5","task_id":"browser-01","commit":"6aada534e8b331c1ed1936e1e7426766a5256622","path":"lab/fixtures/browser","fixture_hash":"2914046dfb5e3f667b0fba2eb17319440f28dc83c2cb08673b9b10e0b37dfab6"},
+    {"ref_id":"research-m5","task_id":"research-01","commit":"6aada534e8b331c1ed1936e1e7426766a5256622","path":"lab/fixtures/research","fixture_hash":"23b3ff2a78d63ee51b2b7cf911f76082c8490c31c338abd1d4b81678b3c353ac"},
+    {"ref_id":"data-m5","task_id":"data-01","commit":"6aada534e8b331c1ed1936e1e7426766a5256622","path":"lab/fixtures/data","fixture_hash":"9a6f960c2be1c660f937d3f431c7956a98d4efd3480530084bb8984c3426569a"},
+    {"ref_id":"document-m5","task_id":"document-01","commit":"6aada534e8b331c1ed1936e1e7426766a5256622","path":"lab/fixtures/document","fixture_hash":"37f8d91cca7607c9950e12eb907df81e2e5e889185ae327bcb9683c4f6f59c80"},
+    {"ref_id":"migration-m5","task_id":"migration-01","commit":"6aada534e8b331c1ed1936e1e7426766a5256622","path":"lab/fixtures/migration","fixture_hash":"482c941cb373dd1d4711509b6ada0c262584aae0c566400c718d41e0481abcad"}
+  ]
+}
