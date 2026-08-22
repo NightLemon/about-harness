@@ -16,12 +16,25 @@ function readJson(file, label) {
   }
 }
 
-function sha256(file) {
-  return crypto.createHash('sha256').update(fs.readFileSync(path.resolve(root, file))).digest('hex').toUpperCase()
+function sha256(value) {
+  return crypto.createHash('sha256').update(value).digest('hex').toUpperCase()
 }
 
 function git(args) {
   return spawnSync('git', args, { cwd: root, encoding: 'utf8' })
+}
+
+function gitBytes(args) {
+  return spawnSync('git', args, { cwd: root })
+}
+
+function readJsonBytes(value, label) {
+  try {
+    return JSON.parse(value.toString('utf8'))
+  } catch (error) {
+    errors.push(`${label}: invalid JSON (${error.message})`)
+    return null
+  }
 }
 
 function exactKeys(value, expected, label) {
@@ -86,8 +99,16 @@ if (result) {
 
   const candidate = result.release_candidate || {}
   if (candidate.path !== 'artifacts/release/v1/release-candidate.json') errors.push('publication result: unexpected release candidate path')
-  else if (sha256(candidate.path) !== candidate.sha256) errors.push('publication result: release candidate SHA256 mismatch')
-  const candidateJson = candidate.path ? readJson(candidate.path, 'historical release candidate') : null
+  const releaseCommit = annotatedTagCommit(candidate.release_tag, 'publication release tag')
+  const milestoneCommit = annotatedTagCommit(candidate.milestone_tag, 'publication milestone tag')
+  const candidateBlob = candidate.path && releaseCommit
+    ? gitBytes(['show', `${candidate.release_tag}:${candidate.path}`])
+    : null
+  if (candidateBlob?.status !== 0) errors.push('publication result: release candidate does not exist at release tag')
+  else if (candidateBlob && sha256(candidateBlob.stdout) !== candidate.sha256) errors.push('publication result: release candidate SHA256 mismatch')
+  const candidateJson = candidateBlob?.status === 0
+    ? readJsonBytes(candidateBlob.stdout, 'historical release candidate')
+    : null
   if (candidateJson) {
     if (candidateJson.publication_status !== 'pending-publication' || candidate.historical_status !== 'pending-publication') {
       errors.push('publication result: historical RC3 status must remain pending-publication')
@@ -96,8 +117,6 @@ if (result) {
       errors.push('publication result: RC source is not an ancestor of the published source')
     }
   }
-  const releaseCommit = annotatedTagCommit(candidate.release_tag, 'publication release tag')
-  const milestoneCommit = annotatedTagCommit(candidate.milestone_tag, 'publication milestone tag')
   if (releaseCommit && releaseCommit !== source) errors.push('publication result: release tag does not point to source_commit')
   if (milestoneCommit && milestoneCommit !== source) errors.push('publication result: milestone tag does not point to source_commit')
 

@@ -6,7 +6,7 @@
   "source_commit": "e13bd93c5f82fe0d84494d45883cd121fb2b80c3",
   "release_candidate": {
     "path": "artifacts/release/v1/release-candidate.json",
-    "sha256": "C8D3CFAFA9A09BDA182D654EC3A05F7E8C272D127E7DAEFFC0D8E8A3B1192A02",
+    "sha256": "AE961973895ABC2D6444FD2DF7762F22344BDD0D7EC6293C55C812775FAE55EC",
     "release_tag": "release-v1-rc3",
     "milestone_tag": "m8-corrected-v3",
     "historical_status": "pending-publication"
