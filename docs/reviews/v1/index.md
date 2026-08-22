@@ -16,4 +16,4 @@ V1 的原定十轮已经完成。M7 创建 round 01–05，M8 创建 round 06–
 | [08](/reviews/v1/round-08) | 完成 | 安全、隐私、许可和供应链 |
 | [09](/reviews/v1/round-09) | 完成 | 迁移、中文可读性和视觉体验 |
 | [10](/reviews/v1/round-10) | 完成 | 发布、来源时效、全局一致性和最终主张 |
-| [11](/reviews/v1/round-11) | 进行中 | 发布后复核、运行时契约、评测 lineage 与 review 可持续性 |
+| [11](/reviews/v1/round-11) | 完成 | 发布后复核、运行时契约、评测 lineage 与 review 可持续性 |
