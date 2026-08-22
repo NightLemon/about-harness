@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://about-harness.local/schemas/publication-result-v1.json",
+  "title": "About Harness publication result v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "publication_id", "publication_status", "published_at", "source_commit", "release_candidate", "site", "workflows", "authorization", "evidence_level", "evidence_boundary"],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "publication_id": { "type": "string", "pattern": "^v1-pages-[0-9]{4}-[0-9]{2}-[0-9]{2}$" },
+    "publication_status": { "const": "published" },
+    "published_at": { "type": "string", "format": "date-time" },
+    "source_commit": { "type": "string", "pattern": "^[a-f0-9]{40}$" },
+    "release_candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256", "release_tag", "milestone_tag", "historical_status"],
+      "properties": {
+        "path": { "const": "artifacts/release/v1/release-candidate.json" },
+        "sha256": { "type": "string", "pattern": "^[A-F0-9]{64}$" },
+        "release_tag": { "type": "string", "pattern": "^release-v1-rc[1-9][0-9]*$" },
+        "milestone_tag": { "type": "string", "pattern": "^m8-corrected-v[1-9][0-9]*$" },
+        "historical_status": { "const": "pending-publication" }
+      }
+    },
+    "site": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["url", "checked_at", "http_status"],
+      "properties": {
+        "url": { "const": "https://nightlemon.github.io/about-harness/" },
+        "checked_at": { "type": "string", "format": "date-time" },
+        "http_status": { "const": 200 }
+      }
+    },
+    "workflows": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ci", "deploy"],
+      "properties": {
+        "ci": { "$ref": "#/$defs/workflow" },
+        "deploy": { "$ref": "#/$defs/workflow" }
+      }
+    },
+    "authorization": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["a3_used", "a4_used_for_m9", "round_11_remote_writes"],
+      "properties": {
+        "a3_used": { "const": false },
+        "a4_used_for_m9": { "const": true },
+        "round_11_remote_writes": { "const": false }
+      }
+    },
+    "evidence_level": { "const": "E1" },
+    "evidence_boundary": { "type": "string", "minLength": 40 }
+  },
+  "$defs": {
+    "workflow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["run_id", "url", "head_sha", "conclusion", "updated_at"],
+      "properties": {
+        "run_id": { "type": "string", "pattern": "^[1-9][0-9]*$" },
+        "url": { "type": "string", "pattern": "^https://github.com/NightLemon/about-harness/actions/runs/[1-9][0-9]*$" },
+        "head_sha": { "type": "string", "pattern": "^[a-f0-9]{40}$" },
+        "conclusion": { "const": "success" },
+        "updated_at": { "type": "string", "format": "date-time" }
+      }
+    }
+  }
+}

@@ -2,6 +2,17 @@
 
 仓库提供 `.github/workflows/deploy.yml`。工作流只运行公开学习站点门禁、构建 VitePress，并以普通项目仓库的 `/about-harness/` 作为 base path。十轮 review 的历史与 tags 由独立 CI 校验，不进入 Pages artifact，也不作为静态发布依赖。
 
+## 当前发布结果
+
+V1 已从 commit `e13bd93c5f82fe0d84494d45883cd121fb2b80c3` 发布到 <https://nightlemon.github.io/about-harness/>。[FACT:publication-v1]
+
+- CI run `32459945445` 与 Deploy run `32459945521` 均为 `success`，head SHA 相同；
+- 2026-08-22 的只读探针返回 HTTP 200；
+- 机器可读结果见 `artifacts/release/v1/publication-result.json`，使用 `npm run publication:check` 核对；
+- `release-v1-rc3` 中的 `pending-publication` 是发布前候选快照，不能改写为事后结果。
+
+上述证据为 E1：它证明固定 SHA 的构建、部署和一次可达性，不证明未来持续可用，也不把离线模型结果升级为 E2/E3。
+
 ## 首次发布
 
 1. 在 GitHub 新建空仓库，不要在网页端额外生成 README 以免冲突。
@@ -46,10 +57,10 @@ npm run pages:smoke -- http://127.0.0.1:4175/about-harness/
 
 `pages:serve` 只用于本地验证，会按 GitHub Pages 的项目路径和 clean URL 规则读取已构建 artifact；完成 smoke 后用 `Ctrl+C` 停止。
 
-M9 发布后再对真实 URL 运行：
+M9 发布后对真实 URL 运行：
 
 ```bash
-npm run pages:smoke -- https://<owner>.github.io/about-harness/
+npm run pages:smoke -- https://nightlemon.github.io/about-harness/
 ```
 
 Smoke 检查首页、学习路径、最小 harness、模型适配、三个 coding harness、六案例、发布说明和同源静态资源。任一路由或资源失败都不能宣告发布成功。
@@ -68,4 +79,4 @@ Smoke 检查首页、学习路径、最小 harness、模型适配、三个 codin
 
 ## 自定义域名
 
-确定域名后，在 `docs/public/CNAME` 写入域名，并在 DNS 与 Pages 设置中配置。域名、仓库所有者和发布 URL 目前未知，所以基线版本不创建 `CNAME`。
+若未来确定自定义域名，在 `docs/public/CNAME` 写入域名，并在 DNS 与 Pages 设置中配置。当前使用 GitHub Pages 项目 URL，没有配置 `CNAME`。

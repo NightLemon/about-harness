@@ -31,6 +31,7 @@
 | openai-agents-sdk | OpenAI Agents SDK 提供 code-first agent runtime 组件 | product | https://developers.openai.com/api/docs/guides/agents-sdk | rolling | 2026-08-20 | high | E1 | verified | /frameworks/openai-agents-sdk |
 | google-adk | Google ADK 提供 agent、tool、session、runtime、deployment、observability 与 evaluation 等构件 | product | https://google.github.io/adk-docs/ | rolling | 2026-08-20 | high | E1 | verified | /frameworks/google-adk |
 | autogen-overview | AutoGen 区分 AgentChat、Core、Extensions 与 Studio 等层 | product | https://microsoft.github.io/autogen/stable/ | stable-docs | 2026-08-20 | high | E1 | verified | /frameworks/autogen |
+| publication-v1 | V1 学习站点已从固定 commit e13bd93 发布到项目 GitHub Pages URL | repository | https://nightlemon.github.io/about-harness/ | e13bd93c5f82fe0d84494d45883cd121fb2b80c3 | 2026-08-22 | medium | E1 | verified | /meta/publishing |
 
 ## 冲突处理
 

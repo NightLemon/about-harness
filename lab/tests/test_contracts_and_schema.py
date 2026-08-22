@@ -75,9 +75,33 @@ def test_task_rejects_unknown_top_level_and_budget_fields() -> None:
 
 
 def test_all_schemas_are_valid_draft_2020_12() -> None:
-    for name in ("task", "run", "trace", "result", "config", "eval-run", "study", "fixture-lineage"):
+    for name in (
+        "task",
+        "run",
+        "trace",
+        "result",
+        "config",
+        "eval-run",
+        "study",
+        "fixture-lineage",
+        "publication-result.schema",
+    ):
         schema = json.loads((SCHEMAS / f"{name}.json").read_text(encoding="utf-8"))
         Draft202012Validator.check_schema(schema)
+
+
+def test_publication_result_matches_its_schema() -> None:
+    schema = json.loads(
+        (SCHEMAS / "publication-result.schema.json").read_text(encoding="utf-8")
+    )
+    result = json.loads(
+        (ROOT.parent / "artifacts" / "release" / "v1" / "publication-result.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    Draft202012Validator(schema, format_checker=Draft202012Validator.FORMAT_CHECKER).validate(
+        result
+    )
 
 
 def test_budget_rejects_negative_cost() -> None:

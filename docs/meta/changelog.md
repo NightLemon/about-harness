@@ -13,7 +13,7 @@
 | M6 | 完成 | `m6-complete-v1`；来源、许可、隐私、CI、视觉和发布自动化，本地全量门禁通过 |
 | M7 | 完成 | Round 01–05 的 findings、修正、验证、result commit 与 annotated tags |
 | M8 | 完成 | Round 06–10 与本地 `v1-rc1` release candidate；`release-v1-rc1` / `m8-complete-v1` |
-| M9 | 未授权 | 无 remote、push、PR、Pages 或发布 |
+| M9 | 完成 | `e13bd93`、CI `32459945445`、Deploy `32459945521` 与 Pages publication result |
 
 权威进度与恢复点记录在仓库根目录的 `EXECUTION_PLAN.md`。
 

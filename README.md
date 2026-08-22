@@ -4,9 +4,9 @@
 
 ## 当前状态
 
-项目已按 [`EXECUTION_PLAN.md`](EXECUTION_PLAN.md) 完成 M8 本地 release candidate。仓库中旧有的十轮记录已原样迁入 `docs/reviews/legacy/`，因缺少冻结 baseline、逐轮 diff、result commit/tag 和环境元数据，**不计入 v1 的十轮审阅**；新的 v1 review 01–10 已分别由 baseline、findings、content、evidence commits 和 annotated tags 验收。
+项目已按 [`EXECUTION_PLAN.md`](EXECUTION_PLAN.md) 完成 M9 发布，并开始 V1 Review Round 11。仓库中旧有的十轮记录已原样迁入 `docs/reviews/legacy/`，因缺少冻结 baseline、逐轮 diff、result commit/tag 和环境元数据，**不计入 v1 的十轮审阅**；新的 v1 review 01–10 已分别由 baseline、findings、content、evidence commits 和 annotated tags 验收。
 
-当前 release candidate 仍未发布：没有调用真实模型 API、使用凭据、产生费用、配置 remote、push、PR 或 Pages。所有模型性能结论默认最高为离线 E1，除非文档明确给出 E2/E3 证据。
+V1 学习站点已从 commit `e13bd93` 发布到 <https://nightlemon.github.io/about-harness/>；CI、Deploy 与 2026-08-22 的 HTTP 200 记录见 [`publication-result.json`](artifacts/release/v1/publication-result.json)。RC3 的 `pending-publication` 保留为发布前历史快照。发布没有调用真实模型 API、使用模型凭据或产生费用；所有模型性能结论默认最高为离线 E1，除非文档明确给出 E2/E3 证据。
 
 ## 本地运行
 
@@ -23,6 +23,7 @@ npm run docs:dev
 npm run check
 npm run facts:check
 npm run reviews:check
+npm run publication:check
 ```
 
 文档入口为 [`docs/index.md`](docs/index.md)，站点配置为 [`docs/.vitepress/config.mts`](docs/.vitepress/config.mts)。学习顺序、作品集与项目治理分别见：

@@ -80,6 +80,16 @@ M4 在 2026-08-20 获取下列官方页面或固定仓库内容，Round 10 又�
 - 本项目原创文档使用 CC BY 4.0，代码使用 MIT；锁定依赖须通过 `npm run licenses:check`，未知许可默认阻断。
 - 来源发生冲突时保留多方证据和核对日期，把注册表状态改为 `conflict`，不得删除不利证据来维持 `verified`。
 
+## V1 publication 结果
+
+核对日期：**2026-08-22**。该组来源只证明固定 commit 的仓库发布状态，不是模型质量证据。
+
+- [公开学习站点](https://nightlemon.github.io/about-harness/)：当次只读探针返回 HTTP 200；
+- [发布 commit `e13bd93`](https://github.com/NightLemon/about-harness/commit/e13bd93c5f82fe0d84494d45883cd121fb2b80c3)：publication result 绑定的 source；
+- [CI run `32459945445`](https://github.com/NightLemon/about-harness/actions/runs/32459945445) 与 [Deploy run `32459945521`](https://github.com/NightLemon/about-harness/actions/runs/32459945521)：均为 `success`，head SHA 为 `e13bd93…`。
+
+仓库内 `artifacts/release/v1/publication-result.json` 保存机器可读记录。RC3 的 `pending-publication` 继续作为发布前历史证据，不作事后改写。
+
 ## M4 获取指纹
 
 以下 SHA256 对应本轮实际收到的响应正文，仅用于证明“核对了哪一份滚动页面”，不是对外部站点的永久存档。滚动页面更新后应重新抓取并更新日期与指纹。
