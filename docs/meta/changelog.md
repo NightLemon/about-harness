@@ -15,7 +15,7 @@
 | M8 | 完成 | Round 06–10 与本地 `v1-rc1` release candidate；`release-v1-rc1` / `m8-complete-v1` |
 | M9 | 完成 | `e13bd93`、CI `32459945445`、Deploy `32459945521` 与 Pages publication result |
 
-权威进度与恢复点记录在仓库根目录的 `EXECUTION_PLAN.md`。
+M0–M9 的完整执行计划已关闭并原样归档到 `artifacts/plans/execution-plan-v1-m0-m9.md`；根目录 `EXECUTION_PLAN.md` 只保留当前状态和历史证据入口，不是活动 Goal 或授权控制面。
 
 ## Legacy 审阅记录
 
@@ -51,5 +51,6 @@
 | [09](/reviews/v1/round-09) | 完成 | 两条迁移路径、六类职责、边界负例与三视口迁移视觉防回归 |
 | [10](/reviews/v1/round-10) | 完成 | 发布证据链、事实逐项锚点、Node.js 22+ 基线与 RC fail-closed 防回归 |
 | [11](/reviews/v1/round-11) | 完成 | 发布后复核、运行时契约、fixture lineage、事实状态与 review 延续 |
+| [12](/reviews/v1/round-12) | 进行中 | 已结束 Goal/计划归档、review 状态一致性与 release clean-worktree 门禁 |
 
 只有文档记录、artifact 证据、result commit 与 annotated tag 同时存在，状态才改为完成。
