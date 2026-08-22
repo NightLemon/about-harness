@@ -1,0 +1,42 @@
+{
+  "schema_version": "1.0",
+  "publication_id": "v1-pages-2026-08-22",
+  "publication_status": "published",
+  "published_at": "2026-08-21T07:45:29Z",
+  "source_commit": "e13bd93c5f82fe0d84494d45883cd121fb2b80c3",
+  "release_candidate": {
+    "path": "artifacts/release/v1/release-candidate.json",
+    "sha256": "C8D3CFAFA9A09BDA182D654EC3A05F7E8C272D127E7DAEFFC0D8E8A3B1192A02",
+    "release_tag": "release-v1-rc3",
+    "milestone_tag": "m8-corrected-v3",
+    "historical_status": "pending-publication"
+  },
+  "site": {
+    "url": "https://nightlemon.github.io/about-harness/",
+    "checked_at": "2026-08-22T17:33:00+08:00",
+    "http_status": 200
+  },
+  "workflows": {
+    "ci": {
+      "run_id": "32459945445",
+      "url": "https://github.com/NightLemon/about-harness/actions/runs/32459945445",
+      "head_sha": "e13bd93c5f82fe0d84494d45883cd121fb2b80c3",
+      "conclusion": "success",
+      "updated_at": "2026-08-21T07:45:26Z"
+    },
+    "deploy": {
+      "run_id": "32459945521",
+      "url": "https://github.com/NightLemon/about-harness/actions/runs/32459945521",
+      "head_sha": "e13bd93c5f82fe0d84494d45883cd121fb2b80c3",
+      "conclusion": "success",
+      "updated_at": "2026-08-21T07:45:29Z"
+    }
+  },
+  "authorization": {
+    "a3_used": false,
+    "a4_used_for_m9": true,
+    "round_11_remote_writes": false
+  },
+  "evidence_level": "E1",
+  "evidence_boundary": "该记录证明固定 commit 的 CI、Deploy 与一次 Pages HTTP 200；不证明真实模型质量、未来持续可用性或未记录的响应头。"
+}
