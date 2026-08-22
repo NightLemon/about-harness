@@ -86,10 +86,19 @@ function walk(dir) {
   })
 }
 
-for (const file of walk(docsRoot)) {
+const docFiles = walk(docsRoot)
+for (const file of docFiles) {
   const body = fs.readFileSync(file, 'utf8')
   for (const match of body.matchAll(/\[FACT:([a-z0-9-]+)\]/g)) {
     if (!ids.has(match[1])) errors.push(`${path.relative(root, file)}: unknown fact ID ${match[1]}`)
+  }
+}
+
+const productRoots = ['models', 'harnesses', 'frameworks'].map((name) => path.join(docsRoot, name))
+for (const file of docFiles.filter((candidate) => productRoots.some((rootDir) => candidate.startsWith(`${rootDir}${path.sep}`)))) {
+  const body = fs.readFileSync(file, 'utf8')
+  if (/(?:\bpending\b|待核验)/i.test(body) && !/\[FACT:[a-z0-9-]+\]/.test(body)) {
+    errors.push(`${path.relative(root, file)}: product page has an unregistered pending claim (missing [FACT:ID])`)
   }
 }
 

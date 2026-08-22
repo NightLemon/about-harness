@@ -50,6 +50,19 @@ try {
     throw new Error('facts-check incorrectly required an anchor for a retired fact')
   }
 
+  write('docs/references/fact-registry.md', `# Pending-claim registry
+
+| ID | Claim | Kind | Source | Version | Checked | Volatility | Evidence | Status | Used by |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| tracked | 这是一条已有正文锚点的有效产品事实记录 | product | https://example.invalid/docs | v1 | 2026-08-20 | low | E1 | verified | /models/tracked |
+`)
+  write('docs/models/tracked.md', '# Tracked\n\n[FACT:tracked]\n')
+  write('docs/models/deepseek.md', '# Untracked pending claim\n\n价格和 model alias 保持 pending。\n')
+  const pendingFacts = run('facts-check.mjs')
+  if (pendingFacts.status === 0 || !`${pendingFacts.stdout}${pendingFacts.stderr}`.includes('unregistered pending claim')) {
+    throw new Error('facts-check accepted a product pending claim without [FACT:ID]')
+  }
+
   write('README.md', '# Invalid\n\n首个完整版本已完成 10 轮。\n')
   write('docs/meta/changelog.md', '# Invalid\n')
   fs.mkdirSync(path.join(tempRoot, 'docs', 'reviews', 'legacy'), { recursive: true })
