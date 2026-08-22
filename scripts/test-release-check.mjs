@@ -158,6 +158,7 @@ This E1-only canary has more than two hundred characters so the checker must ins
   }
   git(['tag', manifest.release_tag])
   git(['tag', manifest.milestone_tag])
+  const releaseCandidate = git(['rev-parse', 'HEAD'])
 
   const portableHashCanary = path.join(temp, reports.privacy)
   fs.writeFileSync(portableHashCanary, fs.readFileSync(portableHashCanary, 'utf8').replace(/\r?\n/g, '\r\n'))
@@ -170,6 +171,30 @@ This E1-only canary has more than two hundred characters so the checker must ins
   if (lightweightOutput.includes(`artifact hash mismatch for ${reports.privacy}`)) {
     throw new Error('release-check rejected a text artifact only because its checkout line endings changed')
   }
+
+  git(['add', reports.privacy])
+  git(['commit', '--allow-empty', '-m', 'test: freeze portable checkout'])
+  for (const item of rounds) {
+    git(['tag', '-d', item.baseline_tag])
+    git(['tag', '-a', item.baseline_tag, '-m', `${item.baseline_tag} self-test`, base])
+    git(['tag', '-d', item.complete_tag])
+    git(['tag', '-a', item.complete_tag, '-m', `${item.complete_tag} self-test`, base])
+  }
+  git(['tag', '-d', manifest.release_tag])
+  git(['tag', '-a', manifest.release_tag, '-m', `${manifest.release_tag} self-test`, releaseCandidate])
+  git(['tag', '-d', manifest.milestone_tag])
+  git(['tag', '-a', manifest.milestone_tag, '-m', `${manifest.milestone_tag} self-test`, releaseCandidate])
+  if (git(['status', '--porcelain'])) throw new Error('release-check self-test fixture is unexpectedly dirty')
+
+  write('ACTIVE_GOAL.md', '# Stale active goal canary\n')
+  const staleGoal = runCheck()
+  const staleGoalOutput = `${staleGoal.stdout}${staleGoal.stderr}`
+  if (staleGoal.status === 0 || !staleGoalOutput.includes('worktree is not clean (?? ACTIVE_GOAL.md)')) {
+    throw new Error('release-check accepted an untracked stale ACTIVE_GOAL.md')
+  }
+  fs.rmSync(path.join(temp, 'ACTIVE_GOAL.md'))
+  const clean = runCheck()
+  if (clean.status !== 0) throw new Error(`release-check rejected the clean valid fixture: ${clean.stdout}${clean.stderr}`)
 
   manifest.review_rounds = []
   manifest.authorization.a4_used = true
@@ -184,7 +209,7 @@ This E1-only canary has more than two hundred characters so the checker must ins
   }
   if (malformed.status === 0) throw new Error('release-check accepted a malformed release candidate')
 
-  console.log('Release checker negative tests passed: lightweight tags, incomplete rounds, inconsistent authorization, and missing gates were rejected.')
+  console.log('Release checker negative tests passed: lightweight tags, stale ACTIVE_GOAL.md, incomplete rounds, inconsistent authorization, and missing gates were rejected.')
 } finally {
   fs.rmSync(temp, { recursive: true, force: true })
 }
