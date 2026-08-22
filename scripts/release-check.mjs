@@ -353,8 +353,7 @@ else {
   if (!manifest.authorization?.a4_used && remotes) errors.push('release candidate: Git remotes exist before A4')
   if (manifest.authorization?.a4_used && !remotes) errors.push('release candidate: A4 remote operations are claimed but no Git remote exists')
   const status = git(['status', '--porcelain=v1', '-uall']).stdout.split(/\r?\n/).filter(Boolean)
-  const unexpected = status.filter((line) => line !== '?? ACTIVE_GOAL.md')
-  if (unexpected.length) errors.push(`release candidate: worktree is not clean (${unexpected.join(', ')})`)
+  if (status.length) errors.push(`release candidate: worktree is not clean (${status.join(', ')})`)
 }
 
 if (errors.length) {
