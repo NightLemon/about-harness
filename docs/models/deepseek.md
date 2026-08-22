@@ -5,7 +5,7 @@
 - [DeepSeek API Docs](https://api-docs.deepseek.com/)
 - 目标模型的官方 model card 与发布说明
 
-本轮对特定 pricing 页面出现 TLS 失败，因此价格、model alias、上下文和可用性保持 `pending`，不得抄写旧值。
+本轮对特定 pricing 页面出现 TLS 失败，因此 API surface（API 可用面）中的价格、model alias、上下文和可用性保持 `pending`，不得抄写旧值。[FACT:deepseek-api-surface]
 
 ## 适配重点
 

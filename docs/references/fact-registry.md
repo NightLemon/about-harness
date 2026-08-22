@@ -32,6 +32,7 @@
 | google-adk | Google ADK 提供 agent、tool、session、runtime、deployment、observability 与 evaluation 等构件 | product | https://google.github.io/adk-docs/ | rolling | 2026-08-20 | high | E1 | verified | /frameworks/google-adk |
 | autogen-overview | AutoGen 区分 AgentChat、Core、Extensions 与 Studio 等层 | product | https://microsoft.github.io/autogen/stable/ | stable-docs | 2026-08-20 | high | E1 | verified | /frameworks/autogen |
 | publication-v1 | V1 学习站点已从固定 commit e13bd93 发布到项目 GitHub Pages URL | repository | https://nightlemon.github.io/about-harness/ | e13bd93c5f82fe0d84494d45883cd121fb2b80c3 | 2026-08-22 | medium | E1 | verified | /meta/publishing |
+| deepseek-api-surface | DeepSeek API 的价格、model alias、上下文和可用性尚待网络复核 | product | https://api-docs.deepseek.com/ | rolling | 2026-08-20 | high | E0 | pending | /models/deepseek |
 
 ## 冲突处理
 
