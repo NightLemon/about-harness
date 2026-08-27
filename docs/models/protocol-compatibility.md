@@ -28,3 +28,5 @@
 ## Compatibility card
 
 用 `supported / emulated / rejected / untested` 四态；`supported` 还需 evidence level。每一项同时记录 request shape、state carrier、错误映射和证据 artifact。模型家族页面不假设同一家族的所有模型共享协议能力。
+
+下一步：把探针结果记录到[模型适配卡](/practice/model-playbook)，再进入[推理预算](/models/reasoning-budget)。

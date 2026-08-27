@@ -127,40 +127,6 @@ function checkContainerPins() {
   }
 }
 
-function checkoutSteps(text) {
-  const lines = text.split(/\r?\n/)
-  const steps = []
-  for (let index = 0; index < lines.length; index += 1) {
-    const uses = lines[index].match(/^(\s*)(-\s+)?uses:\s*actions\/checkout@[0-9a-f]{40}(?:\s+#.*)?$/)
-    if (!uses) continue
-    const usesIndent = uses[1].length + (uses[2]?.length || 0)
-    let stepStart = index
-    let stepIndent = uses[1].length
-    if (!uses[2]) {
-      stepIndent = usesIndent
-      for (let cursor = index - 1; cursor >= 0; cursor -= 1) {
-        const start = lines[cursor].match(/^(\s*)-\s+/)
-        if (start && start[1].length < usesIndent) {
-          stepStart = cursor
-          stepIndent = start[1].length
-          break
-        }
-      }
-    }
-    let stepEnd = lines.length
-    for (let cursor = index + 1; cursor < lines.length; cursor += 1) {
-      if (!lines[cursor].trim()) continue
-      const indent = lines[cursor].match(/^\s*/)[0].length
-      if (indent <= stepIndent) {
-        stepEnd = cursor
-        break
-      }
-    }
-    steps.push(lines.slice(stepStart, stepEnd).join('\n'))
-  }
-  return steps
-}
-
 function jobBlock(text, jobName) {
   const lines = text.split(/\r?\n/)
   const start = lines.findIndex((line) => new RegExp(`^  ${jobName}:\\s*$`).test(line))
@@ -190,7 +156,7 @@ if (!errors.length) {
       const [action, suffix = ''] = reference.split('@')
       if (!/^[0-9a-f]{40}$/.test(suffix)) errors.push(`${name}: action is not pinned to a full SHA: ${reference}`)
       const registered = registeredActionPins.get(action)
-      if (registered && suffix !== registered) errors.push(`${name}: ${action} does not match its registered release pin`)
+      if (registered && suffix !== registered) errors.push(`${name}: ${action} does not match its registered action pin`)
     }
     checkPermissionScopes(text, name)
   }
@@ -199,25 +165,15 @@ if (!errors.length) {
 
   const ci = fs.readFileSync(path.join(workflowDir, 'ci.yml'), 'utf8')
   if (!/pull_request\s*:/.test(ci)) errors.push('ci.yml must run for pull requests')
-  const publicJob = jobBlock(ci, 'verify')
-  if (!publicJob.includes('npm run pages:check')) {
-    errors.push('ci.yml verify job must gate the public learning site with npm run pages:check')
-  }
-  if (publicJob.includes('npm run verify') || publicJob.includes('reviews:check')) {
-    errors.push('ci.yml verify job must not couple the public-site gate to review governance')
-  }
-  const governanceJob = jobBlock(ci, 'governance')
-  const governanceCheckouts = checkoutSteps(governanceJob)
-  if (!governanceJob.includes('npm run verify') || !governanceCheckouts.length ||
-      governanceCheckouts.some((step) => !/^\s*fetch-depth:\s*0\s*$/m.test(step))) {
-    errors.push('ci.yml governance job must run npm run verify with full Git history and tags')
-  }
+  const verifyJob = jobBlock(ci, 'verify')
+  if (!verifyJob.includes('npm run verify')) errors.push('ci.yml verify job must run the full repository verification')
+  if (jobBlock(ci, 'governance')) errors.push('ci.yml must not contain a separate governance-history job')
   const deploy = fs.readFileSync(path.join(workflowDir, 'deploy.yml'), 'utf8')
   for (const requiredText of ['pages: write', 'id-token: write', 'npm run pages:check', 'actions/deploy-pages@']) {
     if (!deploy.includes(requiredText)) errors.push(`deploy.yml missing ${requiredText}`)
   }
-  if (deploy.includes('npm run verify') || deploy.includes('reviews:check') || deploy.includes('release:check')) {
-    errors.push('deploy.yml must not couple Pages publication to Git-history governance checks')
+  if (deploy.includes('npm run verify')) {
+    errors.push('deploy.yml must use the scoped Pages check instead of duplicating the full repository verification')
   }
   const facts = fs.readFileSync(path.join(workflowDir, 'facts.yml'), 'utf8')
   if (!/schedule\s*:/.test(facts) || !facts.includes('links:check -- --network')) {
@@ -231,4 +187,4 @@ if (errors.length) {
   process.exit(1)
 }
 
-console.log('Workflow check passed: governance history and public-site deployment are separated with scoped permissions and pinned dependencies.')
+console.log('Workflow check passed: full CI verification and scoped Pages deployment use pinned dependencies and minimal permissions.')

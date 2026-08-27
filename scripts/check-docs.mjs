@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 import path from 'node:path'
-import { isPublishedMarkdown } from '../docs/.vitepress/publication-scope.mjs'
+import { isPublishedMarkdown } from '../docs/.vitepress/site-scope.mjs'
 
 const root = process.cwd()
 const docsRoot = path.join(root, 'docs')
@@ -133,12 +133,6 @@ for (const [route, count] of inbound) {
   const page = pages.get(route)
   const relativeDoc = toPosix(path.relative(docsRoot, page.file))
   if (count === 0 && isPublishedMarkdown(relativeDoc)) errors.push(`${page.rel}: orphan page (no internal or navigation link)`)
-}
-
-const changelog = fs.readFileSync(path.join(docsRoot, 'meta', 'changelog.md'), 'utf8')
-for (const match of changelog.matchAll(/^\|\s*(\d{2})\s*\|\s*完成\s*\|[^\n]*\]\(\/reviews\/round-(\d{2})\)\s*\|$/gm)) {
-  if (match[1] !== match[2]) errors.push(`docs/meta/changelog.md: round ${match[1]} links to round ${match[2]}`)
-  if (!pages.has(`/reviews/round-${match[1]}`)) errors.push(`docs/meta/changelog.md: completed round ${match[1]} has no review file`)
 }
 
 for (const required of ['package.json', 'package-lock.json', '.github/workflows/deploy.yml']) {

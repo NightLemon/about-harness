@@ -1,5 +1,9 @@
 # 跨 Harness 迁移：保留职责而非文件名
 
+## 前置条件与固定版本
+
+使用 Python 3.11+、`uv 0.11.16` 和仓库锁定 fixture，保持离线。产品配置只按页面列明的来源版本解释，实验不会启动三个 harness。
+
 ## 目标、版本与输入
 
 把一个受约束的 coding 工作流从 Codex 分别映射到 Pi 和 Claude Code。案例固定六类职责：instructions（指令）、tools（工具）、sandbox（技术隔离）、approval（人工批准）、network（网络出口）和 state（恢复状态）。从这里开始正文使用中文简称，配置键仍保留英文。

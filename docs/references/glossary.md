@@ -14,7 +14,7 @@
 | MCP | Model Context Protocol，连接 host/client 与外部 server 的开放协议 |
 | Skill | 可按需发现和加载的工作流/领域知识包，通常以 `SKILL.md` 为核心 |
 | Hook | 在生命周期事件上确定性执行的程序化规则 |
-| Extension/Plugin | 扩展工具、循环、UI、集成或可分发能力的代码/资源包；各产品含义有差别 |
+| Extension/Plugin | 扩展工具、循环、UI、外部接入或可分发能力的代码/资源包；各产品含义有差别 |
 | Subagent | 在独立上下文、角色或工具权限中承担边界任务的 agent |
 | Sandbox | 在操作系统或执行层限制文件、网络、进程等能力的隔离环境 |
 | Approval | 在有副作用动作执行前由用户或策略授权 |
@@ -48,3 +48,5 @@
 | Annotated tag | 含 tagger、日期和说明对象的 Git tag；本项目用它绑定 baseline/result 与证据 |
 
 产品可能对同一词使用更窄或不同定义。引用产品行为时以对应官方文档为准。
+
+需要学习顺序时回到[知识地图](/guide/roadmap)；遇到同名产品能力时用[兼容性矩阵](/references/compatibility)核对责任。

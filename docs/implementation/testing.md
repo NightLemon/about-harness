@@ -28,3 +28,15 @@ npm run lab:smoke
 ## 负例与回滚
 
 Secret/path 必须被脱敏，未授权工具不得执行，污染记忆默认不检索，live adapter 不得读取凭据。失败时保留日志和最近完整 checkpoint，使用精确 revert 而非覆盖用户改动。
+
+## 一个完整故障注入
+
+让 fake adapter 先返回可重试 timeout、再返回同一带幂等键的写工具调用。测试断言退避次数有限、checkpoint 保存 adapter position、恢复后工具结果来自幂等缓存，trace 同时记录第一次失败与最终状态。只断言最后 `status=success` 会漏掉重复副作用。
+
+## 结果解释
+
+单元测试通过证明固定输入下代码满足断言；schema 通过只证明结构合法；离线案例通过提供 E1；真实 smoke 才能证明目标版本有限可用。任何层都不能自动升级为模型质量。Flaky run 保留原记录，并按 provider、runner、fixture 或并发分类。
+
+## 检查题与下一步
+
+哪一个负例能证明取消会传播到子任务？恢复测试怎样发现重复写入？运行[离线 Runner](/labs/runner)，再按[回归集](/evaluation/regression)组织长期门禁。

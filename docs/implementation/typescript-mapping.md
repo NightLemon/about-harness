@@ -25,8 +25,10 @@ npm run lab:typecheck
 
 ## 失败练习
 
-临时把 `Action` 的 `tool_call` 删除或把 `cost_usd` 改成字符串，typecheck 应失败。随后撤销这项练习改动并重跑。编译通过只证明静态映射，不证明 Python/TypeScript 在所有边界值完全一致；M5 schema 正反例负责跨实现契约。
+临时把 `Action` 的 `tool_call` 删除或把 `cost_usd` 改成字符串，typecheck 应失败。随后撤销这项练习改动并重跑。编译通过只证明静态映射，不证明 Python/TypeScript 在所有边界值完全一致；schema 正反例负责跨实现契约。
 
 ## 恢复与边界
 
 不要生成或提交临时 JS；当前配置 `noEmit`。TypeScript 版本由 lockfile 固定，升级时同时跑 Python schema、TS 编译和离线案例。
+
+下一步：对照[Python 最小 Harness](/implementation/minimal-harness-python)核对同一状态机，并用[测试策略](/implementation/testing)补负例。

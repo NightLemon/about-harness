@@ -19,3 +19,15 @@ Prompt injection、越权工具、secret exfiltration、路径逃逸、命令注
 ## 验证
 
 每个威胁至少有预防、检测、停止、恢复和回归测试；未测项明确写 residual risk。
+
+## 一个可执行表格
+
+对“读取仓库并生成补丁”列出资产为源码与凭据，入口为任务文本、仓库文件、依赖和工具输出，攻击者能力包括提交恶意注释与诱导命令。预防控制是最小读写根、禁网、schema 和批准；检测是 policy/trace/secret scan；停止是取消 run；恢复是回到 checkpoint 并轮换受影响凭据。每项都绑定负责人和测试。
+
+## 失败诊断
+
+若威胁只写“模型可能犯错”，就无法选择控制。先问攻击者控制什么输入、想获得什么资产、跨越哪条信任边界；再确认控制是否位于模型不可绕过的位置。没有回归用例的缓解仍是未验证建议，残余风险必须显式保留。
+
+## 检查题与下一步
+
+Approval 与 sandbox 分别阻止什么？合法工具为何仍可能组成数据外发路径？用[Prompt Injection](/security/prompt-injection)验证不可信输入，再到[Secret 与隐私](/security/secrets-privacy)建立数据清单。

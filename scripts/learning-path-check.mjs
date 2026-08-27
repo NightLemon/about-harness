@@ -26,7 +26,7 @@ for (const route of [
 }
 
 if (/\]\(\/practice\//.test(start)) errors.push('learning path still promotes a legacy /practice/ route')
-if (/后续里程碑会|M3\s*将提供/.test(`${start}\n${prerequisites}`)) {
+if (/后续(?:阶段|里程碑).{0,20}(?:会|将)(?:迁移|提供|补齐)/.test(`${start}\n${prerequisites}`)) {
   errors.push('learning entrypoints contain a stale future-milestone placeholder')
 }
 

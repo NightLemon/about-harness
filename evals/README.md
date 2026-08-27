@@ -11,4 +11,4 @@
 
 JSONL 每行是独立对象，便于流式追加和按 run 审计。E2/E3 必须另行授权真实 API/费用，并保存精确模型/provider/adapter/harness、指令/config/fixture hash、usage 和受控原始事件；不能把本目录的 `offline-replay` 样例当成模型成绩。
 
-Fixture reference（fixture 引用）指向不可变 Git commit。Validator 会从该 commit 重新读取 `manifest.json`、`input.json`、`expected.json` 和 `negative.json`，计算 bundle hash，再与 task 和每条 run 交叉核对。因此 migration 的历史 `482c…` 会继续指向 M5 输入，不会被 Round 09 后的当前 `5f9c…` fixture 冒充或覆盖。
+Fixture reference（fixture 引用）指向不可变 Git commit。Validator 会从该 commit 重新读取 `manifest.json`、`input.json`、`expected.json` 和 `negative.json`，计算 bundle hash，再与 task 和每条 run 交叉核对。因此 migration 的固定 `482c…` 输入不会被当前 `5f9c…` fixture 冒充或覆盖。

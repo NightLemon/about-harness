@@ -9,7 +9,7 @@ const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'about-harness-roadmap-'))
 try {
   const guide = path.join(temp, 'docs', 'guide')
   fs.mkdirSync(guide, { recursive: true })
-  fs.writeFileSync(path.join(guide, 'roadmap.md'), '# Map\n\nM3/M4 会补齐其他页面。\n')
+  fs.writeFileSync(path.join(guide, 'roadmap.md'), '# Map\n\n后续阶段会补齐其他页面。\n')
   const result = spawnSync(process.execPath, [path.join(sourceRoot, 'scripts', 'roadmap-check.mjs'), temp], {
     encoding: 'utf8'
   })

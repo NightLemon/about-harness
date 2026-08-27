@@ -17,3 +17,15 @@
 回归失败保留上一默认配置和结果，候选不晋级；不要删除失败 task 或移动阈值。若 holdout 泄漏，作废该轮并建立新的未见任务。
 
 下一步：[报告](/evaluation/reporting)。
+
+## 工作例
+
+十个开发任务用于调 context，五个未见 holdout 只在候选冻结后打开。候选在开发集提升，但 holdout 的安全拒绝漏掉一例，因此不采用；失败任务脱敏后进入 incident regression，不能从 holdout 移到开发集再宣称通过。下一次模型或指令 hash 改变时重新运行受影响集合。
+
+## 失败诊断
+
+回归数量下降先检查任务是否被删除；重复 run 缺失检查矩阵完整性；alias 漂移检查 model identity；基础设施失败按预注册规则重跑但保留原行。阈值不能在看到候选结果后移动，holdout 泄漏则整组作废并建立新任务。
+
+## 检查题与下一步
+
+为什么 run 不是主要独立样本？何时只需运行受影响子集？用[实验方法](/optimization/experiment)定义配置，再在[结果报告](/evaluation/reporting)分开 development 与 holdout。

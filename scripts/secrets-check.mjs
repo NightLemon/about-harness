@@ -31,6 +31,7 @@ if (explicitRoot) {
   const output = execFileSync('git', ['ls-files', '--cached', '--others', '--exclude-standard', '-z'])
   files = output.toString('utf8').split('\0').filter(Boolean).map((file) => path.join(root, file))
 }
+files = files.filter((file) => fs.existsSync(file))
 
 for (const file of files) {
   const rel = path.relative(root, file).replaceAll('\\', '/')

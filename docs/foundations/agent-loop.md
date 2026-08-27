@@ -68,3 +68,5 @@ Agent：复查 diff，报告根因、修改和测试证据。
 
 它的关键不是长推理，而是每个假设都能被工具反馈约束。
 
+下一步：把循环中的状态交给[状态与可靠执行](/foundations/state-reliability)，并在[离线 Runner](/labs/runner)观察停止原因。
+

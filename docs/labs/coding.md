@@ -21,3 +21,13 @@ uv run --frozen --offline python scripts/run-labs.py coding
 这里没有真实 Git 仓库、编译器或模型，只验证“复现—最小 patch—确定性断言”的契约。真实 coding 实验必须记录输入 commit、测试发现、diff 与生成物排除。
 
 下一步：[浏览器案例](/labs/browser)。
+
+## 前置条件与固定版本
+
+使用 Python 3.11+、`uv 0.11.16` 与仓库锁文件；保持离线，不安装新的 package。Runner 会先验证 manifest 与 bundle hash，hash 不一致时不会执行案例。
+
+## 断言检查表
+
+确认 task、trace、result、fixture hash、配置和退出码都被记录；`files_changed` 必须恰好为 1，三个边界测试全部通过，负例拒绝新增依赖。命令退出码 0 只证明这组固定断言，不证明真实模型会生成相同 patch。
+
+如需改变 fixture，复制为新版本并更新引用，不覆盖现有结果。完成后继续[浏览器案例](/labs/browser)。

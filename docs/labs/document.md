@@ -21,3 +21,13 @@ uv run --frozen --offline python scripts/run-labs.py document
 OCR、表格、图片、chunking、embedding 和访问控制不在此 seam 中；E2 需固定 parser、LlamaIndex、embedding/model、索引版本与权限。
 
 下一步：[跨 Harness 迁移](/labs/migration)。
+
+## 前置条件与固定版本
+
+使用 Python 3.11+、`uv 0.11.16` 与版本化本地 fixture，不安装 LlamaIndex 或 embedding 模型。运行前由 manifest 验证文档 bundle hash。
+
+## 断言检查表
+
+确认答案、source ID、版本和引用位置同时匹配；旧版被过滤，无匹配内容走 `insufficient`。回答文本正确但出处错误仍失败。修改文档后产生新 hash 与结果，不能继续引用旧 run；解析器、OCR 或索引变化也应触发重跑。
+
+机器字段为兼容既有 schema 可能仍叫 `integration`，正文只称离线职责接缝。下一步运行[跨 Harness 迁移](/labs/migration)。
