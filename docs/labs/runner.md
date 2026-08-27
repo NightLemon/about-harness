@@ -1,4 +1,4 @@
-# 离线 Runner 与集成接缝
+# 离线 Runner 与职责接缝
 
 ## 输入契约
 
@@ -6,7 +6,7 @@
 
 ## 为什么不直接安装四个 framework
 
-M5 的目标是验证职责映射和数据契约，而不是伪造 live 集成。`lab/src/about_harness/integrations/` 中四个模块把第三方 distribution/import 名、领域职责和 `offline-contract-seam` 模式写入边界对象；它们不导入外部包、不读凭据、不联网。真实集成必须在独立授权下增加包版本、adapter、网络、模型和 E2/E3 证据。
+这些实验验证职责映射和数据契约，不伪造 live 上游接入。`lab/src/about_harness/integrations/` 中四个模块把第三方 distribution/import 名、领域职责和 `offline-contract-seam` 模式写入边界对象；它们不导入外部包、不读凭据、不联网。真实接入必须在独立授权下增加包版本、adapter、网络、模型和 E2/E3 证据。
 
 ## 单案例命令
 

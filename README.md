@@ -1,45 +1,53 @@
 # About Harness
 
-面向中文工程师的 agent harness 学习项目：从模型、上下文、指令、工具、权限、记忆和可靠执行出发，最终用可复现实验回答“一个指定模型在明确工作负载与 Codex、Pi、Claude Code 等环境中怎样配置得更好”。
+面向中文读者的 AI agent harness（承载和约束智能体循环的工作环境）实用手册。项目把稳定原理、产品事实、配置示例和离线实验分开，帮助你针对明确任务选择模型与工作环境，并用可复现证据验证调优是否真的有效。
 
-## 当前状态
+## 项目价值
 
-M0–M9 与 V1 Review Round 01–12 已完成；原 living [`EXECUTION_PLAN.md`](EXECUTION_PLAN.md) 已关闭并保留为简短状态入口，完整历史计划和已结束 Goal 均已归档，不能作为后续授权。仓库中旧有的十轮记录已原样迁入 `docs/reviews/legacy/`，因缺少冻结 baseline、逐轮 diff、result commit/tag 和环境元数据，**不计入 v1 的审阅**。
+读完并完成实验后，你应能回答四个问题：任务真正需要模型做什么；Codex、Pi、Claude Code 等 harness 分别在哪里注入指令、工具与权限；一次配置变化改善了哪项指标；失败时怎样停止、定位和回滚。站点不提供脱离工作负载的“最佳模型”排行榜，也不把离线脚本成功当作真实模型质量。
 
-V1 学习站点已从 commit `e13bd93` 发布到 <https://nightlemon.github.io/about-harness/>；CI、Deploy 与 2026-08-22 的 HTTP 200 记录见 [`publication-result.json`](artifacts/release/v1/publication-result.json)。RC3 的 `pending-publication` 保留为发布前历史快照。发布没有调用真实模型 API、使用模型凭据或产生费用；所有模型性能结论默认最高为离线 E1，除非文档明确给出 E2/E3 证据。
+## 快速开始
 
-## 本地运行
-
-要求 Node.js 22+ 与 npm；CI 与发布自动化以 Node.js 22 为最低发布基线。
+需要 Node.js 22+；运行 Python 实验还需要 Python 3.11+ 与 `uv 0.11.16`。
 
 ```bash
 npm ci
 npm run docs:dev
 ```
 
-当前完整检查：
+完整本地验证：
 
 ```bash
-npm run check
-npm run facts:check
-npm run reviews:check
-npm run publication:check
+npm run verify
 ```
 
-文档入口为 [`docs/index.md`](docs/index.md)，站点配置为 [`docs/.vitepress/config.mts`](docs/.vitepress/config.mts)。学习顺序、作品集与项目治理分别见：
+`npm run check` 覆盖文档、内容契约、示例、构建和离线实验；`npm run pages:check` 以 `/about-harness/` 项目路径完成独立构建与三视口视觉检查。开发服务器只用于可信本机，不要以 `--host 0.0.0.0` 暴露到公网。
 
-- [`docs/guide/start.md`](docs/guide/start.md)
-- [`docs/guide/portfolio.md`](docs/guide/portfolio.md)
-- [`docs/meta/review-method.md`](docs/meta/review-method.md)
+## 学习路线
 
-## 内容原则
+- 从[学习路径](docs/guide/start.md)和[知识地图](docs/guide/roadmap.md)建立全局心智模型；
+- 用[指定模型适配](docs/models/adaptation.md)和[模型—Harness 匹配](docs/optimization/model-fit.md)设计对照实验；
+- 在[Codex](docs/harnesses/codex.md)、[Pi](docs/harnesses/pi.md)、[Claude Code](docs/harnesses/claude-code.md)中映射指令、配置、权限和回滚；
+- 通过[实验环境](docs/labs/setup.md)运行六个离线案例，再用[评测方法](docs/evaluation/method.md)解释结果边界。
 
-- 分开稳定机制、产品事实、本项目建议和示例。
-- 易变产品事实就近引用官方来源，并登记版本与核对日期。
-- 模型优化绑定模型身份、harness、任务集、配置、预算和证据等级，不给通用排行榜。
-- 教程包含输入、命令、预期输出、失败情景、验证、停止和恢复。
-- 默认离线、最小权限；secret、私人轨迹和未授权数据不得进入公开结果。
+站点正文入口是 [docs/index.md](docs/index.md)，产品事实及核对日期集中在 [fact-registry.md](docs/references/fact-registry.md)。
+
+## 实验与证据
+
+离线 fake/replay fixture 是默认路径，live adapter 默认关闭。六个案例覆盖 coding、浏览器、研究、数据、文档与跨 harness 迁移，只证明项目职责接缝在固定 fixture 上可执行（E1）；它们没有调用真实模型、不能证明上游 framework 已运行，也不能外推模型质量。运行结果记录 task、trace、fixture hash、配置、退出码和失败分类。
+
+```bash
+uv run --frozen --offline python scripts/run-labs.py all
+npm run eval:validate
+npm run eval:summary
+```
+
+## 贡献与维护
+
+提交内容前阅读 [CONTRIBUTING.md](CONTRIBUTING.md)。易变产品事实需引用官方来源并写核对日期；教程需有前置条件、固定版本、输入、命令、预期、断言、失败案例、清理、回滚与限制。依赖使用锁文件；GitHub Actions 固定完整 SHA；公开结果必须通过 secret、隐私和许可检查。
+
+GitHub Pages 由 `.github/workflows/deploy.yml` 构建静态站点。远程、push、PR、Pages 设置和发布都需要单独授权；本地实现与验证不会隐含获得这些权限。
 
 ## 许可
 
-代码使用 [MIT](LICENSE)，文档使用 [CC BY 4.0](LICENSE-DOCS)。第三方 fixture、图像和引用仍受其各自许可约束。
+代码使用 [MIT](LICENSE)，原创文档使用 [CC BY 4.0](LICENSE-DOCS)。第三方 fixture、图像和引用仍受各自许可约束。

@@ -1,4 +1,3 @@
-import crypto from 'node:crypto'
 import fs from 'node:fs'
 import http from 'node:http'
 import os from 'node:os'
@@ -7,15 +6,13 @@ import { chromium } from 'playwright'
 
 const root = process.cwd()
 const dist = path.join(root, 'docs', '.vitepress', 'dist')
-const update = process.argv.includes('--update')
 const base = '/about-harness/'
-const evidenceRoot = path.join(root, 'artifacts', 'visual', 'round-09')
-const outputRoot = update ? evidenceRoot : fs.mkdtempSync(path.join(os.tmpdir(), 'about-harness-visual-'))
+const outputRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'about-harness-visual-'))
 const errors = []
 const records = []
 
 if (!fs.existsSync(path.join(dist, 'index.html'))) {
-  console.error('Visual check failed: build docs with npm run docs:project-base first')
+  console.error('Visual check failed: project-base build is missing; run npm run docs:visual for the self-contained check')
   process.exit(1)
 }
 fs.mkdirSync(outputRoot, { recursive: true })
@@ -57,7 +54,6 @@ await new Promise((resolve, reject) => {
 const address = server.address()
 const origin = `http://127.0.0.1:${address.port}`
 const browser = await chromium.launch({ headless: true })
-const browserVersion = browser.version()
 
 async function pageMetrics(page) {
   return page.evaluate(() => {
@@ -202,42 +198,8 @@ try {
   await new Promise((resolve) => server.close(resolve))
 }
 
-const screenshots = fs.readdirSync(outputRoot).filter((name) => name.endsWith('.png')).sort().map((name) => ({
-  file: name,
-  sha256: crypto.createHash('sha256').update(fs.readFileSync(path.join(outputRoot, name))).digest('hex')
-}))
-const manifest = {
-  schema_version: '1.1',
-  evidence: 'E1',
-  generated_at: new Date().toISOString(),
-  base,
-  browser: `Chromium ${browserVersion}`,
-  assertions: [
-    'navigation', 'search', 'theme', 'evaluation-tables', 'migration-page',
-    'deep-anchor', 'mobile-menu-open-close', 'no-horizontal-page-overflow'
-  ],
-  records,
-  screenshots
-}
-
-if (update) {
-  fs.writeFileSync(path.join(outputRoot, 'manifest.json'), `${JSON.stringify(manifest, null, 2)}\n`)
-} else {
-  const committedManifest = path.join(evidenceRoot, 'manifest.json')
-  if (!fs.existsSync(committedManifest)) errors.push('missing committed artifacts/visual/round-09/manifest.json; run with --update')
-  else {
-    const committed = JSON.parse(fs.readFileSync(committedManifest, 'utf8'))
-    for (const item of committed.screenshots || []) {
-      const file = path.join(evidenceRoot, item.file)
-      if (!fs.existsSync(file)) errors.push(`missing committed screenshot ${item.file}`)
-      else {
-        const hash = crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex')
-        if (hash !== item.sha256) errors.push(`committed screenshot hash changed: ${item.file}`)
-      }
-    }
-  }
-  fs.rmSync(outputRoot, { recursive: true, force: true })
-}
+const screenshotCount = fs.readdirSync(outputRoot).filter((name) => name.endsWith('.png')).length
+fs.rmSync(outputRoot, { recursive: true, force: true })
 
 if (errors.length) {
   console.error(`Visual check failed with ${errors.length} error(s):`)
@@ -245,4 +207,4 @@ if (errors.length) {
   process.exit(1)
 }
 
-console.log(`Visual check passed: ${records.length} viewports, ${screenshots.length} screenshots, base ${base}.`)
+console.log(`Visual check passed: ${records.length} viewports, ${screenshotCount} temporary screenshots, base ${base}.`)

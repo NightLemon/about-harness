@@ -21,3 +21,13 @@ uv run --frozen --offline python scripts/run-labs.py data
 本案例不覆盖大型表、SQL、统计正确性或 PydanticAI 的模型重试行为，只验证 schema/缺失/脱敏的最小门禁。
 
 下一步：[文档案例](/labs/document)。
+
+## 前置条件与固定版本
+
+使用 Python 3.11+、`uv 0.11.16` 与固定 schema/fixture，保持离线。案例没有 PydanticAI package，也没有真实个人数据；名称只映射结构化数据职责。
+
+## 断言检查表
+
+确认行数守恒、未知字段被拒绝、缺失值保持 `null`、所有邮箱均脱敏、trace 不包含原值，且结果绑定 fixture hash。若只改公开 JSON 而 runner 仍泄漏，测试必须失败。修改 schema 时新建版本，不原地兼容错误输入。
+
+机器字段为兼容既有 schema 可能仍叫 `integration`，其证据仍是 E1 离线职责接缝。继续[文档案例](/labs/document)。

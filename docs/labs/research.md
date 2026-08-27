@@ -21,3 +21,13 @@ uv run --frozen --offline python scripts/run-labs.py research
 本案例不覆盖网页抓取、来源真实性、license 或 live 搜索漂移；它只验证 claim-level provenance 与“证据不足时不强行断言”。
 
 下一步：[数据案例](/labs/data)。
+
+## 前置条件与固定版本
+
+使用 Python 3.11+、`uv 0.11.16` 和锁定 fixture；运行时保持无网络。第三方 package 没有安装，`LangGraph` 名称只表示职责映射。
+
+## 断言检查表
+
+检查两个冲突来源都保留、每条 claim 有 citation、证据不足路径能停止、trace 与 fixture hash 可对应。Schema 合法但吞掉冲突仍是失败。修改规则时建立新 fixture 版本，保留旧输入用于回归；静态成功不证明任何 live 搜索或模型综合质量。
+
+机器字段为兼容既有 schema 可能仍叫 `integration`，正文统一把它解释为离线职责接缝。下一步是[数据案例](/labs/data)。

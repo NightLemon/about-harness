@@ -37,3 +37,7 @@ Validator ← Tool result ← Policy → Tool executor
 - trace 是否脱敏且仍足够复现？
 
 对应实现见[Python 最小 Harness](/implementation/minimal-harness-python)。
+
+## 工作例与失败诊断
+
+模型提出写文件时，adapter 只转换 action，policy 先核对路径和授权，executor 才执行，validator 最后检查内容。若文件未写入，沿 adapter、policy、tool result 逐层定位；若写入两次，检查幂等键与 checkpoint 时机。不要把所有异常都归为“模型不够强”。下一步可在[状态与可靠执行](/foundations/state-reliability)逐项验证。

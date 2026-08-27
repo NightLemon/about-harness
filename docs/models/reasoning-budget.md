@@ -20,3 +20,5 @@
 ## 报告
 
 每档至少记录请求值、响应中的有效值（若提供）、model ID、任务级成功、失败分类、P50/P90 延迟、input/output/reasoning/cache token、费用与人工介入。没有可比 usage 字段时不要用估算精确排名；provider 静默忽略参数时标为 `emulated` 或 `rejected`，不能标 `supported`。
+
+下一步：不要直接选“最高档”；到[推理与路由实验](/optimization/reasoning-routing)做相同任务的配对比较。

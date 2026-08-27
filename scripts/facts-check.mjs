@@ -67,7 +67,7 @@ for (const cells of rows) {
     if (status === 'verified' && ageDays > 30) warnings.push(`${id}: ${ageDays} days old; queued for review`)
     if (status === 'verified' && ageDays > 90) warnings.push(`${id}: ${ageDays} days old; online page needs an expired notice`)
     if (maxAge !== null && status === 'verified' && volatility === 'high' && ageDays > maxAge) {
-      errors.push(`${id}: high-volatility fact is ${ageDays} days old; release limit is ${maxAge}`)
+      errors.push(`${id}: high-volatility fact is ${ageDays} days old; freshness limit is ${maxAge}`)
     }
   }
   const usedByFile = routeFile(usedBy)

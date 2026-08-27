@@ -23,3 +23,5 @@ Task/fixture hash、model/provider/adapter/harness/surface 版本、有效指令
 ## 何时停止
 
 Secret/隐私、破坏性目标不明、数据污染、无法恢复的外部副作用、预算不可控或 baseline 不可复现时立即停止并请求人工处理。
+
+下一步：用[诊断工作表](/practice/debugging)记录一次真实失败，再到[可观测性](/foundations/observability)补足事件字段。

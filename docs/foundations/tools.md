@@ -74,3 +74,5 @@ MCP（Model Context Protocol）是连接 agent 与外部工具/上下文的协�
 ## 工具评测
 
 不要只测最终答案。记录工具选择准确率、参数首次合法率、无效调用数、重复读取量、权限拒绝后的恢复率和副作用次数。某模型失败，可能只是工具描述对它不友好。
+
+下一步：阅读[扩展点](/implementation/extensions)，把工具、skill、hook、plugin 与 MCP 放回各自责任层。

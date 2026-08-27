@@ -14,7 +14,7 @@ FIXTURES = ROOT / "lab" / "fixtures"
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Run deterministic About Harness M5 labs")
+    parser = argparse.ArgumentParser(description="Run deterministic About Harness labs")
     parser.add_argument("case", nargs="?", choices=(*LAB_NAMES, "all"), default="all")
     parser.add_argument(
         "--fixtures-root",

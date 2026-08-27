@@ -84,24 +84,23 @@ def test_all_schemas_are_valid_draft_2020_12() -> None:
         "eval-run",
         "study",
         "fixture-lineage",
-        "publication-result.schema",
     ):
         schema = json.loads((SCHEMAS / f"{name}.json").read_text(encoding="utf-8"))
         Draft202012Validator.check_schema(schema)
 
 
-def test_publication_result_matches_its_schema() -> None:
-    schema = json.loads(
-        (SCHEMAS / "publication-result.schema.json").read_text(encoding="utf-8")
-    )
-    result = json.loads(
-        (ROOT.parent / "artifacts" / "release" / "v1" / "publication-result.json").read_text(
-            encoding="utf-8"
-        )
-    )
-    Draft202012Validator(schema, format_checker=Draft202012Validator.FORMAT_CHECKER).validate(
-        result
-    )
+def test_schema_inventory_contains_only_runtime_and_evaluation_contracts() -> None:
+    expected = {
+        "task.json",
+        "run.json",
+        "trace.json",
+        "result.json",
+        "config.json",
+        "eval-run.json",
+        "study.json",
+        "fixture-lineage.json",
+    }
+    assert {item.name for item in SCHEMAS.glob("*.json")} == expected
 
 
 def test_budget_rejects_negative_cost() -> None:

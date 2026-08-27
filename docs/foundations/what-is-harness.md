@@ -61,3 +61,5 @@
 ## 自检
 
 打开你常用的 agent，回答：它从哪里加载持久指令？怎样选择模型？能调用哪些工具？谁执行命令？何时需要审批？何时压缩？完成条件由谁判断？答不出的部分就是接下来最值得学习的 harness 层。
+
+下一步：沿[系统架构](/foundations/architecture)定位 controller、adapter、tool 和 policy，再用[知识地图](/guide/roadmap)查漏。

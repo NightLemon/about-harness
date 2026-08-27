@@ -10,7 +10,7 @@ try {
   const guide = path.join(temp, 'docs', 'guide')
   fs.mkdirSync(guide, { recursive: true })
   fs.writeFileSync(path.join(guide, 'start.md'), '# Start\n\n[旧实验](/practice/evaluation)\n\n后续里程碑会迁移。\n')
-  fs.writeFileSync(path.join(guide, 'prerequisites.md'), '# Prerequisites\n\nM3 将提供容器。\n')
+  fs.writeFileSync(path.join(guide, 'prerequisites.md'), '# Prerequisites\n\n后续阶段将提供容器。\n')
   fs.writeFileSync(path.join(guide, 'portfolio.md'), '# Portfolio\n\n总分 80。\n')
   const result = spawnSync(process.execPath, [path.join(sourceRoot, 'scripts', 'learning-path-check.mjs'), temp], {
     encoding: 'utf8'

@@ -25,3 +25,9 @@
 ## 漂移
 
 Provider alias、默认模型、schema 支持和错误格式会变化。固定 model ID/adapter 版本，冲突时保留网页、`--help` 和实际探针三类证据。
+
+下一步：用[协议兼容性](/models/protocol-compatibility)设计探针，再看[Adapter 契约](/implementation/adapter-contract)。
+
+## 工作例与失败诊断
+
+同一 tool call 在 provider 侧可能由多段 stream 拼成。Adapter 必须等参数完整且 schema 合法后再交给 policy；call ID 缺失、JSON 截断或 stop reason 不明都应停止。若 HTTP 成功但工具没有执行，先看事件映射与关联 ID，不要通过猜参数绕过协议错误。

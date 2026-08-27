@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(./docs/**)",
+      "Glob(./docs/**)",
+      "Grep(./docs/**)",
+      "Bash(npm run examples:check)"
+    ],
+    "ask": [
+      "Edit(./docs/**)"
+    ],
+    "deny": [
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "WebFetch",
+      "Bash(git push *)"
+    ]
+  }
+}

@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 import path from 'node:path'
-import { isPublishedMarkdown, nonPublicRoutes } from '../docs/.vitepress/publication-scope.mjs'
+import { excludedSiteRoutes, isPublishedMarkdown } from '../docs/.vitepress/site-scope.mjs'
 
 const root = process.cwd()
 const docsRoot = path.join(root, 'docs')
@@ -63,7 +63,7 @@ for (const file of htmlFiles) {
   }
 }
 
-for (const route of nonPublicRoutes) {
+for (const route of excludedSiteRoutes) {
   const flat = path.join(dist, `${route}.html`)
   const directory = path.join(dist, route)
   if (fs.existsSync(flat) || fs.existsSync(directory)) errors.push(`non-public governance route was rendered: /${route}`)

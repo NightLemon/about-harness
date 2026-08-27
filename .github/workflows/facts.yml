@@ -23,7 +23,7 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - name: Enforce release freshness
-        run: npm run facts:release
+      - name: Enforce fact freshness
+        run: npm run facts:freshness
       - name: Probe public source links
         run: npm run links:check -- --network

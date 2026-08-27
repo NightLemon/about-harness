@@ -23,3 +23,5 @@ Run 至少经历 created、running、waiting-approval、stopping、completed、f
 ## 验证
 
 故障注入覆盖进程中断、timeout、重复 delivery、partial output、并发取消和坏 checkpoint。通过正常路径不能证明恢复正确。
+
+下一步：在[Python 最小 Harness](/implementation/minimal-harness-python)运行 timeout、幂等与恢复负例。

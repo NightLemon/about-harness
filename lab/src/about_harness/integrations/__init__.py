@@ -1,4 +1,4 @@
-"""Dependency-free E1 seams for the four representative M5 integrations."""
+"""Dependency-free E1 seams for four representative framework responsibilities."""
 
 from about_harness.integrations.base import IntegrationBoundary
 

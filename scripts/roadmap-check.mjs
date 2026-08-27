@@ -22,19 +22,14 @@ if (!fs.existsSync(roadmapPath)) {
     '/domains/research', '/domains/data', '/domains/document', '/labs/setup',
     '/evaluation/method', '/evaluation/task-schema', '/evaluation/metrics',
     '/evaluation/judges', '/evaluation/regression', '/evaluation/reporting',
-    '/security/threat-model', '/references/fact-registry',
-    '/meta/dependency-security', '/meta/privacy', '/meta/publishing', '/meta/maintenance',
-    '/guide/portfolio'
+    '/security/threat-model', '/security/secrets-privacy', '/security/supply-chain',
+    '/security/incident-response', '/references/fact-registry', '/guide/portfolio'
   ]
 
   for (const route of requiredRoutes) {
     if (!text.includes(`](${route})`)) errors.push(`knowledge map does not link required route: ${route}`)
   }
-  const stalePatterns = [
-    /M3\/M4\s*会补齐/,
-    /将在\s*M3[^\n]*M4/,
-    /M4\s*会建立/
-  ]
+  const stalePatterns = [/后续(?:阶段|里程碑).{0,20}(?:补齐|建立|完成)/]
   for (const pattern of stalePatterns) {
     if (pattern.test(text)) errors.push(`knowledge map contains stale milestone placeholder: ${pattern}`)
   }
@@ -46,4 +41,4 @@ if (errors.length) {
   process.exit(1)
 }
 
-console.log('Roadmap check passed: all approved knowledge-map routes are linked and no stale M3/M4 placeholders remain.')
+console.log('Roadmap check passed: all handbook knowledge-map routes are linked and no stale milestone placeholders remain.')

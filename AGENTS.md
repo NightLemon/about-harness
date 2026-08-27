@@ -32,13 +32,6 @@ This repository is a Chinese learning site about AI agent harnesses. Keep stable
 - Do not present E1 replay evidence as proof of live-model quality.
 - Real APIs, fees, Git remotes, pushes, PRs, Pages, and releases require separate authorization.
 
-## Reviews
-
-- `docs/reviews/legacy/` is historical evidence and does not count toward v1.
-- New rounds live in `docs/reviews/v1/`; evidence lives in `artifacts/reviews/v1/`.
-- Findings must exist before the corresponding fix. A round needs a frozen baseline, substantive findings, a diff, verification, unresolved items, environment metadata, a result commit, and annotated tags.
-- Typo-only or evidence-free edits do not count as a round.
-
 ## Verification
 
 After changing Markdown or site configuration, run:
@@ -46,7 +39,7 @@ After changing Markdown or site configuration, run:
 ```bash
 npm run check
 npm run facts:check
-npm run reviews:check
+npm run pages:check
 ```
 
-Do not claim a review round is complete until its findings, edits, and verification are recorded under `docs/reviews/`.
+Do not claim product usability or model quality from static validation or offline replay alone.

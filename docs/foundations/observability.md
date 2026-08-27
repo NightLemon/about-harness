@@ -23,3 +23,15 @@ Run started、model action、policy decision、tool result、retry、checkpoint�
 ## 隐私
 
 默认记录结构化摘要，secret、个人路径、私人输入和原始 live trace 不进入公开结果。脱敏后仍需人工抽查可逆标识。
+
+## 工作例：工具调用失败
+
+一次 run 在第 4 步调用 `read_file`，policy 允许，工具却返回路径不存在。Trace 依次保存 model action、policy decision、tool result、failure class 与 stop reason；内容只记录脱敏相对路径和错误码。仅保存最终回答无法判断是模型选错路径、adapter 改写参数还是工具本身故障。
+
+## 失败诊断
+
+指标突然归零先检查采集而非宣称成本下降；事件乱序检查 sequence 与并发 clock；无法关联 task/run 检查 ID 传播；日志过多污染隐私则缩小 data 字段并保留 hash。Trace schema 变化要版本化，读取器不能静默丢事件。
+
+## 自检与下一步
+
+第三方能否从最小事件重建一次失败？哪些原始内容没有必要公开？到[评测报告](/evaluation/reporting)学习聚合，再用[测试策略](/implementation/testing)加入故障注入。

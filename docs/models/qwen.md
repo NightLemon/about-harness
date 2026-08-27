@@ -17,3 +17,19 @@
 ## 结论边界
 
 开放权重允许更深控制，也把模板、部署和资源错误带入 harness。没有锁定 runtime 的结果不能归因给模型权重。
+
+## 当前证据边界
+
+本页只有 E0 适配建议和官方入口，没有运行 checkpoint、云 API 或真实任务比较。
+
+## 最小适配卡
+
+身份至少包含 checkpoint、revision、量化、tokenizer、chat template、runtime/provider 和 adapter。探针覆盖中英文任务契约、单次与连续工具调用、无效 JSON、长上下文截断和取消。若使用托管 API，还要保存 provider alias 解析、区域、usage 与数据策略。
+
+## 失败诊断
+
+中文表现下降先排查 system/template 编码与上下文裁剪；工具名或参数错误先核对兼容层转换；本地超时区分模型首 token、队列和工具执行。不要同时改变量化、模板和采样后把结果归因给“模型升级”。
+
+## 检查题与下一步
+
+同一 checkpoint 在两个 runtime 上结果不同，应把差异归因给谁？“OpenAI-compatible”还需验证哪些 stream 与 error 语义？填写[模型适配卡](/practice/model-playbook)，并用[实验方法](/optimization/experiment)做单变量比较。

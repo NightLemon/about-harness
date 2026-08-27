@@ -25,3 +25,5 @@ E1 证明 harness 流程；E2 证明目标环境窄范围可用；E3 才能支�
 ## 适配卡最小字段
 
 身份、协议、state carrier、工作负载、能力假设、探针、默认/工程/候选配置、任务级结果、安全事件、成本/延迟、路由/回退、证据等级、已知限制与复核日期。
+
+下一步：先完成[协议兼容性](/models/protocol-compatibility)，再用[模型—Harness 匹配](/optimization/model-fit)建立开箱基线。

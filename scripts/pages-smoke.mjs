@@ -1,4 +1,4 @@
-import { publicSmokeRoutes } from '../docs/.vitepress/publication-scope.mjs'
+import { siteSmokeRoutes } from '../docs/.vitepress/site-scope.mjs'
 
 const baseInput = process.argv[2]
 if (!baseInput) {
@@ -16,7 +16,7 @@ try {
   process.exit(2)
 }
 
-const routes = publicSmokeRoutes
+const routes = siteSmokeRoutes
 const errors = []
 const visitedAssets = new Set()
 

@@ -18,13 +18,13 @@ const comparison = read('docs/harnesses/comparison.md')
 const codex = read('docs/harnesses/codex.md')
 const registry = read('docs/references/fact-registry.md')
 
-for (const marker of ['Source fact', 'Local surface', 'Project seam', 'Live evidence']) {
+for (const marker of ['Source fact', 'Offline seam', 'Live evidence']) {
   if (!compatibility.includes(marker)) errors.push(`compatibility matrix missing evidence axis: ${marker}`)
 }
 
 for (const marker of [
-  'M5 offline seam E1',
-  'upstream package 未安装',
+  'E1 离线职责接缝',
+  '未安装上游包',
   'OpenAI Agents SDK',
   'Google ADK',
   'AutoGen',
@@ -35,15 +35,15 @@ for (const marker of [
   if (!compatibility.includes(marker)) errors.push(`compatibility matrix missing current object status: ${marker}`)
 }
 
-if (/待 M5|M5 集成待完成/.test(compatibility)) {
-  errors.push('compatibility matrix still contains a stale M5 placeholder')
+if (/后续(?:阶段|里程碑).{0,20}(?:补齐|完成)/.test(compatibility)) {
+  errors.push('compatibility matrix still contains a stale future-work placeholder')
 }
 
-for (const marker of ['Sandbox', 'Approval/permission', 'Network', 'evidence axis']) {
+for (const marker of ['技术隔离', '询问授权', '网络', '证据轴']) {
   if (!comparison.includes(marker)) errors.push(`harness comparison missing responsibility gap: ${marker}`)
 }
 
-for (const marker of ['Sandbox、Approval 与 Network', 'FACT:codex-sandbox-approval']) {
+for (const marker of ['sandbox 限制技术可达范围', 'FACT:codex-sandbox-approval']) {
   if (!codex.includes(marker)) errors.push(`Codex guide missing independent control: ${marker}`)
 }
 
@@ -57,4 +57,4 @@ if (errors.length) {
   process.exit(1)
 }
 
-console.log('Compatibility check passed: source, local, seam, live, and control-layer evidence are separated.')
+console.log('Compatibility check passed: source, offline-seam, live, and control-layer evidence are separated.')
