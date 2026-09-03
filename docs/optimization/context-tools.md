@@ -170,21 +170,22 @@ Retry（重试）只适合明确的暂时错误，并受次数、deadline 和费
 
 需要 Python 3.11+ 与 uv 0.11，依赖由 `uv.lock` 固定。从仓库根目录离线执行；不配置真实 MCP、浏览器、API key 或外部写权限。
 
-测试输入是固定 `ContextItem`、fake adapter 和进程内 `ToolRegistry`：8-token 上下文预算包含 trusted required 项、trusted code 和高优先级不可信网页；工具案例包含未获 allowlist 的危险调用、两次暂时失败后的成功、重复幂等键和含 Secret/个人路径的结果。
+测试输入是固定 `ContextItem`、fake adapter 和进程内 `ToolRegistry`：8-token 上下文预算包含 trusted required 项、trusted code 和高优先级不可信网页；工具案例包含未获 allowlist 的危险调用、两次暂时失败后的成功、合法幂等复用、同 key 改 tool/参数的冲突，以及含 Secret/个人路径的结果。
 
 ### 命令
 
 ```powershell
-uv run --frozen --offline pytest -q lab/tests/test_memory_context_trace.py::test_context_budget_prioritizes_required_and_trusted_sources lab/tests/test_loop.py::test_permission_denial_stops_before_tool_execution lab/tests/test_loop.py::test_retry_and_idempotency_prevent_duplicate_side_effects lab/tests/test_memory_context_trace.py::test_trace_redacts_secret_values_paths_and_tool_results
+uv run --frozen --offline pytest -q lab/tests/test_memory_context_trace.py::test_context_budget_prioritizes_required_and_trusted_sources lab/tests/test_loop.py::test_permission_denial_stops_before_tool_execution lab/tests/test_loop.py::test_retry_and_idempotency_prevent_duplicate_side_effects lab/tests/test_loop.py::test_idempotency_key_conflict_rejects_changed_tool_or_arguments lab/tests/test_memory_context_trace.py::test_trace_redacts_secret_values_paths_and_tool_results
 ```
 
 ### 预期输出与断言
 
-应有 4 项通过：
+应有 6 项通过：
 
 - 8-token 预算选择 required `AGENTS.md` 与 trusted code，丢弃优先级更高但不可信的网页；
 - 未在 Task allowlist 中的 `dangerous` 工具在 handler 执行前停止；
 - 暂时失败按 10/20 ms 两次退避后成功，同一幂等键第二次调用复用结果，总副作用 handler 只执行 3 次尝试；
+- 同一 key 改 canonical arguments 或 tool name 的两个负例都在第二个 handler 前失败；
 - trace 不包含 fixture 中的 Secret 与个人路径片段，并保留 `[REDACTED]` 标记。
 
 ### 失败、停止、清理与回退
@@ -195,7 +196,7 @@ uv run --frozen --offline pytest -q lab/tests/test_memory_context_trace.py::test
 
 ### 证据边界
 
-这些测试提供 E1：当前离线 Python 实现按 `required → trusted → priority → item_id` 选择上下文；required 项放不下时会抛错；`ToolRegistry` 支持进程内注册、有限重试与幂等缓存；策略能在本地 handler 前拒绝未允许工具；trace 会处理固定 Secret/路径样例。
+这些测试提供 E1：当前离线 Python 实现按 `required → trusted → priority → item_id` 选择上下文；required 项放不下时会抛错；`ToolRegistry` 支持进程内注册、有限重试、同调用幂等复用与冲突拒绝；策略能在本地 handler 前拒绝未允许工具；trace 会处理固定 Secret/路径样例。
 
 它不实现真实 tokenizer、provider context window、检索器、自动压缩、分页 artifact store、跨进程幂等、并发 reservation、MCP capability negotiation 或生产数据防泄漏。测试通过不能证明真实模型遵循率、Prompt Injection 防护或工具集成可用性。
 

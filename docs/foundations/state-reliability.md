@@ -23,7 +23,7 @@
 | Checkpoint（检查点） | 身份、计数、游标、工具台账和版本怎样原子保存 | 只返回内存对象：计数、cost 与 FakeAdapter `index` |
 | Timeout/Deadline | 能否抢占阻塞调用，恢复是否沿用原截止时间 | 在调用边界用单调时钟检查；不能中止阻塞 Adapter/Tool，恢复会重启计时 |
 | Retry（重试） | 哪些错误可重试，是否共享总预算和取消信号 | 仅重试 `RetryableError`，有限指数退避；不感知 run deadline/cancel |
-| Idempotency（幂等） | key 的作用域、参数 hash、持久台账和冲突规则 | `ToolRegistry` 内存 cache 只按 key 查找，进程重启后丢失 |
+| Idempotency（幂等） | key 的作用域、参数 hash、持久台账和冲突规则 | 内存 cache 绑定 key、tool name 与 canonical arguments 指纹；冲突失败，重启后仍丢失 |
 | Cancellation（取消） | 怎样传播、抢占、处理迟到结果和副作用 | Adapter 返回前后检查 token；不会主动终止正在执行的 callable |
 | Concurrency（并发） | lease、CAS、fencing 和同一业务对象的所有权 | 没有持久存储、租约、分布式锁或并发恢复协议 |
 
@@ -120,7 +120,7 @@ created_at / writer / fencing token
 | `cost_usd` | 累计 Action 声明成本 | 有限、非负 |
 | `adapter_state` | Adapter 自定义 JSON 对象 | 必须为对象；FakeAdapter 另验 `index` |
 
-每次工具成功或 cache 命中后，runner 才创建新 checkpoint。完成 Action 不生成新 checkpoint；Result 的 `steps` 会包含完成 Action，而 checkpoint 仍停在最后一个工具步骤。这是当前字段语义，不应假设 Result step 和 checkpoint step 永远相等。
+每次工具成功或 cache 命中后，runner 才创建新 checkpoint。完成 Action 不增加 `steps`，也不生成新 checkpoint；`steps` 始终只计算成功或复用的工具状态转移。最终 Result 的 `model_calls`、cost 可能已包含后续 completion proposal，因此这些值可以大于最近 checkpoint，对应的 tool step 则保持一致。
 
 恢复时，runner 继承 step/model/tool/reused/cost，并调用 `adapter.restore(adapter_state)`。它会创建新的 TraceRecorder，所以新 Result 的 trace 不包含上一段事件；`started` 也重新读取时钟，所以 `timeout_ms` 从恢复调用开始重新计算。工具 cache 不在 checkpoint 内，新建 `ToolRegistry` 后旧幂等结果不会恢复。
 
@@ -181,9 +181,9 @@ status / expiry / writer version
 
 若同一个 key 对应不同 tool 或参数，必须作为冲突拒绝，不能复用旧结果。
 
-当前 `ToolRegistry` 的 cache 只用 `idempotency_key` 做字典 key。成功后保存 value；同一进程再次看到同 key 就返回 `reused=true`，不再调用 handler。它没有保存 tool name、参数 hash、receipt、过期时间或持久版本。因此同 key 配不同参数会错误复用，进程重启会丢失 cache，也不能防止多个 worker 同时执行。
+当前 `ToolRegistry` 仍用 `idempotency_key` 索引，但 cache entry 同时保存 `tool name + canonical arguments` 的 SHA-256 指纹与 result。再次看到同 key 时，只有指纹完全一致才返回 `reused=true`；tool 或参数变化会抛 `IdempotencyConflictError`，由 runner 返回 `failed/tool_error`，第二个 handler 不会执行。参数编码按 object key 排序、使用紧凑 UTF-8 JSON，并保守地区分 `true`、`1` 与 `1.0`；它不是完整 JCS，也没有把 subject、target 或 operation version 纳入身份。
 
-当前测试证明的是：一个 flaky handler 前两次抛 `RetryableError`、第三次成功；随后完全相同的第二个 ToolCall 命中同一内存 cache，handler 总尝试数保持 3。它没有证明跨进程幂等或参数冲突检测。
+当前正例证明：一个 flaky handler 前两次抛 `RetryableError`、第三次成功；随后 `call_id` 和 object key 顺序不同、但业务调用相同的第二个 ToolCall 命中内存 cache，handler 总尝试数保持 3。两个负例分别改变 arguments 和 tool name，证明冲突不会复用旧结果或执行第二个 handler。它们仍没有证明 cache 持久化、跨进程并发互斥、目标系统幂等或 unknown outcome 对账。
 
 ## 四个崩溃窗口
 
@@ -257,6 +257,7 @@ Transactional outbox（事务发件箱）可以把业务状态变化与待发送
 ```powershell
 uv run --frozen --offline pytest -q `
   lab/tests/test_loop.py::test_retry_and_idempotency_prevent_duplicate_side_effects `
+  lab/tests/test_loop.py::test_idempotency_key_conflict_rejects_changed_tool_or_arguments `
   lab/tests/test_loop.py::test_checkpoint_restores_adapter_position `
   lab/tests/test_loop.py::test_concurrent_cancellation_propagates_after_adapter_returns `
   lab/tests/test_loop.py::test_timeout_stops_before_completing_late_action `
@@ -268,25 +269,28 @@ uv run --frozen --offline pytest -q `
 ```bash
 uv run --frozen --offline pytest -q \
   lab/tests/test_loop.py::test_retry_and_idempotency_prevent_duplicate_side_effects \
+  lab/tests/test_loop.py::test_idempotency_key_conflict_rejects_changed_tool_or_arguments \
   lab/tests/test_loop.py::test_checkpoint_restores_adapter_position \
   lab/tests/test_loop.py::test_concurrent_cancellation_propagates_after_adapter_returns \
   lab/tests/test_loop.py::test_timeout_stops_before_completing_late_action \
   lab/tests/test_contracts_and_schema.py::test_checkpoint_rejects_inconsistent_or_negative_counters
 ```
 
-预期退出码为 0，显示 `5 passed`。五个断言分别证明：
+预期退出码为 0，显示 `7 passed`。这些案例分别证明：
 
 1. 两次 retry trace 与实际 sleeper 值一致，第二个同 key 调用复用内存 cache；
-2. 第一次因 max steps 停止后，FakeAdapter `index` 从 checkpoint 恢复并继续完成；
-3. cancel 在阻塞 Adapter 返回后被观察，迟到 complete 不成为完成；
-4. 可控时钟越过 timeout 后，迟到 complete 被拒绝；
-5. 负计数或 `tool_calls + reused_tool_calls != step` 的 checkpoint 被拒绝。
+2. 同 key 改 arguments 或 tool name 的两个负例都失败，第二个 handler 不执行；
+3. 第一次因 max steps 停止后，FakeAdapter `index` 从 checkpoint 恢复并继续完成；
+4. cancel 在阻塞 Adapter 返回后被观察，迟到 complete 不成为完成；
+5. 可控时钟越过 timeout 后，迟到 complete 被拒绝；
+6. 负计数或 `tool_calls + reused_tool_calls != step` 的 checkpoint 被拒绝。
 
 ### 失败、停止、清理与回滚
 
 | 失败 | 先看什么 | 不要怎样绕过 |
 | --- | --- | --- |
 | retry 次数/等待不符 | `RetryPolicy`、attempt 编号、注入 sleeper | 增大次数直到偶然通过 |
+| 同 key 改调用仍复用 | tool name、canonical arguments 指纹、cache entry | 只比较 key 或执行第二个 handler |
 | 恢复后 Action 重放或跳过 | checkpoint `adapter_state.index` 与 Action 序列 | 手工改 index 迎合测试 |
 | cancel 后仍 completed | token 检查发生在调用哪一侧 | 把线程 sleep 调长隐藏竞态 |
 | timeout 后仍 completed | clock 单位与 post-action 检查 | 使用真实等待制造 flaky 测试 |
@@ -324,7 +328,7 @@ uv run --frozen --offline pytest
 | timeout 后资源仍变化 | Tool/目标系统 | 软超时、请求已送达、迟到结果 | clock 精度 |
 | cancel 后仍等待很久 | Adapter/Tool/sleeper | 下游不可取消、token 未传播 | UI 没刷新 |
 | checkpoint 能解析但恢复错误 | identity/schema | 配置漂移、旧 Adapter state、错 Task | JSON 序列化 |
-| 同 key 返回错误旧结果 | idempotency ledger | 未绑定 tool/参数 hash | cache 太快 |
+| 同 key 返回错误旧结果 | idempotency ledger | 指纹未绑定 tool/参数，或外部 store 身份漂移 | cache 太快 |
 | cost/step 恢复后变小 | checkpoint 合并 | 计数重置、并发覆盖、旧版本写入 | 指标展示 |
 | 两个 worker 都声称完成 | ownership/fencing | CAS 缺失、lease 过期后旧 owner 仍可写 | 测试偶发 |
 
@@ -332,13 +336,13 @@ uv run --frozen --offline pytest
 
 ## 证据边界与已知限制
 
-当前项目提供 E1 的 fake/replay 证据：运行时契约拒绝坏 checkpoint；runner 在 Adapter 边界检查预算、timeout 和 cancel；retry 有固定退避；内存 cache 能复用同进程同 key 结果；FakeAdapter 能恢复游标。
+当前项目提供 E1 的 fake/replay 证据：运行时契约拒绝坏 checkpoint；runner 在 Adapter 边界检查预算、timeout 和 cancel；retry 有固定退避；内存 cache 只复用同 key、同 tool、同 canonical arguments 的结果并拒绝两类冲突；FakeAdapter 能恢复游标。
 
 当前实现没有：
 
 - checkpoint 持久存储、schema migration、Task/config/run 身份绑定；
 - 原始 trace 拼接、绝对 deadline 或跨恢复累计 duration；
-- 持久 intent/receipt/idempotency ledger、参数 hash 冲突检测；
+- 持久 intent/receipt/idempotency ledger、subject/target/version 身份与跨 worker 原子 reservation；
 - 工具级 timeout、可取消 retry sleep 或任意 callable 强制终止；
 - 等待审批状态、分布式 lease/CAS/fencing 或多 worker 恢复；
 - 外部目标系统对账、unknown 状态、补偿工作流和 artifact/测试/业务系统 validator；当前 validator 异常仍映射为 `invalid_action`。
@@ -363,7 +367,7 @@ uv run --frozen --offline pytest
 
 1. 为什么 checkpoint 中没有 receipt，不能证明工具从未成功？
 2. 当前 runner 恢复后哪些预算继续累计，哪个时间预算重新开始？
-3. 为什么只按 `idempotency_key` 缓存而不保存参数 hash 会返回错误旧结果？
+3. 当前 tool + arguments 指纹阻止了哪两类错误复用，为什么仍不能替代目标系统幂等？
 4. 当前取消测试证明了什么，又没有证明什么？
 5. Client timeout 为什么不能证明服务端副作用停止？
 6. CAS、lease 和 fencing token 分别解决哪类并发问题？

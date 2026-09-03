@@ -120,7 +120,7 @@ run_started
 
 1. FakeAdapter 只提出 `echo`；
 2. `PermissionPolicy` 检查它是否在 `TaskSpec.allowed_tools`；
-3. `ToolRegistry` 根据 `name` 找 handler，以 `idempotency_key` 管理复用；
+3. `ToolRegistry` 根据 `name` 找 handler，以 `idempotency_key + tool + arguments fingerprint` 管理复用与冲突；
 4. ToolResult 写入 trace 后才创建 checkpoint；
 5. 第二个 Action 提出 complete；
 6. `JsonSubsetAcceptanceValidator` 检查输出包含 `accepted=true`；
@@ -202,7 +202,7 @@ uv run --frozen --offline pytest -q lab/tests/test_loop.py -k permission_denial
 测试中的 `flaky` handler 前两次抛 `RetryableError`，第三次成功；相同 ToolCall 再出现一次：
 
 ```powershell
-uv run --frozen --offline pytest -q lab/tests/test_loop.py -k retry_and_idempotency
+uv run --frozen --offline pytest -q lab/tests/test_loop.py -k "retry_and_idempotency or idempotency_key_conflict"
 ```
 
 预期断言：
@@ -215,9 +215,9 @@ metrics.tool_calls=1
 metrics.reused_tool_calls=1
 ```
 
-`ToolRegistry` 只对显式 `RetryableError` 做有界 retry；确定性 ToolError 不重试。相同 idempotency key 在当前进程 cache 命中后复用结果。
+预期 3 项通过。`ToolRegistry` 只对显式 `RetryableError` 做有界 retry；确定性 ToolError 不重试。相同 idempotency key 还必须匹配 tool name 和 canonical arguments 的 SHA-256 指纹，才会在当前进程 cache 中复用结果；`call_id` 可以不同，object key 顺序也不改变指纹。
 
-重要限制：cache 只以 key 索引，没有校验“同 key 但参数不同”；也没有持久化到 checkpoint 或跨进程存储。生产实现必须绑定 tool + canonical arguments + target identity，并由目标系统或持久 store 支持幂等。
+两个负例分别把 `true` 改为 JSON number `1`、把 `first` 工具改为 `second`；两者都必须得到 `failed/tool_error`，第二个 handler 调用数为 0，`reused_tool_calls` 也不增加。这里的 canonical JSON 使用排序 key 和紧凑编码，保守地区分 `1` 与 `1.0`；它不是完整 JSON Canonicalization Scheme（JCS）。cache 也没有持久化到 checkpoint 或跨进程存储。生产实现还必须绑定 subject、target identity、operation/schema version，并由目标系统或持久 store 支持幂等与对账。
 
 ## 第七步：Checkpoint 恢复
 
