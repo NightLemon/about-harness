@@ -1,13 +1,13 @@
 {
-  "fixture_version": "1.0",
+  "fixture_version": "1.1",
   "case_id": "data",
   "source": "project-synthetic",
   "license": "CC-BY-4.0",
-  "checked": "2026-08-20",
+  "checked": "2026-09-04",
   "contains_personal_data": false,
   "files": {
-    "input.json": "63edcf0df839a42e996dc60639faff2e341b406f7a91e0dac20a22430ed4e51d",
-    "expected.json": "5ca4aa570a5be6368668255bbcd395f1df0dac7067f77e173e2497ea471b9856",
-    "negative.json": "51e9e2deff01c80071a94560468272c547d8a5cb2c9ac39a4c3ec4cf619acd83"
+    "input.json": "30ca96514e53940a68dbe1eaaf4d94414e6d088737e4b1eb55011e1d0d0f1581",
+    "expected.json": "2bea52664df4ff54403bbae19f0bb072cd42577db7d9a681bd556b4023ce5c50",
+    "negative.json": "b03b1f270345e8ccb59c09e53a61c8b5dff6b249b3bf9c1c4e69170d74444097"
   }
 }

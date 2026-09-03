@@ -1,6 +1,13 @@
 {
+  "dataset": {
+    "dataset_id": "training-scores",
+    "snapshot_id": "synthetic-2026-09-04",
+    "schema_version": "1.1",
+    "score_unit": "points_0_10"
+  },
   "rows": [
     {"user_id": "u-1", "score": 7.5, "email": "person1@example.invalid"},
-    {"user_id": "u-2", "score": null, "email": "person2@example.invalid"}
+    {"user_id": "u-2", "score": null, "email": "person2@example.invalid"},
+    {"user_id": "u-3", "email": null}
   ]
 }

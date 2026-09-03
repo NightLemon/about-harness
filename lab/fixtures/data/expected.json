@@ -1,8 +1,17 @@
 {
+  "dataset": {
+    "dataset_id": "training-scores",
+    "snapshot_id": "synthetic-2026-09-04",
+    "schema_version": "1.1",
+    "score_unit": "points_0_10"
+  },
   "rows": [
-    {"user_id": "u-1", "score": 7.5, "email": "[REDACTED]"},
-    {"user_id": "u-2", "score": null, "email": "[REDACTED]"}
+    {"user_id": "u-1", "score": 7.5, "score_state": "value", "email": "[REDACTED]"},
+    {"user_id": "u-2", "score": null, "score_state": "null", "email": "[REDACTED]"},
+    {"user_id": "u-3", "score": null, "score_state": "missing", "email": null}
   ],
-  "row_count": 2,
+  "row_count": 3,
+  "population": {"input_rows": 3, "output_rows": 3, "rejected_rows": 0},
+  "redacted_fields": 2,
   "sensitive_values_exposed": 0
 }

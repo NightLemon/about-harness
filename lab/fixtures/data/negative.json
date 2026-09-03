@@ -1,5 +1,23 @@
 {
-  "case": "schema-drift",
-  "row": {"userId": "u-3", "score": 9},
-  "expected_error": "schema drift: userId is not an allowed field"
+  "case": "data-contract-matrix",
+  "cases": [
+    {
+      "case": "schema-drift",
+      "rows": [{"userId": "u-4", "score": 9}],
+      "expected_error": "schema drift"
+    },
+    {
+      "case": "duplicate-primary-key",
+      "rows": [
+        {"user_id": "u-4", "score": 4},
+        {"user_id": "u-4", "score": 5}
+      ],
+      "expected_error": "duplicate user_id"
+    },
+    {
+      "case": "score-out-of-range",
+      "rows": [{"user_id": "u-4", "score": 11}],
+      "expected_error": "between 0 and 10 points"
+    }
+  ]
 }

@@ -296,7 +296,7 @@ Gold set 要包含 schema 漂移、单位混用、null/zero、重复 key、many-
 
 ## 当前离线工作例
 
-仓库 fixture 包含两行合成数据，字段严格限定为 `user_id/score/email`。确定性函数保留数值 score 和 null，将非空 email 替换为 `[REDACTED]`，并拒绝任何未知字段。
+仓库 v1.1 fixture 包含一个固定 dataset/snapshot/schema/unit identity 与三行合成数据，row 字段严格限定为 `user_id/score/email`。确定性函数要求 snapshot 内 `user_id` 唯一，把 score 分成 `value/null/missing`，只接受 0–10 的有限 points；非空 email 替换为 `[REDACTED]`，随后扫描规范化 rows 是否仍含输入原值。
 
 ### 前置条件与固定输入
 
@@ -305,9 +305,9 @@ Gold set 要包含 schema 漂移、单位混用、null/zero、重复 key、many-
 输入位于 `lab/fixtures/data/`：
 
 - `manifest.json` 固定 project-synthetic 来源、CC BY 4.0 与三个文件 hash；
-- `input.json` 有两行，其中一个 score 为 `null`；
-- `expected.json` 要求两行守恒、email 脱敏、null 保留；
-- `negative.json` 使用 `userId` 制造 schema drift，runner 必须拒绝。
+- `input.json` 有三行，分别包含数值 score、显式 `null` 与 missing score；
+- `expected.json` 要求 dataset identity 回链、三行守恒、score state 分离、email 脱敏；
+- `negative.json` 包含 renamed field、重复 key 与 score 越界，runner 必须全部拒绝。
 
 ### 命令
 
@@ -317,13 +317,13 @@ uv run --frozen --offline python scripts/run-labs.py data
 
 ### 预期输出与断言
 
-命令退出 0，输出 `evidence=E1`、`offline=true`、`passed=true`、`negative_rejected=true`。`row_count=2`，第一行 score 为 `7.5`，第二行为 `null`；两个 email 均为 `[REDACTED]`，`sensitive_values_exposed=0`。
+命令退出 0，输出 `evidence=E1`、`offline=true`、`passed=true`、`negative_rejected=true`。`row_count=3`、population 为 3/3/0；第二、三行 score 都为 `null`，但 `score_state` 分别是 `null/missing`；两个输入 email 均被替换，`redacted_fields=2`、`sensitive_values_exposed=0`。
 
 人工复核没有网络/credential/model action；`integration=PydanticAI` 只是职责映射，`mode=offline-contract-seam` 才是实际执行方式。
 
 ### 失败、停止、清理与回退
 
-若未知字段被接受、行数改变、null 变 0、原邮箱出现在 result、manifest hash 不一致、负例未拒绝或命令需要网络，停止数据能力声明。先修 schema/normalizer/validator 并保留失败输出；不要安装上游框架、修改 expected 迎合结果或删除问题行让测试通过。
+若 identity/unit 漂移被接受、重复 key 未阻断、行数改变、null/missing 混写、原邮箱出现在 result、manifest hash 不一致、负例未拒绝或命令需要网络，停止数据能力声明。先修 schema/normalizer/validator 并保留失败输出；不要安装上游框架、修改 expected 迎合结果或删除问题行让测试通过。
 
 命令只读固定 JSON 并打印结果，不连接数据库、不落盘写回。误改时先运行：
 
@@ -335,9 +335,9 @@ git diff -- lab/fixtures/data lab/src/about_harness/integrations/pydantic_ai.py 
 
 ### 证据边界
 
-实验提供 E1：当前仓库会校验固定 synthetic fixture，在两行输入上拒绝未知字段、保留 null、替换非空 email，并对预期 JSON 和负例做比较。
+实验提供 E1：当前仓库会校验固定 synthetic fixture，在三行输入上验证 identity/unit，拒绝未知字段、重复 key、越界/非有限 score，保留 missing/null 区别，替换非空 email，并对已知原值执行结果内精确扫描。
 
-它没有验证真实 PII 发现、trace/cache 脱敏、单位/时区、异常值、join/聚合、统计、SQL、数据库权限、事务、写回或真实 PydanticAI。`sensitive_values_exposed=0` 是函数返回的固定字段并由 expected 比较，不是独立扫描证明，不能扩展为“无任何泄漏”。
+它没有验证真实 PII 发现、字符串变体、trace/cache 脱敏、其他单位/时区、join/聚合、统计、SQL、数据库权限、事务、写回或真实 PydanticAI。`sensitive_values_exposed=0` 只来自规范化 rows 对已知 email 的精确字符串扫描，不能扩展为“无任何泄漏”。
 
 ## 完成检查表
 
