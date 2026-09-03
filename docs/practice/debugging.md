@@ -197,7 +197,7 @@ npm run debug:workshop
 
 1. `adapter-contract` 的 trace 只有 `run_started → run_stopped`；坏对象在记录 `model_action` 前被 runtime contract 拒绝。
 2. `permission-boundary` 包含 `model_action → policy_denied → run_stopped`，没有 `tool_result`，`handler_executions=0`。
-3. `retry-idempotency` 有两个连续 `retry`，退避为 `0.01/0.02` 秒；两个 `tool_result` 的 `reused_flags` 为 `[false, true]`，所以第二次相同 key 复用缓存，副作用仍为 1。
+3. `retry-idempotency` 有两个连续 `retry`，退避为 `0.01/0.02` 秒；两个 `tool_result` 的 `reused_flags` 为 `[false, true]`，所以第二次相同 key 复用缓存，副作用仍为 1；最后的 `acceptance_result` 因该练习没有声明条件而记录零条件通过，不能当成业务验收。
 4. 三个 case 的 `expected_stop_reason` 与 `observed_stop_reason` 相同。
 
 这些事件回答“在哪一层停止”和“handler 是否执行”。它们没有保存原始 prompt 或真实工具返回，也不能证明分布式 worker、进程重启后的幂等或外部 API 取消。

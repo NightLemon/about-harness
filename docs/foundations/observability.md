@@ -87,23 +87,24 @@ task_id
 
 ## 事件信封与当前 Schema
 
-Event envelope（事件信封）负责公共元数据，`data` 只保存该事件特有字段。当前 `lab/schemas/trace.json` 的结构是：顶层 `schema_version`、`run_id` 和 `events`；每个事件含 `sequence`、`kind`、相对 `timestamp_ms` 与脱敏 `data`。
+Event envelope（事件信封）负责公共元数据，`data` 只保存该事件特有字段。当前 `lab/schemas/trace.json` 是 `trace-v1.1`：顶层包含 `schema_version`、`run_id` 和 `events`；每个事件含 `sequence`、`kind`、相对 `timestamp_ms` 与脱敏 `data`。此前七类事件的 `trace-v1.0.json` 继续保留，新增事件不能塞进旧版本包络。
 
 这意味着当前事件并非每条都有独立 run/task ID：`run_id` 位于 trace 顶层，`task_id` 只由 `run_started.data` 记录。生产级跨服务采集通常还需显式补充 event ID、task ID、component、attempt、span/parent、配置版本、状态和输入/输出 hash，不能假设进程内对象关系会跨队列自动保留。
 
-当前 schema 允许七类事件：
+当前 schema 允许八类事件：
 
 | 事件 | 最低诊断字段 | 能证明什么 |
 | --- | --- | --- |
 | `run_started` | task、adapter、是否恢复、运行模式 | run 使用了哪个入口和基线 |
 | `model_action` | action kind、累计调用与费用 | adapter 返回了什么动作类型 |
+| `acceptance_result` | validator、accepted、feedback、失败路径 | 完成提议是否满足当前声明的 JSON 条件 |
 | `policy_denied` | tool、原因、是否需批准 | 工具为何没有执行 |
 | `retry` | attempt、实际 `delay_ms`、错误分类 | 哪次可恢复失败触发了退避 |
 | `tool_result` | call ID、tool、reused、attempts、脱敏结果 | 工具执行或幂等复用的结果 |
 | `checkpoint` | step、计数器、adapter state | 可从哪个位置恢复 |
 | `run_stopped` | status、reason、error | controller 为何进入终态 |
 
-当前 lab 没有单独的 `policy_allowed`、`validator_result`、approval 或子任务事件。文档设计需要这些能力时，应明确它们是下一步 schema，而不能从已有七类事件推断已实现。
+`acceptance_result` 是最小结构事件，不含 validation-started、artifact hash、断言退出码或业务系统回执。当前 lab 也没有单独的 `policy_allowed`、approval 或子任务事件。文档设计需要这些能力时，应明确它们是下一步 schema，不能从一个 JSON 子集结果推断生产验收已实现。
 
 ### 生产事件信封应回答什么
 
@@ -210,7 +211,7 @@ Metric label（指标标签）保持低基数，例如 workload、status、failu
 每个计划矩阵 = analyzed + excluded + invalid + missing
 ```
 
-当前最小 lab 尚不满足全部不变量，例如没有 `tool_requested`、独立 `validator_result`、run revision 和跨进程 attempt。报告当前 checker 真正验证的子集，不要用目标不变量描述现有能力。
+当前最小 lab 尚不满足全部不变量，例如没有 `tool_requested`、artifact/业务 validator 事件、run revision 和跨进程 attempt。报告当前 checker 真正验证的子集，不要用目标不变量描述现有能力。
 
 Metrics pipeline（指标管道）自身也要版本化。Failure taxonomy（失败分类）、timeout 是否计失败、P90 算法或成本换算变化后，新建聚合版本并重算受影响历史；旧 dashboard 留下版本边界，不能拼成一条无断点趋势。
 
@@ -348,7 +349,7 @@ adapter:    run_started → run_stopped
 permission: run_started → model_action → policy_denied → run_stopped
 retry:       run_started → model_action → retry → retry → tool_result
              → checkpoint → model_action → tool_result → checkpoint
-             → model_action → run_stopped
+             → model_action → acceptance_result → run_stopped
 ```
 
 关键断言不是事件越多越好：Adapter 坏值在 `model_action` 前失败；policy 拒绝后没有 `tool_result` 且 handler 次数为 0；retry 路径为两个暂时错误、一次真实 tool call、一次幂等复用和一次副作用。完整 expected/observed 与失败 canary 见[问题诊断工作坊](/practice/debugging)。

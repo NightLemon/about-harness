@@ -9,7 +9,7 @@
 - 读懂预算、取消、timeout、retry 和 idempotency 的停止顺序；
 - 从 trace 判断动作是否执行、重试或复用；
 - 恢复一个 checkpoint，并指出当前恢复能力的边界；
-- 说明为什么 `status=completed` 仍不能替代业务 validator。
+- 跟踪 completion proposal（完成提议）被验收、退回修正或受预算停止，并说明内置验收器的边界。
 
 整个教程不联网、不读取凭据，使用预定 Action 的 FakeAdapter。证据等级是 E1，只证明当前 commit 下的控制流和负例，不证明任何厂商模型、Provider 或 Framework 的性能。
 
@@ -43,6 +43,7 @@ uv sync --frozen --offline
 | 文件 | 唯一责任 | 关键边界 |
 | --- | --- | --- |
 | `contracts.py` | Task、Action、ToolCall、Checkpoint、Result 与 budget | 结构和值域不合法时 fail closed |
+| `acceptance.py` | `TaskSpec.acceptance` 与完成输出的确定性子集比对 | 只判断 JSON，不执行外部业务检查 |
 | `adapters/base.py` | Adapter Protocol | Provider 输出不能绕过 canonical Action |
 | `adapters/fake.py` | 按序返回预定 Action，保存/恢复索引 | 只用于确定性 E1 |
 | `loop.py` | 状态机、预算、取消、checkpoint 与终态 | Controller 是终态唯一作者 |
@@ -69,6 +70,7 @@ task = TaskSpec(
     "prove deterministic offline execution",
     ("echo",),
     Budgets(max_steps=3, max_model_calls=3, timeout_ms=1000),
+    acceptance={"accepted": True},
     metadata={"evidence": "E1", "network": "disabled"},
 )
 adapter = FakeAdapter(
@@ -110,6 +112,7 @@ run_started
   → tool_result(call_id=echo-1, reused=false)
   → checkpoint(adapter index=1)
   → model_action(kind=complete)
+  → acceptance_result(accepted=true, validator=json-subset-v1)
   → run_stopped(status=completed)
 ```
 
@@ -120,7 +123,8 @@ run_started
 3. `ToolRegistry` 根据 `name` 找 handler，以 `idempotency_key` 管理复用；
 4. ToolResult 写入 trace 后才创建 checkpoint；
 5. 第二个 Action 提出 complete；
-6. Controller 生成唯一 `RunResult`。
+6. `JsonSubsetAcceptanceValidator` 检查输出包含 `accepted=true`；
+7. Controller 只在验收通过后生成唯一 `RunResult`。
 
 模型/Adapter 不直接持有 handler，也不能把 ToolCall 的名字当作已执行证据。
 
@@ -156,14 +160,14 @@ uv run --frozen --offline pytest -q lab/tests/test_contracts_and_schema.py
 
 | Stop reason | Status | 典型触发 | 是否执行当前工具 |
 | --- | --- | --- | --- |
-| `completed` | completed | 收到合法 complete Action | 不适用 |
+| `completed` | completed | 合法 complete 且声明的 JSON 子集验收通过 | 不适用 |
 | `model_budget` | stopped | 调用次数或 cost 超限 | 取决于停止发生位置；超 cost 在工具前 |
 | `max_steps` | stopped | 成功工具 step 达上限 | 最后一个允许 step 已完成 |
 | `timeout` | stopped | 边界检查发现 deadline 到达 | 不抢占正在阻塞的 callable |
 | `cancelled` | stopped | CancellationToken 已设置 | 在下一控制边界生效 |
 | `permission_denied` | stopped | Policy 拒绝 ToolCall | 否 |
 | `tool_error` | failed | 未注册/执行/最终 retry 失败 | 可能已有部分外部状态，需工具声明 |
-| `invalid_action` | failed | Adapter 抛错或返回非 Action | 否 |
+| `invalid_action` | failed | Adapter 返回无效值，或当前 validator 契约/执行失败 | 否 |
 
 这里把 stopped 与 failed 分开：预算、取消和拒权是受控停止；协议/工具错误是执行失败。两者都不能伪装成 completed。
 
@@ -236,7 +240,30 @@ uv run --frozen --offline pytest -q lab/tests/test_loop.py -k "cancellation or t
 
 这不是强制抢占：任意阻塞 Python callable 如果永不返回，当前总 deadline 不能杀掉它。真实 Adapter/handler 需要单调用 timeout、可取消 I/O、子进程/worker 隔离和迟到结果处理。
 
-## 第九步：Context、Memory 与 Trace
+## 第九步：Completion proposal 与验收
+
+默认 `JsonSubsetAcceptanceValidator` 把 `TaskSpec.acceptance` 解释为完成输出必须包含的 JSON 子集：object 可有额外字段，嵌套 object 递归比对，array 必须长度和值一致，布尔值不会与整数 `1/0` 混淆，非有限数不通过。失败路径使用 JSON Pointer（JSON 指针）表达，例如 `/details/count`。
+
+```powershell
+uv run --frozen --offline pytest -q lab/tests/test_acceptance.py lab/tests/test_loop.py -k "acceptance or validator"
+```
+
+关键路径是：
+
+```text
+complete proposal
+  → acceptance_result=false + failed_paths
+  → checkpoint Adapter 游标与已消费 model budget
+  → 下一次 Action 可以修正
+  → acceptance_result=true
+  → completed
+```
+
+如果修正一直失败，下一轮 preflight 会以 `model_budget` 停止，不能把最后一个未通过输出发布为 completed。Validator 返回后还会重新检查 timeout/cancel；一个耗时过长但判断通过的 validator 也不能越过总 deadline。Validator 自身抛错时当前 v1 映射为 `failed/invalid_action`，并只在 trace/error 暴露错误类型，不把完成输出当成功。
+
+`acceptance={}` 为兼容旧的无条件任务，记录 `top_level_criteria=0` 后允许完成；这只说明“没有声明机器条件”，不构成业务验收证据。需要检查文件、测试、外部资源或人工 rubric 时，应注入任务专用 validator，而不是把这些事实复制成模型输出字段。
+
+## 第十步：Context、Memory 与 Trace
 
 ```powershell
 uv run --frozen --offline pytest -q lab/tests/test_memory_context_trace.py
@@ -252,7 +279,7 @@ uv run --frozen --offline pytest -q lab/tests/test_memory_context_trace.py
 
 Pattern-based redaction（模式脱敏）不是完整 DLP（数据防泄漏）。未知凭据格式、语义敏感文本、二进制或嵌套编码仍可能泄漏；生产系统应在输入、ToolResult、异常、trace sink 和公开结果多层控制。
 
-## 第十步：Replay 与 Live 禁用边界
+## 第十一步：Replay 与 Live 禁用边界
 
 ```powershell
 uv run --frozen --offline pytest -q lab/tests/test_replay_and_live.py
@@ -275,22 +302,22 @@ npm run lab:smoke
 
 预期 pytest、Ruff、Pyright 与 smoke 全部退出 0；smoke JSON 满足开头列出的业务断言。测试输出和命令记录是 E1 证据，不能升级成真实模型质量。
 
-## `completed` 不等于业务完成
+## JSON 子集验收不等于完整业务完成
 
-当前最小 `HarnessRunner` 收到合法 `Action.complete` 后返回 `status=completed`。它没有读取 `TaskSpec.acceptance`，也没有内建业务 Validator。
+当前 `HarnessRunner` 已把 complete 当作提议，并调用可替换的 `AcceptanceValidator`。默认实现只对内存中的 completion output 做 JSON 子集比对，不读取文件、运行测试、查询目标系统，也不知道某个字段是否由独立证据产生。
 
-因此调用方还必须执行：
+真实任务仍可能需要：
 
 ```text
-runner completed
-  → validate output schema
+completion proposed
+  → validate output schema / declared JSON subset
   → run Task-specific tests/checks
   → inspect allowed diff/resources
   → record acceptance result
   → only then publish business completion
 ```
 
-这是当前实现的明确边界，而不是隐藏缺陷。学习时应能指出它；扩展实现时应增加 validator 接缝和“运行完成但验收失败”的独立终态/结果字段。
+任务专用 validator 应返回结构化 `AcceptanceResult`，但它仍需固定版本、artifact identity 和失败分类。当前 result-v1 没有独立 `validator_error` stop reason，validator 契约或执行异常暂映射为 `invalid_action`；这项兼容限制必须在消费者中写明，后续新增停止原因时应发布新 schema，而不是改写历史结果。
 
 ## 失败排查
 
@@ -303,7 +330,7 @@ runner completed
 | Resume 重复副作用 | checkpoint 与幂等存储边界 | 假定 cache 已持久化 |
 | Cancel 后迟到完成 | 控制边界与终态覆盖 | 接受最后到达事件 |
 | Trace 出现敏感值 | 原始字段、redactor、sink | 只在 UI 隐藏 |
-| Smoke completed 但业务错误 | 缺失 validator/acceptance | 把 status 当验收 |
+| Smoke completed 但业务错误 | acceptance 为空、条件太弱或 validator 读错 artifact | 把 JSON 子集通过当完整验收 |
 
 修复后重跑原失败测试、相邻负例和完整套件。不要删除失败 case、提高预算或关闭 policy 来制造绿色结果。
 
@@ -317,6 +344,6 @@ runner completed
 
 ## 已知限制与下一步
 
-当前实现故意省略 Provider client、真实 token/usage、业务 validator、分布式队列、持久幂等存储、Durable checkpoint、强制进程抢占和生产 Secret manager。它是可阅读的控制参考，不是生产 Agent 平台。
+当前实现故意省略 Provider client、真实 token/usage、artifact/测试/业务系统 validator、分布式队列、持久幂等存储、Durable checkpoint、强制进程抢占和生产 Secret manager。内置 JSON 子集验收适合学习控制回路，不是生产业务 oracle。
 
-下一步阅读[Adapter 契约](/implementation/adapter-contract)理解 Provider 隔离，再读[测试策略](/implementation/testing)设计 validator 与负例；最后把自己的 workload 写成固定 fixture。
+下一步阅读[Adapter 契约](/implementation/adapter-contract)理解 Provider 隔离，再读[测试策略](/implementation/testing)为任务专用 validator 设计 artifact、异常和预算负例；最后把自己的 workload 写成固定 fixture。

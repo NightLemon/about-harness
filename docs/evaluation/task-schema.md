@@ -69,13 +69,15 @@ Run 应在第一次模型调用或工具副作用之前写入。启动后如果 
 
 ## Trace：追加事件，而不是拼接日志
 
-`trace-v1` 用 `run_id` 关联运行，事件包含 `sequence`、`kind`、`timestamp_ms` 和结构化 `data`。当前允许的事件类型是：
+当前 `trace-v1.1` 用 `run_id` 关联运行，事件包含 `sequence`、`kind`、`timestamp_ms` 和结构化 `data`。允许的事件类型是：
 
 ```text
-run_started → model_action → tool_result/policy_denied/retry/checkpoint → run_stopped
+run_started → model_action → acceptance_result/tool_result/policy_denied/retry/checkpoint → run_stopped
 ```
 
 Trace 应 append-only（只追加）：已写事件不可因后续成功而删除。`sequence` 从 0 连续递增，时间戳使用同一单调时钟，重试和复用保留原 action 关联。并发工具调用需要额外 correlation ID，不能仅靠时间先后推断因果。
+
+新增 `acceptance_result` 扩大了事件枚举，因此当前 schema 使用 `schema_version=1.1`；旧 `trace-v1.0.json` 原样保留，只接受此前七类事件。不要用 1.0 包络承载新事件，也不要修改历史 Trace 的版本号。
 
 JSON Schema 只保证每个 `sequence` 是非负整数，不保证唯一、连续或按数组顺序排列；这些是 recorder/validator 的语义责任。同样，schema 不验证第一条一定是 `run_started`、最后一条一定是 `run_stopped`。因此需要正例和乱序、重复、缺终止事件等负例。
 
@@ -87,7 +89,7 @@ JSON Schema 只保证每个 `sequence` 是非负整数，不保证唯一、连�
 
 | stop_reason | 含义 | 常见 status |
 | --- | --- | --- |
-| `completed` | 验收完成 | `completed` |
+| `completed` | 当前运行时声明的验收条件通过 | `completed` |
 | `max_steps` / `model_budget` / `timeout` | 到达资源边界 | `stopped` |
 | `cancelled` | 用户或上游取消 | `stopped` |
 | `permission_denied` | policy 拒绝动作 | `stopped` 或按产品规则失败 |
@@ -95,6 +97,8 @@ JSON Schema 只保证每个 `sequence` 是非负整数，不保证唯一、连�
 | `invalid_action` | 模型 action 不满足契约 | `failed` |
 
 状态与停止原因的组合需要语义验证。例如 `status=completed` 却写 `stop_reason=timeout` 虽可能分别满足枚举，整体仍矛盾。当前运行时对 invalid action 采用 fail-closed（失败关闭）：在指标累计前返回 `failed/invalid_action`，防止 `NaN` cost 或坏工具名进入预算计算。
+
+当前默认验收器把 `Task.acceptance` 解释为完成输出必须包含的 JSON 子集，并产生 `acceptance_result`；失败可在预算内返回下一轮，成功后才允许 completed。这个事件证明比对被执行，不证明 acceptance 足够或字段来自真实测试/外部系统。空 acceptance 会记录零条件后通过；自定义 validator 异常暂使用 `failed/invalid_action`，新增独立停止原因需要发布新 schema 版本。
 
 Metrics（指标）中的 steps、model/tool calls、复用计数、duration 和 cost 必须是有限非负数；计数必须与 trace/checkpoint 一致。Checkpoint（检查点）是可恢复状态，不是“成功”标志；恢复后仍沿用原预算已消费量，并产生能区分恢复段的事件。
 
@@ -164,7 +168,7 @@ npm run eval:validate
 
 ### 预期输出与断言
 
-Python 契约/schema 测试应显示 17 个测试通过；TypeScript 输出应说明无效 Task/Action 在进入 metrics 前 fail closed；Eval validator 应报告 20 tasks、6 workloads、6 holdout、2 configs、3 repeats、6 fixture refs、120 个预期矩阵单元、12 个唯一样例单元和 108 个缺失单元。
+Python 契约/schema 测试应显示 18 个测试通过，其中运行时 completed Result 与含 `acceptance_result` 的 Trace 也能通过公共 schema；TypeScript 输出应说明无效 Task/Action 在进入 metrics 前 fail closed；Eval validator 应报告 20 tasks、6 workloads、6 holdout、2 configs、3 repeats、6 fixture refs、120 个预期矩阵单元、12 个唯一样例单元和 108 个缺失单元。
 
 不要只看退出码。还要确认 validator 明确写出 `sample_matrix_complete=false` 和 E1 边界；这表示 schema/谱系样例有效，但正式比较尚未完成。
 

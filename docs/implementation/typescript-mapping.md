@@ -160,6 +160,8 @@ Number.NaN <= 0 // false
 
 Adapter 只能提出动作，不能直接执行工具或写入 `completed`。工具 handler 也只能返回值，不能修改 run 状态。这与[状态与可靠执行](/foundations/state-reliability)中的 controller 所有权一致。
 
+这里的 TS 主循环尚未移植 Python 的 `AcceptanceValidator`：合法 `complete` 仍直接进入 completed，`TaskSpec.acceptance` 只被保留而没有执行。相同字段名不代表完成语义对等；需要跨语言一致时，应先共享验收 fixture、事件和失败映射，再实现 TS validator。
+
 ### `ReadonlyMap` 的真实含义
 
 工具表接收 `ReadonlyMap<string, ToolHandler>`，表示 loop 不通过该引用增删 handler。它是 TypeScript 的浅层只读视图，不会把原始 `Map` 冻结；若调用方保留可写引用并在运行中修改它，loop 仍能观察到变化。生产实现应在构造时复制注册表、冻结注册过程，或使用拥有明确生命周期的 registry。
@@ -176,6 +178,7 @@ Adapter 只能提出动作，不能直接执行工具或写入 `completed`。工
 | Action | dataclass + `__post_init__` | union + `validateAction` | 都拒绝非法 kind 与非有限成本 |
 | Adapter | Protocol，可保存/恢复状态 | `nextAction` interface | TS 没有 snapshot / restore |
 | Tool registry | policy、retry、幂等 | `ReadonlyMap` + 内存 cache | TS 只覆盖最小 allowlist 与复用 |
+| Acceptance | JSON 子集 validator、失败后修正 | 未实现 | TS 的 completed 不能解释为 acceptance 已执行 |
 | Run result | run ID、checkpoint、error、trace | status、reason、metrics、trace | TS 是结果子集，不可互换序列化 |
 | Deadline | 调用边界检查，可配合 sleeper/retry | 同步调用前检查 | 都不提供任意 callable 的硬抢占 |
 | Memory / context | 有独立实现与污染测试 | 未实现 | 不应宣称能力对等 |
@@ -299,6 +302,7 @@ npm run lab:ts-runtime-test
 - tool handler 是同步函数，没有 per-call timeout、AbortSignal 或隔离；
 - allowlist 只比较名称，参数策略只是敏感键示例，不是通用授权系统；
 - cache 没有把参数 hash 与幂等键绑定，不能防止同键异参；
+- 没有 AcceptanceValidator，`complete` 不读取 Task acceptance；
 - 没有共同 Action/RunResult schema，也没有自动 TS/Python 差分生成；
 - E1 负例覆盖已知边界，不证明所有 JavaScript object、并发和资源耗尽攻击均安全。
 

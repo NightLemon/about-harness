@@ -42,7 +42,7 @@ User / UI / CLI / API
                    Result / stopped / failed
 ```
 
-图中的 `acceptance validator` 是目标架构责任。当前最小 Python runner 尚未执行 `TaskSpec.acceptance`：它收到合法 `complete` Action 后直接产生 completed Result。后文会把已实现与待实现部分明确分开。
+图中的 `acceptance validator` 已有最小 Python 接缝：默认实现把 `TaskSpec.acceptance` 当作完成输出必须包含的 JSON 子集，失败时回到循环，成功后才产生 completed Result。它仍不是会执行测试、读取 artifact 或查询业务系统的生产 validator；后文会把已实现与待实现部分明确分开。
 
 ## 三个平面不能混在一起
 
@@ -125,7 +125,7 @@ created → validated → running
 - waiting approval 仍受 deadline 和取消约束；
 - 任何副作用发生前已有 Task、policy 和幂等身份。
 
-当前 `HarnessRunner` 实现 preflight、Action 类型检查、预算、policy、工具执行、checkpoint 与结构化 stop reason；它没有 waiting-approval 状态、独立 validator 阶段或分布式 revision。
+当前 `HarnessRunner` 实现 preflight、Action 类型检查、预算、policy、工具执行、JSON 子集验收、checkpoint 与结构化 stop reason；它没有 waiting-approval 状态、隔离执行的业务 validator 或分布式 revision。
 
 ## Context builder：选择，不是堆积
 
@@ -169,9 +169,9 @@ Validation（验收验证）将产物与 Task acceptance 对照。确定性任�
 
 模型生成产物后再说“已经完成”不是独立证据。Validator 也不能只检查格式：JSON 可解析不代表业务条件满足，页面能构建不代表交互正确，tool 返回 success 不代表外部状态符合预期。
 
-当前最小 runner 虽然 `TaskSpec` 有 `acceptance` 字段，却没有读取它，也没有 validator 接口。合法 complete Action 会直接成为 `completed`。因此当前 E1 smoke 只能证明循环完成，不应被解释为“Task acceptance 已自动验证”。
+当前最小 runner 已把 complete 作为 completion proposal，调用可替换的 `AcceptanceValidator`。默认 `JsonSubsetAcceptanceValidator` 递归比对 object 子集；失败路径进入 `acceptance_result`，Adapter 游标与模型预算写入 checkpoint，下一轮可以修正；反复失败最终受 model-call budget 停止。Validator 返回后还会复查 timeout/cancel，迟到的通过结果不能覆盖终态。
 
-生产扩展应让 complete 成为 `completion_proposed`，执行 validator 后才提交 completed；失败则把结构化证据送回下一步决策，或在预算耗尽时停止。
+这仍只是结构 oracle：它不读取最终文件、运行测试、查询业务回执或判断验收条件是否充分。`acceptance={}` 会明确记录零条件后通过；自定义 validator 异常在当前 result-v1 暂映射为 `failed/invalid_action`。生产扩展应绑定 validator 版本、冻结 artifact、业务证据和独立错误枚举。
 
 ## State：至少区分三类
 
@@ -196,7 +196,7 @@ task_id → run_id → step/model_call
                     └─ checkpoint/result/artifact ID
 ```
 
-证据应足以区分 Task、context、model/provider、adapter、policy、tool 与 validator 错误，同时避免保存 Secret、个人路径和完整私密内容。当前 lab 有七类结构化 trace event 和有限脱敏规则，没有独立 validator/approval/span 事件；详见[可观测性](/foundations/observability)。
+证据应足以区分 Task、context、model/provider、adapter、policy、tool 与 validator 错误，同时避免保存 Secret、个人路径和完整私密内容。当前 lab 有八类结构化 trace event，包括 `acceptance_result`，以及有限脱敏规则；它仍没有 policy-allowed、approval、artifact 或 span 事件。详见[可观测性](/foundations/observability)。
 
 ## 一次迭代的正确顺序
 
@@ -291,19 +291,19 @@ npm run lab:smoke
 
 - `status=completed`、`stop_reason=completed`；
 - `metrics.model_calls=2`、`tool_calls=1`、`cost_usd=0.0`；
-- trace 顺序包含 `run_started → model_action → tool_result → checkpoint → model_action → run_stopped`；
+- trace 顺序包含 `run_started → model_action → tool_result → checkpoint → model_action → acceptance_result → run_stopped`；
 - `run_started.data.offline=true`，adapter 为 `fake`；
 - output 为 `{"accepted": true}`。
 
-这条 smoke 没有读取 `acceptance` 或执行独立 validator，不能把 completed 解释为业务验收已通过。
+这条 smoke 的 Task 声明 `acceptance={"accepted": true}`，默认 validator 重新比对完成输出并记录 `top_level_criteria=1`。它证明 JSON 条件进入了控制回路，不证明文件、测试、外部系统或人工验收已经执行。
 
-### 验证四个责任边界
+### 验证五个责任边界
 
 ```bash
-uv run --frozen --offline pytest -q lab/tests/test_loop.py::test_normal_completion_and_structured_trace lab/tests/test_loop.py::test_permission_denial_stops_before_tool_execution lab/tests/test_loop.py::test_wrong_adapter_return_is_classified_as_invalid_action lab/tests/test_loop.py::test_checkpoint_restores_adapter_position
+uv run --frozen --offline pytest -q lab/tests/test_loop.py::test_normal_completion_and_structured_trace lab/tests/test_loop.py::test_acceptance_rejection_returns_feedback_and_allows_repair lab/tests/test_loop.py::test_permission_denial_stops_before_tool_execution lab/tests/test_loop.py::test_wrong_adapter_return_is_classified_as_invalid_action lab/tests/test_loop.py::test_checkpoint_restores_adapter_position
 ```
 
-预期 4 项测试通过，分别证明固定完成轨迹、policy 在 handler 前拒绝、坏 adapter 返回被分类、checkpoint 恢复 action cursor。它们没有覆盖真实 context builder、provider、持久状态或 acceptance validator。
+预期 5 项测试通过，分别证明声明的 JSON 验收通过、首次验收失败可带路径修正、policy 在 handler 前拒绝、坏 adapter 返回被分类，以及 checkpoint 恢复 action cursor。它们没有覆盖真实 context builder、provider、持久状态或任务专用业务 validator。
 
 ## 失败案例：观察 policy 在副作用前停止
 
@@ -342,7 +342,7 @@ stopped permission_denied 0
 
 正常命令只使用进程内对象，最多留下可忽略的 `.pytest_cache/`；无需清理外部服务。若为了学习修改实现，先对目标路径运行限定 `git diff`，只用编辑器 undo 或精确反向修改恢复自己的行；不要 `reset --hard` 或覆盖整个工作树。
 
-当前 E1 架构是模块化单体：同步 Fake/Replay adapter、进程内 policy/tool/cache、线程取消、内存 checkpoint、有限 trace 与 JSON Schema。它没有真实 context integration、acceptance validator、provider transport/stream/usage、持久数据库、队列、分布式 revision、外部幂等台账、硬 timeout、异步审批或多 Agent 调度。
+当前 E1 架构是模块化单体：同步 Fake/Replay adapter、进程内 policy/tool/cache、JSON 子集验收、线程取消、内存 checkpoint、有限 trace 与 JSON Schema。它没有真实 context integration、artifact/测试/业务系统 validator、provider transport/stream/usage、持久数据库、队列、分布式 revision、外部幂等台账、硬 timeout、异步审批或多 Agent 调度。
 
 下一步在[状态与可靠执行](/foundations/state-reliability)深入 checkpoint 与副作用窗口，在[Prompt Injection 防护](/security/prompt-injection)检查数据如何越过权限边界，再到[Python 最小 Harness](/implementation/minimal-harness-python)逐文件观察当前实现。
 
@@ -350,6 +350,6 @@ stopped permission_denied 0
 
 1. 为什么模型输出属于数据面，而不是控制面？
 2. `completed` 为什么只能由 controller 写入？
-3. 当前 `TaskSpec.acceptance` 存在，为什么仍不能声称系统已验证完成？
+3. 默认 JSON 子集验收通过，为什么仍不能声称所有业务验收已经完成？
 4. 单进程拆成队列后，哪三类新失败必须处理？
 5. Checkpoint 为什么不能证明外部副作用只执行了一次？

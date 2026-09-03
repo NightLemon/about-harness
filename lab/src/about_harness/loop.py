@@ -6,6 +6,11 @@ import uuid
 from collections.abc import Callable
 from dataclasses import dataclass, field
 
+from about_harness.acceptance import (
+    AcceptanceResult,
+    AcceptanceValidator,
+    JsonSubsetAcceptanceValidator,
+)
 from about_harness.adapters.base import Adapter
 from about_harness.contracts import (
     Action,
@@ -31,6 +36,21 @@ def _require_action(value: object) -> Action:
     return value
 
 
+def _require_acceptance_result(value: object) -> AcceptanceResult:
+    if not isinstance(value, AcceptanceResult):
+        raise ContractError(
+            f"acceptance validator returned {type(value).__name__}, expected AcceptanceResult"
+        )
+    return value
+
+
+def _require_validator_name(value: object) -> str:
+    name = getattr(value, "name", None)
+    if not isinstance(name, str) or not name.strip():
+        raise ContractError("acceptance validator must contain a non-empty name")
+    return name
+
+
 @dataclass(slots=True)
 class CancellationToken:
     _event: threading.Event = field(default_factory=threading.Event)
@@ -51,6 +71,9 @@ class HarnessRunner:
     retry: RetryPolicy = field(default_factory=RetryPolicy)
     cancellation: CancellationToken = field(default_factory=CancellationToken)
     clock: Clock = time.monotonic
+    acceptance_validator: AcceptanceValidator = field(
+        default_factory=JsonSubsetAcceptanceValidator
+    )
 
     def run(
         self,
@@ -143,6 +166,75 @@ class HarnessRunner:
                 )
 
             if action.kind == "complete":
+                try:
+                    validator_name = _require_validator_name(self.acceptance_validator)
+                    acceptance = _require_acceptance_result(
+                        self.acceptance_validator.validate(task, action.output)
+                    )
+                except Exception as exc:  # validator is an explicit trust boundary
+                    validator_name = type(self.acceptance_validator).__name__
+                    recorder.record(
+                        "acceptance_result",
+                        {
+                            "validator": validator_name,
+                            "accepted": False,
+                            "feedback": "acceptance validator failed",
+                            "evidence": {"error_type": type(exc).__name__},
+                        },
+                    )
+                    return self._result(
+                        identifier,
+                        task,
+                        recorder,
+                        started,
+                        RunStatus.FAILED,
+                        StopReason.INVALID_ACTION,
+                        None,
+                        step,
+                        model_calls,
+                        tool_calls,
+                        reused_tool_calls,
+                        cost_usd,
+                        current_checkpoint,
+                        error=f"acceptance validator error: {type(exc).__name__}",
+                    )
+                recorder.record(
+                    "acceptance_result",
+                    {
+                        "validator": validator_name,
+                        "accepted": acceptance.accepted,
+                        "feedback": acceptance.feedback,
+                        "evidence": acceptance.evidence,
+                    },
+                )
+                stop = self._post_action_stop(task, started, cost_usd)
+                if stop:
+                    return self._result(
+                        identifier,
+                        task,
+                        recorder,
+                        started,
+                        RunStatus.STOPPED,
+                        stop,
+                        None,
+                        step,
+                        model_calls,
+                        tool_calls,
+                        reused_tool_calls,
+                        cost_usd,
+                        current_checkpoint,
+                    )
+                if not acceptance.accepted:
+                    current_checkpoint = RunCheckpoint(
+                        step=step,
+                        model_calls=model_calls,
+                        tool_calls=tool_calls,
+                        reused_tool_calls=reused_tool_calls,
+                        cost_usd=cost_usd,
+                        adapter_state=self.adapter.snapshot(),
+                    )
+                    recorder.record("checkpoint", current_checkpoint.to_dict())
+                    continue
                 return self._result(
                     identifier,
                     task,

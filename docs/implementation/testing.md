@@ -72,12 +72,13 @@ controller + adapter + policy + tool 集成
 
 ## 当前 Python 测试矩阵
 
-当前基线由 `pytest --collect-only -q` 得到 57 项：
+当前基线由 `pytest --collect-only -q` 得到 73 项：
 
 | 文件 | 数量 | 主要责任 |
 | --- | ---: | --- |
-| `test_contracts_and_schema.py` | 17 | Task/Action/budget/checkpoint 与 JSON Schema |
-| `test_loop.py` | 9 | completion、预算、step、权限、retry、幂等、恢复、取消、timeout |
+| `test_acceptance.py` | 11 | JSON 子集验收、类型/数值/路径、循环对象失败关闭 |
+| `test_contracts_and_schema.py` | 18 | Task/Action/budget/checkpoint、Result/Trace 与 JSON Schema |
+| `test_loop.py` | 13 | completion/验收修正、预算、权限、retry、恢复、取消、timeout |
 | `test_m5_labs.py` | 22 | 六类 fixture、hash、领域负例、公开摘要一致性 |
 | `test_memory_context_trace.py` | 4 | 上下文选择、记忆污染/过期/删除、trace 脱敏 |
 | `test_replay_and_live.py` | 5 | Replay 精确字段、Fake state、Live 硬禁用 |
@@ -136,7 +137,7 @@ Static check（静态检查）、build 和 visual smoke 都是必要证据，但
 
 | 路径 | 关键断言 | 只看最终状态会漏掉什么 |
 | --- | --- | --- |
-| completed | Action 合法、trace/metrics 一致 | 是否真正满足 acceptance |
+| completed | Action 合法、声明的 acceptance 通过、trace/metrics 一致 | 条件是否充分、是否读取真实 artifact |
 | max steps | adapter 不再被多调用 | 额外副作用或 off-by-one |
 | model/cost budget | 越界前后计数清楚 | `NaN` 绕过或多一次请求 |
 | timeout | 迟到 completion 不覆盖终态 | 调用其实仍在消耗资源 |
@@ -146,7 +147,7 @@ Static check（静态检查）、build 和 visual smoke 都是必要证据，但
 | invalid action | metrics/trace 未被坏值污染 | 只捕获异常但已记账 |
 | checkpoint restore | cursor、计数、幂等结果保持 | 恢复后重复工具 |
 
-当前 `test_loop.py` 覆盖以上固定路径。它尚未覆盖异步 approval wait、真正硬 timeout、分布式 worker、外部业务对账和 acceptance validator，因为这些能力尚未实现。
+当前 `test_loop.py` 覆盖以上固定路径，并额外断言验收拒绝可修正、反复拒绝受 model budget 停止、validator 异常不能成为完成，以及 validator 超时不能覆盖终态。它尚未覆盖异步 approval wait、真正硬 timeout、分布式 worker 和外部业务对账。
 
 ## Retry 测试要断言真实等待和副作用
 
@@ -212,19 +213,19 @@ Negative test（负例测试）有两层：
 
 若修复需要改变既有正确语义，先更新契约并解释迁移。不要把失败测试标 skip、扩大容差或无限重试来消除红色。
 
-## Acceptance gap：绿色不等于任务完成
+## Acceptance validator：已实现什么，仍缺什么
 
-当前 `TaskSpec` 有 `acceptance` 字段，但 `HarnessRunner` 不读取它；合法 complete Action 会直接得到 completed。因此现有 loop 测试证明的是状态机按当前契约运行，不是业务验收自动完成。
+当前 `HarnessRunner` 已实现 `completion proposal → AcceptanceValidator → completed/continue`。默认 `JsonSubsetAcceptanceValidator` 要求完成输出包含 `TaskSpec.acceptance` 声明的 JSON 子集，失败时记录 `failed_paths`、checkpoint 与已消费预算，再把结果交给下一次 Adapter 决策。
 
-后续应增加 `completion_proposed → validator → completed/continue` 接口，并测试：
+测试同时证明：
 
-- 确定性 acceptance 通过才完成；
-- validation 失败会返回结构化证据，而不是重试同一答案；
-- validator 自身错误与候选失败分开；
-- 预算耗尽时不会把未验证产物标 completed；
-- 生成者与 Judge 共用偏差时有独立 oracle 或人工复核。
+- 布尔值不会与整数混为同一个验收值，`NaN/Infinity` 不会通过；
+- nested object 允许输出额外字段，array 则要求长度和值一致；
+- validation 失败可在预算内修正，反复失败最终以 `model_budget` 停止；
+- validator 返回后重新检查 timeout，迟到的通过结果不能成为 completed；
+- validator 抛错时结果为 failed，完成输出不会泄漏到 Result。
 
-在此能力实现前，任何 E1 smoke 的 `completed` 只能解释为“adapter 提出了合法完成 Action 且 controller 接受”，不能解释为目标质量已被验证。
+这个 oracle 仍不知道 JSON 字段是否真实：模型自己返回 `{"tests_passed": true}` 并不等于测试执行。空 acceptance 也会明确记录零条件后通过。正式任务应注入会读取冻结 artifact、退出码、diff 或目标系统回执的 validator，并测试 validator 版本/身份、坏 artifact、异常、超时与脱敏。当前 result-v1 把 validator 契约/执行异常暂映射到 `invalid_action`，还没有独立错误枚举。
 
 ## 动手验证
 
@@ -246,7 +247,7 @@ npm run lab:typecheck
 npm run lab:ts-runtime-test
 ```
 
-预期 Python 有 9 项通过，TypeScript typecheck 退出 0，runtime test 输出坏 Task/Action 在 metrics 前失败关闭。这里没有运行全部领域 fixture、站点或 checker self-tests。
+预期 Python 有 13 项通过，TypeScript typecheck 退出 0，runtime test 输出坏 Task/Action 在 metrics 前失败关闭。这里没有运行 `test_acceptance.py` 的全部边界、领域 fixture、站点或 checker self-tests。
 
 ### 证明高价值门禁会拒绝坏输入
 
@@ -263,7 +264,7 @@ npm run repo:self-test
 npm run verify
 ```
 
-当前基线应包含 57 项 pytest 全通过，以及 Ruff、Pyright、TypeScript typecheck、文档/事实/站点/安全/工作流/视觉和 checker self-tests 通过。不要只看最后一行；保留首个失败子命令和退出码。
+当前基线应包含 73 项 pytest 全通过，以及 Ruff、Pyright、TypeScript typecheck、文档/事实/站点/安全/工作流/视觉和 checker self-tests 通过。不要只看最后一行；保留首个失败子命令和退出码。
 
 ## 失败时的停止、清理与回滚
 
@@ -275,7 +276,7 @@ npm run verify
 
 ## 当前测试体系的限制
 
-当前没有：通用 acceptance validator、coverage threshold、mutation testing、property-based contracts、自动跨语言差分、真实 provider/stream/usage、持久数据库和队列故障、跨进程幂等、真实浏览器 Agent、完整 accessibility audit、性能/负载基线或生产数据删除演练。
+当前没有：artifact/测试/业务系统 acceptance validator、独立 validator-error 枚举、coverage threshold、mutation testing、property-based contracts、自动跨语言差分、真实 provider/stream/usage、持久数据库和队列故障、跨进程幂等、真实浏览器 Agent、完整 accessibility audit、性能/负载基线或生产数据删除演练。
 
 这些缺口不能通过增加门禁名称来解决。优先补能改变错误结论的 oracle 和真实故障路径；低风险格式规则只有在持续阻止实际问题时才值得保留。
 
@@ -287,4 +288,4 @@ npm run verify
 2. `check` 与 `verify` 的覆盖差异是什么？
 3. Checker self-test 为什么要同时检查非零退出和错误类别？
 4. Retry 测试只断言最终成功，会漏掉哪些副作用？
-5. 当前 Result 为 completed 时，为什么仍不能声称 acceptance 已验证？
+5. JSON 子集 acceptance 已通过时，为什么仍不能声称测试或外部业务状态正确？
