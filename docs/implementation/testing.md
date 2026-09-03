@@ -131,7 +131,7 @@ Static check（静态检查）、build 和 visual smoke 都是必要证据，但
 - checkpoint 计数一致、adapter state 精确字段和 cursor 上下限；
 - Python 与 TypeScript 对共享 wire contract 的同一正负 fixture。
 
-当前 Python 和 TypeScript 分别覆盖主要 Task/Action 边界，但还没有自动生成的跨语言差分集，也没有共同 Action/RunResult wire schema。不能因为两边各自通过就声称完全等价。
+当前 Python 和 TypeScript 分别覆盖主要 Task/Action 边界，并各自验证 JSON 子集验收、失败修正、预算停止与 validator 失败关闭；但还没有自动生成的跨语言差分集，也没有共同 Action/RunResult wire schema。不能因为两边各自通过就声称完全等价。
 
 ## Controller 必测停止路径
 
@@ -147,7 +147,7 @@ Static check（静态检查）、build 和 visual smoke 都是必要证据，但
 | invalid action | metrics/trace 未被坏值污染 | 只捕获异常但已记账 |
 | checkpoint restore | cursor、计数、幂等结果保持 | 恢复后重复工具 |
 
-当前 `test_loop.py` 覆盖以上固定路径，并额外断言验收拒绝可修正、反复拒绝受 model budget 停止、validator 异常不能成为完成，以及 validator 超时不能覆盖终态。它尚未覆盖异步 approval wait、真正硬 timeout、分布式 worker 和外部业务对账。
+当前 `test_loop.py` 覆盖以上固定路径，并额外断言验收拒绝可修正、反复拒绝受 model budget 停止、validator 异常不能成为完成，以及 validator 超时不能覆盖终态。`runtime-test.ts` 对 TS 最小 loop 重放相邻验收负例，并断言拒绝不消耗 tool step、坏 validator 不释放输出。它们尚未覆盖异步 approval wait、真正硬 timeout、分布式 worker 和外部业务对账。
 
 ## Retry 测试要断言真实等待和副作用
 
@@ -215,7 +215,7 @@ Negative test（负例测试）有两层：
 
 ## Acceptance validator：已实现什么，仍缺什么
 
-当前 `HarnessRunner` 已实现 `completion proposal → AcceptanceValidator → completed/continue`。默认 `JsonSubsetAcceptanceValidator` 要求完成输出包含 `TaskSpec.acceptance` 声明的 JSON 子集，失败时记录 `failed_paths`、checkpoint 与已消费预算，再把结果交给下一次 Adapter 决策。
+当前 Python `HarnessRunner` 与 TypeScript `MinimalLoop` 都实现 `completion proposal → AcceptanceValidator → completed/continue`。默认 `JsonSubsetAcceptanceValidator` 要求完成输出包含 `TaskSpec.acceptance` 声明的 JSON 子集，失败时记录 `failed_paths` 与已消费预算，再把结果交给下一次 Adapter 决策；Python 还保存 checkpoint，TS 只保存当前进程内 trace 和 Adapter 状态。
 
 测试同时证明：
 

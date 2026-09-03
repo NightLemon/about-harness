@@ -8,6 +8,12 @@ import {
   type TraceEvent,
   validateAction
 } from './contracts.js'
+import {
+  JsonSubsetAcceptanceValidator,
+  type AcceptanceValidator,
+  validateAcceptanceResult,
+  validateValidatorName
+} from './acceptance.js'
 
 export interface Adapter {
   readonly name: string
@@ -35,7 +41,8 @@ export class MinimalLoop {
   constructor(
     readonly adapter: Adapter,
     tools: ReadonlyMap<string, ToolHandler>,
-    readonly cancellation = new CancellationToken()
+    readonly cancellation = new CancellationToken(),
+    readonly acceptanceValidator: AcceptanceValidator = new JsonSubsetAcceptanceValidator()
   ) {
     this.#tools = tools
   }
@@ -51,9 +58,16 @@ export class MinimalLoop {
     const record = (kind: string, data: Record<string, JsonValue>): void => {
       trace.push({ sequence: trace.length, kind, timestamp_ms: Math.max(0, now() - started), data })
     }
+    const postActionStop = (): 'cancelled' | 'timeout' | 'model_budget' | null => {
+      if (this.cancellation.cancelled) return 'cancelled'
+      if (now() - started >= task.budgets.timeout_ms) return 'timeout'
+      if (cost > task.budgets.max_cost_usd) return 'model_budget'
+      return null
+    }
     record('run_started', { adapter: this.adapter.name, offline: true })
 
-    for (let step = 0; step < task.budgets.max_steps; step += 1) {
+    let step = 0
+    while (step < task.budgets.max_steps) {
       if (this.cancellation.cancelled) return result('stopped', 'cancelled', null)
       if (now() - started >= task.budgets.timeout_ms) return result('stopped', 'timeout', null)
       if (modelCalls >= task.budgets.max_model_calls) return result('stopped', 'model_budget', null)
@@ -67,8 +81,33 @@ export class MinimalLoop {
       modelCalls += 1
       cost += action.cost_usd
       record('model_action', { kind: action.kind, model_calls: modelCalls, cost_usd: cost })
-      if (cost > task.budgets.max_cost_usd) return result('stopped', 'model_budget', null)
-      if (action.kind === 'complete') return result('completed', 'completed', action.output)
+      const actionStop = postActionStop()
+      if (actionStop !== null) return result('stopped', actionStop, null)
+      if (action.kind === 'complete') {
+        let validatorName = 'invalid-validator'
+        try {
+          validatorName = validateValidatorName(this.acceptanceValidator.name)
+          const acceptance = validateAcceptanceResult(this.acceptanceValidator.validate(task, action.output))
+          record('acceptance_result', {
+            validator: validatorName,
+            accepted: acceptance.accepted,
+            feedback: acceptance.feedback,
+            evidence: acceptance.evidence
+          })
+          const acceptanceStop = postActionStop()
+          if (acceptanceStop !== null) return result('stopped', acceptanceStop, null)
+          if (!acceptance.accepted) continue
+        } catch (error) {
+          record('acceptance_result', {
+            validator: validatorName,
+            accepted: false,
+            feedback: 'acceptance validator failed',
+            evidence: { error_type: errorType(error) }
+          })
+          return result('failed', 'invalid_action', null)
+        }
+        return result('completed', 'completed', action.output)
+      }
 
       const denied = this.#deniedReason(task, action.tool_call)
       if (denied !== null) {
@@ -78,6 +117,7 @@ export class MinimalLoop {
       const cached = this.#cache.get(action.tool_call.idempotency_key)
       if (cached !== undefined) {
         reusedToolCalls += 1
+        step += 1
         record('tool_result', { tool: action.tool_call.name, value: cached, reused: true })
         continue
       }
@@ -87,6 +127,7 @@ export class MinimalLoop {
         const value = handler(action.tool_call.arguments)
         this.#cache.set(action.tool_call.idempotency_key, value)
         toolCalls += 1
+        step += 1
         record('tool_result', { tool: action.tool_call.name, value, reused: false })
       } catch {
         return result('failed', 'tool_error', null)
@@ -116,6 +157,10 @@ export class MinimalLoop {
         },
         trace
       }
+    }
+
+    function errorType(error: unknown): string {
+      return error instanceof Error && error.name.length > 0 ? error.name : typeof error
     }
   }
 

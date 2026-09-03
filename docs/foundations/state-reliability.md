@@ -80,7 +80,7 @@ created ──契约通过──> running ──需要批准──> waiting-appr
 5. 每个转换带 expected version；旧 worker 不能覆盖新 worker 的状态。
 6. 终态写入与最终事件/Result 要么原子提交，要么可通过 reconciliation（对账）修复。
 
-当前实现没有持久的 `created/running/waiting-approval` 行；`PermissionPolicy` 同步调用 approve callback，缺少 approver 或被拒绝时直接返回 `stopped/permission_denied`。`Action.complete` 会先经过 JSON 子集 validator：拒绝结果进入 trace 并保存 Adapter 游标/预算，修正通过后才产生 `completed`。但默认 validator 只比较内存输出；空 acceptance 可通过，也没有文件、测试或目标系统证据，因此 `completed` 仍只能按已声明的有限 oracle 解释。
+当前实现没有持久的 `created/running/waiting-approval` 行；`PermissionPolicy` 同步调用 approve callback，缺少 approver 或被拒绝时直接返回 `stopped/permission_denied`。Python 与 TS 的 `Action.complete` 都先经过 JSON 子集 validator：拒绝结果进入 trace，修正通过后才产生 `completed`；Python 还保存 Adapter 游标/预算 checkpoint，TS 没有恢复接口。但默认 validator 只比较内存输出；空 acceptance 可通过，也没有文件、测试或目标系统证据，因此 `completed` 仍只能按已声明的有限 oracle 解释。
 
 ## Event、Checkpoint 与 Receipt
 

@@ -139,6 +139,8 @@ Validator 失败反馈要包含可行动的断言、artifact identity 和退出�
 
 仓库中的 `HarnessRunner` 使用两类 Action：`tool` 与 `complete`。它在模型调用前检查取消、总 timeout 和 model-call budget；Action 返回后累计有限、非负 cost，再检查取消、timeout 与 cost budget；工具调用只有经过 `PermissionPolicy` 才交给 `ToolRegistry`。Complete 是提议：默认 `JsonSubsetAcceptanceValidator` 对照 `TaskSpec.acceptance`，拒绝时记录路径、保存 Adapter 游标和已消费预算，再把证据送入下一轮；通过后才提交 completed。
 
+TypeScript `MinimalLoop` 也执行相同的结构验收、失败修正、预算停止和 validator 失败关闭；不同点是它没有 Adapter snapshot/checkpoint、retry 或持久幂等台账。因此跨语言测试能证明固定 completion 语义相邻，不能证明恢复能力完全一致。
+
 工具成功后，runner 记录 `tool_result`，更新实际/复用调用计数，保存 Adapter snapshot，并生成 checkpoint。终态返回 `RunResult`，其中包含 `status`、`stop_reason`、metrics、trace、checkpoint 和 error。当前停止原因包括：
 
 | `stop_reason` | 触发边界 | 终态含义 |
