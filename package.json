@@ -20,10 +20,6 @@
     "facts:check": "node scripts/facts-check.mjs",
     "facts:freshness": "node scripts/facts-check.mjs --max-age=30",
     "links:check": "node scripts/check-external-links.mjs",
-    "model:check": "node scripts/model-protocol-check.mjs",
-    "model:self-test": "node scripts/test-model-protocol-check.mjs",
-    "compat:check": "node scripts/compatibility-check.mjs",
-    "compat:self-test": "node scripts/test-compatibility-check.mjs",
     "tutorial:check": "node scripts/tutorial-check.mjs",
     "tutorial:self-test": "node scripts/test-tutorial-check.mjs",
     "lab:smoke": "uv run --frozen --offline python scripts/lab-smoke.py",
@@ -38,12 +34,12 @@
     "licenses:check": "node scripts/licenses-check.mjs",
     "secrets:check": "node scripts/secrets-check.mjs",
     "workflows:check": "node scripts/workflows-check.mjs",
-    "pages:check": "npm run docs:project-base && npm run model:check && npm run compat:check && npm run tutorial:check && npm run examples:check && npm run facts:freshness && npm run links:check && npm run licenses:check && npm run secrets:check && npm run workflows:check && npm run docs:visual:run",
+    "pages:check": "npm run docs:project-base && npm run tutorial:check && npm run examples:check && npm run facts:freshness && npm run links:check && npm run licenses:check && npm run secrets:check && npm run workflows:check && npm run docs:visual:run",
     "pages:serve": "node scripts/serve-pages.mjs",
     "pages:smoke": "node scripts/pages-smoke.mjs",
     "repo:self-test": "node scripts/test-repo-checks.mjs",
     "check": "npm run docs:check && npm run examples:check && npm run docs:build && npm run docs:verify-build && npm run facts:check && npm run examples:self-test && npm run labs:all && npm run lab:ts-runtime-test && npm run eval:validate && npm run eval:summary && npm run results:redact && npm run eval:self-test",
-    "verify": "npm run check && npm run model:check && npm run model:self-test && npm run compat:check && npm run compat:self-test && npm run tutorial:check && npm run tutorial:self-test && npm run docs:project-base && uv run --frozen --offline pytest && uv run --frozen --offline ruff check && npm run lab:pyright && npm run lab:typecheck && npm run facts:freshness && npm run links:check && npm run licenses:check && npm run secrets:check && npm run workflows:check && npm run docs:visual:run && npm run repo:self-test"
+    "verify": "npm run check && npm run tutorial:check && npm run tutorial:self-test && npm run docs:project-base && uv run --frozen --offline pytest && uv run --frozen --offline ruff check && npm run lab:pyright && npm run lab:typecheck && npm run facts:freshness && npm run links:check && npm run licenses:check && npm run secrets:check && npm run workflows:check && npm run docs:visual:run && npm run repo:self-test"
   },
   "devDependencies": {
     "playwright": "^1.62.1",

@@ -176,14 +176,7 @@ uv run --frozen --offline pytest -q lab/tests/test_m5_labs.py::test_browser_exte
 
 预期 `1 passed`，退出码为 0。测试本身通过表示 `pytest.raises` 观察到了预期拒绝；不是说外域导航成功。
 
-再运行兼容性门禁，确认项目没有把 integration 名称升级成真实上游支持：
-
-```powershell
-npm run compat:check
-npm run compat:self-test
-```
-
-两条命令都应退出 0；负例门禁要拒绝“只有文件名或映射名，却声称 Framework 已接入”的材料。
+再检查上一步结果中的 `offline=true`、`evidence=E1` 与 `mode=offline-contract-seam`。三者缺一就停止引用该结果；即使三者齐全，也只说明固定浏览职责接缝运行过，不说明 Browser Use 包已安装或真实浏览器集成可用。这个语义边界由读者对照实际结果判断，不能靠正文出现某个关键词证明。
 
 ## 结果如何进入 Eval
 

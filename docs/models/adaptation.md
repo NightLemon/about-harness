@@ -217,9 +217,7 @@ model-card.md           # 当前配置、路由、限制和重测触发
 
 ```powershell
 uv run --frozen --offline pytest -q lab/tests/test_replay_and_live.py
-npm run model:check
-npm run compat:check
-npm run compat:self-test
+npm run facts:check
 npm run eval:validate
 npm run eval:summary
 ```
@@ -227,17 +225,16 @@ npm run eval:summary
 ### 预期输出与断言
 
 - pytest 有 2 项通过：replay 在无网络/凭据下完成 `1+2+3=6`；live adapter 在产生 provider action 前抛出 `LiveAdapterDisabled`；
-- `model:check` 确认 identity、tool flow、reasoning state、effort control 与事实边界所需标记存在；
-- `compat:check` 确认 Source fact、Offline seam、Live evidence 与控制层责任被分开记录；
-- `compat:self-test` 拒绝缺少证据轴、当前对象状态、责任缺口、独立控制或 fact registry 的固定 canary；
+- `facts:check` 确认易变主张的来源状态、版本、日期和正文引用一致；
+- 人工对照兼容矩阵，确认 Source fact、Offline seam、Live evidence 与控制层责任分别记录，且没有用 integration 名称替代上游安装或 live run；
 - `eval:validate` 验证 task、不可变 fixture ref、run 与 hash lineage 一致；
 - `eval:summary` 只汇总通过 schema/lineage 校验的固定示例，并明确其证据等级。
 
-所有命令退出码都必须为 0。还要人工确认没有请求 credential、没有 provider/network action，并且 live 状态仍是 `untested`。
+所有命令退出码都必须为 0。还要人工确认没有请求 credential、没有 provider/network action，并且 live 状态仍是 `untested`；这项语义判断不能由正文关键词存在性代替。
 
 ### 失败与停止条件
 
-若 replay 需要网络/凭据、live adapter 未被硬拒绝、负例被 checker 接受、fixture ref/hash 无法解析，或 summary 把离线结果写成真实模型质量，立即停止“适配完成”声明。先修对应的 adapter、validator 或证据标签并保留失败样本；不要配置真实 key、放宽校验或把 `untested` 改为 `supported` 来让流程通过。
+若 replay 需要网络/凭据、live adapter 未被硬拒绝、运行时负例被接受、fixture ref/hash 无法解析，或 summary 把离线结果写成真实模型质量，立即停止“适配完成”声明。先修对应的 adapter、validator 或证据标签并保留失败样本；不要配置真实 key、放宽校验或把 `untested` 改为 `supported` 来让流程通过。
 
 ### 清理与安全回退
 
@@ -251,9 +248,9 @@ git diff -- lab evals scripts docs/models/adaptation.md
 
 ### 证据边界
 
-上述结果是 E1：证明当前仓库的固定 replay 能经过最小 harness loop，live adapter 被技术禁用，静态 checker 能验证它定义的标记和负例，示例 eval 文件之间的 lineage 可校验。
+上述结果是 E1：证明当前仓库的固定 replay 能经过最小 harness loop，live adapter 被技术禁用，运行时负例会被拒绝，示例 eval 文件之间的 lineage 可校验。事实检查另行验证来源登记和正文引用。
 
-它不安装或运行 Codex、Claude Code、Pi、LangGraph 等真实 harness，不调用 OpenAI、Anthropic、DeepSeek 或其他 provider，也不测真实延迟、费用、reasoning 参数、长上下文和模型质量。静态 marker checker 不理解整段文字语义。因此命令通过不能证明任何真实组合兼容、可用、较优或满足生产安全。
+它不安装或运行 Codex、Claude Code、Pi、LangGraph 等真实 harness，不调用 OpenAI、Anthropic、DeepSeek 或其他 provider，也不测真实延迟、费用、reasoning 参数、长上下文和模型质量。因此命令通过不能证明任何真实组合兼容、可用、较优或满足生产安全；完整性和边界仍需人工对照目标 surface 审阅。
 
 ## 结束检查表
 

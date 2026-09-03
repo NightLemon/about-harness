@@ -148,15 +148,14 @@ Session 保存 Task/config、fixture hash、步骤、预算与结果引用；不
 
 ```powershell
 uv run --frozen --offline python -c "import importlib.util as u; assert u.find_spec('google') is None or u.find_spec('google.adk') is None"
-npm run compat:check
-npm run compat:self-test
+npm run facts:check
 ```
 
-预期三条命令退出码均为 0：当前环境没有可导入的 `google.adk`；兼容性矩阵把官方 Source fact、项目 Offline seam 和 Live evidence 分开，并将 Google ADK 标为只有职责说明；自测拒绝把 E0 架构入口写成 live support 的坏样例。
+预期两条命令退出码均为 0：当前环境没有可导入的 `google.adk`；事实检查确认官方产品主张已登记。人工复核兼容矩阵应继续把 Google ADK 标为只有职责说明，Offline seam 和 Live evidence 均不能由包名或文字自动升级。
 
 这不是 ADK runtime 测试，没有创建 Agent/Session、调用 Gemini/Vertex、部署服务或验证官方 API。因此不能声称目标版本兼容、恢复可靠、线上可用或模型质量较好。
 
-若包意外可导入、命令请求凭据/网络，或 checker 把 ADK 写成已运行，停止结论并审计依赖和证据。不要运行 quickstart、配置真实 key 或放宽矩阵。命令只读仓库；误改时先检查：
+若包意外可导入、命令请求凭据/网络，或事实/人工矩阵核对把 ADK 写成已运行，停止结论并审计依赖和证据。不要运行 quickstart、配置真实 key 或放宽矩阵。命令只读仓库；误改时先检查：
 
 ```powershell
 git diff -- pyproject.toml uv.lock package.json package-lock.json docs/frameworks/google-adk.md docs/references/compatibility.md

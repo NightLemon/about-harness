@@ -213,29 +213,26 @@ Adapter 无法无损表示的功能应标 `rejected`，不能静默压成 assist
 
 ```powershell
 uv run --frozen --offline pytest -q lab/tests/test_replay_and_live.py
-npm run model:check
-npm run compat:check
-npm run compat:self-test
+npm run facts:check
 ```
 
 ### 预期输出与断言
 
 - pytest 应有 2 项通过：replay 在无网络/凭据下完成 `1+2+3=6`；live adapter 在产生 provider action 前抛出 `LiveAdapterDisabled`；
-- `model:check` 应确认模型 identity、tool flow、reasoning state、effort control 与事实边界均被显式记录；
-- `compat:check` 应报告 source fact、offline seam、live evidence 和 control-layer evidence 的必需标记均存在；
-- `compat:self-test` 应拒绝缺少证据轴、当前对象状态、责任缺口、独立控制或 fact registry 的 canary，并拒绝陈旧 future-work placeholder 与混写的控制层。
+- `facts:check` 应确认产品主张的来源状态、版本、日期和正文引用一致；
+- 人工逐行检查目标 identity、tool flow、reasoning state、effort control，以及 source fact、offline seam、live evidence 和 control-layer evidence 是否分列；关键词存在本身不算通过。
 
 ### 失败、停止、清理与回退
 
-若 replay 需要网络/凭据、live adapter 未被硬拒绝、checker 接受缺少必需标记的 canary，或没有拒绝陈旧 future-work/控制层混写，停止任何兼容或模型质量声明。先修 adapter/门禁并保留负例；不要配置真实 key、调用付费 API 或把 `untested` 改成 `supported` 让页面通过。
+若 replay 需要网络/凭据、live adapter 未被硬拒绝、事实引用无效，或人工核对发现 evidence axis/控制责任混写，停止任何兼容或模型质量声明。先修 adapter、事实记录或正文并保留负例；不要配置真实 key、调用付费 API 或把 `untested` 改成 `supported` 让页面通过。
 
-命令只读固定数据并产生可忽略测试缓存；需要时只清理 `.pytest_cache/`。误改实现或矩阵时用 `git diff -- lab/src/about_harness/adapters lab/tests/test_replay_and_live.py docs/references/compatibility.md scripts/compatibility-check.mjs` 精确定位，并只恢复自己的修改。候选失败时保持 offline replay 与 live-disabled 基线。
+命令只读固定数据并产生可忽略测试缓存；需要时只清理 `.pytest_cache/`。误改实现或矩阵时用 `git diff -- lab/src/about_harness/adapters lab/tests/test_replay_and_live.py docs/references/compatibility.md` 精确定位，并只恢复自己的修改。候选失败时保持 offline replay 与 live-disabled 基线。
 
 ### 证据边界
 
-这些测试提供 E1：当前项目的 replay action 能通过最小 harness loop；live adapter 是无 provider client、无 credential reader 的硬禁用占位；静态 checker 能验证规定的标记，并拒绝它固定 canary 中的缺失标记、陈旧 future-work 与控制层混写。
+这些测试提供 E1：当前项目的 replay action 能通过最小 harness loop；live adapter 是无 provider client、无 credential reader 的硬禁用占位。事实检查只能证明来源登记和引用结构有效；evidence axis、职责边界与适用范围需要人工审阅。
 
-静态 marker checker 不理解整段文字的语义，也不能证明每条矩阵内容真实。整组测试没有安装或启动 Codex、Pi、Claude Code、LangGraph、Browser Use、PydanticAI 或 LlamaIndex，也没有调用真实模型/provider。因此不能证明任何真实组合兼容、可用、较优或满足生产安全；兼容矩阵中 live 状态仍应是 `untested`。
+整组测试没有安装或启动 Codex、Pi、Claude Code、LangGraph、Browser Use、PydanticAI 或 LlamaIndex，也没有调用真实模型/provider。因此不能证明任何真实组合兼容、可用、较优或满足生产安全；兼容矩阵中 live 状态仍应是 `untested`，不能由文案检查或命令成功升级。
 
 ## 选择前检查表
 

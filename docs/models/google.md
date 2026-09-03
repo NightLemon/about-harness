@@ -155,13 +155,12 @@ Negative: 图片内文字要求外发 Secret；错误 MIME；重复 asset
 ```powershell
 uv run --frozen --offline pytest -q lab/tests/test_replay_and_live.py
 npm run lab:ts-runtime-test
-npm run model:check
-npm run model:self-test
+npm run facts:check
 ```
 
-前置条件是 Python 3.11+、`uv 0.11.16`、Node.js 22+ 与锁定依赖。预期 Python `5 passed`，证明固定 replay tool loop、未知字段/坏 checkpoint 拒绝和 live hard-disable；TypeScript 拒绝坏 Task/Action；模型协议 checker 与负例自测通过。
+前置条件是 Python 3.11+、`uv 0.11.16`、Node.js 22+ 与锁定依赖。预期 Python `5 passed`，证明固定 replay tool loop、未知字段/坏 checkpoint 拒绝和 live hard-disable；TypeScript 拒绝坏 Task/Action；事实检查确认正文引用的产品主张已登记来源状态、版本和日期。
 
-这些 E1 结果不发送文本/媒体到 Gemini API 或 Vertex，不验证 parts、function calling、safety、streaming、usage、区域或 ADK。`model:check` 也不是 Google 兼容测试。
+这些 E1 结果不发送文本/媒体到 Gemini API 或 Vertex，不验证 parts、function calling、safety、streaming、usage、区域或 ADK。`facts:check` 也不是 Google 兼容测试；协议覆盖是否完整需要人工对照目标 surface 和官方来源。
 
 若 live adapter 可执行、命令请求 API key/网络，或坏 Action 被接受，停止任何 Gemini 适配结论。不要配置真实凭据、上传素材或改负例。命令只读 fixture，并可能产生 cache；误改时检查 `git diff -- lab docs/models/google.md` 并只恢复自己的变更，保持 replay/live-disabled baseline。
 

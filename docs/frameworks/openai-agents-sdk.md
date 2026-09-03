@@ -224,21 +224,19 @@ Task API
 ```powershell
 uv run --frozen --offline python -c "import importlib.util; assert importlib.util.find_spec('agents') is None"
 uv run --frozen --offline pytest -q lab/tests/test_replay_and_live.py lab/tests/test_loop.py
-npm run compat:check
-npm run compat:self-test
+npm run facts:check
 ```
 
 ### 预期输出与断言
 
 - 第一条命令退出 0，证明当前锁定环境没有可导入的 `agents` SDK 包；
 - Python 测试全部通过：replay 能完成进程内 tool loop，live adapter 在 provider action 前硬拒绝，controller 能区分预算、权限、tool error、timeout、幂等复用与 resume；
-- `compat:check` 确认 Source fact、Offline seam 与 Live evidence 分列，并明确上游 SDK 未安装；
-- `compat:self-test` 拒绝缺少证据轴、责任缺口、独立控制或含未来占位符的固定 canary；
+- `facts:check` 确认 SDK 产品主张的来源状态、版本、日期和正文引用一致；人工复核兼容矩阵仍把上游包标为未安装、live 标为 `untested`；
 - 全程没有 API credential 请求、OpenAI 网络调用或费用。
 
 ### 失败、停止、清理与回退
 
-若当前环境意外能导入 `agents`、replay 需要网络/credential、live adapter 未硬拒绝、重复副作用发生，或 checker 接受缺失证据的负例，停止“当前仅 E0/离线 E1”的结论并先审计依赖与实现。不要运行 SDK quickstart、配置真实 API key 或放宽负例来获得绿色结果。
+若当前环境意外能导入 `agents`、replay 需要网络/credential、live adapter 未硬拒绝、重复副作用发生，或事实/兼容矩阵与实际状态不符，停止“当前仅 E0/离线 E1”的结论并先审计依赖与实现。不要运行 SDK quickstart、配置真实 API key 或放宽负例来获得绿色结果。
 
 这些命令只读固定输入并可能产生 `.pytest_cache/` 等可忽略缓存。若误改依赖或实现，先运行：
 

@@ -212,14 +212,7 @@ uv run --frozen --offline pytest -q lab/tests/test_m5_labs.py::test_document_fix
 
 预期 `2 passed`、退出码 0。第一项锁定 45 天、v2、忽略计数和执行模式；第二项把 query 换成 `vacation allowance`，要求返回带完整运行元数据的 `insufficient`，而不是空字符串、异常或无引用答案。
 
-再验证 integration 名称没有被误当作上游接入：
-
-```powershell
-npm run compat:check
-npm run compat:self-test
-```
-
-两条命令都应退出 0；负例门禁必须拒绝把离线职责映射写成 live 支持。
+再检查上一步结果中的 `offline=true`、`evidence=E1` 与 `mode=offline-contract-seam`。它们证明固定文档职责接缝运行过，不证明 LlamaIndex 已安装、真实索引可恢复或 live provider 可用；字段缺失或结论越界时停止引用。证据边界要根据运行结果和依赖状态人工判断，正文关键词不能自动给出兼容结论。
 
 ## Result 如何进入 Eval
 

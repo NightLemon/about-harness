@@ -154,15 +154,14 @@ State 保存 query、source ID/version、claims、citations、conflicts、预算
 ```powershell
 uv run --frozen --offline python -c "import importlib.util as u; assert u.find_spec('langgraph') is None"
 uv run --frozen --offline python scripts/run-labs.py research
-npm run compat:check
-npm run compat:self-test
+npm run facts:check
 ```
 
-预期全部退出 0：第一条证明锁定环境无 `langgraph` 包；研究案例为 `passed=true`、`offline=true`、`evidence=E1`，保留 `retention_days` 的两个冲突值/来源，`review_required` 为 supported；兼容性检查把官方 Source fact、Offline seam 和 Live evidence 分列；自测拒绝证据轴混写。
+预期全部退出 0：第一条证明锁定环境无 `langgraph` 包；研究案例为 `passed=true`、`offline=true`、`evidence=E1`，保留 `retention_days` 的两个冲突值/来源，`review_required` 为 supported；事实检查验证官方来源登记。随后人工确认兼容矩阵仍把 Offline seam 与 Live evidence 分列，且 live 为 `untested`。
 
 这里的 E1 只证明纯 Python 转换和固定负例，不执行 Graph/node/edge/checkpointer/interrupt/streaming，也不验证目标 LangGraph 版本或模型质量。文件名、输出中的 `integration=LangGraph` 和命令成功都不能升级为“已接入 LangGraph”。
 
-若包意外可导入、研究 fixture 需要网络/credential、冲突被丢弃或兼容性检查把 seam 写成 live，停止结论。不要安装包、配置真实 key 或改 expected 迎合输出。命令只读 fixture，并可能产生 cache；误改时检查：
+若包意外可导入、研究 fixture 需要网络/credential、冲突被丢弃或事实/人工矩阵核对把 seam 写成 live，停止结论。不要安装包、配置真实 key 或改 expected 迎合输出。命令只读 fixture，并可能产生 cache；误改时检查：
 
 ```powershell
 git diff -- pyproject.toml uv.lock lab/src/about_harness/integrations/langgraph.py lab/fixtures/research docs/frameworks/langgraph.md docs/references/compatibility.md

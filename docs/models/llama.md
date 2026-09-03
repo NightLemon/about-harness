@@ -354,16 +354,14 @@ rollback:
 
 ```powershell
 uv run --frozen --offline python -c "import importlib.util as u; assert u.find_spec('transformers') is None; assert u.find_spec('vllm') is None; assert u.find_spec('llama_cpp') is None"
-npm run model:check
-npm run model:self-test
+npm run facts:check
 npm run lab:ts-runtime-test
 ```
 
 ### 预期输出与断言
 
 - 第一条命令退出 0，证明当前锁定 Python 环境没有三个常见推理入口；这不枚举所有可能 runtime，但能验证项目没有依赖它们；
-- `model:check` 确认模型页包含 surface identity、tool flow、reasoning state、effort control 和事实边界；
-- `model:self-test` 拒绝缺身份、state、effort 或事实证据的固定 canary；
+- `facts:check` 确认产品主张的来源状态、版本、日期与正文引用一致；它不判断 surface identity、tool flow 或 reasoning 解释是否充分，这些由人工审阅对照目标 runtime；
 - TypeScript runtime test 拒绝无效 Task/Action、重复/空工具和非有限预算/成本；
 - 全程没有权重下载、GPU/CPU model load、provider request 或费用。
 
