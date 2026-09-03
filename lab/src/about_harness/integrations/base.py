@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from math import isfinite
 
 from about_harness.contracts import JsonValue
 
@@ -46,4 +47,7 @@ def optional_string(value: JsonValue, label: str) -> str | None:
 def require_number(value: JsonValue, label: str) -> float:
     if not isinstance(value, (int, float)) or isinstance(value, bool):
         raise IntegrationContractError(f"{label} must be a number")
-    return float(value)
+    number = float(value)
+    if not isfinite(number):
+        raise IntegrationContractError(f"{label} must be a finite number")
+    return number
