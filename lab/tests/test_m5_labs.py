@@ -16,6 +16,7 @@ from about_harness.integrations.pydantic_ai import normalize_rows
 from about_harness.labs import (
     LAB_NAMES,
     FixtureError,
+    evaluate_coding,
     evaluate_migration,
     execute_fixture,
     load_fixture,
@@ -43,6 +44,33 @@ def test_fixture_hash_tampering_is_rejected(tmp_path: Path) -> None:
     (target / "input.json").write_text('{"tampered":true}', encoding="utf-8")
     with pytest.raises(FixtureError, match="hash mismatch"):
         load_fixture(tmp_path, "coding")
+
+
+def test_coding_fixture_executes_baseline_and_candidate_assertions() -> None:
+    bundle = load_fixture(FIXTURES, "coding")
+    result = evaluate_coding(bundle.input)
+    assert result["baseline_failures"] == ["single", "multiple"]
+    assert result["test_results"] == {"empty": True, "single": True, "multiple": True}
+    assert result["tests_passed"] == 3
+    assert result["patch_applied"] is True
+
+
+def test_coding_fixture_does_not_count_named_but_failing_tests() -> None:
+    bundle = load_fixture(FIXTURES, "coding")
+    payload = copy.deepcopy(bundle.input)
+    payload["candidate_patch"] = payload["before"]
+    result = evaluate_coding(payload)
+    assert result["test_results"] == {"empty": True, "single": False, "multiple": False}
+    assert result["tests_passed"] == 1
+    assert result["patch_applied"] is False
+
+
+def test_coding_fixture_rejects_source_outside_fixed_ast_allowlist() -> None:
+    bundle = load_fixture(FIXTURES, "coding")
+    payload = copy.deepcopy(bundle.input)
+    payload["candidate_patch"] = "import os\n\ndef collect(items):\n    return items\n"
+    with pytest.raises(FixtureError, match="fixed AST allowlist"):
+        evaluate_coding(payload)
 
 
 def test_cli_accepts_isolated_fixture_root_and_rejects_tampering(tmp_path: Path) -> None:
