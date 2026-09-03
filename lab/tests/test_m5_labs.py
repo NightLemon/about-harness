@@ -12,6 +12,7 @@ from typing import Any
 import pytest
 from about_harness.integrations.base import IntegrationContractError
 from about_harness.integrations.browser_use import extract_local_catalog
+from about_harness.integrations.llama_index import answer_from_latest
 from about_harness.integrations.pydantic_ai import normalize_rows
 from about_harness.labs import (
     LAB_NAMES,
@@ -96,6 +97,32 @@ def test_cli_accepts_isolated_fixture_root_and_rejects_tampering(tmp_path: Path)
 def test_browser_external_navigation_negative_case_is_rejected() -> None:
     with pytest.raises(IntegrationContractError, match=r"lab\.local"):
         extract_local_catalog({"url": "https://evil.invalid", "page_text": "x", "rows": []})
+
+
+def test_document_fixture_filters_stale_version_and_cites_latest() -> None:
+    bundle = load_fixture(FIXTURES, "document")
+    result = answer_from_latest(bundle.input)
+    assert result["status"] == "answered"
+    assert result["answer"] == "The retention policy keeps records for 45 days."
+    assert result["citations"] == ["handbook@v2"]
+    assert result["stale_versions_ignored"] == 1
+    assert result["integration"] == "LlamaIndex"
+    assert result["mode"] == "offline-contract-seam"
+
+
+def test_document_returns_auditable_insufficient_result_without_match() -> None:
+    bundle = load_fixture(FIXTURES, "document")
+    payload = copy.deepcopy(bundle.input)
+    payload["query"] = "vacation allowance"
+    result = answer_from_latest(payload)
+    assert result == {
+        "status": "insufficient",
+        "answer": None,
+        "citations": [],
+        "stale_versions_ignored": 1,
+        "integration": "LlamaIndex",
+        "mode": "offline-contract-seam",
+    }
 
 
 def test_data_schema_drift_negative_case_is_rejected() -> None:
