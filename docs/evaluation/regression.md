@@ -118,7 +118,7 @@ Summary 应满足：
 - 两个 config 都有 6 个不完整 development task，没有可进入 2/3 聚合分母的任务；
 - development 配对为 5 win、0 loss、1 tie，但这不能覆盖缺失矩阵或证据边界。
 
-这个输出是 E1：它证明 schema、fixture lineage、矩阵统计和报告路径能处理固定样例，不证明 `offline-engineering` 对真实模型更好。`study-v1.1` 先按 2/3 规则聚合任务；汇总器只会在结构条件满足后，用完整 holdout 执行 task-level 通过率和 run-level P90 费用点估计阈值，当前样例因此保持 `blocked`。配对差异区间、污染审计和最终采用仍必须按[指标与区间](/evaluation/metrics)另行复核。
+这个输出是 E1：它证明 schema、fixture lineage、矩阵统计和报告路径能处理固定样例，不证明 `offline-engineering` 对真实模型更好。`study-v1.1` 先按 2/3 规则聚合任务；汇总器只会在结构条件满足后，用完整 holdout 执行 task-level 通过率和 run-level P90 费用点估计阈值，当前样例因此保持 `blocked`。完整 task pair 会附带成功率差的 bootstrap 95% 区间，但污染审计、关键 workload、费用不确定性和最终采用仍必须按[指标与区间](/evaluation/metrics)另行复核。
 
 ### 失败案例、停止与恢复
 

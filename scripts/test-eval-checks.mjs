@@ -194,17 +194,32 @@ try {
       || passingDecision.observed.candidate_passed_tasks !== 4) {
     throw new Error('promotion summary did not aggregate repeats at the task level')
   }
+  const pairedEffect = passingDecision.observed.paired_task_effect
+  if (pairedEffect.paired_tasks !== 5
+      || pairedEffect.candidate_only_passed !== 1
+      || pairedEffect.baseline_only_passed !== 0
+      || pairedEffect.bootstrap.method !== 'nonparametric_percentile'
+      || pairedEffect.bootstrap.computation !== 'exact_empirical_distribution'
+      || pairedEffect.bootstrap.pass_rate_delta_interval.lower !== 0
+      || pairedEffect.bootstrap.pass_rate_delta_interval.upper !== 0.6) {
+    throw new Error('promotion summary calculated the wrong paired task bootstrap interval')
+  }
   if (passingPromotion.evidence !== 'E2' || passingPromotion.evidence_levels.join(',') !== 'E2') {
     throw new Error('promotion summary did not derive its evidence level from run records')
   }
 
   const qualityFailure = summarizeFixture(writeCompletePromotionFixture('promotion-quality-fail', {
-    candidatePasses: 3,
+    candidatePasses: 2,
     candidateCost: 0.2
   }))
   const qualityDecision = qualityFailure.promotion_analysis.candidates.candidate
   if (qualityFailure.promotion_eligible || !qualityDecision.blockers.includes('pass_rate_delta_below_minimum')) {
     throw new Error('promotion summary did not enforce min_pass_rate_delta')
+  }
+  if (qualityDecision.observed.paired_task_effect.baseline_only_passed !== 1
+      || qualityDecision.observed.paired_task_effect.bootstrap.pass_rate_delta_interval.lower !== -0.6
+      || qualityDecision.observed.paired_task_effect.bootstrap.pass_rate_delta_interval.upper !== 0) {
+    throw new Error('promotion summary calculated the wrong negative paired task interval')
   }
 
   const costFailure = summarizeFixture(writeCompletePromotionFixture('promotion-cost-fail', {
@@ -258,6 +273,7 @@ try {
   }))
   if (!legacyPromotion.promotion_eligible
       || legacyPromotion.promotion_analysis.analysis_unit !== 'run'
+      || 'paired_task_effect' in legacyPromotion.promotion_analysis.candidates.candidate.observed
       || legacyPromotion.promotion_analysis.candidates.candidate.observed.pass_rate_delta !== 0.0667) {
     throw new Error('eval summary did not preserve study-v1.0 run-level semantics')
   }
@@ -294,7 +310,7 @@ try {
     throw new Error('redaction checker did not fail closed on an unsupported public artifact')
   }
 
-  console.log('Evaluation checker self-tests passed: fixture lineage, matrix integrity, study-v1.0/v1.1 promotion semantics, task aggregation, safety, evidence derivation, JSON/JSONL redaction, and unsupported-format canaries were checked.')
+  console.log('Evaluation checker self-tests passed: fixture lineage, matrix integrity, study-v1.0/v1.1 promotion semantics, task aggregation, paired bootstrap uncertainty, safety, evidence derivation, JSON/JSONL redaction, and unsupported-format canaries were checked.')
 } finally {
   fs.rmSync(temp, { recursive: true, force: true })
 }

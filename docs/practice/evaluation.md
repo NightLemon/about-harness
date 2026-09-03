@@ -8,7 +8,7 @@
 
 1. 区分实验设计的 formal matrix（正式矩阵）与当前已观察样本；
 2. 解释 run 身份、配置身份、fixture lineage（fixture 来源链）为什么要同时冻结；
-3. 读懂通过率、Wilson 95% 区间、P50/P90、配对 win/loss/tie 和缺失 cell；
+3. 读懂通过率、Wilson 95% 区间、配对 task bootstrap 区间、P50/P90、win/loss/tie 和缺失 cell；
 4. 证明 validator 会拒绝重复、漂移、hash 篡改和不安全公开产物；
 5. 在矩阵或证据等级不足时输出“不可晋级”，而不是补零或外推。
 
@@ -107,7 +107,7 @@ Study 的目标是 E3，当前 run 全是 E1，所以即使 120 cells 全部补�
 
 汇总器同时输出 **run-level pass rate** 和 `study-v1.1` 预注册的 task-level 结果。当前规则是“3 次中至少 2 次通过”；只有收齐三次的任务才进入 task 分母，缺失重复单列为 `incomplete_tasks`。两层都给出成功数、分母和 Wilson 95% 区间；报告仍须写清分析单位，不能拿 run 数冒充独立任务数。
 
-只有矩阵完整、证据达到目标且安全违规为零时，汇总器才对 holdout 执行预注册阈值。`min_pass_rate_delta=0.05` 表示候选的 task-level 成功率至少比基线高 5 个百分点；`max_p90_cost_delta=0.2` 表示候选的每次运行 P90 费用最多高 0.20 USD。当前样例没有 holdout，development 任务也都缺 2 次重复，因此 `promotion_analysis` 将候选标为 `blocked` 并把观察值留为 `null`，不会借用单次 development 数字。
+只有矩阵完整、证据达到目标且安全违规为零时，汇总器才对 holdout 执行预注册阈值。`min_pass_rate_delta=0.05` 表示候选的 task-level 成功率至少比基线高 5 个百分点；`max_p90_cost_delta=0.2` 表示候选的每次运行 P90 费用最多高 0.20 USD。对于两侧都完整的同一批 task，`paired_task_effect` 还会给出四种配对结果和成功率差的精确枚举 bootstrap 95% 区间。当前样例没有 holdout，development 任务也都缺 2 次重复，因此候选保持 `blocked`，点估计与配对区间都是 `null`，不会借用单次 development 数字。
 
 ## 第三步：证明门禁真的会失败
 
@@ -166,8 +166,8 @@ npm run results:redact
 
 ## 当前实现尚未替你做什么
 
-- `promotion_eligible` 会执行完整 holdout 的 task-level 成功率与 run-level P90 费用点估计阈值，但它不是自动采用决定；差异区间和业务复核仍需独立完成。
-- 汇总器不计算 task bootstrap、候选—基线配对差异区间、关键 workload 非劣门槛或多重比较修正。
+- `promotion_eligible` 会执行完整 holdout 的 task-level 成功率与 run-level P90 费用点估计阈值，但它不是自动采用决定；配对 bootstrap 区间只提供不确定性诊断，不会自动改变预注册门槛。
+- 汇总器不计算关键 workload 非劣门槛、多重比较修正、费用差异区间或 holdout 污染状态；小样本 percentile bootstrap 也不能修复抽样偏差。
 - Validator 证明六个当前示例的 lineage，不证明 formal study 中其余 14 个 Task 已实现。
 - `instruction_hash` 证明字节身份，不证明指令实际被 harness 加载；模型、provider 和 harness 字段也需要运行时采集来源。
 - 当前样例没有 trace、真实 usage、外部副作用对账或 Judge（模型/人工评分器）结果。

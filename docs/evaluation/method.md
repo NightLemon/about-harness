@@ -165,7 +165,7 @@ Validator 应报告 `study_schema_version=1.1`、`pass_rate_analysis_unit=task`�
 - 两个配置的 development task-level 汇总都是 `evaluable_tasks=0`、`incomplete_tasks=6`；
 - 六个完整 development 配对是 5 win、0 loss、1 tie。
 
-最后一项只是检验 run 配对汇总逻辑，不能抵消无 holdout、矩阵不完整和证据不足。`study-v1.1` 规定每个任务至少 2/3 次成功；结构前置条件满足后，summary 会在完整 holdout 上执行 task-level 通过率绝对增量和每次运行 P90 费用绝对增量阈值。它尚未计算候选—基线差异区间，因此即使将来为 `true`，仍需按预注册规则人工复核完整采用条件。
+最后一项只是检验 run 配对汇总逻辑，不能抵消无 holdout、矩阵不完整和证据不足。`study-v1.1` 规定每个任务至少 2/3 次成功；结构前置条件满足后，summary 会在完整 holdout 上执行 task-level 通过率绝对增量和每次运行 P90 费用绝对增量阈值，并对同一批完整 task 输出配对 bootstrap 95% 区间。区间目前是诊断信息，不会把点估计门槛自动升级为采用决定；关键 workload、费用不确定性、污染和回退仍需按预注册规则人工复核。
 
 ### 失败、停止、清理与回退
 
