@@ -354,12 +354,26 @@ def _negative_rejected(bundle: FixtureBundle, output: dict[str, JsonValue]) -> b
             candidate.get(field) != ledger_claim.get(field) for field in compared_fields
         )
     if bundle.name == "data":
-        row = bundle.negative.get("row")
-        try:
-            normalize_rows({"rows": [row]})
-        except IntegrationContractError:
-            return True
-        return False
+        cases = bundle.negative.get("cases")
+        if not isinstance(cases, list) or not cases:
+            return False
+        for case in cases:
+            if not isinstance(case, dict):
+                return False
+            rows = case.get("rows")
+            expected_error = case.get("expected_error")
+            if not isinstance(rows, list) or not isinstance(expected_error, str):
+                return False
+            payload = copy.deepcopy(bundle.input)
+            payload["rows"] = rows
+            try:
+                normalize_rows(payload)
+            except IntegrationContractError as error:
+                if expected_error not in str(error):
+                    return False
+            else:
+                return False
+        return True
     if bundle.name == "document":
         candidate = bundle.negative.get("candidate_answer")
         if not isinstance(candidate, dict):

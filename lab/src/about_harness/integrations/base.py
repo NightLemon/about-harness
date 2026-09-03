@@ -47,7 +47,10 @@ def optional_string(value: JsonValue, label: str) -> str | None:
 def require_number(value: JsonValue, label: str) -> float:
     if not isinstance(value, (int, float)) or isinstance(value, bool):
         raise IntegrationContractError(f"{label} must be a number")
-    number = float(value)
+    try:
+        number = float(value)
+    except OverflowError as error:
+        raise IntegrationContractError(f"{label} must be a finite number") from error
     if not isfinite(number):
         raise IntegrationContractError(f"{label} must be a finite number")
     return number

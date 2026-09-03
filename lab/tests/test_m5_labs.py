@@ -374,29 +374,100 @@ def test_document_rejects_duplicate_block_identity() -> None:
 
 
 def test_data_schema_drift_negative_case_is_rejected() -> None:
+    bundle = load_fixture(FIXTURES, "data")
+    payload = copy.deepcopy(bundle.input)
+    payload["rows"] = [{"userId": "u-4", "score": 9}]
     with pytest.raises(IntegrationContractError, match="schema drift"):
-        normalize_rows({"rows": [{"userId": "u-3", "score": 9}]})
+        normalize_rows(payload)
 
 
-def test_data_fixture_preserves_null_and_redacts_email() -> None:
+def test_data_fixture_preserves_identity_missing_null_and_redacts_email() -> None:
     bundle = load_fixture(FIXTURES, "data")
     result = normalize_rows(bundle.input)
+    assert result["dataset"] == {
+        "dataset_id": "training-scores",
+        "snapshot_id": "synthetic-2026-09-04",
+        "schema_version": "1.1",
+        "score_unit": "points_0_10",
+    }
     assert result["rows"] == [
-        {"user_id": "u-1", "score": 7.5, "email": "[REDACTED]"},
-        {"user_id": "u-2", "score": None, "email": "[REDACTED]"},
+        {
+            "user_id": "u-1",
+            "score": 7.5,
+            "score_state": "value",
+            "email": "[REDACTED]",
+        },
+        {
+            "user_id": "u-2",
+            "score": None,
+            "score_state": "null",
+            "email": "[REDACTED]",
+        },
+        {
+            "user_id": "u-3",
+            "score": None,
+            "score_state": "missing",
+            "email": None,
+        },
     ]
-    assert result["row_count"] == 2
+    assert result["row_count"] == 3
+    assert result["population"] == {
+        "input_rows": 3,
+        "output_rows": 3,
+        "rejected_rows": 0,
+    }
+    assert result["redacted_fields"] == 2
     assert result["sensitive_values_exposed"] == 0
     assert result["integration"] == "PydanticAI"
     assert result["mode"] == "offline-contract-seam"
 
 
-@pytest.mark.parametrize("score", [float("nan"), float("inf"), float("-inf")])
-def test_data_rejects_non_finite_scores(score: float) -> None:
-    payload: dict[str, JsonValue] = {
-        "rows": [{"user_id": "u-1", "score": score, "email": None}]
-    }
+@pytest.mark.parametrize(
+    "score", [float("nan"), float("inf"), float("-inf"), 10**400]
+)
+def test_data_rejects_non_finite_scores(score: float | int) -> None:
+    bundle = load_fixture(FIXTURES, "data")
+    payload = copy.deepcopy(bundle.input)
+    payload["rows"] = [{"user_id": "u-4", "score": score, "email": None}]
     with pytest.raises(IntegrationContractError, match="finite number"):
+        normalize_rows(payload)
+
+
+def test_data_rejects_duplicate_keys_range_and_unit_drift() -> None:
+    bundle = load_fixture(FIXTURES, "data")
+
+    duplicate = copy.deepcopy(bundle.input)
+    duplicate["rows"] = [
+        {"user_id": "u-4", "score": 4},
+        {"user_id": "u-4", "score": 5},
+    ]
+    with pytest.raises(IntegrationContractError, match="duplicate user_id"):
+        normalize_rows(duplicate)
+
+    out_of_range = copy.deepcopy(bundle.input)
+    out_of_range["rows"] = [{"user_id": "u-4", "score": 11}]
+    with pytest.raises(IntegrationContractError, match="between 0 and 10 points"):
+        normalize_rows(out_of_range)
+
+    unit_drift = copy.deepcopy(bundle.input)
+    dataset = unit_drift["dataset"]
+    assert isinstance(dataset, dict)
+    dataset["score_unit"] = "percent"
+    with pytest.raises(IntegrationContractError, match="score_unit"):
+        normalize_rows(unit_drift)
+
+
+def test_data_fails_if_sensitive_value_reappears_in_an_output_field() -> None:
+    bundle = load_fixture(FIXTURES, "data")
+    payload = copy.deepcopy(bundle.input)
+    rows = payload["rows"]
+    assert isinstance(rows, list)
+    first = rows[0]
+    assert isinstance(first, dict)
+    email = first["email"]
+    assert isinstance(email, str)
+    first["user_id"] = email
+    with pytest.raises(IntegrationContractError, match="redaction failed"):
         normalize_rows(payload)
 
 

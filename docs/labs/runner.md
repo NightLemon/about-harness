@@ -101,7 +101,7 @@ output.side_effects=0
 | `coding` | patch 已应用；空、单、多值测试均通过 | implementation / verification |
 | `browser` | 注入被拒绝；副作用为 0 | policy / injection |
 | `research` | 冲突仍为 conflict；引用落到 quote；缺证据项为 insufficient | citation / coverage |
-| `data` | 敏感值为 0；行结构可解释 | schema / privacy |
+| `data` | Snapshot/schema/unit 固定；missing/null 分离；key/range/privacy 失败关闭 | schema / lineage / privacy |
 | `document` | 最新版块级引用；权限/解析 typed stop；不回退旧版 | version / retrieval |
 | `migration` | 责任无缺失、无扩大、无逐字复制 | boundary / mapping |
 
