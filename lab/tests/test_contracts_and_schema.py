@@ -286,9 +286,27 @@ def test_schema_inventory_contains_only_runtime_and_evaluation_contracts() -> No
         "config.json",
         "eval-run.json",
         "study.json",
+        "study-v1.0.json",
         "fixture-lineage.json",
     }
     assert {item.name for item in SCHEMAS.glob("*.json")} == expected
+    current_study = json.loads(
+        (ROOT.parent / "evals" / "study.example.json").read_text(encoding="utf-8")
+    )
+    current_schema = json.loads((SCHEMAS / "study.json").read_text(encoding="utf-8"))
+    legacy_schema = json.loads(
+        (SCHEMAS / "study-v1.0.json").read_text(encoding="utf-8")
+    )
+    Draft202012Validator(current_schema).validate(current_study)
+    legacy_study = json.loads(json.dumps(current_study))
+    legacy_study["schema_version"] = "1.0"
+    legacy_study["promotion"].pop("pass_rate_analysis_unit")
+    legacy_study["promotion"].pop("task_pass_min_runs")
+    Draft202012Validator(legacy_schema).validate(legacy_study)
+    with pytest.raises(ValidationError):
+        Draft202012Validator(current_schema).validate(legacy_study)
+    with pytest.raises(ValidationError):
+        Draft202012Validator(legacy_schema).validate(current_study)
 
 
 def test_budget_rejects_negative_cost() -> None:

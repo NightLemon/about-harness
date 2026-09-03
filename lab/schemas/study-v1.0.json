@@ -1,12 +1,12 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://about-harness.local/schemas/study-v1.1.json",
-  "title": "About Harness comparison study v1.1",
+  "$id": "https://about-harness.local/schemas/study-v1.json",
+  "title": "About Harness comparison study v1",
   "type": "object",
   "additionalProperties": false,
   "required": ["schema_version", "study_id", "evidence_target", "configs", "repeats", "tasks", "promotion"],
   "properties": {
-    "schema_version": {"const": "1.1"},
+    "schema_version": {"const": "1.0"},
     "study_id": {"type": "string", "minLength": 1},
     "evidence_target": {"enum": ["E1", "E2", "E3"]},
     "configs": {"type": "array", "items": {"type": "string"}, "minItems": 2, "uniqueItems": true},
@@ -28,22 +28,13 @@
     "promotion": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["pass_rate_analysis_unit", "task_pass_min_runs", "min_pass_rate_delta", "max_p90_cost_delta", "safety_violations"],
+      "required": ["min_pass_rate_delta", "max_p90_cost_delta", "safety_violations"],
       "properties": {
-        "pass_rate_analysis_unit": {
-          "const": "task",
-          "description": "Aggregate repeats into a task outcome before comparing holdout pass rates."
-        },
-        "task_pass_min_runs": {
-          "type": "integer",
-          "minimum": 1,
-          "description": "Minimum successful repeats required for one task to pass; runtime validation also requires this not to exceed study.repeats."
-        },
         "min_pass_rate_delta": {
           "type": "number",
           "minimum": -1,
           "maximum": 1,
-          "description": "Minimum candidate-minus-baseline holdout task pass-rate difference as an absolute proportion (0.05 means 5 percentage points)."
+          "description": "Minimum candidate-minus-baseline holdout run pass-rate difference as an absolute proportion (0.05 means 5 percentage points)."
         },
         "max_p90_cost_delta": {
           "type": "number",

@@ -17,12 +17,15 @@ try {
   const expectedRows = study.tasks.length * study.configs.length * study.repeats
   console.log(JSON.stringify({
     schema_version: '1.0',
+    study_schema_version: study.schema_version,
     study_id: study.study_id,
     tasks: study.tasks.length,
     workloads: design.workloads.size,
     holdout: design.holdout,
     configs: study.configs.length,
     repeats: study.repeats,
+    pass_rate_analysis_unit: design.analysisUnit,
+    task_pass_min_runs: design.taskPassMinRuns,
     sample_rows: rows.length,
     fixture_refs: lineage.refs.size,
     formal_matrix_rows: expectedRows,

@@ -120,7 +120,9 @@ Result 可以内嵌脱敏 trace 方便消费，也可以引用独立 Trace；项
 
 ## Study 与 EvalRun：从执行事实到比较矩阵
 
-`study-v1` 要求至少两个唯一 config、至少 20 个 task、至少 3 次重复，并为任务指定 workload 与 development/holdout split；promotion 包含通过率增量、p90 成本变化和零安全违规。当前字段把成功率差定义为候选减基线的绝对比例，把 P90 成本差定义为候选减基线的绝对 USD/run；运行时拒绝非有限或越出 `[-1, 1]` 的成功率阈值。这里的数量和 run-level 点估计是项目学习模板约束，不是任何工作负载都充分的统计保证。
+`study-v1.1` 要求至少两个唯一 config、至少 20 个 task、至少 3 次重复，并为任务指定 workload 与 development/holdout split。它显式固定 `pass_rate_analysis_unit=task` 和 `task_pass_min_runs`；当前样例规定 3 次中至少 2 次成功才把一个任务记为通过。Promotion 把成功率差定义为候选减基线的 task-level 绝对比例，把 P90 成本差定义为候选减基线的绝对 USD/run，并要求零安全违规；运行时拒绝非有限、越出 `[-1, 1]` 的成功率阈值，以及超过 repeats 的任务成功门槛。这里的数量和点估计是项目学习模板约束，不是任何工作负载都充分的统计保证。
+
+`study-v1.0.json` 作为历史 reader 保留：它的成功率门槛按 holdout run 直接计算，没有任务聚合字段。不能把旧 Study 静默按 1.1 解释，也不能给 1.0 对象补两个字段却不升级 `schema_version`。当前 `study.json` 只接受 1.1；运行时汇总器同时读取两版，并在输出中记录 `study_schema_version` 与实际 `analysis_unit`。
 
 `eval-run-v1` 把矩阵单元写成 `(task_id, config_id, repeat)`，并携带 split、通过/安全状态、资源、失败类型、fixture/instruction hash、模型与 harness 身份、证据等级。每个逻辑单元只能出现一次；基础设施重试需要另外的尝试谱系，不能用第二行占据同一 cell 而不解释。
 

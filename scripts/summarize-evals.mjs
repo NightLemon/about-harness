@@ -8,7 +8,7 @@ if (!studyFile || !runFile) {
 
 const study = readJson(studyFile)
 const rows = readJsonl(runFile)
-assertStudy(study)
+const design = assertStudy(study)
 const coverage = assertRuns(rows, study)
 
 function summarizeRuns(runs) {
@@ -38,6 +38,31 @@ function summarizeRuns(runs) {
   }
 }
 
+function summarizeTasks(runs) {
+  if (runs.length === 0 || design.analysisUnit !== 'task') return null
+  const outcomes = [...Map.groupBy(runs, (row) => row.task_id)].map(([taskId, taskRuns]) => {
+    const successfulRuns = taskRuns.filter((row) => row.passed).length
+    const evaluable = taskRuns.length === study.repeats
+    return {
+      task_id: taskId,
+      runs: taskRuns.length,
+      successful_runs: successfulRuns,
+      evaluable,
+      passed: evaluable ? successfulRuns >= design.taskPassMinRuns : null
+    }
+  })
+  const evaluable = outcomes.filter((outcome) => outcome.evaluable)
+  const passedTasks = evaluable.filter((outcome) => outcome.passed).length
+  return {
+    tasks_observed: outcomes.length,
+    evaluable_tasks: evaluable.length,
+    incomplete_tasks: outcomes.length - evaluable.length,
+    passed_tasks: passedTasks,
+    pass_rate: evaluable.length > 0 ? rounded(passedTasks / evaluable.length, 4) : null,
+    pass_rate_wilson95: evaluable.length > 0 ? wilson95(passedTasks, evaluable.length) : null
+  }
+}
+
 const grouped = Map.groupBy(rows, (row) => row.config_id)
 const configs = {}
 for (const [config, runs] of grouped) {
@@ -46,7 +71,17 @@ for (const [config, runs] of grouped) {
     by_split: {
       development: summarizeRuns(runs.filter((row) => row.split === 'development')),
       holdout: summarizeRuns(runs.filter((row) => row.split === 'holdout'))
-    }
+    },
+    task_level: design.analysisUnit === 'task'
+      ? {
+          successful_runs_required: design.taskPassMinRuns,
+          scheduled_runs_per_task: study.repeats,
+          by_split: {
+            development: summarizeTasks(runs.filter((row) => row.split === 'development')),
+            holdout: summarizeTasks(runs.filter((row) => row.split === 'holdout'))
+          }
+        }
+      : null
   }
 }
 
@@ -90,11 +125,30 @@ function rounded(value, digits) {
 
 const promotionCandidates = {}
 const baselineHoldout = configs[baseline]?.by_split.holdout ?? null
+const baselinePassSummary = design.analysisUnit === 'task'
+  ? configs[baseline]?.task_level?.by_split.holdout ?? null
+  : baselineHoldout
 for (const candidate of study.configs.slice(1)) {
   const candidateHoldout = configs[candidate]?.by_split.holdout ?? null
-  const metricsAvailable = baselineHoldout !== null && candidateHoldout !== null
-  const baselinePassRate = metricsAvailable ? baselineHoldout.passed / baselineHoldout.runs : null
-  const candidatePassRate = metricsAvailable ? candidateHoldout.passed / candidateHoldout.runs : null
+  const candidatePassSummary = design.analysisUnit === 'task'
+    ? configs[candidate]?.task_level?.by_split.holdout ?? null
+    : candidateHoldout
+  const metricsAvailable = baselineHoldout !== null
+    && candidateHoldout !== null
+    && baselinePassSummary !== null
+    && candidatePassSummary !== null
+    && baselinePassSummary.pass_rate !== null
+    && candidatePassSummary.pass_rate !== null
+  const baselinePassRate = metricsAvailable
+    ? design.analysisUnit === 'task'
+      ? baselinePassSummary.passed_tasks / baselinePassSummary.evaluable_tasks
+      : baselinePassSummary.passed / baselinePassSummary.runs
+    : null
+  const candidatePassRate = metricsAvailable
+    ? design.analysisUnit === 'task'
+      ? candidatePassSummary.passed_tasks / candidatePassSummary.evaluable_tasks
+      : candidatePassSummary.passed / candidatePassSummary.runs
+    : null
   const passRateDelta = metricsAvailable ? candidatePassRate - baselinePassRate : null
   const p90CostDelta = metricsAvailable ? candidateHoldout.cost_usd_p90 - baselineHoldout.cost_usd_p90 : null
   const observed = metricsAvailable
@@ -102,6 +156,17 @@ for (const candidate of study.configs.slice(1)) {
         baseline_pass_rate: rounded(baselinePassRate, 4),
         candidate_pass_rate: rounded(candidatePassRate, 4),
         pass_rate_delta: rounded(passRateDelta, 4),
+        ...(design.analysisUnit === 'task'
+          ? {
+              baseline_tasks: baselinePassSummary.evaluable_tasks,
+              candidate_tasks: candidatePassSummary.evaluable_tasks,
+              baseline_passed_tasks: baselinePassSummary.passed_tasks,
+              candidate_passed_tasks: candidatePassSummary.passed_tasks
+            }
+          : {
+              baseline_runs: baselinePassSummary.runs,
+              candidate_runs: candidatePassSummary.runs
+            }),
         baseline_p90_cost_usd: baselineHoldout.cost_usd_p90,
         candidate_p90_cost_usd: candidateHoldout.cost_usd_p90,
         p90_cost_usd_delta: rounded(p90CostDelta, 6)
@@ -110,6 +175,17 @@ for (const candidate of study.configs.slice(1)) {
         baseline_pass_rate: null,
         candidate_pass_rate: null,
         pass_rate_delta: null,
+        ...(design.analysisUnit === 'task'
+          ? {
+              baseline_tasks: null,
+              candidate_tasks: null,
+              baseline_passed_tasks: null,
+              candidate_passed_tasks: null
+            }
+          : {
+              baseline_runs: null,
+              candidate_runs: null
+            }),
         baseline_p90_cost_usd: null,
         candidate_p90_cost_usd: null,
         p90_cost_usd_delta: null
@@ -147,6 +223,7 @@ const promotionBlockers = structuralBlockers.length > 0
 
 console.log(JSON.stringify({
   schema_version: '1.0',
+  study_schema_version: study.schema_version,
   evidence,
   evidence_levels: evidenceLevels,
   warning: evidence === 'E1'
@@ -164,7 +241,13 @@ console.log(JSON.stringify({
   promotion_analysis: {
     baseline,
     split: 'holdout',
-    analysis_unit: 'run',
+    analysis_unit: design.analysisUnit,
+    task_success_rule: design.analysisUnit === 'task'
+      ? {
+          successful_runs_required: design.taskPassMinRuns,
+          scheduled_runs_per_task: study.repeats
+        }
+      : null,
     pass_rate_delta_unit: 'absolute_proportion',
     p90_cost_delta_unit: 'absolute_usd_per_run',
     thresholds: study.promotion,

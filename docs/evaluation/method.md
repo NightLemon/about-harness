@@ -156,15 +156,16 @@ npm run eval:summary
 
 ### 预期输出与断言
 
-Validator 应报告 20 tasks、6 workloads、2 configs、3 repeats、6 个 holdout，因此正式矩阵是 120 个 cell；当前只有 12 个唯一 development cell，缺 108 个，`sample_matrix_complete=false`。Summary 应给出：
+Validator 应报告 `study_schema_version=1.1`、`pass_rate_analysis_unit=task`、`task_pass_min_runs=2`、20 tasks、6 workloads、2 configs、3 repeats、6 个 holdout，因此正式矩阵是 120 个 cell；当前只有 12 个唯一 development cell，缺 108 个，`sample_matrix_complete=false`。Summary 应给出：
 
 - `evidence=E1`，且 warning 明确禁止模型排名；
 - `promotion_eligible=false`；
 - blockers 为 `incomplete_matrix` 与 `evidence_below_target`；
 - 两个配置的 `by_split.holdout=null`；
+- 两个配置的 development task-level 汇总都是 `evaluable_tasks=0`、`incomplete_tasks=6`；
 - 六个完整 development 配对是 5 win、0 loss、1 tie。
 
-最后一项只是检验配对汇总逻辑，不能抵消无 holdout、矩阵不完整和证据不足。结构前置条件满足后，summary 会在完整 holdout 上执行 run-level 通过率绝对增量和每次运行 P90 费用绝对增量阈值；它尚未计算 task-level 聚合或不确定性区间，因此即使将来为 `true`，仍需按预注册规则人工复核完整采用条件。
+最后一项只是检验 run 配对汇总逻辑，不能抵消无 holdout、矩阵不完整和证据不足。`study-v1.1` 规定每个任务至少 2/3 次成功；结构前置条件满足后，summary 会在完整 holdout 上执行 task-level 通过率绝对增量和每次运行 P90 费用绝对增量阈值。它尚未计算候选—基线差异区间，因此即使将来为 `true`，仍需按预注册规则人工复核完整采用条件。
 
 ### 失败、停止、清理与回退
 

@@ -317,7 +317,7 @@ npm run results:redact
 
 ### 预期输出与人工断言
 
-`eval:validate` 应报告 20 tasks、6 workloads、2 configs、3 repeats、120 个预期 cell、12 个已观察 cell 和 108 个缺失 cell。`eval:summary` 应报告 `matrix.complete=false`、`promotion_eligible=false`、没有 holdout run，并列出 `incomplete_matrix`、`evidence_below_target` 两个阻断项。`results:redact` 应确认两个 JSON 文件通过当前键名、路径和凭据模式扫描。
+`eval:validate` 应报告 Study 1.1、task-level 2/3 成功规则、20 tasks、6 workloads、2 configs、3 repeats、120 个预期 cell、12 个已观察 cell 和 108 个缺失 cell。`eval:summary` 应报告 `matrix.complete=false`、`promotion_eligible=false`、没有 holdout run，并列出 `incomplete_matrix`、`evidence_below_target` 两个阻断项；六个 development task 都因只出现 1/3 次而归入 `incomplete_tasks`，不能进入 task-level 分母。`results:redact` 应确认两个 JSON 文件通过当前键名、路径和凭据模式扫描。
 
 然后用 `Get-ChildItem lab/results/public/*.json` 枚举并人工打开汇总与轨迹两个样例，断言它们标记 `evidence=E1`、`offline=true`，没有声称真实 framework 或模型质量，trace 序号连续且不含真实页面内容。
 
@@ -329,7 +329,7 @@ npm run results:redact
 
 ## 当前证据边界
 
-本项目样例只有 12 行 development E1 数据；它展示 schema、fixture lineage、聚合、失败分类和脱敏门禁，没有完整重复、holdout、真实 provider、真实费用或任务级正式晋级计算。即使 `offline-engineering` 在这 6 个配对样例里是 5 win、0 loss、1 tie，也不能据此宣称模型更强或配置应上线。
+本项目样例只有 12 行 development E1 数据；它展示 schema、fixture lineage、run/task 聚合、失败分类和脱敏门禁，但没有完整重复、holdout、真实 provider、真实费用或可执行的 task-level 晋级判断。即使 `offline-engineering` 在这 6 个单次配对样例里是 5 win、0 loss、1 tie，也不能据此宣称模型更强或配置应上线。
 
 继续阅读[回归与晋级](/evaluation/regression)，或进入[评测实验室](/practice/evaluation)运行样例。隐私处理见[Secret 与隐私](/security/secrets-privacy)。
 
