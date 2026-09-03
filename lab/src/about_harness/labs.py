@@ -1,10 +1,13 @@
 from __future__ import annotations
 
+import ast
 import copy
 import hashlib
 import json
+from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
+from typing import cast
 
 from about_harness.contracts import JsonValue
 from about_harness.integrations.base import IntegrationContractError
@@ -29,6 +32,34 @@ MIGRATION_EVIDENCE_AXES = {"source", "seam", "source+seam", "live"}
 
 class FixtureError(ValueError):
     pass
+
+
+CollectFunction = Callable[[list[int]], list[int]]
+_BUGGY_COLLECT = """def collect(items):
+    index = 0
+    output = []
+    while index < len(items) - 1:
+        output.append(items[index])
+        index += 1
+    return output
+"""
+_FIXED_COLLECT = """def collect(items):
+    index = 0
+    output = []
+    while index < len(items):
+        output.append(items[index])
+        index += 1
+    return output
+"""
+_COLLECT_AST_ALLOWLIST = {
+    ast.dump(ast.parse(_BUGGY_COLLECT), include_attributes=False),
+    ast.dump(ast.parse(_FIXED_COLLECT), include_attributes=False),
+}
+_CODING_CASES: dict[str, tuple[list[int], list[int]]] = {
+    "empty": ([], []),
+    "single": ([1], [1]),
+    "multiple": ([1, 2, 3], [1, 2, 3]),
+}
 
 
 @dataclass(frozen=True, slots=True)
@@ -89,16 +120,53 @@ def load_fixture(fixtures_root: Path, name: str) -> FixtureBundle:
     )
 
 
-def _coding(payload: dict[str, JsonValue]) -> dict[str, JsonValue]:
+def _compile_fixture_collect(source: str) -> CollectFunction:
+    try:
+        tree = ast.parse(source)
+    except SyntaxError as exc:
+        raise FixtureError("coding candidate is not valid Python") from exc
+    if ast.dump(tree, include_attributes=False) not in _COLLECT_AST_ALLOWLIST:
+        raise FixtureError("coding candidate is outside the fixed AST allowlist")
+    namespace: dict[str, object] = {"__builtins__": {"len": len}}
+    exec(compile(tree, "<coding-fixture>", "exec"), namespace)
+    function = namespace.get("collect")
+    if not callable(function):
+        raise FixtureError("coding candidate must define collect")
+    return cast(CollectFunction, function)
+
+
+def evaluate_coding(payload: dict[str, JsonValue]) -> dict[str, JsonValue]:
     before = payload.get("before")
     patch = payload.get("candidate_patch")
     tests = payload.get("tests")
-    if not isinstance(before, str) or not isinstance(patch, str) or not isinstance(tests, list):
+    if (
+        not isinstance(before, str)
+        or not isinstance(patch, str)
+        or not isinstance(tests, list)
+        or not all(isinstance(test, str) for test in tests)
+        or len(tests) != len(set(tests))
+        or set(tests) != set(_CODING_CASES)
+    ):
         raise FixtureError("coding input is invalid")
+    baseline = _compile_fixture_collect(before)
+    candidate = _compile_fixture_collect(patch)
+    baseline_failures: list[str] = []
+    test_results: dict[str, JsonValue] = {}
+    for test in tests:
+        assert isinstance(test, str)
+        values, expected = _CODING_CASES[test]
+        if baseline(list(values)) != expected:
+            baseline_failures.append(test)
+        test_results[test] = candidate(list(values)) == expected
+    tests_passed = sum(result is True for result in test_results.values())
+    baseline_failure_items: list[JsonValue] = list(baseline_failures)
     return {
-        "patch_applied": "index < len(items):" in patch
-        and "index < len(items) - 1:" in before,
-        "tests_passed": len(tests),
+        "patch_applied": patch != before
+        and bool(baseline_failures)
+        and tests_passed == len(tests),
+        "baseline_failures": baseline_failure_items,
+        "test_results": test_results,
+        "tests_passed": tests_passed,
         "files_changed": 1,
     }
 
@@ -220,7 +288,7 @@ def evaluate_migration(payload: dict[str, JsonValue]) -> dict[str, JsonValue]:
 
 def execute_fixture(bundle: FixtureBundle) -> dict[str, JsonValue]:
     handlers = {
-        "coding": _coding,
+        "coding": evaluate_coding,
         "browser": extract_local_catalog,
         "research": resolve_versioned_claims,
         "data": normalize_rows,
@@ -251,7 +319,13 @@ def run_all(fixtures_root: Path) -> list[dict[str, JsonValue]]:
 def _negative_rejected(bundle: FixtureBundle, output: dict[str, JsonValue]) -> bool:
     if bundle.name == "coding":
         patch = bundle.negative.get("candidate_patch")
-        return isinstance(patch, str) and "unrelated production dependency" in patch
+        if not isinstance(patch, str):
+            return False
+        try:
+            _compile_fixture_collect(patch)
+        except FixtureError:
+            return True
+        return False
     if bundle.name == "browser":
         url = bundle.negative.get("url")
         try:
