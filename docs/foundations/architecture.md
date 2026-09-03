@@ -171,7 +171,7 @@ Validation（验收验证）将产物与 Task acceptance 对照。确定性任�
 
 当前 Python `HarnessRunner` 与 TypeScript `MinimalLoop` 都把 complete 作为 completion proposal，调用可替换的 `AcceptanceValidator`。默认 `JsonSubsetAcceptanceValidator` 递归比对 object 子集；失败路径进入 `acceptance_result`，下一轮可以修正，反复失败最终受 model-call budget 停止。Python 还把 Adapter 游标与预算写入 checkpoint，TS 目前只保留进程内状态。两边在 Validator 返回后都会复查 timeout/cancel，迟到的通过结果不能覆盖终态。
 
-这仍只是结构 oracle：它不读取最终文件、运行测试、查询业务回执或判断验收条件是否充分。`acceptance={}` 会明确记录零条件后通过；自定义 validator 异常在当前 result-v1 暂映射为 `failed/invalid_action`。生产扩展应绑定 validator 版本、冻结 artifact、业务证据和独立错误枚举。
+这仍只是结构 oracle：它不读取最终文件、运行测试、查询业务回执或判断验收条件是否充分。`acceptance={}` 会明确记录零条件后通过；自定义 validator 异常在当前 result-v1.1 暂映射为 `failed/invalid_action`。生产扩展应绑定 validator 版本、冻结 artifact、业务证据和独立错误枚举。
 
 ## State：至少区分三类
 

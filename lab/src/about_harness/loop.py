@@ -243,7 +243,7 @@ class HarnessRunner:
                     RunStatus.COMPLETED,
                     StopReason.COMPLETED,
                     action.output,
-                    step + 1,
+                    step,
                     model_calls,
                     tool_calls,
                     reused_tool_calls,

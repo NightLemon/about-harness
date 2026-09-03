@@ -13,6 +13,7 @@ from about_harness.contracts import (
     Budgets,
     ContractError,
     RunCheckpoint,
+    RunResult,
     TaskSpec,
     ToolCall,
 )
@@ -24,6 +25,7 @@ from jsonschema.exceptions import ValidationError
 ROOT = Path(__file__).parents[1]
 SCHEMAS = ROOT / "schemas"
 CONTRACT_FIXTURE = ROOT / "fixtures" / "contracts" / "runtime-contract-v1.json"
+RESULT_FIXTURE = ROOT / "fixtures" / "contracts" / "run-result-v1.json"
 
 
 def _load_contract_cases(section: str) -> list[dict[str, Any]]:
@@ -57,6 +59,41 @@ def _load_contract_cases(section: str) -> list[dict[str, Any]]:
 
 SHARED_TASK_CASES = _load_contract_cases("task_cases")
 SHARED_ACTION_CASES = _load_contract_cases("action_cases")
+
+
+def _load_result_cases() -> list[dict[str, Any]]:
+    document: dict[str, Any] = json.loads(RESULT_FIXTURE.read_text(encoding="utf-8"))
+    if (
+        document.get("schema_version") != "1.0"
+        or document.get("result_schema_version") != "1.1"
+        or document.get("evidence") != "E1"
+    ):
+        raise ValueError("shared result fixture metadata is invalid")
+    raw_cases = document.get("result_cases")
+    if not isinstance(raw_cases, list) or not raw_cases:
+        raise ValueError("shared result fixture has no cases")
+    cases: list[dict[str, Any]] = []
+    seen_ids: set[str] = set()
+    for raw_case_value in cast(list[object], raw_cases):
+        if not isinstance(raw_case_value, dict):
+            raise ValueError("shared result entries must be objects")
+        raw_case = cast(dict[str, Any], raw_case_value)
+        case_id = raw_case.get("case_id")
+        if (
+            not isinstance(case_id, str)
+            or not case_id
+            or case_id in seen_ids
+            or not isinstance(raw_case.get("schema_valid"), bool)
+            or not isinstance(raw_case.get("runtime_valid"), bool)
+            or not isinstance(raw_case.get("value"), dict)
+        ):
+            raise ValueError("shared result fixture contains an invalid case")
+        seen_ids.add(case_id)
+        cases.append(raw_case)
+    return cases
+
+
+SHARED_RESULT_CASES = _load_result_cases()
 
 
 def valid_task() -> dict[str, Any]:
@@ -115,6 +152,27 @@ def test_shared_action_wire_contract(case: dict[str, Any]) -> None:
     assert (python_valid, schema_valid) == (expected_valid, expected_valid)
 
 
+@pytest.mark.parametrize(
+    "case",
+    SHARED_RESULT_CASES,
+    ids=[case["case_id"] for case in SHARED_RESULT_CASES],
+)
+def test_shared_result_wire_contract(case: dict[str, Any]) -> None:
+    data = cast(dict[str, Any], case["value"])
+    expected_schema = cast(object, case["schema_valid"])
+    expected_runtime = cast(object, case["runtime_valid"])
+    assert isinstance(expected_schema, bool)
+    assert isinstance(expected_runtime, bool)
+    try:
+        RunResult.from_dict(data)
+        python_valid = True
+    except ContractError:
+        python_valid = False
+    schema = json.loads((SCHEMAS / "result.json").read_text(encoding="utf-8"))
+    schema_valid = Draft202012Validator(schema).is_valid(data)
+    assert (python_valid, schema_valid) == (expected_runtime, expected_schema)
+
+
 def test_task_dataclass_and_json_schema_accept_same_positive_fixture() -> None:
     data = valid_task()
     task = TaskSpec.from_dict(data)
@@ -165,6 +223,7 @@ def test_all_schemas_are_valid_draft_2020_12() -> None:
         "trace",
         "trace-v1.0",
         "result",
+        "result-v1.0",
         "config",
         "eval-run",
         "study",
@@ -193,11 +252,22 @@ def test_runtime_completion_result_and_trace_match_public_schemas() -> None:
         "events": serialized["trace"],
     }
     result_schema = json.loads((SCHEMAS / "result.json").read_text(encoding="utf-8"))
+    old_result_schema = json.loads(
+        (SCHEMAS / "result-v1.0.json").read_text(encoding="utf-8")
+    )
     trace_schema = json.loads((SCHEMAS / "trace.json").read_text(encoding="utf-8"))
     old_trace_schema = json.loads(
         (SCHEMAS / "trace-v1.0.json").read_text(encoding="utf-8")
     )
     Draft202012Validator(result_schema).validate(serialized)
+    assert RunResult.from_dict(serialized).to_dict() == serialized
+    legacy_result = dict(serialized)
+    legacy_result["schema_version"] = "1.0"
+    Draft202012Validator(old_result_schema).validate(legacy_result)
+    with pytest.raises(ValidationError):
+        Draft202012Validator(result_schema).validate(legacy_result)
+    with pytest.raises(ValidationError):
+        Draft202012Validator(old_result_schema).validate(serialized)
     Draft202012Validator(trace_schema).validate(trace)
     assert any(event.kind == "acceptance_result" for event in result.trace)
     with pytest.raises(ValidationError):
@@ -212,6 +282,7 @@ def test_schema_inventory_contains_only_runtime_and_evaluation_contracts() -> No
         "trace.json",
         "trace-v1.0.json",
         "result.json",
+        "result-v1.0.json",
         "config.json",
         "eval-run.json",
         "study.json",
@@ -248,6 +319,16 @@ def test_wire_parsers_reject_non_json_runtime_values() -> None:
     cyclic["self"] = cyclic
     with pytest.raises(ContractError):
         Action.from_dict({"kind": "complete", "output": cyclic, "cost_usd": 0})
+
+    result_data = json.loads(json.dumps(SHARED_RESULT_CASES[0]["value"]))
+    result_data["metrics"]["cost_usd"] = math.inf
+    with pytest.raises(ContractError):
+        RunResult.from_dict(result_data)
+
+    result_data = json.loads(json.dumps(SHARED_RESULT_CASES[0]["value"]))
+    result_data["output"] = cyclic
+    with pytest.raises(ContractError):
+        RunResult.from_dict(result_data)
 
 
 def test_internal_tool_action_rejects_completion_output() -> None:

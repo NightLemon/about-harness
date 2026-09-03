@@ -1,0 +1,347 @@
+{
+  "schema_version": "1.0",
+  "result_schema_version": "1.1",
+  "evidence": "E1",
+  "description": "Synthetic RunResult wire cases shared by the public schema and Python/TypeScript runtime validators. Runtime-only cases expose relational invariants that JSON Schema does not express.",
+  "result_cases": [
+    {
+      "case_id": "result-completed-valid",
+      "schema_valid": true,
+      "runtime_valid": true,
+      "value": {
+        "schema_version": "1.1",
+        "run_id": "run-completed",
+        "task_id": "shared-result-task",
+        "status": "completed",
+        "stop_reason": "completed",
+        "output": { "ok": true },
+        "metrics": {
+          "steps": 1,
+          "model_calls": 2,
+          "tool_calls": 1,
+          "reused_tool_calls": 0,
+          "duration_ms": 5,
+          "cost_usd": 0.01
+        },
+        "trace": [
+          { "sequence": 0, "kind": "run_started", "timestamp_ms": 0, "data": { "offline": true } },
+          { "sequence": 1, "kind": "model_action", "timestamp_ms": 1, "data": { "kind": "tool" } },
+          { "sequence": 2, "kind": "tool_result", "timestamp_ms": 2, "data": { "reused": false } },
+          { "sequence": 3, "kind": "checkpoint", "timestamp_ms": 3, "data": { "step": 1 } },
+          { "sequence": 4, "kind": "model_action", "timestamp_ms": 4, "data": { "kind": "complete" } },
+          { "sequence": 5, "kind": "acceptance_result", "timestamp_ms": 4, "data": { "accepted": true } },
+          { "sequence": 6, "kind": "run_stopped", "timestamp_ms": 5, "data": { "status": "completed", "reason": "completed" } }
+        ],
+        "checkpoint": {
+          "step": 1,
+          "model_calls": 1,
+          "tool_calls": 1,
+          "reused_tool_calls": 0,
+          "cost_usd": 0,
+          "adapter_state": { "index": 1 }
+        },
+        "error": null
+      }
+    },
+    {
+      "case_id": "result-stopped-valid",
+      "schema_valid": true,
+      "runtime_valid": true,
+      "value": {
+        "schema_version": "1.1",
+        "run_id": "run-stopped",
+        "task_id": "shared-result-task",
+        "status": "stopped",
+        "stop_reason": "max_steps",
+        "output": null,
+        "metrics": {
+          "steps": 1,
+          "model_calls": 1,
+          "tool_calls": 0,
+          "reused_tool_calls": 1,
+          "duration_ms": 3,
+          "cost_usd": 0
+        },
+        "trace": [
+          { "sequence": 0, "kind": "run_started", "timestamp_ms": 0, "data": { "offline": true } },
+          { "sequence": 1, "kind": "model_action", "timestamp_ms": 1, "data": { "kind": "tool" } },
+          { "sequence": 2, "kind": "tool_result", "timestamp_ms": 2, "data": { "reused": true } },
+          { "sequence": 3, "kind": "run_stopped", "timestamp_ms": 3, "data": { "status": "stopped", "reason": "max_steps" } }
+        ],
+        "checkpoint": {
+          "step": 1,
+          "model_calls": 1,
+          "tool_calls": 0,
+          "reused_tool_calls": 1,
+          "cost_usd": 0,
+          "adapter_state": { "index": 1 }
+        },
+        "error": null
+      }
+    },
+    {
+      "case_id": "result-failed-valid",
+      "schema_valid": true,
+      "runtime_valid": true,
+      "value": {
+        "schema_version": "1.1",
+        "run_id": "run-failed",
+        "task_id": "shared-result-task",
+        "status": "failed",
+        "stop_reason": "invalid_action",
+        "output": null,
+        "metrics": {
+          "steps": 0,
+          "model_calls": 0,
+          "tool_calls": 0,
+          "reused_tool_calls": 0,
+          "duration_ms": 1,
+          "cost_usd": 0
+        },
+        "trace": [
+          { "sequence": 0, "kind": "run_started", "timestamp_ms": 0, "data": { "offline": true } },
+          { "sequence": 1, "kind": "run_stopped", "timestamp_ms": 1, "data": { "status": "failed", "reason": "invalid_action" } }
+        ],
+        "checkpoint": null,
+        "error": "adapter returned an invalid action"
+      }
+    },
+    {
+      "case_id": "result-permission-denied-valid",
+      "schema_valid": true,
+      "runtime_valid": true,
+      "value": {
+        "schema_version": "1.1",
+        "run_id": "run-denied",
+        "task_id": "shared-result-task",
+        "status": "stopped",
+        "stop_reason": "permission_denied",
+        "output": null,
+        "metrics": {
+          "steps": 0,
+          "model_calls": 1,
+          "tool_calls": 0,
+          "reused_tool_calls": 0,
+          "duration_ms": 2,
+          "cost_usd": 0
+        },
+        "trace": [
+          { "sequence": 0, "kind": "run_started", "timestamp_ms": 0, "data": { "offline": true } },
+          { "sequence": 1, "kind": "model_action", "timestamp_ms": 1, "data": { "kind": "tool" } },
+          { "sequence": 2, "kind": "policy_denied", "timestamp_ms": 1, "data": { "tool": "write" } },
+          { "sequence": 3, "kind": "run_stopped", "timestamp_ms": 2, "data": { "status": "stopped", "reason": "permission_denied" } }
+        ],
+        "checkpoint": null,
+        "error": "tool is not allowlisted"
+      }
+    },
+    {
+      "case_id": "result-status-reason-mismatch",
+      "schema_valid": false,
+      "runtime_valid": false,
+      "value": {
+        "schema_version": "1.1",
+        "run_id": "run-bad-state",
+        "task_id": "shared-result-task",
+        "status": "completed",
+        "stop_reason": "max_steps",
+        "output": null,
+        "metrics": { "steps": 0, "model_calls": 0, "tool_calls": 0, "reused_tool_calls": 0, "duration_ms": 1, "cost_usd": 0 },
+        "trace": [
+          { "sequence": 0, "kind": "run_started", "timestamp_ms": 0, "data": {} },
+          { "sequence": 1, "kind": "run_stopped", "timestamp_ms": 1, "data": { "status": "completed", "reason": "max_steps" } }
+        ],
+        "checkpoint": null,
+        "error": null
+      }
+    },
+    {
+      "case_id": "result-stopped-with-output",
+      "schema_valid": false,
+      "runtime_valid": false,
+      "value": {
+        "schema_version": "1.1",
+        "run_id": "run-bad-output",
+        "task_id": "shared-result-task",
+        "status": "stopped",
+        "stop_reason": "timeout",
+        "output": { "partial": true },
+        "metrics": { "steps": 0, "model_calls": 1, "tool_calls": 0, "reused_tool_calls": 0, "duration_ms": 10, "cost_usd": 0 },
+        "trace": [
+          { "sequence": 0, "kind": "run_started", "timestamp_ms": 0, "data": {} },
+          { "sequence": 1, "kind": "run_stopped", "timestamp_ms": 10, "data": { "status": "stopped", "reason": "timeout" } }
+        ],
+        "checkpoint": null,
+        "error": null
+      }
+    },
+    {
+      "case_id": "result-failed-without-error",
+      "schema_valid": false,
+      "runtime_valid": false,
+      "value": {
+        "schema_version": "1.1",
+        "run_id": "run-no-error",
+        "task_id": "shared-result-task",
+        "status": "failed",
+        "stop_reason": "tool_error",
+        "output": null,
+        "metrics": { "steps": 0, "model_calls": 1, "tool_calls": 0, "reused_tool_calls": 0, "duration_ms": 1, "cost_usd": 0 },
+        "trace": [
+          { "sequence": 0, "kind": "run_started", "timestamp_ms": 0, "data": {} },
+          { "sequence": 1, "kind": "run_stopped", "timestamp_ms": 1, "data": { "status": "failed", "reason": "tool_error" } }
+        ],
+        "checkpoint": null,
+        "error": null
+      }
+    },
+    {
+      "case_id": "result-boolean-counter",
+      "schema_valid": false,
+      "runtime_valid": false,
+      "value": {
+        "schema_version": "1.1",
+        "run_id": "run-bool-counter",
+        "task_id": "shared-result-task",
+        "status": "stopped",
+        "stop_reason": "cancelled",
+        "output": null,
+        "metrics": { "steps": false, "model_calls": 0, "tool_calls": 0, "reused_tool_calls": 0, "duration_ms": 1, "cost_usd": 0 },
+        "trace": [
+          { "sequence": 0, "kind": "run_started", "timestamp_ms": 0, "data": {} },
+          { "sequence": 1, "kind": "run_stopped", "timestamp_ms": 1, "data": { "status": "stopped", "reason": "cancelled" } }
+        ],
+        "checkpoint": null,
+        "error": null
+      }
+    },
+    {
+      "case_id": "result-unknown-metric",
+      "schema_valid": false,
+      "runtime_valid": false,
+      "value": {
+        "schema_version": "1.1",
+        "run_id": "run-extra-metric",
+        "task_id": "shared-result-task",
+        "status": "stopped",
+        "stop_reason": "cancelled",
+        "output": null,
+        "metrics": { "steps": 0, "model_calls": 0, "tool_calls": 0, "reused_tool_calls": 0, "duration_ms": 1, "cost_usd": 0, "tokens": 1 },
+        "trace": [
+          { "sequence": 0, "kind": "run_started", "timestamp_ms": 0, "data": {} },
+          { "sequence": 1, "kind": "run_stopped", "timestamp_ms": 1, "data": { "status": "stopped", "reason": "cancelled" } }
+        ],
+        "checkpoint": null,
+        "error": null
+      }
+    },
+    {
+      "case_id": "result-step-sum-mismatch",
+      "schema_valid": true,
+      "runtime_valid": false,
+      "value": {
+        "schema_version": "1.1",
+        "run_id": "run-bad-step-sum",
+        "task_id": "shared-result-task",
+        "status": "stopped",
+        "stop_reason": "max_steps",
+        "output": null,
+        "metrics": { "steps": 2, "model_calls": 2, "tool_calls": 1, "reused_tool_calls": 0, "duration_ms": 2, "cost_usd": 0 },
+        "trace": [
+          { "sequence": 0, "kind": "run_started", "timestamp_ms": 0, "data": {} },
+          { "sequence": 1, "kind": "run_stopped", "timestamp_ms": 2, "data": { "status": "stopped", "reason": "max_steps" } }
+        ],
+        "checkpoint": null,
+        "error": null
+      }
+    },
+    {
+      "case_id": "result-trace-sequence-gap",
+      "schema_valid": true,
+      "runtime_valid": false,
+      "value": {
+        "schema_version": "1.1",
+        "run_id": "run-trace-gap",
+        "task_id": "shared-result-task",
+        "status": "stopped",
+        "stop_reason": "timeout",
+        "output": null,
+        "metrics": { "steps": 0, "model_calls": 1, "tool_calls": 0, "reused_tool_calls": 0, "duration_ms": 2, "cost_usd": 0 },
+        "trace": [
+          { "sequence": 0, "kind": "run_started", "timestamp_ms": 0, "data": {} },
+          { "sequence": 2, "kind": "run_stopped", "timestamp_ms": 2, "data": { "status": "stopped", "reason": "timeout" } }
+        ],
+        "checkpoint": null,
+        "error": null
+      }
+    },
+    {
+      "case_id": "result-final-event-mismatch",
+      "schema_valid": true,
+      "runtime_valid": false,
+      "value": {
+        "schema_version": "1.1",
+        "run_id": "run-final-mismatch",
+        "task_id": "shared-result-task",
+        "status": "stopped",
+        "stop_reason": "timeout",
+        "output": null,
+        "metrics": { "steps": 0, "model_calls": 1, "tool_calls": 0, "reused_tool_calls": 0, "duration_ms": 2, "cost_usd": 0 },
+        "trace": [
+          { "sequence": 0, "kind": "run_started", "timestamp_ms": 0, "data": {} },
+          { "sequence": 1, "kind": "run_stopped", "timestamp_ms": 2, "data": { "status": "stopped", "reason": "cancelled" } }
+        ],
+        "checkpoint": null,
+        "error": null
+      }
+    },
+    {
+      "case_id": "result-checkpoint-ahead",
+      "schema_valid": true,
+      "runtime_valid": false,
+      "value": {
+        "schema_version": "1.1",
+        "run_id": "run-checkpoint-ahead",
+        "task_id": "shared-result-task",
+        "status": "stopped",
+        "stop_reason": "timeout",
+        "output": null,
+        "metrics": { "steps": 0, "model_calls": 1, "tool_calls": 0, "reused_tool_calls": 0, "duration_ms": 2, "cost_usd": 0 },
+        "trace": [
+          { "sequence": 0, "kind": "run_started", "timestamp_ms": 0, "data": {} },
+          { "sequence": 1, "kind": "run_stopped", "timestamp_ms": 2, "data": { "status": "stopped", "reason": "timeout" } }
+        ],
+        "checkpoint": {
+          "step": 1,
+          "model_calls": 1,
+          "tool_calls": 1,
+          "reused_tool_calls": 0,
+          "cost_usd": 0,
+          "adapter_state": {}
+        },
+        "error": null
+      }
+    },
+    {
+      "case_id": "result-unknown-trace-kind",
+      "schema_valid": false,
+      "runtime_valid": false,
+      "value": {
+        "schema_version": "1.1",
+        "run_id": "run-bad-trace-kind",
+        "task_id": "shared-result-task",
+        "status": "stopped",
+        "stop_reason": "timeout",
+        "output": null,
+        "metrics": { "steps": 0, "model_calls": 1, "tool_calls": 0, "reused_tool_calls": 0, "duration_ms": 2, "cost_usd": 0 },
+        "trace": [
+          { "sequence": 0, "kind": "run_started", "timestamp_ms": 0, "data": {} },
+          { "sequence": 1, "kind": "paused", "timestamp_ms": 1, "data": {} },
+          { "sequence": 2, "kind": "run_stopped", "timestamp_ms": 2, "data": { "status": "stopped", "reason": "timeout" } }
+        ],
+        "checkpoint": null,
+        "error": null
+      }
+    }
+  ]
+}

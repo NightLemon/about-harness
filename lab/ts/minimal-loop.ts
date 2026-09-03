@@ -1,10 +1,11 @@
 import {
-  SCHEMA_VERSION,
+  RESULT_SCHEMA_VERSION,
   type Action,
   type JsonValue,
   type RunResult,
   type TaskSpec,
   type ToolCall,
+  type TraceKind,
   type TraceEvent,
   validateAction
 } from './contracts.js'
@@ -42,12 +43,15 @@ export class MinimalLoop {
     readonly adapter: Adapter,
     tools: ReadonlyMap<string, ToolHandler>,
     readonly cancellation = new CancellationToken(),
-    readonly acceptanceValidator: AcceptanceValidator = new JsonSubsetAcceptanceValidator()
+    readonly acceptanceValidator: AcceptanceValidator = new JsonSubsetAcceptanceValidator(),
+    readonly runIdFactory: () => string = () => globalThis.crypto.randomUUID()
   ) {
     this.#tools = tools
   }
 
   run(task: TaskSpec, now: () => number = performance.now.bind(performance)): RunResult {
+    const runId = this.runIdFactory()
+    if (typeof runId !== 'string' || runId.length === 0) throw new TypeError('runIdFactory must return a non-empty string')
     const started = now()
     const trace: TraceEvent[] = []
     let modelCalls = 0
@@ -55,7 +59,7 @@ export class MinimalLoop {
     let reusedToolCalls = 0
     let cost = 0
 
-    const record = (kind: string, data: Record<string, JsonValue>): void => {
+    const record = (kind: TraceKind, data: Record<string, JsonValue>): void => {
       trace.push({ sequence: trace.length, kind, timestamp_ms: Math.max(0, now() - started), data })
     }
     const postActionStop = (): 'cancelled' | 'timeout' | 'model_budget' | null => {
@@ -76,7 +80,7 @@ export class MinimalLoop {
       try {
         action = validateAction(this.adapter.nextAction(task, trace))
       } catch {
-        return result('failed', 'invalid_action', null)
+        return result('failed', 'invalid_action', null, 'adapter returned an invalid action')
       }
       modelCalls += 1
       cost += action.cost_usd
@@ -104,7 +108,7 @@ export class MinimalLoop {
             feedback: 'acceptance validator failed',
             evidence: { error_type: errorType(error) }
           })
-          return result('failed', 'invalid_action', null)
+          return result('failed', 'invalid_action', null, 'acceptance validator failed')
         }
         return result('completed', 'completed', action.output)
       }
@@ -112,7 +116,7 @@ export class MinimalLoop {
       const denied = this.#deniedReason(task, action.tool_call)
       if (denied !== null) {
         record('policy_denied', { tool: action.tool_call.name, reason: denied })
-        return result('stopped', 'permission_denied', null)
+        return result('stopped', 'permission_denied', null, denied)
       }
       const cached = this.#cache.get(action.tool_call.idempotency_key)
       if (cached !== undefined) {
@@ -122,7 +126,7 @@ export class MinimalLoop {
         continue
       }
       const handler = this.#tools.get(action.tool_call.name)
-      if (handler === undefined) return result('failed', 'tool_error', null)
+      if (handler === undefined) return result('failed', 'tool_error', null, 'tool handler is unavailable')
       try {
         const value = handler(action.tool_call.arguments)
         this.#cache.set(action.tool_call.idempotency_key, value)
@@ -130,7 +134,7 @@ export class MinimalLoop {
         step += 1
         record('tool_result', { tool: action.tool_call.name, value, reused: false })
       } catch {
-        return result('failed', 'tool_error', null)
+        return result('failed', 'tool_error', null, 'tool handler failed')
       }
     }
     return result('stopped', 'max_steps', null)
@@ -138,11 +142,13 @@ export class MinimalLoop {
     function result(
       status: RunResult['status'],
       stopReason: RunResult['stop_reason'],
-      output: JsonValue
+      output: JsonValue,
+      error: string | null = null
     ): RunResult {
       record('run_stopped', { status, reason: stopReason })
       return {
-        schema_version: SCHEMA_VERSION,
+        schema_version: RESULT_SCHEMA_VERSION,
+        run_id: runId,
         task_id: task.task_id,
         status,
         stop_reason: stopReason,
@@ -155,7 +161,9 @@ export class MinimalLoop {
           duration_ms: Math.max(0, now() - started),
           cost_usd: cost
         },
-        trace
+        trace,
+        checkpoint: null,
+        error
       }
     }
 

@@ -55,6 +55,7 @@ def test_normal_completion_and_structured_trace() -> None:
     assert result.status is RunStatus.COMPLETED
     assert result.stop_reason is StopReason.COMPLETED
     assert result.output == {"ok": True}
+    assert result.metrics["steps"] == 1
     assert result.metrics["tool_calls"] == 1
     acceptance_events = [event for event in result.trace if event.kind == "acceptance_result"]
     assert [event.data["accepted"] for event in acceptance_events] == [True]
@@ -81,6 +82,7 @@ def test_acceptance_rejection_returns_feedback_and_allows_repair() -> None:
         "failed_paths": ["/passed", "/details/count"],
     }
     assert result.metrics["model_calls"] == 2
+    assert result.metrics["steps"] == 0
     assert result.metrics["tool_calls"] == 0
 
 
