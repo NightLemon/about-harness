@@ -27,6 +27,13 @@ class FakeAdapter:
 
     def restore(self, state: dict[str, JsonValue]) -> None:
         index = state.get("index")
-        if not isinstance(index, int) or isinstance(index, bool) or index < 0:
+        if set(state) != {"index"}:
+            raise ValueError("fake adapter checkpoint must contain only index")
+        if (
+            not isinstance(index, int)
+            or isinstance(index, bool)
+            or index < 0
+            or index > len(self.actions)
+        ):
             raise ValueError("fake adapter checkpoint index is invalid")
         self.index = index
