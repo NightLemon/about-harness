@@ -180,7 +180,7 @@ TypeScript `MinimalLoop` 也执行相同的结构验收、失败修正、预算�
 | Repair（修正） | 参数或 schema 错误 | 依据精确错误生成新 Action | 原样重复坏参数 |
 | Replan（重规划） | 假设、实现路线或任务拆分失败 | 方案和后续步骤 | 传输抖动 |
 
-当前 `ToolRegistry` 对标记为 retryable 的工具错误执行有限重试并记录实际 `delay_ms`；相同幂等键的成功结果可以复用。它没有通用 replan 策略，repair/replan 仍由下一轮 Adapter 行为表达。权限拒绝不能通过改工具名、拆参数或切模型绕过。
+当前 `ToolRegistry` 对标记为 retryable 的工具错误执行有限重试并记录实际 `delay_ms`；相同幂等键只有在 tool name 与 canonical arguments 指纹也相同时才复用，冲突会在 handler 前失败。它没有通用 replan 策略，repair/replan 仍由下一轮 Adapter 行为表达。权限拒绝不能通过改工具名、拆参数或切模型绕过。
 
 ### 先分类，再决定下一步
 

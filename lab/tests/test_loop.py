@@ -4,6 +4,7 @@ import threading
 from dataclasses import dataclass
 from typing import cast
 
+import pytest
 from about_harness.acceptance import AcceptanceResult
 from about_harness.adapters.fake import FakeAdapter
 from about_harness.contracts import (
@@ -177,8 +178,21 @@ def test_retry_and_idempotency_prevent_duplicate_side_effects() -> None:
 
     registry = ToolRegistry(sleeper=sleeps.append)
     registry.register("flaky", flaky)
-    duplicate = call(name="flaky", key="stable-key")
-    adapter = FakeAdapter((Action.tool(duplicate), Action.tool(duplicate), Action.complete("done")))
+    first = ToolCall(
+        "call-1",
+        "flaky",
+        {"value": "hello", "metadata": {"a": 1, "b": 2}},
+        "stable-key",
+    )
+    duplicate = ToolCall(
+        "call-2",
+        "flaky",
+        {"metadata": {"b": 2, "a": 1}, "value": "hello"},
+        "stable-key",
+    )
+    adapter = FakeAdapter(
+        (Action.tool(first), Action.tool(duplicate), Action.complete("done"))
+    )
     runner = HarnessRunner(adapter, registry, retry=RetryPolicy(max_attempts=3, base_backoff_ms=10))
     result = runner.run(task(tools=("flaky",)))
     assert result.status is RunStatus.COMPLETED
@@ -187,6 +201,50 @@ def test_retry_and_idempotency_prevent_duplicate_side_effects() -> None:
     assert result.metrics["reused_tool_calls"] == 1
     assert len([event for event in result.trace if event.kind == "retry"]) == 2
     assert sleeps == [0.01, 0.02]
+
+
+@pytest.mark.parametrize(
+    ("second_name", "second_arguments"),
+    [
+        ("first", {"value": 1}),
+        ("second", {"value": True}),
+    ],
+    ids=("arguments-changed", "tool-changed"),
+)
+def test_idempotency_key_conflict_rejects_changed_tool_or_arguments(
+    second_name: str,
+    second_arguments: dict[str, JsonValue],
+) -> None:
+    executed: list[str] = []
+
+    def first_handler(arguments: dict[str, JsonValue]) -> JsonValue:
+        executed.append("first")
+        return arguments
+
+    def second_handler(arguments: dict[str, JsonValue]) -> JsonValue:
+        executed.append("second")
+        return arguments
+
+    registry = ToolRegistry()
+    registry.register("first", first_handler)
+    registry.register("second", second_handler)
+    first = ToolCall("call-1", "first", {"value": True}, "shared-key")
+    conflicting = ToolCall("call-2", second_name, second_arguments, "shared-key")
+    adapter = FakeAdapter(
+        (Action.tool(first), Action.tool(conflicting), Action.complete("unreachable"))
+    )
+
+    result = HarnessRunner(adapter, registry).run(task(tools=("first", "second")))
+
+    assert result.status is RunStatus.FAILED
+    assert result.stop_reason is StopReason.TOOL_ERROR
+    assert result.error is not None
+    assert "idempotency key conflict" in result.error
+    assert executed == ["first"]
+    assert result.metrics["steps"] == 1
+    assert result.metrics["tool_calls"] == 1
+    assert result.metrics["reused_tool_calls"] == 0
+    assert len([event for event in result.trace if event.kind == "tool_result"]) == 1
 
 
 @dataclass(slots=True)

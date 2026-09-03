@@ -161,7 +161,7 @@ environment / cost / expiry / approval identity
 
 工具可被发现、schema 合法、模型多次请求，都不等于已授权。Policy 必须在 handler、shell、浏览器导航或外部请求之前运行；拒绝后不能换名称、拆动作或编码参数规避同一边界。
 
-Executor 维护 per-call timeout、有限 retry、幂等键、结果大小和副作用状态。写请求 timeout 不证明远端没执行，应先按幂等键查询或对账。当前 `ToolRegistry` 只有进程内 handler、retry 与 cache；cache 只按 `idempotency_key`，没有参数 hash 或外部持久台账。
+Executor 维护 per-call timeout、有限 retry、幂等键、结果大小和副作用状态。写请求 timeout 不证明远端没执行，应先按幂等键查询或对账。当前 `ToolRegistry` 只有进程内 handler、retry 与 cache；每个 key 同时保存 tool name 与 canonical arguments 的 SHA-256 指纹，完全相同的调用才能复用，名称或参数变化会在第二个 handler 前失败。它仍没有 subject/target/version 身份、外部持久台账或并发所有权。
 
 ## Validator：完成提议不是完成事实
 

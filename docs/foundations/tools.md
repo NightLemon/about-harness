@@ -288,16 +288,16 @@ checked_at / rollback version
 
 ## 当前仓库的离线验证
 
-Python 最小 Harness 的 `ToolRegistry` 提供 `echo` 和 `sum`，测试覆盖未授权工具、重试、幂等复用、错误和 trace 脱敏。前置条件是 Python 3.11+、`uv 0.11.16` 与已缓存锁定依赖：
+Python 最小 Harness 的 `ToolRegistry` 提供 `echo` 和 `sum`，测试覆盖未授权工具、重试、幂等复用、幂等冲突、错误和 trace 脱敏。前置条件是 Python 3.11+、`uv 0.11.16` 与已缓存锁定依赖：
 
 ```powershell
 uv run --frozen --offline pytest -q lab/tests/test_loop.py
 uv run --frozen --offline pytest -q lab/tests/test_memory_context_trace.py
 ```
 
-预期测试退出 0；其中重复 `idempotency_key` 只执行 handler 一次、第二次计入 `reused_tool_calls`，未授权 `dangerous` 在 handler 前停止，ToolResult 中模拟 token 和用户路径被脱敏。
+预期测试退出 0；其中同 key、同 tool、同 canonical arguments 的调用只执行 handler 一次，即使 call ID 和 object key 顺序不同，第二次仍计入 `reused_tool_calls`；同 key 改 tool 或参数时返回 `failed/tool_error`，第二个 handler 不执行。未授权 `dangerous` 也在 handler 前停止，ToolResult 中模拟 token 和用户路径被脱敏。
 
-这些是 E1 fake 证据，不调用 MCP server、CLI、外部系统或真实模型，也不证明实现支持分布式幂等、强制抢占任意阻塞 handler 或生产 Secret manager。
+这些是 E1 fake 证据，不调用 MCP server、CLI、外部系统或真实模型，也不证明实现支持跨进程/分布式幂等、目标系统对账、强制抢占任意阻塞 handler 或生产 Secret manager。
 
 若测试出现真实网络/凭据请求、未授权 handler 被执行、坏 Action 进入 metrics 或敏感值进入 trace，立即停止。命令只产生测试 cache；误改时用 `git diff -- lab` 确认范围，只恢复自己的候选并保留失败输出。
 

@@ -72,13 +72,13 @@ controller + adapter + policy + tool 集成
 
 ## 当前 Python 测试矩阵
 
-当前基线由 `pytest --collect-only -q` 得到 137 项：
+当前基线由 `pytest --collect-only -q` 得到 139 项：
 
 | 文件 | 数量 | 主要责任 |
 | --- | ---: | --- |
 | `test_acceptance.py` | 15 | 九个跨语言 JSON 样例、非有限数、结果契约与循环对象 |
 | `test_contracts_and_schema.py` | 64 | 30 个 Task/Action 与 14 个 Result 跨语言案例、非 JSON 值、内部互斥和公共 schema |
-| `test_loop.py` | 13 | completion/验收修正、预算、权限、retry、恢复、取消、timeout |
+| `test_loop.py` | 15 | completion/验收修正、预算、权限、retry、幂等冲突、恢复、取消、timeout |
 | `test_m5_labs.py` | 22 | 六类 fixture、hash、领域负例、公开摘要一致性 |
 | `test_memory_context_trace.py` | 4 | 上下文选择、记忆污染/过期/删除、trace 脱敏 |
 | `test_replay_and_live.py` | 5 | Replay 精确字段、Fake state、Live 硬禁用 |
@@ -147,10 +147,11 @@ Static check（静态检查）、build 和 visual smoke 都是必要证据，但
 | cancellation | 请求、观察和线程结束可区分 | 在途工具是否被抢占 |
 | permission denied | handler 调用数为 0 | 先执行后拒绝 |
 | tool error | 错误分类、retry 次数、无错误 cache | 原失败被成功重试抹掉 |
+| idempotency conflict | 同 key 改 tool/参数时第二个 handler 为零 | 错误复用旧结果 |
 | invalid action | metrics/trace 未被坏值污染 | 只捕获异常但已记账 |
 | checkpoint restore | cursor、计数、幂等结果保持 | 恢复后重复工具 |
 
-当前 `test_loop.py` 覆盖以上固定路径，并额外断言验收拒绝可修正、反复拒绝受 model budget 停止、validator 异常不能成为完成，以及 validator 超时不能覆盖终态。`runtime-test.ts` 对 TS 最小 loop 重放相邻验收负例，并断言拒绝不消耗 tool step、坏 validator 不释放输出。它们尚未覆盖异步 approval wait、真正硬 timeout、分布式 worker 和外部业务对账。
+当前 `test_loop.py` 覆盖以上固定路径，并额外断言同一幂等键改变 tool/参数会在第二个 handler 前失败、验收拒绝可修正、反复拒绝受 model budget 停止、validator 异常不能成为完成，以及 validator 超时不能覆盖终态。`runtime-test.ts` 对 TS 最小 loop 重放相邻验收负例，并断言拒绝不消耗 tool step、坏 validator 不释放输出。它们尚未覆盖异步 approval wait、真正硬 timeout、分布式 worker 和外部业务对账。
 
 ## Retry 测试要断言真实等待和副作用
 
@@ -159,7 +160,8 @@ Static check（静态检查）、build 和 visual smoke 都是必要证据，但
 - handler 总尝试次数是 3；
 - sleeper 实际收到 `[0.01, 0.02]`；
 - trace 中有两条 retry；
-- 同一幂等键第二次调用复用结果；
+- 同一幂等键、tool 和 canonical arguments 的第二次调用复用结果，即使 call ID 与 object key 顺序不同；
+- 同一 key 改 tool name 或 canonical arguments 时稳定失败，第二个 handler 不执行；
 - `tool_calls=1`、`reused_tool_calls=1`，逻辑副作用没有重复。
 
 测试通过使用注入 sleeper，而不是实际等待长退避；这让结果快速、确定。真实系统还需验证 provider `retry-after`、总 deadline、进程重启后的持久幂等和 unknown outcome 对账。
@@ -252,7 +254,7 @@ npm run lab:typecheck
 npm run lab:ts-runtime-test
 ```
 
-预期 Python 有 28 项通过，TypeScript typecheck 退出 0；runtime test 依次输出本地边界通过、九个共享验收案例、30 个 Task/Action 案例和 14 个 RunResult 案例通过。这里没有运行完整 Python 契约/schema 测试、领域 fixture、站点或 checker self-tests。
+预期 Python 有 30 项通过，TypeScript typecheck 退出 0；runtime test 依次输出本地边界通过、九个共享验收案例、30 个 Task/Action 案例和 14 个 RunResult 案例通过。这里没有运行完整 Python 契约/schema 测试、领域 fixture、站点或 checker self-tests。
 
 ### 证明高价值门禁会拒绝坏输入
 
@@ -269,7 +271,7 @@ npm run repo:self-test
 npm run verify
 ```
 
-当前基线应包含 137 项 pytest 全通过，以及 Ruff、Pyright、TypeScript typecheck、文档/事实/站点/安全/工作流/视觉和 checker self-tests 通过。不要只看最后一行；保留首个失败子命令和退出码。
+当前基线应包含 139 项 pytest 全通过，以及 Ruff、Pyright、TypeScript typecheck、文档/事实/站点/安全/工作流/视觉和 checker self-tests 通过。不要只看最后一行；保留首个失败子命令和退出码。
 
 ## 失败时的停止、清理与回滚
 
