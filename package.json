@@ -23,6 +23,7 @@
     "tutorial:check": "node scripts/tutorial-check.mjs",
     "tutorial:self-test": "node scripts/test-tutorial-check.mjs",
     "lab:smoke": "uv run --frozen --offline python scripts/lab-smoke.py",
+    "debug:workshop": "uv run --frozen --offline python scripts/debugging-workshop.py",
     "lab:pyright": "uv run --frozen --offline pyright",
     "lab:typecheck": "tsc -p lab/ts/tsconfig.json",
     "lab:ts-runtime-test": "node scripts/test-ts-runtime.mjs",

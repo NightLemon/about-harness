@@ -6,6 +6,15 @@
 
 完成一次诊断后，你应能交付四项内容：可重复的症状、第一处分歧、被证据排除的替代假设，以及一个通过回归与负例验证的最小修复。还不能定位时，应明确缺少哪段证据，而不是用“偶发”“模型不稳定”结束调查。
 
+具体来说，你应该能够：
+
+- 区分 symptom（症状）、first divergence（第一处分歧）和 root cause（根因）；
+- 证明一个 Action 是模型提出、policy 拒绝，还是 handler 真正执行；
+- 用固定 Adapter、内存 Tool 和确定性 oracle 隔离责任层；
+- 为重试、幂等、预算、取消和 timeout 保存可反驳的证据；
+- 在修复前定义停止条件，在修复后同时验证原失败、相邻正例和安全负例；
+- 把结论限制在当前 E1 fake 案例，不外推真实 provider 或生产副作用。
+
 ## 先保全现场
 
 修配置、重跑或开启更详细日志之前，先保存最小诊断快照：
@@ -17,6 +26,16 @@
 - 外部副作用是否发生，以及可以安全重试还是必须先对账。
 
 日志、session 和工具返回可能含 credential（凭据）、个人路径或私有内容。保留现场不等于原样公开：先限制访问，再制作脱敏副本；不要在尚未确认部分写入时盲目重跑写操作。
+
+### 现场快照分三层
+
+| 层 | 保存什么 | 为什么不能互相替代 |
+| --- | --- | --- |
+| Identity（身份） | task/config/instruction/tool schema/commit/environment hash | 同名任务可能已经换了输入或实现 |
+| Event（事件） | Action、policy decision、handler result、retry、stop | 最终结果不能重建中间因果 |
+| Artifact（产物） | 文件、测试、业务回执、截图或查询结果 | 日志写“成功”不等于对象真的改变 |
+
+外部写操作结果不明时，先记录 intent（意图）、idempotency key（幂等键）和目标系统 receipt（回执），再查询事实来源。Checkpoint 没有结果不表示动作未发生；超时也不表示远端一定取消。
 
 ## 快速诊断树
 
@@ -75,6 +94,35 @@ Oracle（判定标准）可以是测试、schema、业务对账、视觉基线�
 
 最小修复至少通过三种验证：原失败现在通过；相邻正常路径没有退化；一个负例仍被正确拒绝。安全或副作用相关修复还要断言 handler 调用次数、资源版本或外部对账结果，而不只看最终文本。
 
+### 用一张边界表防止跳步
+
+每个边界只写观察到的事实，不提前写根因：
+
+| 边界 | Expected | Observed | 证据引用 | 是否第一处分歧 |
+| --- | --- | --- | --- | --- |
+| Task → context | 目标、禁区、输入版本完整 | … | context hash/selected IDs | … |
+| Model → Action | schema 合法、参数符合任务 | … | raw response hash/Action | … |
+| Action → policy | 按 task 能力和参数判定 | … | policy decision/reason | … |
+| Policy → handler | 只执行 allowed action | … | handler count/call ID | … |
+| Handler → ToolResult | 结果、错误和回执完整 | … | result/receipt/attempt | … |
+| Result → validator | 根据真实产物验收 | … | assertion/exit code | … |
+| Validator → terminal | 只有验收通过才 completed | … | stop reason/final state | … |
+
+一旦找到第一处分歧，仍要验证它是否足以解释后续症状。例如 policy 正确拒绝了未授权工具，这是预期保护，不是 policy bug；更早的问题可能是 Task 没有允许本应需要的工具，或模型提出了任务外动作。
+
+### 假设台账要保留被否定方案
+
+```text
+hypothesis_id / owner / created_at
+prediction if true
+one-variable discriminating test
+supporting evidence / counterevidence
+result: supported | weakened | rejected | pending
+next action / stop condition
+```
+
+“改完能跑”不是区分性测试。修 prompt 后成功，可能来自随机性、缓存或更高预算；要回到原 fixture，固定其他身份并验证预言。被否定的假设也保留，避免下一人重复同一路径。
+
 ## 症状只是入口
 
 | 症状 | 候选层 | 第一项检查 | 不要先做 |
@@ -102,6 +150,121 @@ Oracle（判定标准）可以是测试、schema、业务对账、视觉基线�
 5. 将遗漏测试加入完成 validator，并添加“只跑目标测试不得 completed”的负例。
 
 如果模型从未收到“必须运行完整检查”，第一处分歧在 Task；如果 Action 是完整命令但 Adapter 截断参数，根因在协议映射；如果完整测试失败却仍进入 `completed`，根因在 validator/终态顺序。三种情况的表面回复相同，修复位置完全不同。
+
+## 动手工作坊：三个诊断案例、三条责任边界
+
+仓库提供 `npm run debug:workshop`，用固定 Adapter、内存 Tool 和可控 retry 生成三个结构化诊断案例。它不调用模型、不联网、不读取凭据，也不写外部系统；目标是练习读 expected/observed、事件顺序和执行次数。
+
+### 固定输入与预期
+
+| case | 固定输入 | 预期第一处分歧 | 决定性断言 |
+| --- | --- | --- | --- |
+| `adapter-contract` | Adapter 返回普通对象而非 `Action` | `adapter_return` | `failed/invalid_action`，没有 handler 执行 |
+| `permission-boundary` | 已注册但 Task 未 allowlist 的 `dangerous` Tool | `policy_decision` | `stopped/permission_denied`，handler 次数为 0 |
+| `retry-idempotency` | 前两次暂时失败、第三次成功，再重复同一 key | `tool_attempt` | 2 retry、1 次副作用、1 tool call、1 次复用 |
+
+这里“第一处分歧”描述预设诊断案例，不表示所有同名 stop reason 都有同一根因。真实问题仍要沿自己的事件链验证。
+
+### 前置条件与版本
+
+- Node.js 22+，用于运行 npm 入口；
+- Python 3.11+，项目静态类型基线为 3.11；
+- `uv 0.11.16`；依赖按 `uv.lock` 冻结，其中当前 pytest 为 8.4.2；
+- 从仓库根目录执行，锁定依赖已经在本地 cache。
+
+脚本是 `scripts/debugging-workshop.py`，实现复用 `lab/src/about_harness/`，不需要 API key、真实 provider、网络、浏览器或费用授权。运行前无需修改任何 fixture。
+
+### 第一步：运行正例
+
+PowerShell、bash 和 zsh 都可使用：
+
+```bash
+npm run debug:workshop
+```
+
+预期退出码为 0，顶层至少满足：
+
+```json
+{
+  "evidence": "E1",
+  "offline": true,
+  "injected_failure": false,
+  "passed": true
+}
+```
+
+不要只看 `passed=true`。逐项核对：
+
+1. `adapter-contract` 的 trace 只有 `run_started → run_stopped`；坏对象在记录 `model_action` 前被 runtime contract 拒绝。
+2. `permission-boundary` 包含 `model_action → policy_denied → run_stopped`，没有 `tool_result`，`handler_executions=0`。
+3. `retry-idempotency` 有两个连续 `retry`，退避为 `0.01/0.02` 秒；两个 `tool_result` 的 `reused_flags` 为 `[false, true]`，所以第二次相同 key 复用缓存，副作用仍为 1。
+4. 三个 case 的 `expected_stop_reason` 与 `observed_stop_reason` 相同。
+
+这些事件回答“在哪一层停止”和“handler 是否执行”。它们没有保存原始 prompt 或真实工具返回，也不能证明分布式 worker、进程重启后的幂等或外部 API 取消。
+
+### 第二步：让 oracle 故意失败
+
+```bash
+npm run debug:workshop -- --inject-failure
+```
+
+这个参数不破坏实现，而是把 `adapter-contract.expected_stop_reason` 从 `invalid_action` 故意换成 `completed`。预期退出码为 1，顶层 `injected_failure=true`、`passed=false`，该 case 同时保留：
+
+```json
+{
+  "expected_stop_reason": "completed",
+  "observed_stop_reason": "invalid_action",
+  "passed": false
+}
+```
+
+负例的意义是证明工作坊不会只打印漂亮 JSON：oracle 与观察冲突时，进程必须非零退出。若这条命令返回 0，停止使用结果，检查聚合条件和 `main()` 的退出码；不要把预期改回与输出相同来隐藏 checker 故障。
+
+### 第三步：回到独立测试锚点
+
+工作坊和单元测试可能共享实现，因此还要读断言本身。在仓库根目录运行。PowerShell：
+
+```powershell
+uv run --frozen --offline pytest -vv `
+  lab/tests/test_loop.py::test_wrong_adapter_return_is_classified_as_invalid_action `
+  lab/tests/test_loop.py::test_permission_denial_stops_before_tool_execution `
+  lab/tests/test_loop.py::test_retry_and_idempotency_prevent_duplicate_side_effects
+```
+
+bash/zsh：
+
+```bash
+uv run --frozen --offline pytest -vv \
+  lab/tests/test_loop.py::test_wrong_adapter_return_is_classified_as_invalid_action \
+  lab/tests/test_loop.py::test_permission_denial_stops_before_tool_execution \
+  lab/tests/test_loop.py::test_retry_and_idempotency_prevent_duplicate_side_effects
+```
+
+也可以把三个 test ID 放在同一行。预期收集 3 项并全部 `PASSED`。断言分别位于 Adapter trust boundary、policy 拒绝前的 handler count，以及 retry/幂等的 attempts、trace 和副作用次数。
+
+如果工作坊通过但对应测试失败，第一处分歧可能在脚本复制的判定条件；如果测试通过但工作坊失败，检查 npm 参数、脚本导入路径和 summary 聚合。两者都通过只提供 E1 固定实现证据，不是独立模型或生产系统验证。
+
+### 失败、停止、清理与回滚
+
+正例非零、负例返回 0、危险 handler 执行、retry 次数无上限、`side_effects` 大于 1，或 trace 缺少终态时立即停止。保留脱敏 stdout 和精确 commit，先检查 `HarnessRunner → PermissionPolicy → ToolRegistry` 的第一处分歧，不增加无限重试、不扩大 Task 工具权限。
+
+工作坊只向终端写 JSON；内存状态随进程结束释放，没有业务数据需要清理。pytest 可能留下被 Git 忽略的 `.pytest_cache/`，可以保留复用，不应清理工作区其他文件。若为了练习修改脚本或实现，先用 `git diff -- scripts/debugging-workshop.py lab/src/about_harness/ lab/tests/test_loop.py` 精确核对，只撤销自己本轮修改；恢复后重新运行正例、失败 canary 和三项测试。
+
+当前证据为 E1：固定 fake 能区分 Adapter、policy 和 tool/retry 三条路径。它不证明真实模型 action 质量、provider 协议、跨进程幂等、外部副作用、生产观测完整性或任何模型排名。
+
+## 从第一处分歧到修复位置
+
+| 第一处分歧 | 优先修复 | 必须增加的验证 | 不应顺手改变 |
+| --- | --- | --- | --- |
+| Task/fixture | 目标、输入、验收或版本 | 好/坏 fixture、旧版本兼容 | 模型、预算、policy |
+| Context | 选择、排序、压缩或来源 | 固定 selected IDs、截断负例 | Tool handler |
+| Adapter | parser、字段映射、stream 状态 | 原始响应 replay、未知字段/坏类型 | 放宽 Action schema |
+| Policy | capability、参数约束、approval | allow/deny/needs-approval 三路 | 关闭 sandbox |
+| Tool/retry | error taxonomy、幂等、回执 | 暂时/永久错误、重复 key、副作用次数 | 增加模型重试 |
+| Checkpoint | 游标、预算、pending intent | 崩溃窗口、恢复、迟到结果 | 覆盖历史事件 |
+| Validator | oracle、产物读取、终态顺序 | 已知好/坏产物、旧 report 重放 | 候选生成逻辑 |
+
+最小修复只改变拥有根因的层。若必须跨层修改，分别说明每一项如何恢复同一个不变量，并为交界处增加契约测试；不要把一次“大升级”包装成已定位根因。
 
 ## 最小复现包
 
