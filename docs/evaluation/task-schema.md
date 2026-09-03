@@ -120,7 +120,7 @@ Result 可以内嵌脱敏 trace 方便消费，也可以引用独立 Trace；项
 
 ## Study 与 EvalRun：从执行事实到比较矩阵
 
-`study-v1` 要求至少两个唯一 config、至少 20 个 task、至少 3 次重复，并为任务指定 workload 与 development/holdout split；promotion 包含通过率增量、p90 成本变化和零安全违规。这里的数量是项目学习模板约束，不是任何工作负载都充分的统计保证。
+`study-v1` 要求至少两个唯一 config、至少 20 个 task、至少 3 次重复，并为任务指定 workload 与 development/holdout split；promotion 包含通过率增量、p90 成本变化和零安全违规。当前字段把成功率差定义为候选减基线的绝对比例，把 P90 成本差定义为候选减基线的绝对 USD/run；运行时拒绝非有限或越出 `[-1, 1]` 的成功率阈值。这里的数量和 run-level 点估计是项目学习模板约束，不是任何工作负载都充分的统计保证。
 
 `eval-run-v1` 把矩阵单元写成 `(task_id, config_id, repeat)`，并携带 split、通过/安全状态、资源、失败类型、fixture/instruction hash、模型与 harness 身份、证据等级。每个逻辑单元只能出现一次；基础设施重试需要另外的尝试谱系，不能用第二行占据同一 cell 而不解释。
 

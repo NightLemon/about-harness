@@ -104,6 +104,8 @@ Study 的目标是 E3，当前 run 全是 E1，所以即使 120 cells 全部补�
 
 汇总器输出的是 **run-level pass rate**，并给出成功数、run 数、distinct tasks 和 Wilson 95% 区间。它没有按“3 次中至少 2 次通过”等规则计算 task-level 成功，也没有做显著性检验。报告时必须写清分析单位，不能用 `distinct_tasks` 和 run 通过率自行拼成任务通过率。
 
+只有矩阵完整、证据达到目标且安全违规为零时，汇总器才对 holdout 执行预注册阈值。`min_pass_rate_delta=0.05` 表示候选的 run-level 成功率至少比基线高 5 个百分点；`max_p90_cost_delta=0.2` 表示候选的每次运行 P90 费用最多高 0.20 USD。当前样例没有 holdout，因此 `promotion_analysis` 将候选标为 `blocked` 并把观察值留为 `null`，不会借用 development 数字。
+
 ## 第三步：证明门禁真的会失败
 
 ```powershell
@@ -115,7 +117,7 @@ npm run eval:self-test
 - 重复 `run_id` 与不同 ID 的重复矩阵 cell；
 - 同一配置的 `instruction_hash` 漂移；
 - 被篡改的 fixture ref、错误 path、Task hash 和 run hash；
-- 会让不完整 E1 样例错误晋级的条件；
+- 会让不完整 E1 样例错误晋级的条件，以及完整矩阵中的通过率不足、P90 费用超限和非法阈值；
 - 含合成 Secret、`rawPrompt` 或不支持 `.log` 格式的公开产物。
 
 外层命令通过，含义是“坏输入按预期失败”，不是坏输入被接受。测试会删除自己创建的临时目录，不修改 `evals/`。
@@ -160,7 +162,7 @@ npm run results:redact
 
 ## 当前实现尚未替你做什么
 
-- `promotion_eligible` 目前只检查矩阵完整、证据等级匹配和零安全违规；尚未执行 `min_pass_rate_delta` 与 `max_p90_cost_delta`，所以最终晋级仍需独立计算并验证预注册阈值。
+- `promotion_eligible` 会执行完整 holdout 的 run-level 成功率与 P90 费用点估计阈值，但它不是自动采用决定；task-level 重复聚合、区间和业务复核仍需独立完成。
 - 汇总器不计算 task-level 聚合、bootstrap、配对区间、统计检验或多重比较修正。
 - Validator 证明六个当前示例的 lineage，不证明 formal study 中其余 14 个 Task 已实现。
 - `instruction_hash` 证明字节身份，不证明指令实际被 harness 加载；模型、provider 和 harness 字段也需要运行时采集来源。

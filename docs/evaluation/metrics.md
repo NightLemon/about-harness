@@ -302,15 +302,17 @@ Sensitivity analysis（敏感性分析）还可以比较：基础设施首次尝
 
 正式晋级至少同时满足：矩阵完整、身份一致、证据达到目标、holdout 未用于调参、硬门槛通过、主指标达到最小改善、护栏未超预算，并且结论限定在目标工作负载。
 
-当前 `scripts/summarize-evals.mjs` 的 `promotion_eligible` 只检查三项结构前置条件：
+当前 `scripts/summarize-evals.mjs` 先检查三项结构前置条件：
 
 1. 没有缺失矩阵单元；
 2. 每行 evidence 等于 study 的目标等级；
 3. 没有 `safety_violation=true`。
 
-它目前**没有执行** `study.promotion.min_pass_rate_delta` 和 `max_p90_cost_delta`，也没有计算 task-level 晋级指标。因此 `promotion_eligible=true` 仍不能单独证明候选达到完整采用标准；在 checker 扩展前，报告必须单独计算并人工复核阈值。这个字段更接近“具备进入决策的结构前提”。
+结构前置条件全部满足后，汇总器才按 candidate 分别读取 holdout：`min_pass_rate_delta` 是候选减基线的 run-level 成功率绝对差，例如 `0.05` 表示至少增加 5 个百分点；`max_p90_cost_delta` 是候选减基线的单次运行 P90 费用绝对差，单位为 USD，例如 `0.2` 表示最多增加 0.20 美元。两者不是相对百分比。`promotion_analysis` 会保存基线、split、分析单位、阈值、观察值和每个候选的 blocker；顶层 `promotion_eligible=true` 表示至少一个候选同时通过结构条件和这两个点估计阈值。
 
-当前 12 行样例因为缺 108 个单元、没有 holdout run，且 E1 低于目标 E3，正确输出是 `promotion_eligible=false`。即使 development 的 candidate 为 6/6，也不能晋级。
+这仍不是自动采用决定。当前工具没有把 repeats 聚合成 task-level 指标，也没有计算配对效应区间、bootstrap、统计检验、关键 workload 非劣界限或 holdout 污染状态。点估计刚过线但区间很宽时，负责人仍应给出 `inconclusive`，不能把 `promotion_eligible` 当成发布命令。
+
+当前 12 行样例因为缺 108 个单元、没有 holdout run，且 E1 低于目标 E3，正确输出是 `promotion_eligible=false`；候选在 `promotion_analysis` 中为 `blocked`，阈值观察值保持 `null`，而不是拿 development 代替 holdout。即使 development 的 candidate 为 6/6，也不能晋级。
 
 ### 把区间映射为三种决定
 
@@ -334,7 +336,7 @@ npm run eval:validate
 npm run eval:summary
 ```
 
-预期 validator 报告 20 tasks、2 configs、3 repeats、120 个预期单元、12 个已观察单元和 108 个缺失单元。Summary 应显示 development 的两组 `k/n`、Wilson 区间、5/0/1 配对结果、`holdout: null`、`promotion_eligible: false`，阻断项含 `incomplete_matrix` 与 `evidence_below_target`。
+预期 validator 报告 20 tasks、2 configs、3 repeats、120 个预期单元、12 个已观察单元和 108 个缺失单元。Summary 应显示 development 的两组 `k/n`、Wilson 区间、5/0/1 配对结果、`holdout: null`、`promotion_eligible: false`，阻断项含 `incomplete_matrix` 与 `evidence_below_target`；`promotion_analysis.candidates.offline-engineering.status` 为 `blocked`，两个 delta 为 `null`。
 
 任一数字不符时先停止，不要直接改期望输出。检查 study、run identity、repeat、split 和 fixture lineage；若为了练习修改样例，保存 diff，并只还原自己改动的文件。本命令只读取输入，无需额外清理。
 

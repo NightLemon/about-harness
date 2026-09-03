@@ -23,6 +23,7 @@ function summarizeRuns(runs) {
     safety_violations: runs.filter((row) => row.safety_violation).length,
     duration_ms_p50: percentile(runs.map((row) => row.duration_ms), 0.5),
     duration_ms_p90: percentile(runs.map((row) => row.duration_ms), 0.9),
+    cost_usd_p90: percentile(runs.map((row) => row.cost_usd), 0.9),
     cost_usd_total: Number(runs.reduce((sum, row) => sum + row.cost_usd, 0).toFixed(6)),
     input_tokens_total: runs.reduce((sum, row) => sum + row.input_tokens, 0),
     output_tokens_total: runs.reduce((sum, row) => sum + row.output_tokens, 0),
@@ -75,23 +76,100 @@ for (const split of ['development', 'holdout']) {
 const evidenceMatchesTarget = rows.every((row) => row.evidence === study.evidence_target)
 const noSafetyViolations = rows.every((row) => row.safety_violation === false)
 const matrixComplete = coverage.missingCells.length === 0
+const evidenceLevels = [...new Set(rows.map((row) => row.evidence))].sort()
+const evidence = evidenceLevels.length === 1 ? evidenceLevels[0] : 'mixed'
+const structuralBlockers = [
+  ...(!matrixComplete ? ['incomplete_matrix'] : []),
+  ...(!evidenceMatchesTarget ? ['evidence_below_target'] : []),
+  ...(!noSafetyViolations ? ['safety_violation'] : [])
+]
+
+function rounded(value, digits) {
+  return Number(value.toFixed(digits))
+}
+
+const promotionCandidates = {}
+const baselineHoldout = configs[baseline]?.by_split.holdout ?? null
+for (const candidate of study.configs.slice(1)) {
+  const candidateHoldout = configs[candidate]?.by_split.holdout ?? null
+  const metricsAvailable = baselineHoldout !== null && candidateHoldout !== null
+  const baselinePassRate = metricsAvailable ? baselineHoldout.passed / baselineHoldout.runs : null
+  const candidatePassRate = metricsAvailable ? candidateHoldout.passed / candidateHoldout.runs : null
+  const passRateDelta = metricsAvailable ? candidatePassRate - baselinePassRate : null
+  const p90CostDelta = metricsAvailable ? candidateHoldout.cost_usd_p90 - baselineHoldout.cost_usd_p90 : null
+  const observed = metricsAvailable
+    ? {
+        baseline_pass_rate: rounded(baselinePassRate, 4),
+        candidate_pass_rate: rounded(candidatePassRate, 4),
+        pass_rate_delta: rounded(passRateDelta, 4),
+        baseline_p90_cost_usd: baselineHoldout.cost_usd_p90,
+        candidate_p90_cost_usd: candidateHoldout.cost_usd_p90,
+        p90_cost_usd_delta: rounded(p90CostDelta, 6)
+      }
+    : {
+        baseline_pass_rate: null,
+        candidate_pass_rate: null,
+        pass_rate_delta: null,
+        baseline_p90_cost_usd: null,
+        candidate_p90_cost_usd: null,
+        p90_cost_usd_delta: null
+      }
+  const thresholdBlockers = []
+  if (structuralBlockers.length === 0 && !metricsAvailable) {
+    thresholdBlockers.push('holdout_metrics_unavailable')
+  }
+  if (structuralBlockers.length === 0 && metricsAvailable) {
+    if (passRateDelta < study.promotion.min_pass_rate_delta) {
+      thresholdBlockers.push('pass_rate_delta_below_minimum')
+    }
+    if (p90CostDelta > study.promotion.max_p90_cost_delta) {
+      thresholdBlockers.push('p90_cost_delta_above_maximum')
+    }
+  }
+  const blockers = [...structuralBlockers, ...thresholdBlockers]
+  promotionCandidates[candidate] = {
+    status: structuralBlockers.length > 0 || !metricsAvailable
+      ? 'blocked'
+      : thresholdBlockers.length > 0 ? 'failed' : 'passed',
+    eligible: blockers.length === 0,
+    observed,
+    blockers
+  }
+}
+
+const promotionEligible = Object.values(promotionCandidates).some((candidate) => candidate.eligible)
+const eligibleCandidates = Object.entries(promotionCandidates)
+  .filter(([, candidate]) => candidate.eligible)
+  .map(([candidate]) => candidate)
+const promotionBlockers = structuralBlockers.length > 0
+  ? structuralBlockers
+  : promotionEligible ? [] : ['no_candidate_met_promotion_thresholds']
 
 console.log(JSON.stringify({
   schema_version: '1.0',
-  evidence: 'E1',
-  warning: 'Synthetic/offline sample; do not use it as a model ranking.',
+  evidence,
+  evidence_levels: evidenceLevels,
+  warning: evidence === 'E1'
+    ? 'Synthetic/offline sample; do not use it as a model ranking.'
+    : 'Eligibility is an analysis result, not an automatic deployment decision.',
   matrix: {
     expected_cells: coverage.expectedCells.length,
     observed_cells: coverage.cells.size,
     missing_cells: coverage.missingCells.length,
     complete: matrixComplete
   },
-  promotion_eligible: matrixComplete && evidenceMatchesTarget && noSafetyViolations,
-  promotion_blockers: [
-    ...(!matrixComplete ? ['incomplete_matrix'] : []),
-    ...(!evidenceMatchesTarget ? ['evidence_below_target'] : []),
-    ...(!noSafetyViolations ? ['safety_violation'] : [])
-  ],
+  promotion_eligible: promotionEligible,
+  eligible_candidates: eligibleCandidates,
+  promotion_blockers: promotionBlockers,
+  promotion_analysis: {
+    baseline,
+    split: 'holdout',
+    analysis_unit: 'run',
+    pass_rate_delta_unit: 'absolute_proportion',
+    p90_cost_delta_unit: 'absolute_usd_per_run',
+    thresholds: study.promotion,
+    candidates: promotionCandidates
+  },
   configs,
   pairwise
 }, null, 2))

@@ -117,7 +117,7 @@ Summary 应满足：
 - 两个 config 的 `by_split.holdout` 都是 `null`；
 - development 配对为 5 win、0 loss、1 tie，但这不能覆盖缺失矩阵或证据边界。
 
-这个输出是 E1：它证明 schema、fixture lineage、矩阵统计和报告路径能处理固定样例，不证明 `offline-engineering` 对真实模型更好。当前 `promotion_eligible` 还没有执行 study 中的通过率增量和 p90 成本阈值，完整晋级必须按[指标与区间](/evaluation/metrics)另行计算。
+这个输出是 E1：它证明 schema、fixture lineage、矩阵统计和报告路径能处理固定样例，不证明 `offline-engineering` 对真实模型更好。汇总器只会在结构条件满足后，用完整 holdout 执行 run-level 通过率和 P90 费用点估计阈值；当前样例因此保持 `blocked`。Task-level 聚合、区间、污染审计和最终采用仍必须按[指标与区间](/evaluation/metrics)另行复核。
 
 ### 失败案例、停止与恢复
 
