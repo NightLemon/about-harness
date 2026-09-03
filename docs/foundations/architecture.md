@@ -145,7 +145,7 @@ Adapter 负责 role/content、tool call/result、stream、usage、错误与 prov
 
 Adapter 不得拥有 Task 权限、批准工具或自行无限重试。一个 provider 的字段变化只能影响该反腐层，不应迫使 policy 和 controller 依赖 provider response class。详细契约见[Adapter 契约](/implementation/adapter-contract)。
 
-当前 Fake/Replay adapter 只提供内存 Action 序列和 cursor；Live adapter 硬禁用。不存在真实 transport、stream assembler、usage 或 provider error 分类。
+当前 Fake/Replay adapter 只提供内存 Action 序列和 cursor；Live adapter 硬禁用。项目另有 provider-neutral 合成 stream assembler，用连续 sequence、response/event/call ID 和完整 JSON object 组装 canonical Action，只在 completed 终态返回响应，并对冲突、断流、取消和 Provider error 失败关闭。它不是真实 transport 或 Provider stream adapter，也不覆盖真实 usage 映射。
 
 ## Policy 与工具：授权和执行必须分开
 
@@ -342,7 +342,7 @@ stopped permission_denied 0
 
 正常命令只使用进程内对象，最多留下可忽略的 `.pytest_cache/`；无需清理外部服务。若为了学习修改实现，先对目标路径运行限定 `git diff`，只用编辑器 undo 或精确反向修改恢复自己的行；不要 `reset --hard` 或覆盖整个工作树。
 
-当前 E1 架构是模块化单体：同步 Fake/Replay adapter、进程内 policy/tool/cache、JSON 子集验收、线程取消、内存 checkpoint、有限 trace 与 JSON Schema。它没有真实 context integration、artifact/测试/业务系统 validator、provider transport/stream/usage、持久数据库、队列、分布式 revision、外部幂等台账、硬 timeout、异步审批或多 Agent 调度。
+当前 E1 架构是模块化单体：同步 Fake/Replay adapter、provider-neutral 合成 stream assembler、进程内 policy/tool/cache、JSON 子集验收、线程取消、内存 checkpoint、有限 trace 与 JSON Schema。它没有真实 context integration、artifact/测试/业务系统 validator、Provider transport/stream adapter/usage 映射、持久数据库、队列、分布式 revision、外部幂等台账、硬 timeout、异步审批或多 Agent 调度。
 
 下一步在[状态与可靠执行](/foundations/state-reliability)深入 checkpoint 与副作用窗口，在[Prompt Injection 防护](/security/prompt-injection)检查数据如何越过权限边界，再到[Python 最小 Harness](/implementation/minimal-harness-python)逐文件观察当前实现。
 

@@ -97,6 +97,10 @@ started → accumulating → structurally_complete → validated → committed
 
 不要用字符串拼接后“尽量修 JSON”掩盖协议错误。修复出来的字段可能改变工具或目标。若 provider 支持恢复，保存 cursor/response ID 与已确认 sequence；否则把本次请求标为中止并从已知安全点重试。
 
+当前仓库提供一个 provider-neutral（供应方无关）的 E1 组装器，用合成事件演示这条状态机。事件必须共享 `response_id`，新事件的 `sequence` 从 0 连续；同一 `event_id` 与完全相同内容可以作为重放被忽略，同 ID 不同内容则是冲突。`tool_arguments_delta` 只进入缓冲区，直到 `tool_call_completed` 后才解析完整 JSON、要求 object，并再次经过公共 Action validator。
+
+`StreamAssembler` 区分 `response_completed`、`response_error`、`response_cancelled` 和 transport 在无终态时结束。只有第一种能由 `finish()` 返回；pending tool、空响应、序号缺口、response ID 漂移、终态后的新事件都会失败关闭。当前 v1 明确拒绝第二个 tool call，而不是假装支持并行调用。它输出 canonical text/tool action/usage，不执行 handler，也不对应任何真实 Provider 的事件名。
+
 ## Schema 是信任边界，不是文档提示
 
 工具 schema 应表达必填、类型、enum、范围、长度、互斥和未知字段策略。Provider 可能只支持 JSON Schema 的子集，必须用目标 model/provider/adapter 逐项探测；不要看到 schema 被接受就假设约束生效。
@@ -240,18 +244,18 @@ Provider alias、默认模型、schema 子集、event shape、错误字段和工
 
 需要 Python 3.11+、uv 0.11、Node.js 22+，依赖由 `uv.lock` 和 `package-lock.json` 固定。从仓库根目录离线执行；不配置真实 provider、credential、网络或费用。
 
-输入包括固定 replay actions、hard-disabled live adapter、进程内工具、权限/重试/timeout 负例，以及 30 个 Task/Action 与 14 个 Result 跨语言 runtime contract fixture。
+输入包括固定 replay actions、hard-disabled live adapter、进程内工具、权限/重试/timeout 负例、30 个 Task/Action 与 14 个 Result 跨语言 fixture，以及 `stream-events-v1.json` 的 14 个合成 stream 案例。
 
 ### 命令
 
 ```powershell
-uv run --frozen --offline pytest -q lab/tests/test_replay_and_live.py lab/tests/test_loop.py::test_permission_denial_stops_before_tool_execution lab/tests/test_loop.py::test_retry_and_idempotency_prevent_duplicate_side_effects lab/tests/test_loop.py::test_wrong_adapter_return_is_classified_as_invalid_action lab/tests/test_loop.py::test_timeout_stops_before_completing_late_action
+uv run --frozen --offline pytest -q lab/tests/test_replay_and_live.py lab/tests/test_streaming.py lab/tests/test_loop.py::test_permission_denial_stops_before_tool_execution lab/tests/test_loop.py::test_retry_and_idempotency_prevent_duplicate_side_effects lab/tests/test_loop.py::test_wrong_adapter_return_is_classified_as_invalid_action lab/tests/test_loop.py::test_timeout_stops_before_completing_late_action
 npm run lab:ts-runtime-test
 ```
 
 ### 预期输出与断言
 
-pytest 应有 6 项通过：
+pytest 应有 23 项通过：
 
 - Replay 保存 tool call 并完成固定 `sum=6`；
 - live adapter 在任何 provider action 前硬拒绝；
@@ -259,20 +263,22 @@ pytest 应有 6 项通过：
 - 暂时错误进行两次有限退避，同一幂等键复用结果而不重复逻辑调用；
 - 非 `Action` adapter 返回被分类为 `failed/invalid_action`；
 - deadline 后到达的 completion 保持 `timeout`。
+- stream 正例重组文本、usage 与跨 delta 的完整 tool JSON；完全重复事件只计一次；
+- 序号/ID 冲突、坏 JSON、未完成 tool/transport、迟到事件、Provider error、取消与并行 tool call 均返回稳定失败分类，且没有执行工具。
 
 TypeScript runtime 测试应退出 0，报告 30 个共享 Task/Action 与 14 个 RunResult 案例通过；其中混合 Action、坏 tool call、空/重复工具、错误预算和矛盾终态等被拒绝。`NaN/Infinity` 不是合法 JSON，继续由两种语言各自的运行时负例覆盖。
 
 ### 失败、停止、清理与回退
 
-若 live 路径未硬禁用、权限拒绝后 handler 仍执行、坏 action 进入 metrics、timeout 被覆盖为成功或幂等复用失效，停止兼容声明与上层评测。先修对应 adapter/controller/validator，并保留负例；不要接入真实 key 或放宽 schema。
+若 live 路径未硬禁用、权限拒绝后 handler 仍执行、坏 action 进入 metrics、timeout 被覆盖为成功、幂等复用失效，或 partial/冲突 stream 产生 Action，停止兼容声明与上层评测。先修对应 assembler/adapter/controller/validator，并保留负例；不要接入真实 key 或放宽 schema。
 
-命令只创建进程内对象和可忽略测试缓存；需要时只清理 `.pytest_cache/`。误改实现时用 `git diff -- lab/src/about_harness/adapters lab/src/about_harness/loop.py lab/src/about_harness/contracts.py lab/ts lab/tests` 精确定位，并只恢复自己的修改。候选失败时保持 replay 与 live-disabled 基线。
+命令只创建进程内对象和可忽略测试缓存；需要时只清理 `.pytest_cache/`。误改实现时用 `git diff -- lab/src/about_harness/streaming.py lab/src/about_harness/adapters lab/src/about_harness/loop.py lab/src/about_harness/contracts.py lab/ts lab/tests` 精确定位，并只恢复自己的修改。候选失败时保持 replay 与 live-disabled 基线。
 
 ### 证据边界
 
-这些测试提供 E1：当前本地 Python/TypeScript 最小契约能执行固定 replay，对共享 Task/Action 案例保持接受边界一致，拒绝 live、未授权工具和部分坏值，并验证有限重试、进程内幂等与 timeout 分类。
+这些测试提供 E1：当前本地 Python/TypeScript 最小契约能执行固定 replay，对共享 Task/Action 案例保持接受边界一致，拒绝 live、未授权工具和部分坏值，验证有限重试、进程内幂等与 timeout 分类，并对 14 组合成事件执行 provider-neutral 状态转换。
 
-当前实现没有真实 transport/stream assembler、provider message/state carrier、并行 tool call、usage 映射、跨进程幂等、partial/unknown outcome 或 schema negotiation。测试通过不能证明任何真实 model/provider/harness/MCP 组合兼容或安全。
+当前实现没有真实 transport/Provider stream adapter、message/state carrier、并行 tool call、费用映射、跨进程幂等、partial/unknown 外部副作用对账或 schema negotiation。合成 assembler 不验证 SSE/SDK、UTF-8 bytes、重连 cursor 或目标 Provider 事件语义；测试通过不能证明任何真实 model/provider/harness/MCP 组合兼容或安全。
 
 ## 协议审核清单
 

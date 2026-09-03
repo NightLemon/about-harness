@@ -198,7 +198,7 @@ started → accumulating → structurally_complete → validated → committed
 
 Partial arguments（不完整参数）不能进入 policy 或 handler。分片重复但内容不同、call ID 变化、stop 早于参数完成、取消后的迟到分片，都应中止并保留错误分类。若 provider 无法从 cursor 恢复，不能靠字符串拼接“修复”JSON 后执行。
 
-当前项目没有真实 stream assembler；这一节是实现要求，不是已有能力声明。目标 provider 的流式格式属于易变产品事实，应冻结 model/provider/surface/SDK/adapter 版本并用实际探针验证。
+当前项目已有一个不绑定 Provider 的离线 `StreamAssembler`：它以 response/event/sequence/call ID 对事件去重和排序，缓冲 tool argument delta，只在 tool 完成、JSON object 与公共 Action 契约都有效后产出 canonical Action。它还区分 completed/error/cancelled/无终态断流，并明确拒绝第二个 tool call。这个 E1 状态机没有 transport 或 handler，不能冒充真实 Provider adapter；目标流式格式仍需冻结 model/provider/surface/SDK/adapter 版本并用实际探针验证。
 
 ## 错误分类决定能否重试
 
@@ -267,6 +267,14 @@ uv run --frozen --offline pytest -q lab/tests/test_loop.py::test_wrong_adapter_r
 
 预期 2 项测试通过。第一项让 adapter 返回伪装成 Action 的 dict，runner 必须产生 `failed / invalid_action`；第二项先在一个 tool step 后停止，再用 checkpoint 恢复 Fake cursor，最终只消费剩余 complete Action。
 
+### 验证 stream 只在结构完成后提交
+
+```bash
+uv run --frozen --offline pytest -q lab/tests/test_streaming.py
+```
+
+预期 14 项通过。三个正例分别重组中文文本与 usage、跨两个 delta 的 tool arguments、完全重复事件；十一项负例覆盖 sequence/response/event ID 冲突、坏 JSON、无终态断流、tool 未完成、终态后事件、Provider error、取消、未知事件和当前不支持的并行 tool call。测试只比较 assembler 返回或错误码，没有 ToolRegistry/handler，因此 partial stream 不可能产生副作用。
+
 ## 失败练习：直接观察 checkpoint 和 replay 拒绝
 
 以下命令故意产生非零退出码；它们只创建进程内对象，不修改文件：
@@ -298,12 +306,12 @@ uv run --frozen --offline python -c "import sys; sys.path.insert(0, 'lab/src'); 
 正常测试和失败练习只创建进程内对象，最多留下可忽略的 `.pytest_cache/`，无需清理外部资源。若误改 adapter，先运行：
 
 ```bash
-git diff -- lab/src/about_harness/adapters lab/tests/test_replay_and_live.py
+git diff -- lab/src/about_harness/streaming.py lab/src/about_harness/adapters lab/tests/test_streaming.py lab/tests/test_replay_and_live.py
 ```
 
 只用编辑器 undo 或精确反向修改恢复自己的行，再重跑目标测试。不要 `reset --hard` 或覆盖整个工作树。真实 adapter 探针失败时，回退到 Fake/Replay 与 hard-disabled Live 基线；先撤销新网络/凭据入口，再保留脱敏失败 artifact。
 
-当前实现的已知限制包括：没有 provider client、transport、stream assembler、真实消息映射、typed adapter error、usage、capability/version 字段、并行 tool call 或 schema negotiation；Replay 没有文件 hash/sequence/config 校验；Action 参数没有独立 replay JSON Schema；restore 异常还不是结构化 Result；Fake state 只有内存 cursor；幂等 cache 只在进程内。
+当前实现的已知限制包括：没有 provider client/transport、真实消息映射、typed adapter error、费用 usage 映射、capability/version 字段、并行 tool call 或 schema negotiation；离线 stream assembler 只有合成 JSON 事件，没有 bytes/SSE、backpressure、重连 cursor 或 Provider 恢复；Replay 没有文件 hash/sequence/config 校验；restore 异常还不是结构化 Result；Fake state 只有内存 cursor；幂等 cache 只在进程内。
 
 下一步先读[协议兼容性](/models/protocol-compatibility)设计目标版本探针，再用[测试策略](/implementation/testing)覆盖错误与恢复；准备接入真实模型前，按[模型适配方法](/models/adaptation)冻结身份、成本和数据边界。
 

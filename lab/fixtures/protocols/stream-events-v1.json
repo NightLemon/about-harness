@@ -1,0 +1,183 @@
+{
+  "schema_version": "1.0",
+  "evidence": "E1",
+  "description": "Provider-neutral synthetic stream events. They test assembly semantics, not any real provider protocol.",
+  "cases": [
+    {
+      "case_id": "text-and-usage-complete",
+      "valid": true,
+      "events": [
+        { "event_id": "e0", "sequence": 0, "type": "response_started", "response_id": "resp-text" },
+        { "event_id": "e1", "sequence": 1, "type": "text_delta", "response_id": "resp-text", "delta": "你" },
+        { "event_id": "e2", "sequence": 2, "type": "text_delta", "response_id": "resp-text", "delta": "好" },
+        { "event_id": "e3", "sequence": 3, "type": "usage", "response_id": "resp-text", "input_tokens": 8, "output_tokens": 2 },
+        { "event_id": "e4", "sequence": 4, "type": "response_completed", "response_id": "resp-text" }
+      ],
+      "expected": {
+        "response_id": "resp-text",
+        "text": "你好",
+        "actions": [],
+        "usage": { "input_tokens": 8, "output_tokens": 2 },
+        "accepted_events": 5,
+        "duplicates_ignored": 0
+      }
+    },
+    {
+      "case_id": "split-tool-arguments-complete",
+      "valid": true,
+      "events": [
+        { "event_id": "e0", "sequence": 0, "type": "response_started", "response_id": "resp-tool" },
+        { "event_id": "e1", "sequence": 1, "type": "tool_call_started", "response_id": "resp-tool", "call_id": "call-1", "name": "echo", "idempotency_key": "echo-1" },
+        { "event_id": "e2", "sequence": 2, "type": "tool_arguments_delta", "response_id": "resp-tool", "call_id": "call-1", "delta": "{\"value\":" },
+        { "event_id": "e3", "sequence": 3, "type": "tool_arguments_delta", "response_id": "resp-tool", "call_id": "call-1", "delta": "\"ok\"}" },
+        { "event_id": "e4", "sequence": 4, "type": "tool_call_completed", "response_id": "resp-tool", "call_id": "call-1" },
+        { "event_id": "e5", "sequence": 5, "type": "usage", "response_id": "resp-tool", "input_tokens": 10, "output_tokens": 4 },
+        { "event_id": "e6", "sequence": 6, "type": "response_completed", "response_id": "resp-tool" }
+      ],
+      "expected": {
+        "response_id": "resp-tool",
+        "text": "",
+        "actions": [
+          {
+            "kind": "tool",
+            "tool_call": {
+              "call_id": "call-1",
+              "name": "echo",
+              "arguments": { "value": "ok" },
+              "idempotency_key": "echo-1"
+            },
+            "cost_usd": 0
+          }
+        ],
+        "usage": { "input_tokens": 10, "output_tokens": 4 },
+        "accepted_events": 7,
+        "duplicates_ignored": 0
+      }
+    },
+    {
+      "case_id": "exact-duplicate-is-idempotent",
+      "valid": true,
+      "events": [
+        { "event_id": "e0", "sequence": 0, "type": "response_started", "response_id": "resp-duplicate" },
+        { "event_id": "e1", "sequence": 1, "type": "text_delta", "response_id": "resp-duplicate", "delta": "ok" },
+        { "event_id": "e1", "sequence": 1, "type": "text_delta", "response_id": "resp-duplicate", "delta": "ok" },
+        { "event_id": "e2", "sequence": 2, "type": "response_completed", "response_id": "resp-duplicate" }
+      ],
+      "expected": {
+        "response_id": "resp-duplicate",
+        "text": "ok",
+        "actions": [],
+        "usage": null,
+        "accepted_events": 3,
+        "duplicates_ignored": 1
+      }
+    },
+    {
+      "case_id": "sequence-gap",
+      "valid": false,
+      "expected_error": "sequence_conflict",
+      "events": [
+        { "event_id": "e0", "sequence": 0, "type": "response_started", "response_id": "resp-gap" },
+        { "event_id": "e2", "sequence": 2, "type": "text_delta", "response_id": "resp-gap", "delta": "late" }
+      ]
+    },
+    {
+      "case_id": "duplicate-id-content-conflict",
+      "valid": false,
+      "expected_error": "sequence_conflict",
+      "events": [
+        { "event_id": "e0", "sequence": 0, "type": "response_started", "response_id": "resp-conflict" },
+        { "event_id": "e1", "sequence": 1, "type": "text_delta", "response_id": "resp-conflict", "delta": "a" },
+        { "event_id": "e1", "sequence": 1, "type": "text_delta", "response_id": "resp-conflict", "delta": "b" }
+      ]
+    },
+    {
+      "case_id": "response-id-changed",
+      "valid": false,
+      "expected_error": "response_mismatch",
+      "events": [
+        { "event_id": "e0", "sequence": 0, "type": "response_started", "response_id": "resp-a" },
+        { "event_id": "e1", "sequence": 1, "type": "text_delta", "response_id": "resp-b", "delta": "wrong response" }
+      ]
+    },
+    {
+      "case_id": "malformed-tool-arguments",
+      "valid": false,
+      "expected_error": "invalid_tool_arguments",
+      "events": [
+        { "event_id": "e0", "sequence": 0, "type": "response_started", "response_id": "resp-bad-json" },
+        { "event_id": "e1", "sequence": 1, "type": "tool_call_started", "response_id": "resp-bad-json", "call_id": "call-1", "name": "echo", "idempotency_key": "echo-1" },
+        { "event_id": "e2", "sequence": 2, "type": "tool_arguments_delta", "response_id": "resp-bad-json", "call_id": "call-1", "delta": "{\"value\":" },
+        { "event_id": "e3", "sequence": 3, "type": "tool_call_completed", "response_id": "resp-bad-json", "call_id": "call-1" }
+      ]
+    },
+    {
+      "case_id": "response-completes-before-tool",
+      "valid": false,
+      "expected_error": "incomplete_stream",
+      "events": [
+        { "event_id": "e0", "sequence": 0, "type": "response_started", "response_id": "resp-early-stop" },
+        { "event_id": "e1", "sequence": 1, "type": "tool_call_started", "response_id": "resp-early-stop", "call_id": "call-1", "name": "echo", "idempotency_key": "echo-1" },
+        { "event_id": "e2", "sequence": 2, "type": "tool_arguments_delta", "response_id": "resp-early-stop", "call_id": "call-1", "delta": "{}" },
+        { "event_id": "e3", "sequence": 3, "type": "response_completed", "response_id": "resp-early-stop" }
+      ]
+    },
+    {
+      "case_id": "transport-ends-without-terminal",
+      "valid": false,
+      "expected_error": "incomplete_stream",
+      "events": [
+        { "event_id": "e0", "sequence": 0, "type": "response_started", "response_id": "resp-disconnect" },
+        { "event_id": "e1", "sequence": 1, "type": "text_delta", "response_id": "resp-disconnect", "delta": "partial" }
+      ]
+    },
+    {
+      "case_id": "event-after-terminal",
+      "valid": false,
+      "expected_error": "state_violation",
+      "events": [
+        { "event_id": "e0", "sequence": 0, "type": "response_started", "response_id": "resp-late" },
+        { "event_id": "e1", "sequence": 1, "type": "text_delta", "response_id": "resp-late", "delta": "done" },
+        { "event_id": "e2", "sequence": 2, "type": "response_completed", "response_id": "resp-late" },
+        { "event_id": "e3", "sequence": 3, "type": "text_delta", "response_id": "resp-late", "delta": "too late" }
+      ]
+    },
+    {
+      "case_id": "provider-error-terminal",
+      "valid": false,
+      "expected_error": "provider_error",
+      "events": [
+        { "event_id": "e0", "sequence": 0, "type": "response_started", "response_id": "resp-error" },
+        { "event_id": "e1", "sequence": 1, "type": "response_error", "response_id": "resp-error", "code": "upstream_failure", "message": "synthetic failure" }
+      ]
+    },
+    {
+      "case_id": "parallel-tool-calls-unsupported",
+      "valid": false,
+      "expected_error": "unsupported_parallel_calls",
+      "events": [
+        { "event_id": "e0", "sequence": 0, "type": "response_started", "response_id": "resp-parallel" },
+        { "event_id": "e1", "sequence": 1, "type": "tool_call_started", "response_id": "resp-parallel", "call_id": "call-1", "name": "echo", "idempotency_key": "echo-1" },
+        { "event_id": "e2", "sequence": 2, "type": "tool_call_started", "response_id": "resp-parallel", "call_id": "call-2", "name": "echo", "idempotency_key": "echo-2" }
+      ]
+    },
+    {
+      "case_id": "unknown-event-type",
+      "valid": false,
+      "expected_error": "invalid_event",
+      "events": [
+        { "event_id": "e0", "sequence": 0, "type": "response_started", "response_id": "resp-unknown" },
+        { "event_id": "e1", "sequence": 1, "type": "response_paused", "response_id": "resp-unknown" }
+      ]
+    },
+    {
+      "case_id": "cancelled-terminal",
+      "valid": false,
+      "expected_error": "cancelled",
+      "events": [
+        { "event_id": "e0", "sequence": 0, "type": "response_started", "response_id": "resp-cancelled" },
+        { "event_id": "e1", "sequence": 1, "type": "response_cancelled", "response_id": "resp-cancelled" }
+      ]
+    }
+  ]
+}

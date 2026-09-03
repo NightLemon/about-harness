@@ -285,21 +285,22 @@ Raw artifact（原始证据）与公开 artifact 分开保存。公开前移除 
 固定输入是：
 
 - `lab/tests/test_replay_and_live.py` 的两步 replay 与 hard-disabled live adapter；
+- `lab/tests/test_streaming.py` 与 `stream-events-v1.json` 的 14 个 provider-neutral 合成 stream 正负例；
 - `lab/tests/test_loop.py` 的预算、权限、幂等、timeout 和 resume 负例；
-- `lab/ts/runtime-test.ts` 的 Task/Action 运行时契约负例；
+- `lab/ts/runtime-test.ts` 的 Task/Action/Result 运行时契约负例；
 - 本页、OpenAI 模型页、事实注册表与兼容矩阵中的静态标记。
 
 ### 命令
 
 ```powershell
-uv run --frozen --offline pytest -q lab/tests/test_replay_and_live.py lab/tests/test_loop.py
+uv run --frozen --offline pytest -q lab/tests/test_replay_and_live.py lab/tests/test_streaming.py lab/tests/test_loop.py
 npm run lab:ts-runtime-test
 npm run facts:check
 ```
 
 ### 预期输出与断言
 
-- pytest 全部通过：replay 能按 `call_id` 完成进程内 `sum`，live adapter 在 provider action 前硬拒绝；loop 能区分预算、权限、tool error、幂等复用、timeout 和 resume；
+- pytest 32 项全部通过：replay 能按 `call_id` 完成进程内 `sum`，live adapter 在 provider action 前硬拒绝；合成 stream 只在 tool call 完成且完整 JSON object 校验后生成 canonical Action，只有 `response_completed` 才返回响应，并拒绝序号/ID 冲突、断流、取消、坏参数、迟到事件和并行 tool call；loop 能区分预算、权限、tool error、幂等复用、timeout 和 resume；
 - TypeScript runtime 测试拒绝空/重复工具名、非有限预算与非法 action，并阻止坏值进入 metrics；
 - `facts:check` 确认易变产品主张的来源状态、版本、日期和正文引用一致，但不把引用完整误当作协议兼容；
 - 人工逐行复核兼容矩阵中的目标 surface、状态载体、工具循环、错误/usage、控制责任和 live 状态，任何 `untested` 都不能被命令成功改写。
@@ -308,7 +309,7 @@ npm run facts:check
 
 ### 失败、停止与回退
 
-若 replay 需要网络/credential、live adapter 未被硬拒绝、重复副作用发生、timeout 被记为完成、非法 action 进入 metrics，或任一运行时负例未被拒绝，停止协议兼容声明。先修对应 contract、adapter、controller 或 validator，并保留可复现负例；不要接入真实 key、放宽断言或把 `untested` 改成 `supported` 来获得绿色结果。
+若 replay 需要网络/credential、live adapter 未被硬拒绝、partial/conflict stream 产生 Action、重复副作用发生、timeout 被记为完成、非法 action 进入 metrics，或任一运行时负例未被拒绝，停止协议兼容声明。先修对应 contract、assembler、adapter、controller 或 validator，并保留可复现负例；不要接入真实 key、放宽断言或把 `untested` 改成 `supported` 来获得绿色结果。
 
 命令只读固定输入并可能产生 `.pytest_cache/` 等可忽略缓存。若误改实现，使用：
 
@@ -320,9 +321,9 @@ git diff -- lab scripts docs/models/protocol-compatibility.md docs/models/openai
 
 ### 当前证据边界
 
-上述测试提供 E1：证明本项目固定 replay 和最小 controller 在这些夹具上保持 action、call ID、预算、权限、幂等与 resume 语义；事实检查只验证易变主张的登记和引用。
+上述测试提供 E1：证明本项目固定 replay、合成 stream assembler 和最小 controller 在这些夹具上保持 action、call ID、事件顺序、完整终态、预算、权限、幂等与 resume 语义；事实检查只验证易变主张的登记和引用。
 
-它没有 provider SDK/client、credential reader、真实 streaming event、response/session ID 或 opaque reasoning item 实现，也没有调用任何真实模型。协议说明是否完整只能人工对照目标 surface 和来源审阅。因此即使全部通过，也不能证明 OpenAI、Anthropic、DeepSeek、Qwen 或任何第三方兼容 endpoint 在目标版本上 `supported`，更不能证明模型质量或生产安全。
+它没有 provider SDK/client、credential reader、真实 transport/Provider stream adapter、response/session ID 或 opaque reasoning item 实现，也没有调用任何真实模型。合成 assembler 不覆盖真实 SSE/SDK event shape、UTF-8 byte 边界、重连 cursor 或 Provider 特有状态。协议说明是否完整只能人工对照目标 surface 和来源审阅。因此即使全部通过，也不能证明 OpenAI、Anthropic、DeepSeek、Qwen 或任何第三方兼容 endpoint 在目标版本上 `supported`，更不能证明模型质量或生产安全。
 
 ## 协议资格检查表
 
