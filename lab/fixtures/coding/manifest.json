@@ -1,13 +1,13 @@
 {
-  "fixture_version": "1.0",
+  "fixture_version": "1.1",
   "case_id": "coding",
   "source": "project-synthetic",
   "license": "CC-BY-4.0",
-  "checked": "2026-08-20",
+  "checked": "2026-09-04",
   "contains_personal_data": false,
   "files": {
-    "input.json": "43e8e7d0c28c14a0feccfeb13e14462ca65fa77c9336529f0a9f8c13807ce560",
-    "expected.json": "dfa7f00cc02375fbf8b1c17c6dd2bc0c3c4867a20c79810ab08019285de1b807",
-    "negative.json": "1da88ed705be0d742de2fa5392b41a8556ed7a2da8241959207466762f1d6a6b"
+    "input.json": "314410ea76065d7a4f8f4622d5afaa317ac34c90e75da64d6588f92a95776255",
+    "expected.json": "eded1d4b7c47e0ee6223ef791455ef9a8d9fef75ad5d0fedae0bfc12c7f53198",
+    "negative.json": "ccc40decd869b3779cf079a7e0e7cd7608ab23944e5d1ac6fa51a827854d2e71"
   }
 }

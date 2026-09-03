@@ -4,9 +4,10 @@ import ast
 import copy
 import hashlib
 import json
+import re
 from collections.abc import Callable
 from dataclasses import dataclass
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import cast
 
 from about_harness.contracts import JsonValue
@@ -51,15 +52,29 @@ _FIXED_COLLECT = """def collect(items):
         index += 1
     return output
 """
+_UNDER_FIXED_COLLECT = """def collect(items):
+    index = 0
+    output = []
+    while index < len(items) - 2:
+        output.append(items[index])
+        index += 1
+    return output
+"""
 _COLLECT_AST_ALLOWLIST = {
     ast.dump(ast.parse(_BUGGY_COLLECT), include_attributes=False),
     ast.dump(ast.parse(_FIXED_COLLECT), include_attributes=False),
+    ast.dump(ast.parse(_UNDER_FIXED_COLLECT), include_attributes=False),
 }
 _CODING_CASES: dict[str, tuple[list[int], list[int]]] = {
     "empty": ([], []),
     "single": ([1], [1]),
     "multiple": ([1, 2, 3], [1, 2, 3]),
 }
+_CODING_PATH = "src/collect.py"
+_SHA256_PATTERN = re.compile(r"^[0-9a-f]{64}$")
+_HUNK_PATTERN = re.compile(
+    r"^@@ -([1-9][0-9]*)(?:,([0-9]+))? \+([1-9][0-9]*)(?:,([0-9]+))? @@(?: .*)?$"
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -71,6 +86,14 @@ class FixtureBundle:
     expected: dict[str, JsonValue]
     negative: dict[str, JsonValue]
     fixture_hash: str
+
+
+@dataclass(frozen=True, slots=True)
+class AppliedDiff:
+    path: str
+    content: str
+    added_lines: int
+    deleted_lines: int
 
 
 def _load_object(path: Path) -> dict[str, JsonValue]:
@@ -135,21 +158,218 @@ def _compile_fixture_collect(source: str) -> CollectFunction:
     return cast(CollectFunction, function)
 
 
-def evaluate_coding(payload: dict[str, JsonValue]) -> dict[str, JsonValue]:
-    before = payload.get("before")
-    patch = payload.get("candidate_patch")
-    tests = payload.get("tests")
+def _require_exact_keys(
+    value: dict[str, JsonValue], expected: set[str], label: str
+) -> None:
+    missing = expected.difference(value)
+    unknown = set(value).difference(expected)
+    if missing or unknown:
+        problems: list[str] = []
+        if missing:
+            problems.append(f"missing {sorted(missing)}")
+        if unknown:
+            problems.append(f"unknown {sorted(unknown)}")
+        raise FixtureError(f"{label} has schema drift: {', '.join(problems)}")
+
+
+def _require_non_blank_string(value: JsonValue, label: str) -> str:
+    if not isinstance(value, str) or not value.strip():
+        raise FixtureError(f"{label} must be a non-blank string")
+    return value
+
+
+def _require_unique_string_list(value: JsonValue, label: str) -> list[str]:
+    if not isinstance(value, list):
+        raise FixtureError(f"{label} must be a string array")
+    result: list[str] = []
+    seen: set[str] = set()
+    for index, raw in enumerate(value):
+        item = _require_non_blank_string(raw, f"{label}[{index}]")
+        if item in seen:
+            raise FixtureError(f"{label} contains duplicate value: {item}")
+        seen.add(item)
+        result.append(item)
+    return result
+
+
+def _validate_coding_path(path: str, label: str) -> str:
+    parts = path.split("/")
+    candidate = PurePosixPath(path)
     if (
-        not isinstance(before, str)
-        or not isinstance(patch, str)
-        or not isinstance(tests, list)
-        or not all(isinstance(test, str) for test in tests)
-        or len(tests) != len(set(tests))
-        or set(tests) != set(_CODING_CASES)
+        candidate.is_absolute()
+        or "\\" in path
+        or ":" in path
+        or any(part in {"", ".", ".."} for part in parts)
+        or str(candidate) != path
     ):
-        raise FixtureError("coding input is invalid")
-    baseline = _compile_fixture_collect(before)
-    candidate = _compile_fixture_collect(patch)
+        raise FixtureError(f"{label} is an unsafe repository-relative path")
+    return path
+
+
+def _sha256_text(value: str) -> str:
+    return hashlib.sha256(value.encode("utf-8")).hexdigest()
+
+
+def _apply_single_file_unified_diff(
+    diff: str,
+    files: dict[str, str],
+    allowed_paths: set[str],
+) -> AppliedDiff:
+    if not diff or "\r" in diff:
+        raise FixtureError("coding diff must be a non-empty LF-only unified diff")
+    lines = diff.splitlines(keepends=True)
+    if len(lines) < 3:
+        raise FixtureError("coding diff is missing file headers or a hunk")
+    old_header = lines[0].removesuffix("\n")
+    new_header = lines[1].removesuffix("\n")
+    if not old_header.startswith("--- a/") or not new_header.startswith("+++ b/"):
+        raise FixtureError("coding diff must use --- a/path and +++ b/path headers")
+    old_path = _validate_coding_path(old_header[6:], "coding diff old path")
+    new_path = _validate_coding_path(new_header[6:], "coding diff new path")
+    if old_path != new_path:
+        raise FixtureError("coding diff cannot rename files")
+    if old_path not in allowed_paths:
+        raise FixtureError(f"coding diff path is outside task scope: {old_path}")
+    if old_path not in files:
+        raise FixtureError(f"coding diff path is absent from the workspace: {old_path}")
+
+    source = files[old_path]
+    source_lines = source.splitlines(keepends=True)
+    output_lines: list[str] = []
+    source_cursor = 0
+    line_index = 2
+    added_lines = 0
+    deleted_lines = 0
+    hunks = 0
+    while line_index < len(lines):
+        header = lines[line_index].removesuffix("\n")
+        match = _HUNK_PATTERN.fullmatch(header)
+        if match is None:
+            raise FixtureError("coding diff contains data outside a unified hunk")
+        old_start = int(match.group(1))
+        old_count = int(match.group(2) or "1")
+        new_start = int(match.group(3))
+        new_count = int(match.group(4) or "1")
+        target_cursor = old_start - 1
+        if target_cursor < source_cursor or target_cursor > len(source_lines):
+            raise FixtureError("coding diff hunk starts outside the source snapshot")
+        output_lines.extend(source_lines[source_cursor:target_cursor])
+        if new_start != len(output_lines) + 1:
+            raise FixtureError("coding diff hunk target start does not match prior output")
+        source_cursor = target_cursor
+        line_index += 1
+        old_seen = 0
+        new_seen = 0
+        while line_index < len(lines) and not lines[line_index].startswith("@@ "):
+            line = lines[line_index]
+            if not line or line[0] not in {" ", "+", "-"}:
+                raise FixtureError("coding diff hunk contains an invalid line marker")
+            marker = line[0]
+            content = line[1:]
+            if marker in {" ", "-"}:
+                if source_cursor >= len(source_lines) or source_lines[source_cursor] != content:
+                    raise FixtureError("coding diff context does not match the source snapshot")
+                source_cursor += 1
+                old_seen += 1
+            if marker in {" ", "+"}:
+                output_lines.append(content)
+                new_seen += 1
+            if marker == "+":
+                added_lines += 1
+            elif marker == "-":
+                deleted_lines += 1
+            line_index += 1
+        if old_seen != old_count or new_seen != new_count:
+            raise FixtureError("coding diff hunk line counts do not match its header")
+        hunks += 1
+
+    if hunks == 0:
+        raise FixtureError("coding diff must contain at least one hunk")
+    output_lines.extend(source_lines[source_cursor:])
+    content = "".join(output_lines)
+    if content == source or added_lines == 0 or deleted_lines == 0:
+        raise FixtureError("coding diff must make a non-empty replacement")
+    return AppliedDiff(
+        path=old_path,
+        content=content,
+        added_lines=added_lines,
+        deleted_lines=deleted_lines,
+    )
+
+
+def evaluate_coding(payload: dict[str, JsonValue]) -> dict[str, JsonValue]:
+    _require_exact_keys(payload, {"task", "workspace", "candidate_patch"}, "coding input")
+    task_value = payload.get("task")
+    workspace_value = payload.get("workspace")
+    patch_value = payload.get("candidate_patch")
+    if not isinstance(task_value, dict):
+        raise FixtureError("coding task must be an object")
+    if not isinstance(workspace_value, dict):
+        raise FixtureError("coding workspace must be an object")
+    if not isinstance(patch_value, dict):
+        raise FixtureError("coding candidate_patch must be an object")
+    task = task_value
+    workspace = workspace_value
+    patch = patch_value
+    _require_exact_keys(
+        task, {"task_id", "allowed_paths", "max_files_changed", "tests"}, "coding task"
+    )
+    _require_exact_keys(workspace, {"snapshot_id", "files"}, "coding workspace")
+    _require_exact_keys(
+        patch, {"format", "base_hashes", "diff"}, "coding candidate_patch"
+    )
+
+    task_id = _require_non_blank_string(task.get("task_id"), "coding task.task_id")
+    allowed_paths = _require_unique_string_list(
+        task.get("allowed_paths"), "coding task.allowed_paths"
+    )
+    for index, path in enumerate(allowed_paths):
+        _validate_coding_path(path, f"coding task.allowed_paths[{index}]")
+    if allowed_paths != [_CODING_PATH]:
+        raise FixtureError(f"coding task scope must be exactly {_CODING_PATH}")
+    max_files_changed = task.get("max_files_changed")
+    if (
+        not isinstance(max_files_changed, int)
+        or isinstance(max_files_changed, bool)
+        or max_files_changed != 1
+    ):
+        raise FixtureError("coding task.max_files_changed must be 1")
+    tests = _require_unique_string_list(task.get("tests"), "coding task.tests")
+    if set(tests) != set(_CODING_CASES):
+        raise FixtureError("coding task.tests must cover empty, single, and multiple")
+
+    snapshot_id = _require_non_blank_string(
+        workspace.get("snapshot_id"), "coding workspace.snapshot_id"
+    )
+    raw_files = workspace.get("files")
+    if not isinstance(raw_files, dict) or set(raw_files) != set(allowed_paths):
+        raise FixtureError("coding workspace files must exactly match task.allowed_paths")
+    files: dict[str, str] = {}
+    for path, raw_source in raw_files.items():
+        source = _require_non_blank_string(raw_source, f"coding workspace.files[{path}]")
+        files[path] = source
+
+    if patch.get("format") != "unified-diff":
+        raise FixtureError("coding candidate_patch.format must be unified-diff")
+    raw_base_hashes = patch.get("base_hashes")
+    if not isinstance(raw_base_hashes, dict) or set(raw_base_hashes) != set(files):
+        raise FixtureError("coding candidate_patch.base_hashes must cover workspace files")
+    base_hashes: dict[str, str] = {}
+    for path, raw_hash in raw_base_hashes.items():
+        if not isinstance(raw_hash, str) or _SHA256_PATTERN.fullmatch(raw_hash) is None:
+            raise FixtureError(f"coding base hash is invalid for {path}")
+        actual_hash = _sha256_text(files[path])
+        if raw_hash != actual_hash:
+            raise FixtureError(f"coding base hash mismatch for {path}")
+        base_hashes[path] = raw_hash
+    diff = _require_non_blank_string(patch.get("diff"), "coding candidate_patch.diff")
+    applied = _apply_single_file_unified_diff(diff, files, set(allowed_paths))
+    changed_files = [applied.path]
+    if len(changed_files) > max_files_changed:
+        raise FixtureError("coding diff exceeds task.max_files_changed")
+
+    baseline = _compile_fixture_collect(files[applied.path])
+    candidate = _compile_fixture_collect(applied.content)
     baseline_failures: list[str] = []
     test_results: dict[str, JsonValue] = {}
     for test in tests:
@@ -160,14 +380,30 @@ def evaluate_coding(payload: dict[str, JsonValue]) -> dict[str, JsonValue]:
         test_results[test] = candidate(list(values)) == expected
     tests_passed = sum(result is True for result in test_results.values())
     baseline_failure_items: list[JsonValue] = list(baseline_failures)
+    changed_file_items: list[JsonValue] = list(changed_files)
+    base_hash_output: dict[str, JsonValue] = dict(base_hashes)
+    result_hash_output: dict[str, JsonValue] = {
+        applied.path: _sha256_text(applied.content)
+    }
+    workspace_output: dict[str, JsonValue] = {
+        "snapshot_id": snapshot_id,
+        "base_hashes": base_hash_output,
+    }
+    patch_output: dict[str, JsonValue] = {
+        "format": "unified-diff",
+        "applied": True,
+        "changed_files": changed_file_items,
+        "added_lines": applied.added_lines,
+        "deleted_lines": applied.deleted_lines,
+        "result_hashes": result_hash_output,
+    }
     return {
-        "patch_applied": patch != before
-        and bool(baseline_failures)
-        and tests_passed == len(tests),
+        "task_id": task_id,
+        "workspace": workspace_output,
+        "patch": patch_output,
         "baseline_failures": baseline_failure_items,
         "test_results": test_results,
         "tests_passed": tests_passed,
-        "files_changed": 1,
     }
 
 
@@ -316,52 +552,60 @@ def run_all(fixtures_root: Path) -> list[dict[str, JsonValue]]:
     return [execute_fixture(load_fixture(fixtures_root, name)) for name in LAB_NAMES]
 
 
+def _override_cases_rejected(
+    bundle: FixtureBundle,
+    handler: Callable[[dict[str, JsonValue]], dict[str, JsonValue]],
+    error_type: type[Exception],
+) -> bool:
+    cases = bundle.negative.get("cases")
+    if not isinstance(cases, list) or not cases:
+        return False
+    for case in cases:
+        if not isinstance(case, dict):
+            return False
+        override = case.get("override")
+        expected_error = case.get("expected_error")
+        if (
+            not isinstance(override, dict)
+            or "value" not in override
+            or not isinstance(expected_error, str)
+            or not expected_error
+        ):
+            return False
+        path = override.get("path")
+        if (
+            not isinstance(path, list)
+            or not path
+            or not all(isinstance(part, str) and part for part in path)
+        ):
+            return False
+        payload = copy.deepcopy(bundle.input)
+        cursor: JsonValue = payload
+        for part in path[:-1]:
+            if not isinstance(cursor, dict) or part not in cursor:
+                return False
+            cursor = cursor[part]
+        final = path[-1]
+        if not isinstance(cursor, dict) or final not in cursor:
+            return False
+        cursor[final] = copy.deepcopy(override["value"])
+        try:
+            handler(payload)
+        except error_type as error:
+            if expected_error not in str(error):
+                return False
+        else:
+            return False
+    return True
+
+
 def _negative_rejected(bundle: FixtureBundle, output: dict[str, JsonValue]) -> bool:
     if bundle.name == "coding":
-        patch = bundle.negative.get("candidate_patch")
-        if not isinstance(patch, str):
-            return False
-        try:
-            _compile_fixture_collect(patch)
-        except FixtureError:
-            return True
-        return False
+        return _override_cases_rejected(bundle, evaluate_coding, FixtureError)
     if bundle.name == "browser":
-        cases = bundle.negative.get("cases")
-        if not isinstance(cases, list) or not cases:
-            return False
-        for case in cases:
-            if not isinstance(case, dict):
-                return False
-            override = case.get("override")
-            expected_error = case.get("expected_error")
-            if not isinstance(override, dict) or not isinstance(expected_error, str):
-                return False
-            path = override.get("path")
-            if (
-                not isinstance(path, list)
-                or not path
-                or not all(isinstance(part, str) and part for part in path)
-            ):
-                return False
-            payload = copy.deepcopy(bundle.input)
-            cursor: JsonValue = payload
-            for part in path[:-1]:
-                if not isinstance(cursor, dict) or part not in cursor:
-                    return False
-                cursor = cursor[part]
-            final = path[-1]
-            if not isinstance(cursor, dict) or final not in cursor:
-                return False
-            cursor[final] = copy.deepcopy(override.get("value"))
-            try:
-                extract_local_catalog(payload)
-            except IntegrationContractError as error:
-                if expected_error not in str(error):
-                    return False
-            else:
-                return False
-        return True
+        return _override_cases_rejected(
+            bundle, extract_local_catalog, IntegrationContractError
+        )
     if bundle.name == "research":
         claims = output.get("claims")
         candidate = bundle.negative.get("candidate_claim")

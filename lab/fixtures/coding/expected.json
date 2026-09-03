@@ -1,5 +1,22 @@
 {
-  "patch_applied": true,
-  "tests_passed": 3,
-  "files_changed": 1
+  "task_id": "collect-last-item",
+  "workspace": {
+    "snapshot_id": "coding-workspace-01",
+    "base_hashes": {
+      "src/collect.py": "4c0d18777d21f94708ef40f50e7e0169fc172d26516a65ed2263d5a20e62ce59"
+    }
+  },
+  "patch": {
+    "format": "unified-diff",
+    "applied": true,
+    "changed_files": ["src/collect.py"],
+    "added_lines": 1,
+    "deleted_lines": 1,
+    "result_hashes": {
+      "src/collect.py": "2652c76a095519a39ad7c8713e082785fe0533033d3f0eac5a7f6171f0ced4e5"
+    }
+  },
+  "baseline_failures": ["single", "multiple"],
+  "test_results": {"empty": true, "single": true, "multiple": true},
+  "tests_passed": 3
 }

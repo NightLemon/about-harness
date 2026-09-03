@@ -61,7 +61,7 @@ features:
 
 | 案例 | 核心练习 | 关键失败例 | 当前 E1 不证明什么 |
 | --- | --- | --- | --- |
-| [Coding](/labs/coding) | 先复现、再验收固定候选 | AST 范围外源码 | 模型能修真实仓库 |
+| [Coding](/labs/coding) | 固定 workspace、应用 diff、再跑断言 | 路径、base、hunk 或 AST 越界 | 模型能修真实仓库 |
 | [Browser](/labs/browser) | Observation 绑定与只读提取 | 外域、旧 observation、字段扩权 | 真实浏览器或注入检测有效 |
 | [Research](/labs/research) | Claim–citation 与冲突保留 | 无引用主张、伪引用 | 搜索覆盖完整或事实为真 |
 | [Data](/labs/data) | Dataset lineage、单位、missing/null 与脱敏 | Schema、范围、隐私越界 | 生产数据管线正确 |

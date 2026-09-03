@@ -1,5 +1,29 @@
 {
-  "case": "scope-expansion",
-  "candidate_patch": "replace the loop and add an unrelated production dependency",
-  "expected": "reject because the patch changes more than the fixed behavior"
+  "case": "coding-patch-contract-matrix",
+  "cases": [
+    {
+      "case": "path-traversal",
+      "override": {
+        "path": ["candidate_patch", "diff"],
+        "value": "--- a/../pyproject.toml\n+++ b/../pyproject.toml\n@@ -1 +1 @@\n-old\n+new\n"
+      },
+      "expected_error": "unsafe repository-relative path"
+    },
+    {
+      "case": "stale-base",
+      "override": {
+        "path": ["candidate_patch", "base_hashes", "src/collect.py"],
+        "value": "0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "expected_error": "base hash mismatch"
+    },
+    {
+      "case": "dependency-import",
+      "override": {
+        "path": ["candidate_patch", "diff"],
+        "value": "--- a/src/collect.py\n+++ b/src/collect.py\n@@ -1,7 +1,9 @@\n+import os\n+\n def collect(items):\n     index = 0\n     output = []\n-    while index < len(items) - 1:\n+    while index < len(items):\n         output.append(items[index])\n         index += 1\n     return output\n"
+      },
+      "expected_error": "fixed AST allowlist"
+    }
+  ]
 }
