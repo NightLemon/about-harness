@@ -2,13 +2,14 @@
 
 ## 学习目标与证据边界
 
-本页把 Python 主线中的 task、action、adapter、loop 与 result 映射到 TypeScript，并解释哪些语义能够共用、哪些能力仍然只是最小子集。完成后你应能回答三个问题：
+本页把 Python 主线中的 task、action、adapter、acceptance、loop 与 result 映射到 TypeScript，并解释哪些语义能够共用、哪些能力仍然只是最小子集。完成后你应能回答四个问题：
 
 1. 为什么 `TaskSpec` interface 编译通过，仍不能信任网络、文件或 adapter 返回的数据；
 2. 为什么 Action 要用 Discriminated union（判别联合）表达互斥分支；
-3. 为什么预算计费、trace 和工具执行都必须排在运行时校验之后。
+3. 为什么预算计费、trace 和工具执行都必须排在运行时校验之后；
+4. 为什么 `complete` 只是完成提议，结构化验收失败后仍要受同一模型预算约束。
 
-预计 35–45 分钟。当前练习固定 Node.js 22+ 与 TypeScript 5.9.3，版本来自 `package.json` 和 lockfile；输入只使用仓库内置对象，不联网、不读取凭据、不调用真实模型。证据等级为 E1：命令能证明当前离线实现满足固定断言，不能证明 Python 与 TypeScript 完全等价，也不能证明生产环境可靠性或模型质量。
+预计 45–55 分钟。当前练习固定 Node.js 22+ 与 TypeScript 5.9.3，版本来自 `package.json` 和 lockfile；输入只使用仓库内置对象，不联网、不读取凭据、不调用真实模型。证据等级为 E1：命令能证明当前离线实现满足固定断言，不能证明 Python 与 TypeScript 完全等价，也不能证明生产环境可靠性或模型质量。
 
 ## 先区分三层契约
 
@@ -48,8 +49,9 @@ const result = loop.run(task)
 | --- | --- | --- |
 | `lab/schemas/task.json` | 公共 Task JSON Schema | 跨语言输入基线 |
 | `lab/ts/contracts.ts` | TS 类型与运行时 Validator（校验器） | 拒绝未知字段、非法数字和非 JSON 值 |
+| `lab/ts/acceptance.ts` | 验收结果契约与 JSON 子集验收器 | `complete` 仍需独立决定才能提交 |
 | `lab/ts/minimal-loop.ts` | 最小 controller、policy 与工具调用 | 只演示离线控制流 |
-| `lab/ts/runtime-test.ts` | 正例、负例和预算绕过回归 | 坏 action 不能进入 metrics/trace |
+| `lab/ts/runtime-test.ts` | 契约、预算与验收回归 | 坏 action/validator 不能产生 completed |
 | `lab/src/about_harness/contracts.py` | Python dataclass 及运行时约束 | 对照共有字段与语言差异 |
 | `lab/src/about_harness/loop.py` | Python 完整教学主线 | checkpoint、retry 等能力以此为准 |
 
@@ -153,14 +155,31 @@ Number.NaN <= 0 // false
 1. 检查取消、总 timeout 与 model-call budget；
 2. 请求 adapter 产生下一 action；
 3. 验证 action 并累计模型调用与费用；
-4. `complete` 分支产生终态；
+4. `complete` 分支调用 acceptance validator，并记录结构化决定；
 5. `tool` 分支检查 allowlist 与敏感参数名；
 6. 先查询幂等缓存，再查找并执行 handler；
-7. 达到 step 上限时返回 `stopped / max_steps`。
+7. 达到 tool step 上限时返回 `stopped / max_steps`。
 
 Adapter 只能提出动作，不能直接执行工具或写入 `completed`。工具 handler 也只能返回值，不能修改 run 状态。这与[状态与可靠执行](/foundations/state-reliability)中的 controller 所有权一致。
 
-这里的 TS 主循环尚未移植 Python 的 `AcceptanceValidator`：合法 `complete` 仍直接进入 completed，`TaskSpec.acceptance` 只被保留而没有执行。相同字段名不代表完成语义对等；需要跨语言一致时，应先共享验收 fixture、事件和失败映射，再实现 TS validator。
+### Completion proposal 怎样变成终态
+
+当前 Python 与 TypeScript 都把 `complete` 解释为 completion proposal（完成提议），默认交给 `JsonSubsetAcceptanceValidator`：
+
+```text
+complete(output)
+  → 将 TaskSpec.acceptance 作为期望 JSON 子集
+  → acceptance_result{validator, accepted, feedback, evidence}
+      ├─ accepted=true  → completed
+      ├─ accepted=false → 保留反馈，进入下一次 adapter 决策
+      └─ 抛错/坏结果    → failed / invalid_action
+```
+
+Object 允许完成输出含额外字段；array 要求长度和逐项值一致；布尔值不会与数字 `1/0` 混淆；失败位置使用 JSON Pointer（JSON 指针），其中 `/` 和 `~` 会转义。验收拒绝不消耗 tool step，但已经发生的 model call 与 cost 不会退款，因此反复声称完成最终以 `model_budget` 停止，而不是获得无限修正。
+
+Validator 是外部信任边界。`validateAcceptanceResult` 要求决定为 boolean、反馈为非空字符串、evidence 为有限且无循环的 JSON object；validator 名称、返回值或执行异常都不能变成 completed。Validator 返回后，loop 再检查取消和总 timeout，迟到的通过结果会被丢弃。
+
+这只是结构语义对齐，不是实现完全相同：Python 拒绝后保存 Adapter snapshot/checkpoint；TS 没有 snapshot 接口，只保留内存 Adapter 状态和 trace。两边也没有共用的 Action/RunResult wire schema 或自动差分 fixture。
 
 ### `ReadonlyMap` 的真实含义
 
@@ -178,7 +197,7 @@ Adapter 只能提出动作，不能直接执行工具或写入 `completed`。工
 | Action | dataclass + `__post_init__` | union + `validateAction` | 都拒绝非法 kind 与非有限成本 |
 | Adapter | Protocol，可保存/恢复状态 | `nextAction` interface | TS 没有 snapshot / restore |
 | Tool registry | policy、retry、幂等 | `ReadonlyMap` + 内存 cache | TS 只覆盖最小 allowlist 与复用 |
-| Acceptance | JSON 子集 validator、失败后修正 | 未实现 | TS 的 completed 不能解释为 acceptance 已执行 |
+| Acceptance | JSON 子集 validator、失败后修正、checkpoint | JSON 子集 validator、失败后修正、无 checkpoint | 固定结构语义对齐，恢复能力不同 |
 | Run result | run ID、checkpoint、error、trace | status、reason、metrics、trace | TS 是结果子集，不可互换序列化 |
 | Deadline | 调用边界检查，可配合 sleeper/retry | 同步调用前检查 | 都不提供任意 callable 的硬抢占 |
 | Memory / context | 有独立实现与污染测试 | 未实现 | 不应宣称能力对等 |
@@ -198,7 +217,7 @@ node node_modules/typescript/bin/tsc --version
 
 预期第一条输出 `v22` 或更高主版本，第二条输出 `Version 5.9.3`。如果版本或依赖不符，先停止，不要让 `npx` 临时下载另一个 TypeScript 版本来掩盖环境差异。
 
-本练习的输入是 `lab/ts/runtime-test.ts` 中的固定 Task、若干非法 Task/Action，以及一个 unsafe adapter（故意返回非法值的适配器）。它返回 `NaN` 成本，但不读取环境变量、用户文件或网络。
+本练习的输入是 `lab/ts/runtime-test.ts` 中的固定 Task、若干非法 Task/Action、一个 unsafe adapter（故意返回非法值的适配器），以及验收拒绝、修正、异常和超时样例。它们只构造内存对象，不读取环境变量、用户文件或网络。
 
 ### 第一步：只验证静态类型
 
@@ -224,7 +243,7 @@ npm run lab:ts-runtime-test
 预期退出码为 0，并输出：
 
 ```text
-TypeScript runtime contract test passed: invalid Task/Action values fail closed before metrics.
+TypeScript runtime test passed: Task/Action values fail closed and completion proposals require acceptance.
 ```
 
 脚本会临时编译到操作系统临时目录、执行生成的 JavaScript，并在 `finally` 中删除目录。它至少断言：
@@ -235,6 +254,10 @@ TypeScript runtime contract test passed: invalid Task/Action values fail closed 
 - 空 action tool name 被拒绝；
 - unsafe adapter 使 run 返回 `failed / invalid_action`；
 - 非法 action 不增加 model call，不污染 cost，也不产生 `model_action` trace。
+- nested object 的失败路径按 JSON Pointer 记录，修正后才能 completed；
+- boolean/number 不混淆，array 长度不一致会失败；
+- 反复拒绝在第三次模型调用前以 `model_budget` 停止；
+- validator 抛错、返回坏结果、超时或取消都不会释放 completion output。
 
 ### 第三步：核对 Python 公共边界
 
@@ -242,7 +265,7 @@ TypeScript runtime contract test passed: invalid Task/Action values fail closed 
 uv run --frozen --offline pytest -q lab/tests/test_contracts_and_schema.py
 ```
 
-预期测试全部通过。这里的 assertion（断言）证明 Python dataclass 拒绝固定非法 Task、预算与 Action，同时证明公共 JSON Schema 本身有效且与正例兼容。当前测试没有逐条对同一负例执行 TS、Python 和 schema 三方差分；两边 RunResult 的能力差异也应保留为显式边界。
+预期测试全部通过。这里的 assertion（断言）证明 Python dataclass 拒绝固定非法 Task、预算与 Action，同时证明公共 JSON Schema 本身有效且与正例兼容。Python 与 TS 现在分别覆盖 JSON 子集验收的相同关键语义，但仍没有由同一份 fixture 自动驱动的 TS、Python 和 schema 三方差分；两边 RunResult 与 checkpoint 的能力差异也应保留为显式边界。
 
 ## 失败练习：证明类型断言会破坏防线
 
@@ -285,6 +308,8 @@ npm run lab:ts-runtime-test
 | `cost_usd` 变成 `NaN` | 校验是否早于累计和 trace | 用 `Number.isFinite`，失败关闭 |
 | complete action 同时携带 tool call | 是否使用精确分支字段 | union 与 validator 同时拒绝混合形态 |
 | JSON 序列化后字段消失 | 数据里是否含 `undefined` / function | 进入 trace/result 前递归限制为 `JsonValue` |
+| complete 后直接结束 | 是否注入/调用 validator 并记录决定 | 把 complete 当提议，验收通过后才提交终态 |
+| 验收一直失败却继续请求 | model call/cost 是否在拒绝后保留 | 复用任务总预算，不为修正创建隐藏预算 |
 | 工具运行中无法取消 | handler 是否同步阻塞 | 传递 AbortSignal、客户端 timeout 或进程隔离 |
 | 重复 action 重复写外部系统 | cache 是否仅在进程内 | 稳定幂等键、持久台账与目标系统对账 |
 | TS 与 Python 输出不能互读 | 是否误把内部 interface 当 wire schema | 先定义共同 result schema 和版本迁移 |
@@ -300,9 +325,9 @@ npm run lab:ts-runtime-test
 - `run` 接收的是已验证 `TaskSpec`，调用方必须在外部入口执行 `validateTask`；
 - 没有 checkpoint、adapter restore、retry、持久幂等台账或 memory；
 - tool handler 是同步函数，没有 per-call timeout、AbortSignal 或隔离；
+- acceptance validator 是同步接口，默认实现只比较内存 JSON，不读取文件、测试退出码或目标系统回执；
 - allowlist 只比较名称，参数策略只是敏感键示例，不是通用授权系统；
 - cache 没有把参数 hash 与幂等键绑定，不能防止同键异参；
-- 没有 AcceptanceValidator，`complete` 不读取 Task acceptance；
 - 没有共同 Action/RunResult schema，也没有自动 TS/Python 差分生成；
 - E1 负例覆盖已知边界，不证明所有 JavaScript object、并发和资源耗尽攻击均安全。
 
