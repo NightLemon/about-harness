@@ -26,7 +26,10 @@ class WorkingMemory:
         return self._values.get(key)
 
     def delete(self, key: str) -> bool:
-        return self._values.pop(key, None) is not None
+        if key not in self._values:
+            return False
+        del self._values[key]
+        return True
 
     def clear(self) -> None:
         self._values.clear()
@@ -61,6 +64,8 @@ class LongTermMemory:
         now_ms: int,
         trusted_only: bool = True,
     ) -> tuple[MemoryRecord, ...]:
+        if not query.strip():
+            return ()
         normalized = query.casefold()
         return tuple(
             record
