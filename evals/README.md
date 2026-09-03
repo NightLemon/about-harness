@@ -7,7 +7,9 @@
 - `study.example.json`：20 任务、6 workload、2 配置、3 重复、6 holdout 的正式比较模板；
 - `runs.example.jsonl`：12 条合成 E1 配对分析样例，不是完整 120-run 矩阵；
 - `npm run eval:validate`：验证 task/reference/run 的 fixture lineage，以及 study 门槛、run 完整性、split 与枚举；
-- `npm run eval:summary`：报告成功率/Wilson 区间、P50/P90、失败类型和配对 win/loss/tie。
+- `npm run eval:summary`：从 run 推导证据等级，报告成功率/Wilson 区间、时长与费用 P50/P90、失败类型和配对 win/loss/tie；结构条件满足后，按候选在完整 holdout 上执行成功率绝对增量与 P90 费用绝对 USD/run 增量阈值。
+
+`promotion_eligible` 表示至少一个候选通过结构条件和上述 run-level 点估计阈值，不是自动发布或通用模型排名。最终采用仍需 task-level 聚合、区间、holdout 污染审计、回退与负责人决策。
 
 JSONL 每行是独立对象，便于流式追加和按 run 审计。E2/E3 必须另行授权真实 API/费用，并保存精确模型/provider/adapter/harness、指令/config/fixture hash、usage 和受控原始事件；不能把本目录的 `offline-replay` 样例当成模型成绩。
 

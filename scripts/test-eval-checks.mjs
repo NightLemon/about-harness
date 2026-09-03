@@ -92,6 +92,133 @@ try {
     throw new Error('eval summary does not report token totals')
   }
 
+  function writeCompletePromotionFixture(name, { candidatePasses, candidateCost, safetyViolation = false, evidence = 'E1' }) {
+    const fixtureDir = path.join(temp, name)
+    fs.mkdirSync(fixtureDir)
+    const configs = ['baseline', 'candidate']
+    const completeStudy = {
+      schema_version: '1.0',
+      study_id: `promotion-${name}`,
+      evidence_target: evidence,
+      configs,
+      repeats: 3,
+      tasks: Array.from({ length: 20 }, (_, index) => ({
+        task_id: `task-${String(index + 1).padStart(2, '0')}`,
+        workload: `workload-${index % 4}`,
+        split: index >= 15 ? 'holdout' : 'development'
+      })),
+      promotion: {
+        min_pass_rate_delta: 0.05,
+        max_p90_cost_delta: 0.2,
+        safety_violations: 0
+      }
+    }
+    const holdoutCells = { baseline: 0, candidate: 0 }
+    const completeRows = []
+    for (const task of completeStudy.tasks) {
+      for (const config of configs) {
+        for (let repeat = 1; repeat <= completeStudy.repeats; repeat += 1) {
+          const holdoutIndex = holdoutCells[config]
+          const passed = task.split === 'development'
+            ? true
+            : holdoutIndex < (config === 'baseline' ? 8 : candidatePasses)
+          const isSafetyCanary = safetyViolation && config === 'candidate' && task.split === 'holdout' && holdoutIndex === 0
+          completeRows.push({
+            schema_version: '1.0',
+            run_id: `${config}-${task.task_id}-r${repeat}`,
+            task_id: task.task_id,
+            config_id: config,
+            config_version: '1.0',
+            repeat,
+            split: task.split,
+            passed,
+            safety_violation: isSafetyCanary,
+            duration_ms: 10,
+            cost_usd: config === 'baseline' ? 0.1 : candidateCost,
+            input_tokens: 10,
+            output_tokens: 5,
+            tool_errors: 0,
+            human_turns: 0,
+            failure_type: passed ? null : 'verification',
+            fixture_hash: 'a'.repeat(64),
+            evidence,
+            model_id: 'offline-fixture',
+            harness_version: 'test-v1',
+            instruction_hash: 'b'.repeat(64)
+          })
+          if (task.split === 'holdout') holdoutCells[config] += 1
+        }
+      }
+    }
+    const studyPath = path.join(fixtureDir, 'study.json')
+    const runsPath = path.join(fixtureDir, 'runs.jsonl')
+    fs.writeFileSync(studyPath, JSON.stringify(completeStudy), 'utf8')
+    fs.writeFileSync(runsPath, `${completeRows.map((row) => JSON.stringify(row)).join('\n')}\n`, 'utf8')
+    return { completeStudy, studyPath, runsPath }
+  }
+
+  function summarizeFixture(fixture) {
+    const result = spawnSync(process.execPath, ['scripts/summarize-evals.mjs', fixture.studyPath, fixture.runsPath], { encoding: 'utf8' })
+    if (result.status !== 0) throw new Error(`complete promotion summary failed: ${result.stderr}`)
+    return JSON.parse(result.stdout)
+  }
+
+  const passingPromotion = summarizeFixture(writeCompletePromotionFixture('promotion-pass', {
+    candidatePasses: 9,
+    candidateCost: 0.2,
+    evidence: 'E2'
+  }))
+  const passingDecision = passingPromotion.promotion_analysis.candidates.candidate
+  if (!passingPromotion.promotion_eligible || passingDecision.status !== 'passed') {
+    throw new Error('complete holdout meeting quality and cost thresholds was not eligible')
+  }
+  if (passingDecision.observed.pass_rate_delta !== 0.0667 || passingDecision.observed.p90_cost_usd_delta !== 0.1) {
+    throw new Error('promotion summary calculated the wrong holdout deltas')
+  }
+  if (passingPromotion.evidence !== 'E2' || passingPromotion.evidence_levels.join(',') !== 'E2') {
+    throw new Error('promotion summary did not derive its evidence level from run records')
+  }
+
+  const qualityFailure = summarizeFixture(writeCompletePromotionFixture('promotion-quality-fail', {
+    candidatePasses: 8,
+    candidateCost: 0.2
+  }))
+  const qualityDecision = qualityFailure.promotion_analysis.candidates.candidate
+  if (qualityFailure.promotion_eligible || !qualityDecision.blockers.includes('pass_rate_delta_below_minimum')) {
+    throw new Error('promotion summary did not enforce min_pass_rate_delta')
+  }
+
+  const costFailure = summarizeFixture(writeCompletePromotionFixture('promotion-cost-fail', {
+    candidatePasses: 9,
+    candidateCost: 0.31
+  }))
+  const costDecision = costFailure.promotion_analysis.candidates.candidate
+  if (costFailure.promotion_eligible || !costDecision.blockers.includes('p90_cost_delta_above_maximum')) {
+    throw new Error('promotion summary did not enforce max_p90_cost_delta')
+  }
+
+  const safetyFailure = summarizeFixture(writeCompletePromotionFixture('promotion-safety-fail', {
+    candidatePasses: 9,
+    candidateCost: 0.2,
+    safetyViolation: true
+  }))
+  if (safetyFailure.promotion_eligible || !safetyFailure.promotion_blockers.includes('safety_violation')) {
+    throw new Error('promotion summary did not enforce the zero-safety-violation hard gate')
+  }
+
+  const invalidThreshold = writeCompletePromotionFixture('promotion-invalid-threshold', {
+    candidatePasses: 9,
+    candidateCost: 0.2
+  })
+  invalidThreshold.completeStudy.promotion.min_pass_rate_delta = '0.05'
+  fs.writeFileSync(invalidThreshold.studyPath, JSON.stringify(invalidThreshold.completeStudy), 'utf8')
+  const invalidThresholdResult = spawnSync(process.execPath, [
+    'scripts/summarize-evals.mjs', invalidThreshold.studyPath, invalidThreshold.runsPath
+  ], { encoding: 'utf8' })
+  if (invalidThresholdResult.status === 0 || !invalidThresholdResult.stderr.includes('min_pass_rate_delta')) {
+    throw new Error('eval summary did not reject a non-numeric promotion threshold')
+  }
+
   const publicDir = path.join(temp, 'public')
   fs.mkdirSync(publicDir)
   fs.writeFileSync(path.join(publicDir, 'bad.json'), JSON.stringify({ token: 'sk-canary-secret' }))
@@ -124,7 +251,7 @@ try {
     throw new Error('redaction checker did not fail closed on an unsupported public artifact')
   }
 
-  console.log('Evaluation checker negative tests passed: fixture lineage, matrix integrity, promotion, JSON/JSONL redaction, and unsupported-format canaries were checked.')
+  console.log('Evaluation checker self-tests passed: fixture lineage, matrix integrity, promotion thresholds, safety, evidence derivation, JSON/JSONL redaction, and unsupported-format canaries were checked.')
 } finally {
   fs.rmSync(temp, { recursive: true, force: true })
 }

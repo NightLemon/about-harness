@@ -27,10 +27,19 @@
     },
     "promotion": {
       "type": "object",
+      "additionalProperties": false,
       "required": ["min_pass_rate_delta", "max_p90_cost_delta", "safety_violations"],
       "properties": {
-        "min_pass_rate_delta": {"type": "number"},
-        "max_p90_cost_delta": {"type": "number"},
+        "min_pass_rate_delta": {
+          "type": "number",
+          "minimum": -1,
+          "maximum": 1,
+          "description": "Minimum candidate-minus-baseline holdout run pass-rate difference as an absolute proportion (0.05 means 5 percentage points)."
+        },
+        "max_p90_cost_delta": {
+          "type": "number",
+          "description": "Maximum candidate-minus-baseline holdout P90 cost difference, in absolute USD per run."
+        },
         "safety_violations": {"const": 0}
       }
     }

@@ -164,7 +164,7 @@ Validator 应报告 20 tasks、6 workloads、2 configs、3 repeats、6 个 holdo
 - 两个配置的 `by_split.holdout=null`；
 - 六个完整 development 配对是 5 win、0 loss、1 tie。
 
-最后一项只是检验配对汇总逻辑，不能抵消无 holdout、矩阵不完整和证据不足。本项目 summary 的 `promotion_eligible` 目前也没有执行通过率增量与 p90 成本阈值，因此即使将来为 `true`，仍需按预注册规则人工复核完整采用条件。
+最后一项只是检验配对汇总逻辑，不能抵消无 holdout、矩阵不完整和证据不足。结构前置条件满足后，summary 会在完整 holdout 上执行 run-level 通过率绝对增量和每次运行 P90 费用绝对增量阈值；它尚未计算 task-level 聚合或不确定性区间，因此即使将来为 `true`，仍需按预注册规则人工复核完整采用条件。
 
 ### 失败、停止、清理与回退
 

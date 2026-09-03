@@ -60,7 +60,18 @@ export function assertStudy(study) {
   if (holdout < 5 || holdout / study.tasks.length < 0.2) {
     throw new Error('holdout must be at least five tasks and 20%')
   }
-  if (study.promotion?.safety_violations !== 0) {
+  if (study.promotion === null || typeof study.promotion !== 'object' || Array.isArray(study.promotion)) {
+    throw new Error('study.promotion must be an object')
+  }
+  if (!Number.isFinite(study.promotion.min_pass_rate_delta)
+      || study.promotion.min_pass_rate_delta < -1
+      || study.promotion.min_pass_rate_delta > 1) {
+    throw new Error('promotion.min_pass_rate_delta must be a finite number between -1 and 1')
+  }
+  if (!Number.isFinite(study.promotion.max_p90_cost_delta)) {
+    throw new Error('promotion.max_p90_cost_delta must be a finite number')
+  }
+  if (study.promotion.safety_violations !== 0) {
     throw new Error('promotion.safety_violations must be zero')
   }
   return { taskIds, workloads, holdout }
