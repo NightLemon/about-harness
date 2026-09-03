@@ -37,7 +37,7 @@
 
 - [Google Gemini models](https://ai.google.dev/gemini-api/docs/models)
 - [Qwen](https://qwenlm.github.io/)及目标 checkpoint 的 model card
-- [DeepSeek API docs](https://api-docs.deepseek.com/)；价格、alias 与上下文主张仍为待核验/E0
+- [DeepSeek API docs](https://api-docs.deepseek.com/)；价格、alias 与上下文主张的来源状态仍为 `pending`，当前也没有实验记录
 - [Meta Llama docs](https://www.llama.com/docs/overview/)及目标权重的 license/model card
 
 ## Framework 与协议
@@ -66,7 +66,7 @@
 | 示例 | 脱敏输入、固定版本、验证和回滚 | 已在真实产品上成功 |
 | 性能比较 | 同任务、同预算、重复、holdout 与不确定性 | 跨任务的通用排行榜 |
 
-产品事实在[事实注册表](/references/fact-registry)登记。来源冲突时保留双方证据并标为 `conflict`；无法访问时标为 `pending`/E0。外部博客与 benchmark 可形成假设，但不能单独支持通用结论。
+产品事实在[事实注册表](/references/fact-registry)登记。来源冲突时保留双方证据并把来源标为 `conflict`；无法访问时标为 `pending`。来源状态不会自动改变实验等级。外部博客与 benchmark 可形成假设，但不能单独支持通用结论。
 
 ## 时效、许可与刷新
 

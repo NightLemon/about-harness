@@ -141,9 +141,9 @@ jobs:
 
   write('docs/references/fact-registry.md', `# Registry
 
-| ID | Claim | Kind | Source | Version | Checked | Volatility | Evidence | Status | Used by |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| stale-fact | 这是一个需要被过期门禁拒绝的产品事实 | product | https://example.com/ | rolling | 2026-01-01 | high | E1 | verified | /page |
+| ID | Claim | Kind | Source | Version | Checked | Volatility | Source status | Experiment level | Experiment ref | Used by |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| stale-fact | 这是一个需要被过期门禁拒绝的产品事实 | product | https://example.com/ | rolling | 2026-01-01 | high | verified | E0 | - | /page |
 `)
   write('docs/page.md', '# Page\n')
   const facts = run('facts-check.mjs', ['--max-age=30'], { env: { ...process.env, FACTS_AS_OF: '2026-08-20' } })
@@ -151,7 +151,19 @@ jobs:
     throw new Error('fact checker did not reject a stale high-volatility fact')
   }
 
-  console.log('Repository checker negative tests passed: secret, license, scoped workflow, mutable-image and fact-age canaries were rejected.')
+  write('docs/references/fact-registry.md', `# Registry
+
+| ID | Claim | Kind | Source | Version | Checked | Volatility | Source status | Experiment level | Experiment ref | Used by |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| missing-run | 这是一个错误声称具有离线实验的产品事实 | product | https://example.com/ | rolling | 2026-08-20 | low | verified | E1 | - | /page |
+`)
+  write('docs/page.md', '# Page\n[FACT:missing-run]\n')
+  const missingRun = run('facts-check.mjs', [], { env: { ...process.env, FACTS_AS_OF: '2026-08-20' } })
+  if (missingRun.status === 0 || !missingRun.stderr.includes('requires an Experiment ref')) {
+    throw new Error('fact checker did not reject E1 without a result reference')
+  }
+
+  console.log('Repository checker negative tests passed: secret, license, scoped workflow, mutable-image, fact-age and experiment-reference canaries were rejected.')
 } finally {
   fs.rmSync(temp, { recursive: true, force: true })
 }

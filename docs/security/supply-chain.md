@@ -30,6 +30,12 @@ VitePress 是开发与构建依赖，GitHub Pages 只托管生成的静态文件
 
 若站点增加服务端运行时、用户输入或在线编辑器，必须重新威胁建模，不能沿用纯静态站点结论。
 
+当前构建链风险登记如下。2026-09-03 使用在线 `npm audit` 复核时，完整开发依赖图报告 1 个 high、2 个 moderate；这不是生产站点漏洞数，也不能替代对每条 advisory 的适用性分析。负责人按季度复核；退出条件满足后才升级，并运行完整站点、链接与视觉验证。
+
+| 风险 | 影响边界 | 负责人 | 最近复核 | 下次复核 | 升级条件 |
+| --- | --- | --- | --- | --- | --- |
+| VitePress 1.6.4 间接使用 Vite 5.4.21 与 esbuild 0.21.5；前者命中 Windows 路径绕过范围 [FACT:vite-dev-server-advisory]，后者命中跨站读取开发服务器响应的范围 [FACT:esbuild-dev-server-advisory] | 贡献者本机 dev/preview；已部署的纯静态文件不运行这些服务器 | repository maintainer | 2026-09-03 | 2026-12-03 | 上游发布不再命中这些范围的兼容版本，且 `npm run verify` 与 `npm run pages:check` 通过 |
+
 ## 扩展专项
 
 Skill 会引导模型使用工具；hook、extension、plugin 可直接执行；MCP server 可暴露工具与数据。逐项限制发现、启用、输入、权限、输出和 timeout。外部内容始终是不可信数据，不因来自工具而成为高优先级指令。
