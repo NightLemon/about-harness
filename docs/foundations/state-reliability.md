@@ -80,7 +80,7 @@ created ──契约通过──> running ──需要批准──> waiting-appr
 5. 每个转换带 expected version；旧 worker 不能覆盖新 worker 的状态。
 6. 终态写入与最终事件/Result 要么原子提交，要么可通过 reconciliation（对账）修复。
 
-当前实现没有持久的 `created/running/waiting-approval` 行；`PermissionPolicy` 同步调用 approve callback，缺少 approver 或被拒绝时直接返回 `stopped/permission_denied`。`Action.complete` 在预算检查通过后直接产生 `completed`，runner 不执行 `TaskSpec.acceptance` 中的独立业务 validator。因此 `completed` 只表示控制循环接受了完成 Action。
+当前实现没有持久的 `created/running/waiting-approval` 行；`PermissionPolicy` 同步调用 approve callback，缺少 approver 或被拒绝时直接返回 `stopped/permission_denied`。`Action.complete` 会先经过 JSON 子集 validator：拒绝结果进入 trace 并保存 Adapter 游标/预算，修正通过后才产生 `completed`。但默认 validator 只比较内存输出；空 acceptance 可通过，也没有文件、测试或目标系统证据，因此 `completed` 仍只能按已声明的有限 oracle 解释。
 
 ## Event、Checkpoint 与 Receipt
 
@@ -341,7 +341,7 @@ uv run --frozen --offline pytest
 - 持久 intent/receipt/idempotency ledger、参数 hash 冲突检测；
 - 工具级 timeout、可取消 retry sleep 或任意 callable 强制终止；
 - 等待审批状态、分布式 lease/CAS/fencing 或多 worker 恢复；
-- 外部目标系统对账、unknown 状态、补偿工作流和独立业务 validator。
+- 外部目标系统对账、unknown 状态、补偿工作流和 artifact/测试/业务系统 validator；当前 validator 异常仍映射为 `invalid_action`。
 
 因此不能从这些测试声称生产环境具备“恰好一次”、硬 timeout、崩溃安全恢复或分布式一致性。命令退出 0 也不证明任何真实模型质量。
 
@@ -367,6 +367,6 @@ uv run --frozen --offline pytest
 4. 当前取消测试证明了什么，又没有证明什么？
 5. Client timeout 为什么不能证明服务端副作用停止？
 6. CAS、lease 和 fencing token 分别解决哪类并发问题？
-7. 为什么 `status=completed` 仍需要独立业务 validator？
+7. 默认 JSON 子集 validator 通过后，为什么高影响任务仍需要 artifact 与业务系统证据？
 
 下一步：在[Python 最小 Harness](/implementation/minimal-harness-python)逐行观察控制循环，在[测试策略](/implementation/testing)设计 crash injection（崩溃注入），再到[可观测性](/foundations/observability)定义恢复所需事件。

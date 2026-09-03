@@ -1,12 +1,12 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://about-harness.local/schemas/trace-v1.1.json",
-  "title": "About Harness trace v1.1",
+  "$id": "https://about-harness.local/schemas/trace-v1.0.json",
+  "title": "About Harness trace v1.0",
   "type": "object",
   "additionalProperties": false,
   "required": ["schema_version", "run_id", "events"],
   "properties": {
-    "schema_version": { "const": "1.1" },
+    "schema_version": { "const": "1.0" },
     "run_id": { "type": "string", "minLength": 1 },
     "events": {
       "type": "array",
@@ -17,7 +17,7 @@
         "properties": {
           "sequence": { "type": "integer", "minimum": 0 },
           "kind": {
-            "enum": ["run_started", "model_action", "acceptance_result", "tool_result", "policy_denied", "retry", "checkpoint", "run_stopped"]
+            "enum": ["run_started", "model_action", "tool_result", "policy_denied", "retry", "checkpoint", "run_stopped"]
           },
           "timestamp_ms": { "type": "number", "minimum": 0 },
           "data": { "type": "object" }

@@ -175,7 +175,7 @@ trace[0].kind=run_started
 trace[0].data.offline=true
 ```
 
-沿 trace 找到 `model_action → tool_result → checkpoint → model_action → run_stopped`，并确认 ToolCall 由 policy 和 registry 处理，而不是由模型直接执行。
+沿 trace 找到 `model_action → tool_result → checkpoint → model_action → acceptance_result → run_stopped`，并确认 ToolCall 由 policy/registry 处理、完成提议由 validator 处理，而不是由模型直接执行或自证。
 
 这只是 E1 控制流证据：FakeAdapter 提供预定 Action，没有调用真实模型、Provider 或外部系统。命令失败时保存退出码和 trace，先检查版本/锁文件，不删除测试或开启 live adapter。
 

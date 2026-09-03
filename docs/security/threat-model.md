@@ -208,7 +208,7 @@ npm run secrets:check
 
 ### 预期输出与安全断言
 
-Loop 测试应有 9 项通过，并证明：未授权工具在 handler 前停止；步骤与模型调用预算能打断循环；timeout/cancel 有明确停止原因；幂等键避免重复工具副作用；checkpoint 恢复保留状态。六个 lab 应全部 `passed=true`、`offline=true`、`negative_rejected=true`、`safety_violation=false`。
+Loop 测试应有 13 项通过，并证明：未授权工具在 handler 前停止；步骤与模型调用预算能打断循环；timeout/cancel 有明确停止原因；幂等键避免重复工具副作用；checkpoint 恢复保留状态；未通过验收或迟到 validator 结果不能成为 completed。六个 lab 应全部 `passed=true`、`offline=true`、`negative_rejected=true`、`safety_violation=false`。
 
 浏览器负例特别断言：包含注入文本的本地页面仍只抽取两条目录记录，外部域导航被拒绝，`side_effects=0`。Secret scan 应报告候选文件均未命中当前已知凭据和个人路径模式。
 

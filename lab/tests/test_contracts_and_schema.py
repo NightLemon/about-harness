@@ -7,8 +7,12 @@ from pathlib import Path
 from typing import Any
 
 import pytest
+from about_harness.adapters.fake import FakeAdapter
 from about_harness.contracts import Action, Budgets, ContractError, RunCheckpoint, TaskSpec
+from about_harness.loop import HarnessRunner
+from about_harness.tools import ToolRegistry
 from jsonschema import Draft202012Validator
+from jsonschema.exceptions import ValidationError
 
 ROOT = Path(__file__).parents[1]
 SCHEMAS = ROOT / "schemas"
@@ -79,6 +83,7 @@ def test_all_schemas_are_valid_draft_2020_12() -> None:
         "task",
         "run",
         "trace",
+        "trace-v1.0",
         "result",
         "config",
         "eval-run",
@@ -89,11 +94,42 @@ def test_all_schemas_are_valid_draft_2020_12() -> None:
         Draft202012Validator.check_schema(schema)
 
 
+def test_runtime_completion_result_and_trace_match_public_schemas() -> None:
+    task = TaskSpec(
+        "schema-result",
+        "validate serialized completion evidence",
+        (),
+        Budgets(),
+        acceptance={"ok": True},
+    )
+    result = HarnessRunner(
+        FakeAdapter((Action.complete({"ok": True}),)),
+        ToolRegistry(),
+    ).run(task, run_id="run-schema-result")
+    serialized = result.to_dict()
+    trace = {
+        "schema_version": "1.1",
+        "run_id": result.run_id,
+        "events": serialized["trace"],
+    }
+    result_schema = json.loads((SCHEMAS / "result.json").read_text(encoding="utf-8"))
+    trace_schema = json.loads((SCHEMAS / "trace.json").read_text(encoding="utf-8"))
+    old_trace_schema = json.loads(
+        (SCHEMAS / "trace-v1.0.json").read_text(encoding="utf-8")
+    )
+    Draft202012Validator(result_schema).validate(serialized)
+    Draft202012Validator(trace_schema).validate(trace)
+    assert any(event.kind == "acceptance_result" for event in result.trace)
+    with pytest.raises(ValidationError):
+        Draft202012Validator(old_trace_schema).validate(trace)
+
+
 def test_schema_inventory_contains_only_runtime_and_evaluation_contracts() -> None:
     expected = {
         "task.json",
         "run.json",
         "trace.json",
+        "trace-v1.0.json",
         "result.json",
         "config.json",
         "eval-run.json",

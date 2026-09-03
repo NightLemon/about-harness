@@ -19,6 +19,7 @@ def main() -> int:
         "prove deterministic offline execution",
         ("echo",),
         Budgets(max_steps=3, max_model_calls=3, timeout_ms=1000),
+        acceptance={"accepted": True},
         metadata={"evidence": "E1", "network": "disabled"},
     )
     adapter = FakeAdapter(

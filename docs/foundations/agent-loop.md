@@ -137,13 +137,13 @@ Validator 失败反馈要包含可行动的断言、artifact identity 和退出�
 
 ## 当前最小 Runner 实际做了什么
 
-仓库中的 `HarnessRunner` 使用两类 Action：`tool` 与 `complete`。它在模型调用前检查取消、总 timeout 和 model-call budget；Action 返回后累计有限、非负 cost，再检查取消、timeout 与 cost budget；工具调用只有经过 `PermissionPolicy` 才交给 `ToolRegistry`。
+仓库中的 `HarnessRunner` 使用两类 Action：`tool` 与 `complete`。它在模型调用前检查取消、总 timeout 和 model-call budget；Action 返回后累计有限、非负 cost，再检查取消、timeout 与 cost budget；工具调用只有经过 `PermissionPolicy` 才交给 `ToolRegistry`。Complete 是提议：默认 `JsonSubsetAcceptanceValidator` 对照 `TaskSpec.acceptance`，拒绝时记录路径、保存 Adapter 游标和已消费预算，再把证据送入下一轮；通过后才提交 completed。
 
 工具成功后，runner 记录 `tool_result`，更新实际/复用调用计数，保存 Adapter snapshot，并生成 checkpoint。终态返回 `RunResult`，其中包含 `status`、`stop_reason`、metrics、trace、checkpoint 和 error。当前停止原因包括：
 
 | `stop_reason` | 触发边界 | 终态含义 |
 | --- | --- | --- |
-| `completed` | Adapter 提出合法 `complete` | 当前实现接受输出并结束 |
+| `completed` | 合法 `complete` 且声明的 JSON 子集验收通过 | Controller 接受输出并结束 |
 | `max_steps` | 工具循环达到步数上限 | 正常受控停止，不是完成 |
 | `model_budget` | 调用数或累计 cost 超限 | 预算停止 |
 | `timeout` | preflight 或 Action 返回后超过总时限 | 丢弃迟到完成 |
@@ -152,7 +152,7 @@ Validator 失败反馈要包含可行动的断言、artifact identity 和退出�
 | `tool_error` | 工具重试后仍失败 | 执行边界失败 |
 | `invalid_action` | Adapter 抛错或返回非 `Action` | 契约边界失败 |
 
-最重要的 acceptance gap（验收缺口）是：当前 runner 没有独立 validator，合法 `complete` 会直接得到 `completed`，并未读取 `TaskSpec.acceptance` 复查测试、产物或业务条件。因此它能证明控制流 E1 契约，却不能把 `completed` 当作业务任务真实完成。生产设计应让 validator 根据外部证据决定完成，或把未通过验收的 completion 送回循环修正。
+当前实现已补上可替换的 validator 接缝和修正回路，但默认 oracle 只做内存 JSON 子集比对。它不运行测试、不读取冻结 artifact、不查询外部副作用，也不能判断 `acceptance` 是否充分；空对象会以 `top_level_criteria=0` 通过。因此 E1 能证明“声明的结构条件被执行”，仍不能把 `completed` 外推为任意业务任务真实完成。任务专用 validator 需要独立读取证据，并把版本、artifact identity 与失败分类写入结果。
 
 ### 当前实现与目标循环的边界
 
@@ -163,7 +163,7 @@ Validator 失败反馈要包含可行动的断言、artifact identity 和退出�
 | Policy | 同步 allow/deny/approval callback | 持久等待、批准 ID/scope/expiry、恢复复核 |
 | Retry | `RetryableError` 有限退避 | deadline/cancel 感知、attempt lineage、外部对账 |
 | Checkpoint | 内存计数 + Adapter snapshot | run/config identity、pending intent、持久原子写 |
-| Completion | 合法 `complete` 直接结束 | 独立 acceptance validator 与修复反馈 |
+| Completion | JSON 子集 validator、失败反馈、预算内修正 | artifact/测试/业务 validator、独立错误枚举 |
 | Concurrency | 同步单 Action/单 Tool | fan-out、join、部分结果、预算预留、取消传播 |
 
 文档后面的生产设计不能反向升级当前证据。只有对应 schema、实现、负例和重放都存在，才能说某能力已实现。
@@ -340,19 +340,20 @@ terminal：completed，关联 intent、receipt、测试和 revision
 uv run --frozen --offline pytest -q lab/tests/test_loop.py
 ```
 
-预期退出码为 0，并显示 `9 passed`。九条路径分别覆盖正常完成、model budget、无限工具循环、权限拒绝、重试/幂等、坏 Adapter 返回、checkpoint 恢复、并发取消与迟到 Action timeout。重点断言包括：未授权 handler 调用次数为零；两次 retry 的等待值进入 trace；恢复保留 Adapter position；迟到 `complete` 不会覆盖 `timeout`。
+预期退出码为 0，并显示 `13 passed`。十三条路径除原有完成、预算、权限、retry/幂等、恢复、取消和 timeout 外，还覆盖验收拒绝后修正、反复拒绝受 model budget 停止、validator 异常失败关闭，以及 validator 返回过晚不能覆盖 timeout。重点断言包括：未授权 handler 调用次数为零；两次 retry 的等待值进入 trace；验收失败输出不会成为 completed；恢复保留 Adapter position；迟到 `complete` 或 validator 结果不会覆盖 `timeout`。
 
-为了看清测试名与边界，运行四条代表路径：
+为了看清测试名与边界，运行五条代表路径：
 
 ```powershell
 uv run --frozen --offline pytest -vv `
   lab/tests/test_loop.py::test_max_steps_breaks_infinite_tool_loop `
   lab/tests/test_loop.py::test_wrong_adapter_return_is_classified_as_invalid_action `
+  lab/tests/test_loop.py::test_acceptance_rejection_returns_feedback_and_allows_repair `
   lab/tests/test_loop.py::test_checkpoint_restores_adapter_position `
   lab/tests/test_loop.py::test_timeout_stops_before_completing_late_action
 ```
 
-bash/zsh 将反引号换成反斜杠。预期四项 `PASSED`，分别证明当前实现会：在三个 Tool step 后停止重复循环；在 metrics/Tool 前拒绝坏 Adapter 值；用 checkpoint 恢复 FakeAdapter index；丢弃超过总时限后才返回的 `complete`。
+bash/zsh 将反引号换成反斜杠。预期五项 `PASSED`，分别证明当前实现会：在三个 Tool step 后停止重复循环；在 metrics/Tool 前拒绝坏 Adapter 值；把首次验收失败路径反馈给下一轮并接受修正输出；用 checkpoint 恢复 FakeAdapter index；丢弃超过总时限后才返回的 `complete`。
 
 再运行：
 
@@ -370,7 +371,7 @@ npm run debug:workshop
 - Timeout 是边界检查，不能强制抢占任意永久阻塞的 Python callable；取消也在 Adapter 返回后才被观察。
 - PermissionPolicy 只有同步 allow/deny 接缝，没有持久 `waiting-approval` 状态、审批 ID 和过期恢复。
 - 幂等 cache 只在进程内，不能证明外部系统 exactly-once（恰好一次）。
-- 没有独立 acceptance validator、业务对账、补偿事务或真实 model/provider Adapter。
+- 默认验收器只做 JSON 子集比对；没有 artifact/测试/业务系统对账、补偿事务或真实 model/provider Adapter；validator 异常在 result-v1 暂映射为 `invalid_action`。
 
 这些限制意味着九条测试证明的是固定控制路径，不是生产可靠性或模型质量。
 
@@ -378,7 +379,7 @@ npm run debug:workshop
 
 1. Action 通过 schema 后，为什么还不能直接执行？
 2. 参数错误、限流和测试失败分别应走 repair、retry 还是 replan？
-3. 当前 `completed` 为什么不等于业务 acceptance 已成立？
+3. JSON 子集 validator 通过后，为什么仍可能没有完整业务 acceptance？
 4. 取消在 Adapter 返回后才被观察，会留下什么风险？
 5. 为什么 checkpoint 不能替代外部系统的业务回执？
 
