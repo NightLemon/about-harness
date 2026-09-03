@@ -150,7 +150,7 @@ Number.NaN <= 0 // false
 4. 然后写入 `model_action` trace；
 5. 最后比较预算并决定是否继续。
 
-因此非法 action 的结果必须是 `failed / invalid_action`，并且 `model_calls`、`cost_usd` 和 `model_action` trace 都保持未污染状态。这里验证的不只是“会报错”，而是错误发生在副作用之前。
+因此非法 action 的结果必须是 `failed / invalid_action`，并且 `model_calls`、`cost_usd` 和 `model_action` trace 都保持未污染状态。Python `HarnessRunner` 执行同一顺序：把 Adapter 返回的 dataclass 深拷贝成 wire 形态并用 `Action.from_dict` 重建，再允许记账或执行。这里验证的不只是“会报错”，而是错误发生在副作用之前。
 
 ## Loop：控制权属于 harness
 

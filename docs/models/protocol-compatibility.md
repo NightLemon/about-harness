@@ -300,7 +300,7 @@ npm run facts:check
 
 ### 预期输出与断言
 
-- pytest 32 项全部通过：replay 能按 `call_id` 完成进程内 `sum`，live adapter 在 provider action 前硬拒绝；合成 stream 只在 tool call 完成且完整 JSON object 校验后生成 canonical Action，只有 `response_completed` 才返回响应，并拒绝序号/ID 冲突、断流、取消、坏参数、迟到事件和并行 tool call；loop 能区分预算、权限、tool error、幂等复用、timeout 和 resume；
+- pytest 36 项全部通过：replay 能按 `call_id` 完成进程内 `sum`，live adapter 在 provider action 前硬拒绝；合成 stream 只在 tool call 完成且完整 JSON object 校验后生成 canonical Action，只有 `response_completed` 才返回响应，并拒绝序号/ID 冲突、断流、取消、坏参数、迟到事件和并行 tool call；loop 会在 metrics、trace 与 handler 前深层重验 Adapter Action，拒绝嵌套非有限 JSON 数字，并能区分预算、权限、tool error、幂等复用、timeout 和 resume；
 - TypeScript runtime 测试拒绝空/重复工具名、非有限预算与非法 action，并阻止坏值进入 metrics；
 - `facts:check` 确认易变产品主张的来源状态、版本、日期和正文引用一致，但不把引用完整误当作协议兼容；
 - 人工逐行复核兼容矩阵中的目标 surface、状态载体、工具循环、错误/usage、控制责任和 live 状态，任何 `untested` 都不能被命令成功改写。

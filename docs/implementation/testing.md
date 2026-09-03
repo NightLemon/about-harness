@@ -72,13 +72,13 @@ controller + adapter + policy + tool 集成
 
 ## 当前 Python 测试矩阵
 
-当前基线由 `pytest --collect-only -q` 得到 139 项：
+当前基线由 `pytest --collect-only -q` 得到 141 项：
 
 | 文件 | 数量 | 主要责任 |
 | --- | ---: | --- |
 | `test_acceptance.py` | 15 | 九个跨语言 JSON 样例、非有限数、结果契约与循环对象 |
 | `test_contracts_and_schema.py` | 64 | 30 个 Task/Action 与 14 个 Result 跨语言案例、非 JSON 值、内部互斥和公共 schema |
-| `test_loop.py` | 15 | completion/验收修正、预算、权限、retry、幂等冲突、恢复、取消、timeout |
+| `test_loop.py` | 17 | completion/验收修正、Adapter Action 深层重验、预算、权限、retry、幂等冲突、恢复、取消、timeout |
 | `test_m5_labs.py` | 22 | 六类 fixture、hash、领域负例、公开摘要一致性 |
 | `test_memory_context_trace.py` | 4 | 上下文选择、记忆污染/过期/删除、trace 脱敏 |
 | `test_replay_and_live.py` | 5 | Replay 精确字段、Fake state、Live 硬禁用 |
@@ -151,7 +151,7 @@ Static check（静态检查）、build 和 visual smoke 都是必要证据，但
 | invalid action | metrics/trace 未被坏值污染 | 只捕获异常但已记账 |
 | checkpoint restore | cursor、计数、幂等结果保持 | 恢复后重复工具 |
 
-当前 `test_loop.py` 覆盖以上固定路径，并额外断言同一幂等键改变 tool/参数会在第二个 handler 前失败、验收拒绝可修正、反复拒绝受 model budget 停止、validator 异常不能成为完成，以及 validator 超时不能覆盖终态。`runtime-test.ts` 对 TS 最小 loop 重放相邻验收负例，并断言拒绝不消耗 tool step、坏 validator 不释放输出。它们尚未覆盖异步 approval wait、真正硬 timeout、分布式 worker 和外部业务对账。
+当前 `test_loop.py` 覆盖以上固定路径，并额外断言 Adapter 返回的 dataclass 会在记账前经过深拷贝和完整 Action 解析，嵌套 `NaN` / `Infinity` 不会污染 metrics、trace 或触发 handler；同一幂等键改变 tool/参数会在第二个 handler 前失败；验收拒绝可修正；反复拒绝受 model budget 停止；validator 异常不能成为完成；validator 超时不能覆盖终态。`runtime-test.ts` 对 TS 最小 loop 重放相邻验收负例，并断言拒绝不消耗 tool step、坏 validator 不释放输出。它们尚未覆盖异步 approval wait、真正硬 timeout、分布式 worker 和外部业务对账。
 
 ## Retry 测试要断言真实等待和副作用
 
@@ -254,7 +254,7 @@ npm run lab:typecheck
 npm run lab:ts-runtime-test
 ```
 
-预期 Python 有 30 项通过，TypeScript typecheck 退出 0；runtime test 依次输出本地边界通过、九个共享验收案例、30 个 Task/Action 案例和 14 个 RunResult 案例通过。这里没有运行完整 Python 契约/schema 测试、领域 fixture、站点或 checker self-tests。
+预期 Python 有 32 项通过，TypeScript typecheck 退出 0；runtime test 依次输出本地边界通过、九个共享验收案例、30 个 Task/Action 案例和 14 个 RunResult 案例通过。这里没有运行完整 Python 契约/schema 测试、领域 fixture、站点或 checker self-tests。
 
 ### 证明高价值门禁会拒绝坏输入
 
@@ -271,7 +271,7 @@ npm run repo:self-test
 npm run verify
 ```
 
-当前基线应包含 139 项 pytest 全通过，以及 Ruff、Pyright、TypeScript typecheck、文档/事实/站点/安全/工作流/视觉和 checker self-tests 通过。不要只看最后一行；保留首个失败子命令和退出码。
+当前基线应包含 141 项 pytest 全通过，以及 Ruff、Pyright、TypeScript typecheck、文档/事实/站点/安全/工作流/视觉和 checker self-tests 通过。不要只看最后一行；保留首个失败子命令和退出码。
 
 ## 失败时的停止、清理与回滚
 

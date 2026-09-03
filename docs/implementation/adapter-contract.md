@@ -170,6 +170,8 @@ Fake/replay 不是较便宜的 live 替代证据。它们能证明 harness 在�
 
 顶层 Action 和嵌套 `tool_call` 都执行精确字段检查。这样 `argments` 拼错或混入未知字段不会被静默忽略。Tool action 必须有完整 tool call；complete 的 `output` 和两类 Action 的 `cost_usd` 可以省略，分别归一化为 `None` 与 `0.0`。
 
+Python Adapter 的类型注解返回 `Action`，但这不构成运行时信任。`HarnessRunner` 收到对象后先深拷贝其 wire 形态，再用 `Action.from_dict` 重建可信 Action；因此直接构造 dataclass 时藏在 `output` 或 `arguments` 中的 `NaN`、`Infinity`、循环或非 JSON 值，也会在 metrics、trace、policy 与 handler 之前以 `failed / invalid_action` 关闭。深拷贝还避免 Adapter 在返回后继续修改共享的嵌套容器。
+
 这仍不是完整 replay artifact 契约。当前 adapter 没有验证 fixture hash、adapter/config identity、record sequence、文件大小或参数的业务 schema；Python 类型注解也不会在运行时递归证明任意 object 都是 `JsonValue`。生产 replay 应先通过版本化 JSON Schema、来源 hash 和大小限制，再进入 `from_records`。
 
 ## 一次工具调用怎样往返
@@ -178,7 +180,7 @@ Fake/replay 不是较便宜的 live 替代证据。它们能证明 harness 在�
 
 1. Adapter 验证 response identity、item type、完整性和 stop reason；
 2. 把 provider tool call 映射为内部 `ToolCall`，保留原 call ID 与顺序；
-3. Action 构造器和 adapter-specific validator 验证内部形态与参数 schema；
+3. Controller 在信任边界重建并验证 canonical Action，adapter-specific validator 再验证参数 schema；
 4. Policy 检查 Task allowlist、主体、资源、数据来源和审批；
 5. Tool registry 以幂等键执行或复用结果；
 6. Result 记录实际 side-effect state、错误、截断与 artifact reference；
@@ -262,10 +264,10 @@ uv run --frozen --offline pytest -q lab/tests/test_replay_and_live.py
 ### 验证 runner 边界和 checkpoint
 
 ```bash
-uv run --frozen --offline pytest -q lab/tests/test_loop.py::test_wrong_adapter_return_is_classified_as_invalid_action lab/tests/test_loop.py::test_checkpoint_restores_adapter_position
+uv run --frozen --offline pytest -q lab/tests/test_loop.py -k "wrong_adapter_return or adapter_action_is_revalidated or checkpoint_restores"
 ```
 
-预期 2 项测试通过。第一项让 adapter 返回伪装成 Action 的 dict，runner 必须产生 `failed / invalid_action`；第二项先在一个 tool step 后停止，再用 checkpoint 恢复 Fake cursor，最终只消费剩余 complete Action。
+预期 4 项测试通过。第一项让 adapter 返回伪装成 Action 的 dict；两个参数化案例分别把 `NaN` 藏入 completion output、把 `Infinity` 藏入 tool arguments，runner 都必须在记账和 handler 前产生 `failed / invalid_action`；最后一项先在一个 tool step 后停止，再用 checkpoint 恢复 Fake cursor，最终只消费剩余 complete Action。
 
 ### 验证 stream 只在结构完成后提交
 

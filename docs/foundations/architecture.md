@@ -125,7 +125,7 @@ created → validated → running
 - waiting approval 仍受 deadline 和取消约束；
 - 任何副作用发生前已有 Task、policy 和幂等身份。
 
-当前 `HarnessRunner` 实现 preflight、Action 类型检查、预算、policy、工具执行、JSON 子集验收、checkpoint 与结构化 stop reason；它没有 waiting-approval 状态、隔离执行的业务 validator 或分布式 revision。
+当前 `HarnessRunner` 实现 preflight、Adapter Action 的深拷贝与完整契约重验、预算、policy、工具执行、JSON 子集验收、checkpoint 与结构化 stop reason；坏 Action 会在 metrics、trace 和副作用前关闭。它没有 waiting-approval 状态、隔离执行的业务 validator 或分布式 revision。
 
 ## Context builder：选择，不是堆积
 

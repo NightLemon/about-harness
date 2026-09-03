@@ -134,11 +134,11 @@ run_started
 
 Task ID 必须匹配公共 pattern；goal 为 1–4000 字符；`allowed_tools` 不能含空名或重复名。预算要求正整数 step/model-call/timeout，step 和 model-call 不超过 10,000，timeout 不超过 86,400,000 ms，cost 必须有限且非负。
 
-`TaskSpec.from_dict` 还拒绝未知顶层/预算字段以及非有限或循环的 JSON 输入，避免拼写错误和不可序列化值被静默带入运行。`Action.from_dict` / `ToolCall.from_dict` 对 `action-v1` 线协议做同样的运行时收窄；直接构造 dataclass 适合内部可信测试对象，不应代替外部解析。
+`TaskSpec.from_dict` 还拒绝未知顶层/预算字段以及非有限或循环的 JSON 输入，避免拼写错误和不可序列化值被静默带入运行。`Action.from_dict` / `ToolCall.from_dict` 对 `action-v1` 线协议做同样的运行时收窄；直接构造 dataclass 不会递归证明嵌套 JSON。外部 wire 输入必须解析，Adapter 返回的 dataclass 也会由 runner 深拷贝并重建后才成为可信 Action。
 
 ### Action 与 ToolCall
 
-Action 只有 `tool` 或 `complete`：tool 必须携带 ToolCall，complete 不能携带 ToolCall；action cost 拒绝负数、`NaN` 与 `Infinity`。ToolCall 要求非空 call ID、name 和 idempotency key。
+Action 只有 `tool` 或 `complete`：tool 必须携带 ToolCall，complete 不能携带 ToolCall；action cost 拒绝负数、`NaN` 与 `Infinity`。ToolCall 要求非空 call ID、name 和 idempotency key。Runner 的边界重验还会递归拒绝 completion output 与 tool arguments 中的非有限数字、循环和非 JSON 值。
 
 ### Checkpoint
 
@@ -164,7 +164,7 @@ uv run --frozen --offline pytest -q lab/tests/test_contracts_and_schema.py
 
 ## 第四步：预算与终态
 
-`HarnessRunner` 在每次 Adapter 调用前检查 cancellation、总 deadline 和 model-call budget；收到 Action 后累计 cost，再检查 cancellation、deadline 和 cost budget；成功工具执行后推进 step。
+`HarnessRunner` 在每次 Adapter 调用前检查 cancellation、总 deadline 和 model-call budget；收到 Action 后先深拷贝并按公共契约重验，成功后才累计 model call 与 cost、写 `model_action`，再检查 cancellation、deadline 和 cost budget；成功工具执行后推进 step。
 
 | Stop reason | Status | 典型触发 | 是否执行当前工具 |
 | --- | --- | --- | --- |

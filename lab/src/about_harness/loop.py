@@ -4,6 +4,7 @@ import threading
 import time
 import uuid
 from collections.abc import Callable
+from copy import deepcopy
 from dataclasses import dataclass, field
 
 from about_harness.acceptance import (
@@ -33,7 +34,7 @@ Clock = Callable[[], float]
 def _require_action(value: object) -> Action:
     if not isinstance(value, Action):
         raise ContractError(f"adapter returned {type(value).__name__}, expected Action")
-    return value
+    return Action.from_dict(deepcopy(value.to_dict()))
 
 
 def _require_acceptance_result(value: object) -> AcceptanceResult:
