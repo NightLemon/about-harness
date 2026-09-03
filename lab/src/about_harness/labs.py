@@ -327,12 +327,41 @@ def _negative_rejected(bundle: FixtureBundle, output: dict[str, JsonValue]) -> b
             return True
         return False
     if bundle.name == "browser":
-        url = bundle.negative.get("url")
-        try:
-            extract_local_catalog({"url": url, "page_text": "negative", "rows": []})
-        except IntegrationContractError:
-            return True
-        return False
+        cases = bundle.negative.get("cases")
+        if not isinstance(cases, list) or not cases:
+            return False
+        for case in cases:
+            if not isinstance(case, dict):
+                return False
+            override = case.get("override")
+            expected_error = case.get("expected_error")
+            if not isinstance(override, dict) or not isinstance(expected_error, str):
+                return False
+            path = override.get("path")
+            if (
+                not isinstance(path, list)
+                or not path
+                or not all(isinstance(part, str) and part for part in path)
+            ):
+                return False
+            payload = copy.deepcopy(bundle.input)
+            cursor: JsonValue = payload
+            for part in path[:-1]:
+                if not isinstance(cursor, dict) or part not in cursor:
+                    return False
+                cursor = cursor[part]
+            final = path[-1]
+            if not isinstance(cursor, dict) or final not in cursor:
+                return False
+            cursor[final] = copy.deepcopy(override.get("value"))
+            try:
+                extract_local_catalog(payload)
+            except IntegrationContractError as error:
+                if expected_error not in str(error):
+                    return False
+            else:
+                return False
+        return True
     if bundle.name == "research":
         claims = output.get("claims")
         candidate = bundle.negative.get("candidate_claim")

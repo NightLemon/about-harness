@@ -1,13 +1,13 @@
 {
-  "fixture_version": "1.0",
+  "fixture_version": "1.1",
   "case_id": "browser",
   "source": "project-synthetic",
   "license": "CC-BY-4.0",
-  "checked": "2026-08-20",
+  "checked": "2026-09-04",
   "contains_personal_data": false,
   "files": {
-    "input.json": "30d1f24f7823e01db1b67ef139fdb69f6987a6a2c364d853ee9741e9776a17e4",
-    "expected.json": "13aca2e5e21a0b3eb51ea69c81cd60e74ceb047c5749ac34318ce0f8018aa88f",
-    "negative.json": "9edffae81732e9dff5586f74a4d4a9eeeaed16c284af4fb849d2b192fe9d0199"
+    "input.json": "657a862ff65516ff7eb341e609bc98dff868ec540b4755bd8a1eaea9e1d82ac0",
+    "expected.json": "5c44bb6962c7ff1729f25b54d1fc554f83b0c21b8b86ab807baed2c1743048a0",
+    "negative.json": "d9b9a42ca53b8cef3ee54c918138b8559e58842e30959d678d1a9e43846e2a40"
   }
 }

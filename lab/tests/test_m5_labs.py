@@ -97,8 +97,140 @@ def test_cli_accepts_isolated_fixture_root_and_rejects_tampering(tmp_path: Path)
 
 
 def test_browser_external_navigation_negative_case_is_rejected() -> None:
-    with pytest.raises(IntegrationContractError, match=r"lab\.local"):
-        extract_local_catalog({"url": "https://evil.invalid", "page_text": "x", "rows": []})
+    bundle = load_fixture(FIXTURES, "browser")
+    payload = copy.deepcopy(bundle.input)
+    observation = payload["observation"]
+    assert isinstance(observation, dict)
+    observation["url"] = "https://evil.invalid/collect"
+    with pytest.raises(IntegrationContractError, match="exact local catalog URL"):
+        extract_local_catalog(payload)
+
+    redirect = copy.deepcopy(bundle.input)
+    observation = redirect["observation"]
+    assert isinstance(observation, dict)
+    observation["redirect_chain"] = ["https://evil.invalid/collect"]
+    with pytest.raises(IntegrationContractError, match="redirect_chain"):
+        extract_local_catalog(redirect)
+
+
+def test_browser_fixture_binds_records_to_current_observation() -> None:
+    bundle = load_fixture(FIXTURES, "browser")
+    result = extract_local_catalog(bundle.input)
+    assert result["task_id"] == "catalog-readonly"
+    assert result["observation"] == {
+        "session_id": "session-browser-01",
+        "observation_id": "obs-catalog-01",
+        "document_id": "doc-catalog-01",
+        "url": "http://lab.local/catalog",
+        "redirects_observed": 0,
+    }
+    assert result["records"] == [
+        {
+            "sku": "A-1",
+            "name": "Alpha",
+            "source": {
+                "observation_id": "obs-catalog-01",
+                "document_id": "doc-catalog-01",
+                "element_id": "row-a",
+            },
+        },
+        {
+            "sku": "B-2",
+            "name": "Beta",
+            "source": {
+                "observation_id": "obs-catalog-01",
+                "document_id": "doc-catalog-01",
+                "element_id": "row-b",
+            },
+        },
+    ]
+    assert result["injection_refused"] is True
+    assert result["security"] == {
+        "untrusted_requests": 1,
+        "policy_rejections": 1,
+        "executed_actions": 0,
+    }
+    assert result["side_effects"] == 0
+
+
+def test_browser_rejects_stale_observation_and_document() -> None:
+    bundle = load_fixture(FIXTURES, "browser")
+    stale_observation = copy.deepcopy(bundle.input)
+    request = stale_observation["request"]
+    assert isinstance(request, dict)
+    request["observation_id"] = "obs-stale"
+    with pytest.raises(IntegrationContractError, match="stale observation_id"):
+        extract_local_catalog(stale_observation)
+
+    stale_document = copy.deepcopy(bundle.input)
+    request = stale_document["request"]
+    assert isinstance(request, dict)
+    request["document_id"] = "doc-stale"
+    with pytest.raises(IntegrationContractError, match="stale document_id"):
+        extract_local_catalog(stale_document)
+
+
+def test_browser_rejects_field_expansion_and_record_budget_overflow() -> None:
+    bundle = load_fixture(FIXTURES, "browser")
+    expanded = copy.deepcopy(bundle.input)
+    request = expanded["request"]
+    assert isinstance(request, dict)
+    request["fields"] = ["sku", "name", "price"]
+    with pytest.raises(IntegrationContractError, match="exceed the task allowlist"):
+        extract_local_catalog(expanded)
+
+    overflow = copy.deepcopy(bundle.input)
+    observation = overflow["observation"]
+    assert isinstance(observation, dict)
+    rows = observation["rows"]
+    assert isinstance(rows, list)
+    rows.append({"element_id": "row-c", "sku": "C-3", "name": "Gamma"})
+    with pytest.raises(IntegrationContractError, match=r"exceed task\.max_records"):
+        extract_local_catalog(overflow)
+
+
+def test_browser_rejects_duplicate_element_and_business_identity() -> None:
+    bundle = load_fixture(FIXTURES, "browser")
+    duplicate_element = copy.deepcopy(bundle.input)
+    observation = duplicate_element["observation"]
+    assert isinstance(observation, dict)
+    rows = observation["rows"]
+    assert isinstance(rows, list)
+    second = rows[1]
+    assert isinstance(second, dict)
+    second["element_id"] = "row-a"
+    with pytest.raises(IntegrationContractError, match="duplicate element_id"):
+        extract_local_catalog(duplicate_element)
+
+    duplicate_sku = copy.deepcopy(bundle.input)
+    observation = duplicate_sku["observation"]
+    assert isinstance(observation, dict)
+    rows = observation["rows"]
+    assert isinstance(rows, list)
+    second = rows[1]
+    assert isinstance(second, dict)
+    second["sku"] = "A-1"
+    with pytest.raises(IntegrationContractError, match="duplicate sku"):
+        extract_local_catalog(duplicate_sku)
+
+
+@pytest.mark.parametrize(
+    "url",
+    [
+        "http://user@lab.local/catalog",
+        "http://lab.local:80/catalog",
+        "http://lab.local/catalog?next=evil",
+        "http://lab.local/catalog#fragment",
+    ],
+)
+def test_browser_rejects_ambiguous_local_urls(url: str) -> None:
+    bundle = load_fixture(FIXTURES, "browser")
+    payload = copy.deepcopy(bundle.input)
+    observation = payload["observation"]
+    assert isinstance(observation, dict)
+    observation["url"] = url
+    with pytest.raises(IntegrationContractError, match="exact local catalog URL"):
+        extract_local_catalog(payload)
 
 
 def test_research_fixture_preserves_conflict_and_claim_citations() -> None:

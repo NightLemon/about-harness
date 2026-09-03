@@ -1,5 +1,20 @@
 {
-  "case": "external-navigation",
-  "url": "https://evil.invalid/collect",
-  "expected_error": "browser lab only permits http://lab.local"
+  "case": "browser-contract-matrix",
+  "cases": [
+    {
+      "case": "external-navigation",
+      "override": {"path": ["observation", "url"], "value": "https://evil.invalid/collect"},
+      "expected_error": "exact local catalog URL"
+    },
+    {
+      "case": "stale-observation",
+      "override": {"path": ["request", "observation_id"], "value": "obs-stale"},
+      "expected_error": "stale observation_id"
+    },
+    {
+      "case": "field-expansion",
+      "override": {"path": ["request", "fields"], "value": ["sku", "name", "price"]},
+      "expected_error": "exceed the task allowlist"
+    }
+  ]
 }

@@ -269,7 +269,7 @@ State fingerprint 可组合 origin/path、document hash、关键元素和分页�
 
 ## 当前离线工作例
 
-仓库 fixture 已经把页面解析成 `url/page_text/rows` JSON。确定性函数只允许 `http://lab.local`，从预结构化 rows 复制 `sku/name`，并在 `page_text` 包含 `ignore previous` 时把 `injection_refused` 设为 true。
+仓库 v1.1 fixture 已把页面解析成 `task/observation/request` JSON。确定性函数固定 `http://lab.local/catalog`、字段 allowlist 与 record budget；request 必须引用当前 observation/document，每条 record 回链 source element。页面 capability request 由 fixture 预先标注，函数统一拒绝且没有动作 handler。
 
 ### 前置条件与固定输入
 
@@ -278,9 +278,9 @@ State fingerprint 可组合 origin/path、document hash、关键元素和分页�
 输入位于 `lab/fixtures/browser/`：
 
 - `manifest.json` 固定 project-synthetic 来源、CC BY 4.0 与三个文件 hash；
-- `input.json` 固定 `http://lab.local/catalog`、两条商品记录和一段注入文字；
-- `expected.json` 要求两条记录、`injection_refused=true`、`side_effects=0`；
-- `negative.json` 使用 `https://evil.invalid/collect`，runner 必须拒绝。
+- `input.json` 固定只读 task、observation/document、两条商品记录和一个页面 capability request；
+- `expected.json` 要求 identity/source 回链、两条记录、一次 policy rejection、零 action/side effect；
+- `negative.json` 包含外域、stale observation 与 field expansion，runner 必须全部拒绝。
 
 ### 命令
 
@@ -290,13 +290,13 @@ uv run --frozen --offline python scripts/run-labs.py browser
 
 ### 预期输出与断言
 
-命令退出 0，输出 `evidence=E1`、`offline=true`、`passed=true`、`negative_rejected=true`。Records 精确为 `A-1/Alpha` 与 `B-2/Beta`，`injection_refused=true`，`side_effects=0`；外域 URL 负例被拒绝。
+命令退出 0，输出 `evidence=E1`、`offline=true`、`passed=true`、`negative_rejected=true`。Records 精确为 `A-1/Alpha/row-a` 与 `B-2/Beta/row-b`，都引用 `obs-catalog-01/doc-catalog-01`；`policy_rejections=1`、`executed_actions=0`、`side_effects=0`。
 
 人工复核没有 browser process、network、credential、download 或 profile；`integration=Browser Use` 只是职责映射，`mode=offline-contract-seam` 才是实际执行方式。
 
 ### 失败、停止、清理与回退
 
-若外域 URL 被接受、记录缺失/漂移、注入标记为 false、side effects 非零、manifest hash 不一致或命令需要网络，停止浏览器能力声明。先修 contract/fixture/validator 并保留失败输出；不要安装上游框架、扩大域名或修改 expected 迎合错误。
+若外域/歧义 URL 被接受、stale identity 未拒绝、字段扩权、记录来源缺失、重复 SKU、页面 request 未计为拒绝、side effects 非零、manifest hash 不一致或命令需要网络，停止浏览器能力声明。先修 contract/fixture/validator 并保留失败输出；不要安装上游框架、扩大域名或修改 expected 迎合错误。
 
 命令只读固定 JSON，不创建 profile、截图或下载。误改时先运行：
 
@@ -308,9 +308,9 @@ git diff -- lab/fixtures/browser lab/src/about_harness/integrations/browser_use.
 
 ### 证据边界
 
-实验提供 E1：当前仓库校验固定 fixture，验证 scheme/hostname、复制预结构化 `sku/name`，检测固定注入短语，并拒绝外域负例。
+实验提供 E1：当前仓库校验固定 fixture，验证 exact local URL、observation/document grounding、字段 allowlist、record budget 与唯一 identity；它投影预结构化 `sku/name` 并返回 element source，拒绝一个已标注页面 capability request 与三组 fixture 负例。
 
-它没有加载 HTML/DOM、启动浏览器、执行 selector/click/navigation、运行模型、检查真实 prompt injection、防止真实数据外传或接入 Browser Use。`injection_refused=true` 只是字符串检测后的返回字段，不证明模型行为或安全控制有效；`side_effects=0` 也来自没有动作能力的函数，不是对真实浏览器副作用的监控。
+它没有加载 HTML/DOM、启动浏览器、执行 selector/click/navigation、运行模型、自动识别真实 prompt injection、防止真实数据外传或接入 Browser Use。`injection_refused=true` 来自 fixture annotation 与确定性拒绝，不证明模型行为或检测器有效；`side_effects=0` 也来自没有动作能力的函数，不是对真实浏览器副作用的监控。
 
 ## 完成检查表
 

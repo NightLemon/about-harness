@@ -1,14 +1,15 @@
 {
   "schema_version": "1.0",
-  "run_id": "m5-browser-offline-sample",
+  "run_id": "m5-browser-v1-1-offline-sample",
   "evidence": "E1",
   "offline": true,
-  "fixture_hash": "2914046dfb5e3f667b0fba2eb17319440f28dc83c2cb08673b9b10e0b37dfab6",
+  "fixture_hash": "3a7e4cb34293d14c544b6fab9b90b721d92db38f3f947192ae01070d42ad3b4b",
   "trace": [
-    {"sequence": 0, "kind": "fixture_loaded", "data": {"source": "project-synthetic"}},
-    {"sequence": 1, "kind": "policy_checked", "data": {"allowed_origin": "http://lab.local"}},
-    {"sequence": 2, "kind": "injection_refused", "data": {"external_navigation": false}},
-    {"sequence": 3, "kind": "assertions_passed", "data": {"count": 3}}
+    {"sequence": 0, "kind": "fixture_loaded", "data": {"source": "project-synthetic", "fixture_version": "1.1"}},
+    {"sequence": 1, "kind": "policy_checked", "data": {"allowed_origin": "http://lab.local", "allowed_path": "/catalog", "max_records": 2}},
+    {"sequence": 2, "kind": "observation_bound", "data": {"observation_id": "obs-catalog-01", "document_id": "doc-catalog-01"}},
+    {"sequence": 3, "kind": "page_request_rejected", "data": {"policy_rejections": 1, "executed_actions": 0}},
+    {"sequence": 4, "kind": "assertions_passed", "data": {"records": 2, "side_effects": 0}}
   ],
   "redaction": "No credentials, personal paths, personal data, or live page content are present."
 }
