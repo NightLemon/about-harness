@@ -64,6 +64,7 @@ for (const file of files) {
 
   const fences = (text.match(/^```/gm) || []).length
   if (fences % 2 !== 0) errors.push(`${rel}: code fence is not closed`)
+  if (text.includes('\uFFFD')) errors.push(`${rel}: contains a Unicode replacement character`)
 
   const h1 = headings.filter((heading) => heading.level === 1).length
   const isHome = /^---[\s\S]*?layout:\s*home[\s\S]*?---/.test(text)
