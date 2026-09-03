@@ -80,7 +80,7 @@ Codex 中 sandbox 限制技术可达范围，approval 决定何时询问，netwo
 | Qwen | 官方站 + 目标 model card/revision 要求 | E0 checkpoint/runtime/协议方法 | 没有 API/权重加载结果 |
 | DeepSeek | API surface 的价格、alias、context、availability 为 pending [FACT:deepseek-api-surface] | E0 方法，pending 阻止费用结论 | 没有官方/第三方/本地 run |
 
-“共享 TypeScript runtime test 通过”只证明公共 Task/Action 拒绝坏值；它不是任一 Provider 的 tool/stream/error 兼容测试。
+“共享 TypeScript runtime test 通过”只证明公共 Task/Action/Result 拒绝坏值；Python 合成 stream 测试也只证明项目内 assembler 对固定事件的状态转换。两者都不是任一 Provider 的 tool/stream/error 兼容测试。
 
 模型适配必须同时固定 model、Provider、Adapter、Harness、surface、Task 和 budget。详见[模型适配方法](/models/adaptation)与[协议兼容性](/models/protocol-compatibility)。
 

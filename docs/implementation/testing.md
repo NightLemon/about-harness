@@ -72,7 +72,7 @@ controller + adapter + policy + tool 集成
 
 ## 当前 Python 测试矩阵
 
-当前基线由 `pytest --collect-only -q` 得到 123 项：
+当前基线由 `pytest --collect-only -q` 得到 137 项：
 
 | 文件 | 数量 | 主要责任 |
 | --- | ---: | --- |
@@ -82,6 +82,7 @@ controller + adapter + policy + tool 集成
 | `test_m5_labs.py` | 22 | 六类 fixture、hash、领域负例、公开摘要一致性 |
 | `test_memory_context_trace.py` | 4 | 上下文选择、记忆污染/过期/删除、trace 脱敏 |
 | `test_replay_and_live.py` | 5 | Replay 精确字段、Fake state、Live 硬禁用 |
+| `test_streaming.py` | 14 | 合成 stream 的顺序、ID、tool JSON、终态、重放与失败关闭 |
 
 数字只描述覆盖面，不代表质量分数。一个参数化测试可以计为多项，十个相似 happy path 也可能没有一个关键负例。新增能力时先补责任层和故障路径，而不是追求总数。
 
@@ -268,7 +269,7 @@ npm run repo:self-test
 npm run verify
 ```
 
-当前基线应包含 123 项 pytest 全通过，以及 Ruff、Pyright、TypeScript typecheck、文档/事实/站点/安全/工作流/视觉和 checker self-tests 通过。不要只看最后一行；保留首个失败子命令和退出码。
+当前基线应包含 137 项 pytest 全通过，以及 Ruff、Pyright、TypeScript typecheck、文档/事实/站点/安全/工作流/视觉和 checker self-tests 通过。不要只看最后一行；保留首个失败子命令和退出码。
 
 ## 失败时的停止、清理与回滚
 
@@ -280,7 +281,7 @@ npm run verify
 
 ## 当前测试体系的限制
 
-当前没有：artifact/测试/业务系统 acceptance validator、独立 validator-error 枚举、coverage threshold、mutation/property-based contracts、跨 artifact Run/Trace/Result lineage、可交换的 checkpoint 恢复实现、真实 provider/stream/usage、持久数据库和队列故障、跨进程幂等、真实浏览器 Agent、完整 accessibility audit、性能/负载基线或生产数据删除演练。
+当前已有 provider-neutral 合成 stream assembler，但没有真实 Provider transport/stream adapter、SSE/SDK event 映射、UTF-8 byte 边界或重连恢复。其他缺口包括：artifact/测试/业务系统 acceptance validator、独立 validator-error 枚举、coverage threshold、mutation/property-based contracts、跨 artifact Run/Trace/Result lineage、可交换的 checkpoint 恢复实现、真实 usage、持久数据库和队列故障、跨进程幂等、真实浏览器 Agent、完整 accessibility audit、性能/负载基线或生产数据删除演练。
 
 这些缺口不能通过增加门禁名称来解决。优先补能改变错误结论的 oracle 和真实故障路径；低风险格式规则只有在持续阻止实际问题时才值得保留。
 
