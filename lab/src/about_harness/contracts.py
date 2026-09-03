@@ -179,6 +179,14 @@ class ToolCall:
             idempotency_key=_required_str(data, "idempotency_key"),
         )
 
+    def to_dict(self) -> dict[str, JsonValue]:
+        return {
+            "call_id": self.call_id,
+            "name": self.name,
+            "arguments": self.arguments,
+            "idempotency_key": self.idempotency_key,
+        }
+
 
 @dataclass(frozen=True, slots=True)
 class Action:
@@ -226,6 +234,17 @@ class Action:
                 cost_usd=_required_number(data, "cost_usd"),
             )
         raise ContractError(f"unsupported action kind: {kind}")
+
+    def to_dict(self) -> dict[str, JsonValue]:
+        if self.kind == "complete":
+            return {"kind": "complete", "output": self.output, "cost_usd": self.cost_usd}
+        if self.kind == "tool" and self.tool_call is not None:
+            return {
+                "kind": "tool",
+                "tool_call": self.tool_call.to_dict(),
+                "cost_usd": self.cost_usd,
+            }
+        raise ContractError("action cannot be serialized because its branches are invalid")
 
 
 @dataclass(frozen=True, slots=True)

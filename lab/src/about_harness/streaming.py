@@ -208,7 +208,7 @@ class StreamAssembler:
                         idempotency_key=cast(str, self._idempotency_key),
                     )
                 )
-                action = Action.from_dict(action_to_wire(action))
+                action = Action.from_dict(action.to_dict())
             except (ContractError, json.JSONDecodeError, TypeError) as exc:
                 self._abort(
                     StreamErrorCode.INVALID_TOOL_ARGUMENTS,
@@ -262,21 +262,6 @@ class StreamAssembler:
     def _abort(self, code: StreamErrorCode, message: str) -> NoReturn:
         self._failure = (code, message)
         raise StreamProtocolError(code, message)
-
-
-def action_to_wire(action: Action) -> dict[str, JsonValue]:
-    if action.kind != "tool" or action.tool_call is None:
-        raise ContractError("stream assembler only emits tool actions")
-    return {
-        "kind": "tool",
-        "tool_call": {
-            "call_id": action.tool_call.call_id,
-            "name": action.tool_call.name,
-            "arguments": action.tool_call.arguments,
-            "idempotency_key": action.tool_call.idempotency_key,
-        },
-        "cost_usd": action.cost_usd,
-    }
 
 
 def _required_string(

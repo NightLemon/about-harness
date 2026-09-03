@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import math
 import threading
 from dataclasses import dataclass
 from typing import cast
@@ -268,6 +269,39 @@ def test_wrong_adapter_return_is_classified_as_invalid_action() -> None:
     assert result.stop_reason is StopReason.INVALID_ACTION
     assert result.error is not None
     assert "expected Action" in result.error
+
+
+@pytest.mark.parametrize(
+    "invalid_branch",
+    ["completion-output", "tool-arguments"],
+)
+def test_adapter_action_is_revalidated_before_metrics(invalid_branch: str) -> None:
+    executed = False
+
+    def handler(arguments: dict[str, JsonValue]) -> JsonValue:
+        nonlocal executed
+        executed = True
+        return arguments
+
+    registry = ToolRegistry()
+    registry.register("echo", handler)
+    if invalid_branch == "completion-output":
+        action = Action.complete({"value": math.nan})
+    else:
+        action = Action.tool(
+            ToolCall("call-invalid", "echo", {"value": math.inf}, "invalid-json")
+        )
+
+    result = HarnessRunner(FakeAdapter((action,)), registry).run(task())
+
+    assert result.status is RunStatus.FAILED
+    assert result.stop_reason is StopReason.INVALID_ACTION
+    assert result.error is not None
+    assert "ContractError" in result.error
+    assert result.metrics["model_calls"] == 0
+    assert result.metrics["cost_usd"] == 0
+    assert not any(event.kind == "model_action" for event in result.trace)
+    assert not executed
 
 
 def test_checkpoint_restores_adapter_position() -> None:

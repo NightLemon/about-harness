@@ -57,7 +57,7 @@ Task 还应在关联协议中记录禁止动作、cleanup（清理）、人工 r
 
 `action-v1` 使用 `oneOf` 表达两个互斥分支：`tool` 必须含完整 `tool_call` 与有限非负 `cost_usd`，`complete` 必须含 `output` 与成本；任何混合字段、缺失字段或额外字段都拒绝。Tool call 至少固定 `call_id`、非空名称、JSON object 参数与 `idempotency_key`。
 
-Schema 只定义线协议。Python `Action.from_dict` / `ToolCall.from_dict` 和 TypeScript `validateAction` 才是在进程边界把不可信对象转成内部 Action；两边都递归拒绝非有限 JSON 数字，Python 还显式拒绝循环对象。直接调用 dataclass 构造器或写 `as Action` 不能替代 wire parsing。
+Schema 只定义线协议。Python `Action.from_dict` / `ToolCall.from_dict` 和 TypeScript `validateAction` 才是在进程边界把不可信对象转成内部 Action；两边都递归拒绝非有限 JSON 数字，Python 还显式拒绝循环对象。直接调用 dataclass 构造器或写 `as Action` 不能替代 wire parsing；Python runner 还会深拷贝并重建 Adapter 返回的 Action，避免带坏嵌套值或返回后可变引用越过边界。
 
 Action 合法仍不代表可以执行：tool 分支还需 policy、参数约束、预算和幂等检查；complete 分支还需 acceptance validator。`cost_usd` 只是当前动作申报值，也不能替代 provider usage 对账。公共 fixture 用 13 个 Action 正反例固定结构接受边界，不声称覆盖 provider stream、消息连续性或业务授权。
 
