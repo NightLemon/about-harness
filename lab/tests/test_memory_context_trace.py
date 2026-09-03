@@ -33,6 +33,8 @@ def test_memory_expiration_pollution_filter_and_delete() -> None:
     assert memory.purge_expired(now_ms=10) == 1
     assert memory.delete("poison")
     assert memory.get("poison", now_ms=10) is None
+    assert memory.search("", now_ms=10) == ()
+    assert memory.search("   ", now_ms=10) == ()
 
 
 def test_working_memory_supports_explicit_deletion() -> None:
@@ -41,6 +43,9 @@ def test_working_memory_supports_explicit_deletion() -> None:
     assert memory.get("plan") == {"step": 1}
     assert memory.delete("plan")
     assert memory.get("plan") is None
+    memory.set("nullable", None)
+    assert memory.delete("nullable")
+    assert not memory.delete("nullable")
 
 
 def test_trace_redacts_secret_values_paths_and_tool_results() -> None:
