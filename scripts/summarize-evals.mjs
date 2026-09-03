@@ -63,6 +63,87 @@ function summarizeTasks(runs) {
   }
 }
 
+function completeTaskOutcomes(runs) {
+  const outcomes = new Map()
+  for (const [taskId, taskRuns] of Map.groupBy(runs, (row) => row.task_id)) {
+    if (taskRuns.length !== study.repeats) continue
+    outcomes.set(
+      taskId,
+      taskRuns.filter((row) => row.passed).length >= design.taskPassMinRuns
+    )
+  }
+  return outcomes
+}
+
+function weightedQuantile(distribution, quantile) {
+  let cumulative = 0
+  let largestValue = null
+  for (const [value, probability] of [...distribution].sort(([left], [right]) => left - right)) {
+    largestValue = value
+    cumulative += probability
+    if (cumulative + 1e-12 >= quantile) return value
+  }
+  return largestValue
+}
+
+function exactBootstrapMeanInterval(values, confidenceLevel = 0.95) {
+  if (values.length === 0) return null
+  const valueProbabilities = new Map()
+  for (const value of values) {
+    valueProbabilities.set(value, (valueProbabilities.get(value) ?? 0) + (1 / values.length))
+  }
+
+  let sumDistribution = new Map([[0, 1]])
+  for (let draw = 0; draw < values.length; draw += 1) {
+    const next = new Map()
+    for (const [sum, sumProbability] of sumDistribution) {
+      for (const [value, valueProbability] of valueProbabilities) {
+        const nextSum = sum + value
+        next.set(nextSum, (next.get(nextSum) ?? 0) + (sumProbability * valueProbability))
+      }
+    }
+    sumDistribution = next
+  }
+
+  const alpha = (1 - confidenceLevel) / 2
+  return {
+    lower: rounded(weightedQuantile(sumDistribution, alpha) / values.length, 4),
+    upper: rounded(weightedQuantile(sumDistribution, 1 - alpha) / values.length, 4)
+  }
+}
+
+function pairedTaskEffect(baselineRuns, candidateRuns) {
+  const baselineOutcomes = completeTaskOutcomes(baselineRuns)
+  const candidateOutcomes = completeTaskOutcomes(candidateRuns)
+  const taskIds = [...baselineOutcomes.keys()]
+    .filter((taskId) => candidateOutcomes.has(taskId))
+    .sort()
+  if (taskIds.length === 0) return null
+
+  const pairs = taskIds.map((taskId) => ({
+    baseline: baselineOutcomes.get(taskId),
+    candidate: candidateOutcomes.get(taskId)
+  }))
+  const baselinePassed = pairs.filter((pair) => pair.baseline).length
+  const candidatePassed = pairs.filter((pair) => pair.candidate).length
+  const differences = pairs.map((pair) => Number(pair.candidate) - Number(pair.baseline))
+  return {
+    paired_tasks: pairs.length,
+    baseline_passed_tasks: baselinePassed,
+    candidate_passed_tasks: candidatePassed,
+    both_passed: pairs.filter((pair) => pair.baseline && pair.candidate).length,
+    both_failed: pairs.filter((pair) => !pair.baseline && !pair.candidate).length,
+    candidate_only_passed: pairs.filter((pair) => !pair.baseline && pair.candidate).length,
+    baseline_only_passed: pairs.filter((pair) => pair.baseline && !pair.candidate).length,
+    bootstrap: {
+      method: 'nonparametric_percentile',
+      computation: 'exact_empirical_distribution',
+      confidence_level: 0.95,
+      pass_rate_delta_interval: exactBootstrapMeanInterval(differences)
+    }
+  }
+}
+
 const grouped = Map.groupBy(rows, (row) => row.config_id)
 const configs = {}
 for (const [config, runs] of grouped) {
@@ -125,28 +206,34 @@ function rounded(value, digits) {
 
 const promotionCandidates = {}
 const baselineHoldout = configs[baseline]?.by_split.holdout ?? null
+const baselineHoldoutRows = (grouped.get(baseline) ?? []).filter((row) => row.split === 'holdout')
 const baselinePassSummary = design.analysisUnit === 'task'
   ? configs[baseline]?.task_level?.by_split.holdout ?? null
   : baselineHoldout
 for (const candidate of study.configs.slice(1)) {
   const candidateHoldout = configs[candidate]?.by_split.holdout ?? null
+  const candidateHoldoutRows = (grouped.get(candidate) ?? []).filter((row) => row.split === 'holdout')
   const candidatePassSummary = design.analysisUnit === 'task'
     ? configs[candidate]?.task_level?.by_split.holdout ?? null
     : candidateHoldout
+  const taskEffect = design.analysisUnit === 'task'
+    ? pairedTaskEffect(baselineHoldoutRows, candidateHoldoutRows)
+    : null
   const metricsAvailable = baselineHoldout !== null
     && candidateHoldout !== null
     && baselinePassSummary !== null
     && candidatePassSummary !== null
-    && baselinePassSummary.pass_rate !== null
-    && candidatePassSummary.pass_rate !== null
+    && (design.analysisUnit === 'task'
+      ? taskEffect !== null
+      : baselinePassSummary.pass_rate !== null && candidatePassSummary.pass_rate !== null)
   const baselinePassRate = metricsAvailable
     ? design.analysisUnit === 'task'
-      ? baselinePassSummary.passed_tasks / baselinePassSummary.evaluable_tasks
+      ? taskEffect.baseline_passed_tasks / taskEffect.paired_tasks
       : baselinePassSummary.passed / baselinePassSummary.runs
     : null
   const candidatePassRate = metricsAvailable
     ? design.analysisUnit === 'task'
-      ? candidatePassSummary.passed_tasks / candidatePassSummary.evaluable_tasks
+      ? taskEffect.candidate_passed_tasks / taskEffect.paired_tasks
       : candidatePassSummary.passed / candidatePassSummary.runs
     : null
   const passRateDelta = metricsAvailable ? candidatePassRate - baselinePassRate : null
@@ -158,10 +245,11 @@ for (const candidate of study.configs.slice(1)) {
         pass_rate_delta: rounded(passRateDelta, 4),
         ...(design.analysisUnit === 'task'
           ? {
-              baseline_tasks: baselinePassSummary.evaluable_tasks,
-              candidate_tasks: candidatePassSummary.evaluable_tasks,
-              baseline_passed_tasks: baselinePassSummary.passed_tasks,
-              candidate_passed_tasks: candidatePassSummary.passed_tasks
+              baseline_tasks: taskEffect.paired_tasks,
+              candidate_tasks: taskEffect.paired_tasks,
+              baseline_passed_tasks: taskEffect.baseline_passed_tasks,
+              candidate_passed_tasks: taskEffect.candidate_passed_tasks,
+              paired_task_effect: taskEffect
             }
           : {
               baseline_runs: baselinePassSummary.runs,
@@ -180,7 +268,8 @@ for (const candidate of study.configs.slice(1)) {
               baseline_tasks: null,
               candidate_tasks: null,
               baseline_passed_tasks: null,
-              candidate_passed_tasks: null
+              candidate_passed_tasks: null,
+              paired_task_effect: null
             }
           : {
               baseline_runs: null,

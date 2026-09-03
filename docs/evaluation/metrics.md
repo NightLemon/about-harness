@@ -310,7 +310,11 @@ Sensitivity analysis（敏感性分析）还可以比较：基础设施首次尝
 
 结构前置条件全部满足后，汇总器才按 candidate 分别读取 holdout。`study-v1.1` 先按预注册的成功次数把 repeats 聚合为任务结果；`min_pass_rate_delta` 是候选减基线的 task-level 成功率绝对差，例如 `0.05` 表示至少增加 5 个百分点。`max_p90_cost_delta` 仍是候选减基线的单次运行 P90 费用绝对差，单位为 USD，例如 `0.2` 表示最多增加 0.20 美元。两者不是相对百分比。`promotion_analysis` 会保存 Study 版本、基线、split、分析单位、任务聚合规则、阈值、观察值和每个候选的 blocker；顶层 `promotion_eligible=true` 表示至少一个候选同时通过结构条件和这两个点估计阈值。
 
-这仍不是自动采用决定。当前工具虽会计算 task-level 比例和各配置的 Wilson 区间，但没有计算候选减基线的配对效应区间、task bootstrap、关键 workload 非劣界限、多重比较修正或 holdout 污染状态。点估计刚过线但差异区间很宽时，负责人仍应给出 `inconclusive`，不能把 `promotion_eligible` 当成发布命令。
+对于 task-level 结果，汇总器还会只取候选与基线都完整的同一批 holdout task，报告 `both_passed`、`both_failed`、`candidate_only_passed`、`baseline_only_passed`。每个 task 的候选减基线结果是 `-1`、`0` 或 `1`；工具从这些配对差异的经验分布进行有放回重采样，并用动态规划精确计算所有可能 bootstrap 均值的概率，而不是依赖随机 seed。`paired_task_effect.bootstrap` 记录方法、95% percentile 区间和实际配对任务数。
+
+例如 5 个 holdout task 中，基线通过 3 个、候选通过 4 个，且只有 1 个 task 从失败变为通过。点估计是 `+0.20`，但精确枚举的 paired bootstrap 95% 区间是 `[0, 0.60]`：它没有排除“真实改善为零”的合理不确定性。`promotion_eligible` 仍只执行预注册的点估计阈值；区间是供 `adopt/reject/inconclusive` 复核使用的诊断证据，不能在看到结果后临时改成新门槛。
+
+这仍不是自动采用决定。Percentile bootstrap 在 task 很少、任务相关、抽样不代表目标流量或两侧缺少完整 pair 时都可能失真；当前工具也没有关键 workload 非劣界限、多重比较修正、费用差异区间或 holdout 污染状态。点估计刚过线但差异区间很宽时，负责人仍应给出 `inconclusive`，不能把 `promotion_eligible` 当成发布命令。
 
 当前 12 行样例因为缺 108 个单元、每个 development task 也只有 1/3 次重复、没有 holdout run，且 E1 低于目标 E3，正确输出是 `promotion_eligible=false`。两组 development 的 task-level 汇总都显示 6 个 `incomplete_tasks`、0 个 `evaluable_tasks`；候选在 `promotion_analysis` 中为 `blocked`，阈值观察值保持 `null`。即使 candidate 的六个单次 run 都通过，也不能把它们伪装成六个达到 2/3 规则的任务。
 
@@ -336,7 +340,7 @@ npm run eval:validate
 npm run eval:summary
 ```
 
-预期 validator 报告 `study_schema_version=1.1`、`pass_rate_analysis_unit=task`、`task_pass_min_runs=2`、20 tasks、2 configs、3 repeats、120 个预期单元、12 个已观察单元和 108 个缺失单元。Summary 应显示 development 的 run-level 两组 `k/n`、task-level `evaluable_tasks=0`、5/0/1 run 配对、`holdout: null`、`promotion_eligible: false`，阻断项含 `incomplete_matrix` 与 `evidence_below_target`；候选状态为 `blocked`，两个 delta 为 `null`。
+预期 validator 报告 `study_schema_version=1.1`、`pass_rate_analysis_unit=task`、`task_pass_min_runs=2`、20 tasks、2 configs、3 repeats、120 个预期单元、12 个已观察单元和 108 个缺失单元。Summary 应显示 development 的 run-level 两组 `k/n`、task-level `evaluable_tasks=0`、5/0/1 run 配对、`holdout: null`、`promotion_eligible: false`，阻断项含 `incomplete_matrix` 与 `evidence_below_target`；候选状态为 `blocked`，两个 delta 与 `paired_task_effect` 都是 `null`。运行 `npm run eval:self-test` 还会构造完整的 5-task holdout，断言 `+0.20` 点估计对应 `[0, 0.60]` 的配对 bootstrap 区间。
 
 任一数字不符时先停止，不要直接改期望输出。检查 study、run identity、repeat、split 和 fixture lineage；若为了练习修改样例，保存 diff，并只还原自己改动的文件。本命令只读取输入，无需额外清理。
 
