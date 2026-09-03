@@ -361,12 +361,12 @@ def _negative_rejected(bundle: FixtureBundle, output: dict[str, JsonValue]) -> b
             return True
         return False
     if bundle.name == "document":
-        proposed = bundle.negative.get("proposed_citation")
-        citations = output.get("citations")
-        return (
-            isinstance(proposed, str)
-            and isinstance(citations, list)
-            and proposed not in citations
+        candidate = bundle.negative.get("candidate_answer")
+        if not isinstance(candidate, dict):
+            return False
+        compared_fields = ("status", "answer", "citations")
+        return any(
+            candidate.get(field) != output.get(field) for field in compared_fields
         )
     if bundle.name == "migration":
         proposals = bundle.negative.get("proposals")

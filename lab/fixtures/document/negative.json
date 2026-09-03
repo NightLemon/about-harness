@@ -1,5 +1,16 @@
 {
   "case": "stale-citation",
-  "proposed_citation": "handbook@v1",
-  "expected": "reject because a newer version exists"
+  "candidate_answer": {
+    "status": "answered",
+    "answer": "The retention policy keeps records for 30 days.",
+    "citations": [
+      {
+        "doc_id": "handbook",
+        "version": 1,
+        "block_id": "retention",
+        "quote": "The retention policy keeps records for 30 days."
+      }
+    ]
+  },
+  "expected": "reject an answer and citation from a stale document version"
 }

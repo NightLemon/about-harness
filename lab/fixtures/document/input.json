@@ -1,8 +1,33 @@
 {
   "query": "retention policy",
   "documents": [
-    {"doc_id": "handbook", "version": 1, "text": "The retention policy keeps records for 30 days."},
-    {"doc_id": "handbook", "version": 2, "text": "The retention policy keeps records for 45 days."},
-    {"doc_id": "unrelated", "version": 1, "text": "Support is available on weekdays."}
+    {
+      "doc_id": "handbook",
+      "version": 1,
+      "access": "allowed",
+      "parse_status": "parsed",
+      "blocks": [
+        {"block_id": "retention", "text": "The retention policy keeps records for 30 days."}
+      ]
+    },
+    {
+      "doc_id": "handbook",
+      "version": 2,
+      "access": "allowed",
+      "parse_status": "parsed",
+      "blocks": [
+        {"block_id": "retention", "text": "The retention policy keeps records for 45 days."},
+        {"block_id": "review", "text": "The policy is reviewed annually."}
+      ]
+    },
+    {
+      "doc_id": "unrelated",
+      "version": 1,
+      "access": "allowed",
+      "parse_status": "parsed",
+      "blocks": [
+        {"block_id": "support", "text": "Support is available on weekdays."}
+      ]
+    }
   ]
 }
