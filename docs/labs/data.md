@@ -187,14 +187,7 @@ uv run --frozen --offline pytest -q lab/tests/test_m5_labs.py::test_data_fixture
 
 预期 `5 passed`、退出码 0：一个正常 case、一个 schema drift case、三个参数化 finite-number 负例。负例测试通过表示异常被观察到，不表示坏数据被接受。
 
-再验证 integration 映射没有被写成真实产品支持：
-
-```powershell
-npm run compat:check
-npm run compat:self-test
-```
-
-两项都应退出 0；兼容性负例门禁必须拒绝把文件名、映射名或离线结果当成 live 上游证据。
+再检查上一步结果中的 `offline=true`、`evidence=E1` 与 `mode=offline-contract-seam`。它们证明固定数据职责接缝运行过，不证明 PydanticAI 已安装、真实 provider 可用或生产数据兼容；任何缺失或被改成 live 的结果都应停止引用。这个证据判断必须读取实际结果，不能由页面中是否出现产品名替代。
 
 ## Result 如何进入 Eval
 

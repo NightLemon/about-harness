@@ -211,12 +211,11 @@ E2 至少保存 model/provider/Harness/Adapter、原始协议引用、Task、con
 
 ```powershell
 npm run facts:check
-npm run compat:check
 npm run examples:check
 uv run --frozen --offline python scripts/run-labs.py all
 ```
 
-预期：事实注册表结构/引用通过；兼容页面保留三条核心 evidence axis；三套静态示例通过；六个离线 case 为 `E1`、`offline=true`、`negative_rejected=true`。
+预期：事实注册表结构/引用通过；三套静态示例通过；六个离线 case 为 `E1`、`offline=true`、`negative_rejected=true`。然后人工逐行核对本页五层证据：对象/版本、Source fact、Offline seam、Live evidence、控制层；任何空白或 `untested` 都必须原样保留，不能因为产品名或命令退出 0 而升级。
 
 这些命令不访问产品、Provider 或第三方 Framework。若它们请求网络/凭据、同名 integration 开始导入未锁定上游包，或 E1 被显示为 live/E2/E3，立即停止。
 

@@ -162,13 +162,12 @@ Trace 同时保存脱敏的原始输出引用和规范化 ToolCall/ToolResult，
 ```powershell
 uv run --frozen --offline pytest -q lab/tests/test_replay_and_live.py
 npm run lab:ts-runtime-test
-npm run model:check
-npm run model:self-test
+npm run facts:check
 ```
 
-前置条件是 Python 3.11+、`uv 0.11.16`、Node.js 22+ 与锁定依赖。输入是仓库固定 replay fixture；预期 Python 显示 `5 passed`，TypeScript runtime 拒绝坏 Task/Action，模型协议 checker 与负例自测退出 0。断言 live adapter 在任何 provider/权重动作前失败。
+前置条件是 Python 3.11+、`uv 0.11.16`、Node.js 22+ 与锁定依赖。输入是仓库固定 replay fixture；预期 Python 显示 `5 passed`，TypeScript runtime 拒绝坏 Task/Action，事实检查确认正文引用的易变主张已有来源状态、版本和日期。断言 live adapter 在任何 provider/权重动作前失败。
 
-这些 E1 控制结果不下载权重、不访问 Qwen/第三方 API，也不验证 tokenizer、chat template、tool/stream/error/usage、硬件性能、许可证或模型质量。`model:check` 主要验证共享/OpenAI 协议文档，不是 Qwen 兼容测试。
+这些 E1 控制结果不下载权重、不访问 Qwen/第三方 API，也不验证 tokenizer、chat template、tool/stream/error/usage、硬件性能、许可证或模型质量。`facts:check` 只验证事实引用，不是 Qwen 兼容测试；协议解释的充分性由人工对照目标 surface 复核。
 
 若命令请求 API key、网络或模型文件，live adapter 不再硬拒绝，或坏 Action 进入 metrics，立即停止；不要配置真实凭据、下载大文件或产生费用。命令只读 fixture，并可能产生 cache。清理时只删除本轮明确生成的 cache；误改时先用 `git diff -- lab docs/models/qwen.md` 确认范围，再只恢复自己的修改。候选不合格时回退到 replay/live-disabled baseline。
 

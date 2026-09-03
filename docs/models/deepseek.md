@@ -171,13 +171,12 @@ Budget: call/tool/token/time caps；货币成本 unknown
 ```powershell
 uv run --frozen --offline pytest -q lab/tests/test_replay_and_live.py
 npm run lab:ts-runtime-test
-npm run model:check
-npm run model:self-test
+npm run facts:check
 ```
 
-前置条件是 Python 3.11+、`uv 0.11.16`、Node.js 22+ 与锁定依赖。输入为仓库固定 replay fixture；预期 Python 显示 `5 passed`，TypeScript runtime 拒绝坏 Task/Action，model checker 与负例自测退出 0。断言 live adapter 在任何 provider、网络或权重动作前失败。
+前置条件是 Python 3.11+、`uv 0.11.16`、Node.js 22+ 与锁定依赖。输入为仓库固定 replay fixture；预期 Python 显示 `5 passed`，TypeScript runtime 拒绝坏 Task/Action，事实检查保留 DeepSeek 主张的 `pending` 来源状态。断言 live adapter 在任何 provider、网络或权重动作前失败。
 
-这些 E1 控制结果不访问 DeepSeek/第三方 API、不下载权重，也不验证 reasoning、tool、stream、usage、价格、alias、上下文、可用性或模型质量。`model:check` 主要验证共享/OpenAI 协议文档，不是 DeepSeek 兼容测试。
+这些 E1 控制结果不访问 DeepSeek/第三方 API、不下载权重，也不验证 reasoning、tool、stream、usage、价格、alias、上下文、可用性或模型质量。`facts:check` 只阻止未登记或错误升级的事实，不是 DeepSeek 兼容测试。
 
 若命令请求 API key、网络或模型文件，live adapter 不再硬拒绝，或 pending 值进入费用计算，立即停止；不要配置凭据、产生费用或用旧数字补空。命令只读 fixture，并可能产生 cache。清理时只删除本轮明确生成的 cache；误改时用 `git diff -- lab docs/models/deepseek.md` 确认范围并只恢复自己的改动。候选失败时回到 replay/live-disabled baseline。
 

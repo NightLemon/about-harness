@@ -105,7 +105,7 @@ Static check（静态检查）、build 和 visual smoke 都是必要证据，但
 
 覆盖：基础文档/内容/示例检查、普通 VitePress build、事实注册、内容与示例 checker 自测、六类离线 Lab、TypeScript 运行时、eval validate/summary/self-test 和公开结果扫描。
 
-它不运行完整 pytest、Ruff、Pyright、TypeScript 静态 typecheck，也不包含所有 roadmap/model/tutorial/repository checker self-tests。因此 `check` 通过不能替代 `verify`。
+它不运行完整 pytest、Ruff、Pyright、TypeScript 静态 typecheck，也不包含 tutorial/repository 等高价值 checker self-tests。因此 `check` 通过不能替代 `verify`。
 
 ### `npm run pages:check`
 

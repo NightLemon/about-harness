@@ -244,21 +244,19 @@ Lock-in（锁定）不只来自 import。最难迁移的通常是 checkpoint、s
 ```powershell
 uv run --frozen --offline python -c "import importlib.util as u; assert u.find_spec('langgraph') is None; assert u.find_spec('agents') is None; assert u.find_spec('autogen') is None; assert u.find_spec('google') is None or u.find_spec('google.adk') is None"
 npm run labs:all
-npm run compat:check
-npm run compat:self-test
+npm run facts:check
 ```
 
 ### 预期输出与断言
 
 - 第一条命令退出 0，证明锁定环境没有导入四个上游 Framework；
 - `labs:all` 的 6 个固定 case 全部 `passed: true`、`offline: true`、`evidence: E1`，且每个 case 的负例被拒绝；
-- `compat:check` 把 Source fact、Offline seam 与 Live evidence 分列，不把 integration 文件名当作上游包已接入；
-- `compat:self-test` 拒绝缺证据轴、缺责任边界或把离线接缝写成 live 支持的 canary；
+- `facts:check` 确认各 Framework 的产品主张有来源状态、版本、日期和正文引用；人工复核兼容矩阵仍把 Source fact、Offline seam 与 Live evidence 分列；
 - 全程没有 provider 网络调用、credential 读取和费用。
 
 ### 失败、停止、清理与回退
 
-若任一 Framework 意外可导入、fixture 需要联网、live adapter 未硬禁用、负例通过，或 checker 把 E1 升级成 E2/E3，立即停止比较结论。先检查 lockfile、环境和证据标签；不要为了得到绿色结果安装上游包、配置 API key 或删除负例。
+若任一 Framework 意外可导入、fixture 需要联网、live adapter 未硬禁用、负例通过，或事实/人工矩阵复核把 E1 升级成 E2/E3，立即停止比较结论。先检查 lockfile、环境和证据标签；不要为了得到绿色结果安装上游包、配置 API key 或删除负例。
 
 命令只读固定输入，并可能产生 `.pytest_cache/` 等可忽略缓存。误改依赖或实验时先运行：
 

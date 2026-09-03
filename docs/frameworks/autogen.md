@@ -133,15 +133,14 @@ Checkpoint（检查点）至少保存任务/config 版本、每个 participant �
 
 ```powershell
 uv run --frozen --offline python -c "import importlib.util as u; assert u.find_spec('autogen') is None"
-npm run compat:check
-npm run compat:self-test
+npm run facts:check
 ```
 
-预期三条命令退出码均为 0：第一条证明当前 Python 环境没有可导入的 `autogen` 包；`compat:check` 将官方 Source fact、项目 Offline seam 与 Live evidence 分列，并把 AutoGen 标为只有职责说明；自测应拒绝缺证据轴或把 E0 写成 live support 的 canary。
+预期两条命令退出码均为 0：第一条证明当前 Python 环境没有可导入的 `autogen` 包；事实检查确认官方 Source fact 已登记。人工复核兼容矩阵应继续把 AutoGen 标为只有职责说明，不能用产品名或页面措辞替代 Offline seam/Live evidence。
 
-这些结果只有 E0 来源 + E1 项目门禁意义。它们没有创建 AgentChat team、运行 Core、加载 Extensions/Studio 或调用模型，不能声称 AutoGen 已接入、兼容、可恢复、生产可用或优于其他 Framework。
+这些结果只有已核验的 E0 来源和本地依赖缺失检查。它们没有创建 AgentChat team、运行 Core、加载 Extensions/Studio 或调用模型，不能声称 AutoGen 已接入、兼容、可恢复、生产可用或优于其他 Framework。
 
-若意外发现包可导入、checker 把 AutoGen 写成 E1/live，或命令要求 API key/网络，停止结论并审计依赖与证据文件；不要运行 quickstart、配置真实凭据或删除负例来获得绿色输出。命令只读仓库并可能产生可忽略 cache。误改时先检查：
+若意外发现包可导入、事实或人工矩阵核对把 AutoGen 误写成 E1/live，或命令要求 API key/网络，停止结论并审计依赖与证据文件；不要运行 quickstart、配置真实凭据或删除负例来获得绿色输出。命令只读仓库并可能产生可忽略 cache。误改时先检查：
 
 ```powershell
 git diff -- pyproject.toml uv.lock package.json package-lock.json docs/frameworks/autogen.md docs/references/compatibility.md

@@ -233,14 +233,7 @@ uv run --frozen --offline pytest -q lab/tests/test_m5_labs.py::test_research_fix
 
 预期 `3 passed`、退出码 0。后两项通过表示坏输入被异常拒绝，不表示重复来源或空 query 被接受。
 
-再确认 integration 映射没有被升级成 live 支持：
-
-```powershell
-npm run compat:check
-npm run compat:self-test
-```
-
-两项都应退出 0；负例门禁必须拒绝把映射名、模块文件或 E1 fixture 当成真实 LangGraph 证据。
+再检查上一步结果中的 `offline=true`、`evidence=E1` 与 `mode=offline-contract-seam`。它们证明固定研究职责接缝运行过，不证明 LangGraph 已安装、graph/checkpointer 实际执行或 live provider 可用；字段缺失或结论越界时停止引用。证据边界必须从真实结果和依赖状态得出，不能由映射名或页面关键词自动判定。
 
 ## Result 如何进入 Eval
 

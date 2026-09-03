@@ -131,13 +131,12 @@ Budget: model/tool calls、20 min、cost cap
 ```powershell
 uv run --frozen --offline pytest -q lab/tests/test_replay_and_live.py
 npm run lab:ts-runtime-test
-npm run model:check
-npm run model:self-test
+npm run facts:check
 ```
 
-前置条件是 Python 3.11+、`uv 0.11.16`、Node.js 22+ 和锁定依赖。预期 Python 显示 `5 passed`：replay 可完成固定 tool loop，未知字段/坏 checkpoint 被拒绝，live adapter 在任何 provider 动作前失败；TypeScript runtime 拒绝坏 Task/Action；model checker 与负例自测退出 0。
+前置条件是 Python 3.11+、`uv 0.11.16`、Node.js 22+ 和锁定依赖。预期 Python 显示 `5 passed`：replay 可完成固定 tool loop，未知字段/坏 checkpoint 被拒绝，live adapter 在任何 provider 动作前失败；TypeScript runtime 拒绝坏 Task/Action；事实检查确认正文引用的产品主张已登记来源状态、版本和日期。
 
-这些是 E1 控制契约，不包含 Anthropic 请求、Claude Code 启动、真实 usage/cache、thinking 或模型任务。`model:check` 主要验证共享模型协议文档，不是 Claude 兼容测试。
+这些是 E1 控制契约，不包含 Anthropic 请求、Claude Code 启动、真实 usage/cache、thinking 或模型任务。`facts:check` 只验证事实谱系，不是 Claude 兼容测试；身份、状态和工具流是否解释充分仍由内容审阅判断。
 
 若 live adapter 不再硬拒绝、命令需要 API key/网络，或坏 Action 进入 metrics，停止任何 Claude 适配结论；不要配置真实凭据、产生费用或删除负例。命令只读固定 fixture，并可能产生 cache。误改时检查 `git diff -- lab docs/models/anthropic.md`，只恢复自己的变更；候选失败时回到 replay/live-disabled baseline。
 

@@ -270,7 +270,7 @@ Raw artifact（原始证据）与公开 artifact 分开保存。公开前移除 
 | Usage 为 0 | 字段缺失、映射、价格计算 | 请求免费 |
 | ID continuation 成功、手工回放失败 | Output item/state 保存 | 两条路径等价 |
 | HTTP 200 但请求字段被忽略 | Adapter/provider effective state | 参数已经生效 |
-| 静态 checker 通过 | 文档标记存在 | 真实 API 兼容 |
+| 正文关键词检查通过 | 只能说明字符串存在 | 真实 API 兼容 |
 
 修复 adapter 后建立新版本并重跑受影响探针。旧失败 trace 保留为历史证据，但不要继续计入修复后组合的失败率。
 
@@ -294,26 +294,21 @@ Raw artifact（原始证据）与公开 artifact 分开保存。公开前移除 
 ```powershell
 uv run --frozen --offline pytest -q lab/tests/test_replay_and_live.py lab/tests/test_loop.py
 npm run lab:ts-runtime-test
-npm run model:check
-npm run model:self-test
-npm run compat:check
-npm run compat:self-test
+npm run facts:check
 ```
 
 ### 预期输出与断言
 
 - pytest 全部通过：replay 能按 `call_id` 完成进程内 `sum`，live adapter 在 provider action 前硬拒绝；loop 能区分预算、权限、tool error、幂等复用、timeout 和 resume；
 - TypeScript runtime 测试拒绝空/重复工具名、非有限预算与非法 action，并阻止坏值进入 metrics；
-- `model:check` 确认 API model/Codex surface、tool flow、状态续接与 reasoning control 的必需标记存在；
-- `model:self-test` 能拒绝缺少这些标记的固定 canary；
-- `compat:check` 确认 Source fact、Offline seam、Live evidence 与独立控制责任没有混写；
-- `compat:self-test` 能拒绝缺少证据轴、责任缺口或含陈旧占位符的固定 canary。
+- `facts:check` 确认易变产品主张的来源状态、版本、日期和正文引用一致，但不把引用完整误当作协议兼容；
+- 人工逐行复核兼容矩阵中的目标 surface、状态载体、工具循环、错误/usage、控制责任和 live 状态，任何 `untested` 都不能被命令成功改写。
 
-每条命令退出码必须为 0。还要人工确认 trace/输出不含 Secret、未发生网络请求，兼容矩阵中的真实运行仍为 `untested`。
+每条命令退出码必须为 0。还要人工确认 trace/输出不含 Secret、未发生网络请求，兼容矩阵中的真实运行仍为 `untested`。这项人工检查有明确对象，却没有适合用关键词正则代替的自动 oracle。
 
 ### 失败、停止与回退
 
-若 replay 需要网络/credential、live adapter 未被硬拒绝、重复副作用发生、timeout 被记为完成、非法 action 进入 metrics，或任一负例未被 checker 拒绝，停止协议兼容声明。先修对应 contract、adapter、controller 或 checker，并保留可复现负例；不要接入真实 key、放宽断言或把 `untested` 改成 `supported` 来获得绿色结果。
+若 replay 需要网络/credential、live adapter 未被硬拒绝、重复副作用发生、timeout 被记为完成、非法 action 进入 metrics，或任一运行时负例未被拒绝，停止协议兼容声明。先修对应 contract、adapter、controller 或 validator，并保留可复现负例；不要接入真实 key、放宽断言或把 `untested` 改成 `supported` 来获得绿色结果。
 
 命令只读固定输入并可能产生 `.pytest_cache/` 等可忽略缓存。若误改实现，使用：
 
@@ -325,9 +320,9 @@ git diff -- lab scripts docs/models/protocol-compatibility.md docs/models/openai
 
 ### 当前证据边界
 
-上述测试提供 E1：证明本项目固定 replay 和最小 controller 在这些夹具上保持 action、call ID、预算、权限、幂等与 resume 语义；静态 checker 会检查它定义的标记并拒绝固定负例。
+上述测试提供 E1：证明本项目固定 replay 和最小 controller 在这些夹具上保持 action、call ID、预算、权限、幂等与 resume 语义；事实检查只验证易变主张的登记和引用。
 
-它没有 provider SDK/client、credential reader、真实 streaming event、response/session ID 或 opaque reasoning item 实现，也没有调用任何真实模型。静态 marker checker 不解析整段语义。因此即使全部通过，也不能证明 OpenAI、Anthropic、DeepSeek、Qwen 或任何第三方兼容 endpoint 在目标版本上 `supported`，更不能证明模型质量或生产安全。
+它没有 provider SDK/client、credential reader、真实 streaming event、response/session ID 或 opaque reasoning item 实现，也没有调用任何真实模型。协议说明是否完整只能人工对照目标 surface 和来源审阅。因此即使全部通过，也不能证明 OpenAI、Anthropic、DeepSeek、Qwen 或任何第三方兼容 endpoint 在目标版本上 `supported`，更不能证明模型质量或生产安全。
 
 ## 协议资格检查表
 
