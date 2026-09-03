@@ -136,7 +136,7 @@ superseded_by / deletion watermark
 4. 去重同一 chunk/overlap，保留来源多样性；
 5. Rerank（重排）但不允许把不合格版本重新带回；
 6. 组装 context，记录 selected/dropped 与原因；
-7. 生成答案或 `insufficient/conflict/access_denied`；
+7. 生成答案或 `insufficient/conflict/access_denied/parse_failed`；
 8. Citation validator 独立核对每条主张和引用；
 9. 保存结果、索引/config identity、latency 和 failure class。
 
@@ -148,7 +148,7 @@ superseded_by / deletion watermark
 
 ```json
 {
-  "status": "answered | insufficient | conflict | access_denied",
+  "status": "answered | insufficient | conflict | access_denied | parse_failed",
   "answer": "... or null",
   "claims": [
     {
@@ -171,7 +171,7 @@ superseded_by / deletion watermark
 
 Citation correctness（引用正确性）至少包含两件事：引用对象确实存在；引用内容实际支持该主张。Citation coverage（引用覆盖）检查所有需要证据的主张是否有出处。二者不能只靠 URL 或文档标题存在来通过。
 
-拒答不是空字符串。`insufficient` 应记录查过的版本范围和缺口；`conflict` 保留各方主张与来源；`access_denied` 不泄露被拒文档的标题或内容。模型记忆不能补发布日期、政策数字或缺失页。
+拒答不是空字符串。`insufficient` 应记录查过的版本范围和缺口；`conflict` 保留各方主张与来源；`access_denied` 不泄露被拒文档的标题或内容；`parse_failed` 保留不含原文的解析错误 identity。模型记忆不能补发布日期、政策数字或缺失页。
 
 ## 版本选择要写成政策
 
@@ -253,7 +253,7 @@ source object
 
 ## 当前离线工作例
 
-仓库的 `document` fixture 有三条纯文本记录：`handbook@v1` 写 30 天，`handbook@v2` 写 45 天，另有一条无关文档。确定性函数按 `doc_id` 选择最大整数版本，再用 query 分词做简单包含匹配。
+仓库的 `document` fixture 有三条合成文档记录：`handbook@v1` 的 retention block 写 30 天，`handbook@v2` 写 45 天并另有 review block，第三条是无关 support block。确定性函数拒绝重复版本身份，按 `doc_id` 选择最大正整数版本，先检查 `access/parse_status`，再要求全部 query tokens 在同一 block 命中。
 
 ### 前置条件与固定输入
 
@@ -262,9 +262,9 @@ source object
 输入与期望位于 `lab/fixtures/document/`：
 
 - `manifest.json` 固定 synthetic 来源、CC BY 4.0 许可和三个文件 hash；
-- `input.json` 固定 query 与三个版本化文本；
-- `expected.json` 要求回答 45 天、引用 `handbook@v2`、忽略一个旧版本；
-- `negative.json` 提议引用 `handbook@v1`，runner 必须拒绝。
+- `input.json` 固定 query 与三个带 access/parse/blocks 的版本化文档；
+- `expected.json` 要求回答 45 天、返回 v2 retention block 的结构化 citation、忽略一个旧版本；
+- `negative.json` 提交 v1 的 30 天 answer 与 citation，runner 必须拒绝。
 
 ### 命令
 
@@ -274,7 +274,7 @@ uv run --frozen --offline python scripts/run-labs.py document
 
 ### 预期输出与断言
 
-命令退出 0，并输出 `evidence=E1`、`offline=true`、`passed=true`、`negative_rejected=true`。Result 的 `status=answered`，答案包含 45 天，只引用 `handbook@v2`，`stale_versions_ignored=1`，fixture hash 与 manifest bundle 一致。
+命令退出 0，并输出 `evidence=E1`、`offline=true`、`passed=true`、`negative_rejected=true`。Result 的 `status=answered`，答案包含 45 天，citation 锁定 `handbook` v2 的 `retention` block 与 quote；`stale_versions_ignored=1`，权限/解析失败计数为 0，fixture hash 与 manifest bundle 一致。
 
 人工复核还要确认：没有网络、credential、真实文档或上游 framework import；机器字段 `integration=LlamaIndex` 只是教学职责映射，`mode=offline-contract-seam` 才是实际执行方式。
 
@@ -292,9 +292,9 @@ git diff -- lab/fixtures/document lab/src/about_harness/integrations/llama_index
 
 ### 证据边界
 
-该实验提供 E1：当前仓库能读取固定 JSON、校验 bundle hash、按教学规则排除旧整数版本、匹配纯文本并拒绝 stale citation。
+该实验提供 E1：当前仓库能读取固定 JSON、校验 bundle hash、拒绝版本身份冲突、按教学规则排除旧整数版本、在 parsed blocks 做 AND-style token 匹配、返回块级引用，并区分普通无命中、权限拒绝与解析失败。
 
-它没有 PDF/DOCX/HTML 解析、OCR、表格、图片、chunking、embedding、vector search、reranker、ACL、删除传播或真实 LlamaIndex；也没有模型生成。因此不能证明真实文档问答正确、真实框架已接入或生产数据安全。
+它没有 PDF/DOCX/HTML 解析、OCR、表格、图片、embedding、vector search、reranker、真实 user/tenant ACL、删除传播或真实 LlamaIndex；也没有模型生成。`access/parse_status` 是 fixture 输入，不是外部系统实测。因此不能证明真实文档问答正确、真实框架已接入或生产数据安全。
 
 ## 完成检查表
 
@@ -305,7 +305,7 @@ git diff -- lab/fixtures/document lab/src/about_harness/integrations/llama_index
 - “当前版本”是否有业务政策，而不是简单取最大数字？
 - ACL 和版本是否在 retrieval 前作为资格过滤？
 - Answer 是否逐主张引用，并由独立 validator 检查支持关系？
-- `insufficient/conflict/access_denied` 是否不泄漏、不由模型记忆补值？
+- `insufficient/conflict/access_denied/parse_failed` 是否不泄漏、不由模型记忆补值？
 - 更新、撤销、权限变化和删除是否传播到 index/cache/session/export？
 - 指标是否覆盖摄取、解析、检索、引用、安全与运行，而非只看答案？
 - 每个结果能否回链 source/parser/chunk/index/config identity？

@@ -102,7 +102,7 @@ output.side_effects=0
 | `browser` | 注入被拒绝；副作用为 0 | policy / injection |
 | `research` | 冲突仍为 conflict；引用落到 quote；缺证据项为 insufficient | citation / coverage |
 | `data` | 敏感值为 0；行结构可解释 | schema / privacy |
-| `document` | 答案引用当前版本；旧版本被忽略 | version / retrieval |
+| `document` | 最新版块级引用；权限/解析 typed stop；不回退旧版 | version / retrieval |
 | `migration` | 责任无缺失、无扩大、无逐字复制 | boundary / mapping |
 
 运行全套：

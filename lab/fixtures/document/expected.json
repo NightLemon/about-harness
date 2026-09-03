@@ -1,6 +1,15 @@
 {
   "status": "answered",
   "answer": "The retention policy keeps records for 45 days.",
-  "citations": ["handbook@v2"],
-  "stale_versions_ignored": 1
+  "citations": [
+    {
+      "doc_id": "handbook",
+      "version": 2,
+      "block_id": "retention",
+      "quote": "The retention policy keeps records for 45 days."
+    }
+  ],
+  "stale_versions_ignored": 1,
+  "access_denied_documents": 0,
+  "parse_failed_documents": 0
 }

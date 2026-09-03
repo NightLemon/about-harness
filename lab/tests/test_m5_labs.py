@@ -228,8 +228,17 @@ def test_document_fixture_filters_stale_version_and_cites_latest() -> None:
     result = answer_from_latest(bundle.input)
     assert result["status"] == "answered"
     assert result["answer"] == "The retention policy keeps records for 45 days."
-    assert result["citations"] == ["handbook@v2"]
+    assert result["citations"] == [
+        {
+            "doc_id": "handbook",
+            "version": 2,
+            "block_id": "retention",
+            "quote": "The retention policy keeps records for 45 days.",
+        }
+    ]
     assert result["stale_versions_ignored"] == 1
+    assert result["access_denied_documents"] == 0
+    assert result["parse_failed_documents"] == 0
     assert result["integration"] == "LlamaIndex"
     assert result["mode"] == "offline-contract-seam"
 
@@ -244,9 +253,124 @@ def test_document_returns_auditable_insufficient_result_without_match() -> None:
         "answer": None,
         "citations": [],
         "stale_versions_ignored": 1,
+        "access_denied_documents": 0,
+        "parse_failed_documents": 0,
         "integration": "LlamaIndex",
         "mode": "offline-contract-seam",
     }
+
+
+def test_document_requires_all_query_terms_in_one_block() -> None:
+    bundle = load_fixture(FIXTURES, "document")
+    payload = copy.deepcopy(bundle.input)
+    payload["query"] = "retention nonsense"
+    result = answer_from_latest(payload)
+    assert result["status"] == "insufficient"
+    assert result["answer"] is None
+    assert result["citations"] == []
+
+
+def test_document_rejects_duplicate_document_version_identity() -> None:
+    bundle = load_fixture(FIXTURES, "document")
+    payload = copy.deepcopy(bundle.input)
+    documents = payload["documents"]
+    assert isinstance(documents, list)
+    documents.append({"doc_id": "handbook", "version": 2})
+    with pytest.raises(IntegrationContractError, match="duplicate document version"):
+        answer_from_latest(payload)
+
+
+def test_document_does_not_fall_back_from_denied_latest_version() -> None:
+    payload: dict[str, JsonValue] = {
+        "query": "retention policy",
+        "documents": [
+            {
+                "doc_id": "handbook",
+                "version": 1,
+                "access": "allowed",
+                "parse_status": "parsed",
+                "blocks": [
+                    {
+                        "block_id": "retention",
+                        "text": "The retention policy keeps records for 30 days.",
+                    }
+                ],
+            },
+            {
+                "doc_id": "handbook",
+                "version": 2,
+                "access": "denied",
+                "parse_status": "not_attempted",
+                "blocks": [],
+            },
+        ],
+    }
+    result = answer_from_latest(payload)
+    assert result["status"] == "access_denied"
+    assert result["answer"] is None
+    assert result["citations"] == []
+    assert result["stale_versions_ignored"] == 1
+    assert result["access_denied_documents"] == 1
+
+
+def test_document_reports_parse_failure_without_exposing_blocks() -> None:
+    payload: dict[str, JsonValue] = {
+        "query": "retention policy",
+        "documents": [
+            {
+                "doc_id": "handbook",
+                "version": 2,
+                "access": "allowed",
+                "parse_status": "failed",
+                "blocks": [],
+            }
+        ],
+    }
+    result = answer_from_latest(payload)
+    assert result["status"] == "parse_failed"
+    assert result["answer"] is None
+    assert result["parse_failed_documents"] == 1
+
+
+def test_document_rejects_non_positive_versions_and_exposed_denied_content() -> None:
+    bundle = load_fixture(FIXTURES, "document")
+    payload = copy.deepcopy(bundle.input)
+    documents = payload["documents"]
+    assert isinstance(documents, list)
+    first = documents[0]
+    assert isinstance(first, dict)
+    first["version"] = 0
+    with pytest.raises(IntegrationContractError, match="positive integer"):
+        answer_from_latest(payload)
+
+    denied = copy.deepcopy(bundle.input)
+    denied_documents = denied["documents"]
+    assert isinstance(denied_documents, list)
+    latest = denied_documents[1]
+    assert isinstance(latest, dict)
+    latest["access"] = "denied"
+    latest["parse_status"] = "not_attempted"
+    with pytest.raises(IntegrationContractError, match="must not be parsed or exposed"):
+        answer_from_latest(denied)
+
+
+def test_document_rejects_duplicate_block_identity() -> None:
+    bundle = load_fixture(FIXTURES, "document")
+    payload = copy.deepcopy(bundle.input)
+    documents = payload["documents"]
+    assert isinstance(documents, list)
+    latest = documents[1]
+    assert isinstance(latest, dict)
+    blocks = latest["blocks"]
+    assert isinstance(blocks, list)
+    blocks.append(
+        {
+            "block_id": "retention",
+            "text": "Duplicate block identities must not depend on input order.",
+        }
+    )
+    with pytest.raises(IntegrationContractError, match="duplicate block id"):
+        answer_from_latest(payload)
 
 
 def test_data_schema_drift_negative_case_is_rejected() -> None:
