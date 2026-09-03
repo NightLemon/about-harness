@@ -1,0 +1,439 @@
+{
+  "schema_version": "1.0",
+  "evidence": "E1",
+  "description": "Synthetic Task and Action wire cases shared by JSON Schema, Python, and TypeScript validators.",
+  "task_cases": [
+    {
+      "case_id": "task-minimal-valid",
+      "valid": true,
+      "value": {
+        "schema_version": "1.0",
+        "task_id": "shared-task-minimal",
+        "goal": "validate the minimal task wire contract",
+        "allowed_tools": [],
+        "budgets": {
+          "max_steps": 1,
+          "max_model_calls": 1,
+          "timeout_ms": 1
+        }
+      }
+    },
+    {
+      "case_id": "task-full-valid",
+      "valid": true,
+      "value": {
+        "schema_version": "1.0",
+        "task_id": "shared-task-full",
+        "goal": "validate the full task wire contract",
+        "input": {
+          "nested": [1, true, null]
+        },
+        "allowed_tools": ["echo"],
+        "budgets": {
+          "max_steps": 3,
+          "max_model_calls": 3,
+          "timeout_ms": 1000,
+          "max_cost_usd": 0.25
+        },
+        "acceptance": {
+          "ok": true
+        },
+        "metadata": {
+          "evidence": "E1"
+        }
+      }
+    },
+    {
+      "case_id": "task-whitespace-goal",
+      "valid": false,
+      "value": {
+        "schema_version": "1.0",
+        "task_id": "shared-task-whitespace",
+        "goal": "   ",
+        "allowed_tools": [],
+        "budgets": {
+          "max_steps": 1,
+          "max_model_calls": 1,
+          "timeout_ms": 1000
+        }
+      }
+    },
+    {
+      "case_id": "task-unsupported-schema-version",
+      "valid": false,
+      "value": {
+        "schema_version": "2.0",
+        "task_id": "shared-task-version",
+        "goal": "reject an unsupported task version",
+        "allowed_tools": [],
+        "budgets": {
+          "max_steps": 1,
+          "max_model_calls": 1,
+          "timeout_ms": 1000
+        }
+      }
+    },
+    {
+      "case_id": "task-invalid-id",
+      "valid": false,
+      "value": {
+        "schema_version": "1.0",
+        "task_id": "bad task id",
+        "goal": "reject an invalid task identifier",
+        "allowed_tools": [],
+        "budgets": {
+          "max_steps": 1,
+          "max_model_calls": 1,
+          "timeout_ms": 1000
+        }
+      }
+    },
+    {
+      "case_id": "task-duplicate-tools",
+      "valid": false,
+      "value": {
+        "schema_version": "1.0",
+        "task_id": "shared-task-duplicate-tools",
+        "goal": "reject duplicate tools",
+        "allowed_tools": ["echo", "echo"],
+        "budgets": {
+          "max_steps": 1,
+          "max_model_calls": 1,
+          "timeout_ms": 1000
+        }
+      }
+    },
+    {
+      "case_id": "task-empty-tool-name",
+      "valid": false,
+      "value": {
+        "schema_version": "1.0",
+        "task_id": "shared-task-empty-tool",
+        "goal": "reject an empty tool name",
+        "allowed_tools": [""],
+        "budgets": {
+          "max_steps": 1,
+          "max_model_calls": 1,
+          "timeout_ms": 1000
+        }
+      }
+    },
+    {
+      "case_id": "task-non-string-tool-name",
+      "valid": false,
+      "value": {
+        "schema_version": "1.0",
+        "task_id": "shared-task-non-string-tool",
+        "goal": "reject a non-string tool name",
+        "allowed_tools": [1],
+        "budgets": {
+          "max_steps": 1,
+          "max_model_calls": 1,
+          "timeout_ms": 1000
+        }
+      }
+    },
+    {
+      "case_id": "task-missing-timeout",
+      "valid": false,
+      "value": {
+        "schema_version": "1.0",
+        "task_id": "shared-task-missing-timeout",
+        "goal": "reject a missing budget",
+        "allowed_tools": [],
+        "budgets": {
+          "max_steps": 1,
+          "max_model_calls": 1
+        }
+      }
+    },
+    {
+      "case_id": "task-boolean-step-budget",
+      "valid": false,
+      "value": {
+        "schema_version": "1.0",
+        "task_id": "shared-task-boolean-budget",
+        "goal": "reject a boolean integer budget",
+        "allowed_tools": [],
+        "budgets": {
+          "max_steps": true,
+          "max_model_calls": 1,
+          "timeout_ms": 1000
+        }
+      }
+    },
+    {
+      "case_id": "task-zero-step-budget",
+      "valid": false,
+      "value": {
+        "schema_version": "1.0",
+        "task_id": "shared-task-zero-budget",
+        "goal": "reject a zero step budget",
+        "allowed_tools": [],
+        "budgets": {
+          "max_steps": 0,
+          "max_model_calls": 1,
+          "timeout_ms": 1000
+        }
+      }
+    },
+    {
+      "case_id": "task-step-budget-over-limit",
+      "valid": false,
+      "value": {
+        "schema_version": "1.0",
+        "task_id": "shared-task-large-step-budget",
+        "goal": "reject an excessive step budget",
+        "allowed_tools": [],
+        "budgets": {
+          "max_steps": 10001,
+          "max_model_calls": 1,
+          "timeout_ms": 1000
+        }
+      }
+    },
+    {
+      "case_id": "task-unknown-top-level-field",
+      "valid": false,
+      "value": {
+        "schema_version": "1.0",
+        "task_id": "shared-task-unknown-field",
+        "goal": "reject an unknown field",
+        "allowed_tools": [],
+        "budgets": {
+          "max_steps": 1,
+          "max_model_calls": 1,
+          "timeout_ms": 1000
+        },
+        "unexpected": true
+      }
+    },
+    {
+      "case_id": "task-unknown-budget-field",
+      "valid": false,
+      "value": {
+        "schema_version": "1.0",
+        "task_id": "shared-task-unknown-budget",
+        "goal": "reject an unknown budget field",
+        "allowed_tools": [],
+        "budgets": {
+          "max_steps": 1,
+          "max_model_calls": 1,
+          "timeout_ms": 1000,
+          "unexpected": 1
+        }
+      }
+    },
+    {
+      "case_id": "task-negative-cost-budget",
+      "valid": false,
+      "value": {
+        "schema_version": "1.0",
+        "task_id": "shared-task-negative-cost",
+        "goal": "reject a negative cost budget",
+        "allowed_tools": [],
+        "budgets": {
+          "max_steps": 1,
+          "max_model_calls": 1,
+          "timeout_ms": 1000,
+          "max_cost_usd": -0.01
+        }
+      }
+    },
+    {
+      "case_id": "task-array-input",
+      "valid": false,
+      "value": {
+        "schema_version": "1.0",
+        "task_id": "shared-task-array-input",
+        "goal": "reject a non-object input",
+        "input": [],
+        "allowed_tools": [],
+        "budgets": {
+          "max_steps": 1,
+          "max_model_calls": 1,
+          "timeout_ms": 1000
+        }
+      }
+    },
+    {
+      "case_id": "task-timeout-over-limit",
+      "valid": false,
+      "value": {
+        "schema_version": "1.0",
+        "task_id": "shared-task-large-timeout",
+        "goal": "reject an excessive timeout",
+        "allowed_tools": [],
+        "budgets": {
+          "max_steps": 1,
+          "max_model_calls": 1,
+          "timeout_ms": 86400001
+        }
+      }
+    }
+  ],
+  "action_cases": [
+    {
+      "case_id": "action-complete-object-valid",
+      "valid": true,
+      "value": {
+        "kind": "complete",
+        "output": {
+          "ok": true,
+          "items": [1, null]
+        },
+        "cost_usd": 0
+      }
+    },
+    {
+      "case_id": "action-complete-scalar-valid",
+      "valid": true,
+      "value": {
+        "kind": "complete",
+        "output": null,
+        "cost_usd": 0.25
+      }
+    },
+    {
+      "case_id": "action-tool-valid",
+      "valid": true,
+      "value": {
+        "kind": "tool",
+        "tool_call": {
+          "call_id": "call-1",
+          "name": "echo",
+          "arguments": {
+            "value": "hello"
+          },
+          "idempotency_key": "echo-1"
+        },
+        "cost_usd": 0
+      }
+    },
+    {
+      "case_id": "action-unknown-kind",
+      "valid": false,
+      "value": {
+        "kind": "pause",
+        "output": null,
+        "cost_usd": 0
+      }
+    },
+    {
+      "case_id": "action-complete-missing-output",
+      "valid": false,
+      "value": {
+        "kind": "complete",
+        "cost_usd": 0
+      }
+    },
+    {
+      "case_id": "action-complete-with-tool-call",
+      "valid": false,
+      "value": {
+        "kind": "complete",
+        "output": null,
+        "tool_call": {
+          "call_id": "call-1",
+          "name": "echo",
+          "arguments": {},
+          "idempotency_key": "echo-1"
+        },
+        "cost_usd": 0
+      }
+    },
+    {
+      "case_id": "action-negative-cost",
+      "valid": false,
+      "value": {
+        "kind": "complete",
+        "output": null,
+        "cost_usd": -0.01
+      }
+    },
+    {
+      "case_id": "action-tool-missing-call-id",
+      "valid": false,
+      "value": {
+        "kind": "tool",
+        "tool_call": {
+          "name": "echo",
+          "arguments": {},
+          "idempotency_key": "echo-1"
+        },
+        "cost_usd": 0
+      }
+    },
+    {
+      "case_id": "action-tool-empty-name",
+      "valid": false,
+      "value": {
+        "kind": "tool",
+        "tool_call": {
+          "call_id": "call-1",
+          "name": "",
+          "arguments": {},
+          "idempotency_key": "echo-1"
+        },
+        "cost_usd": 0
+      }
+    },
+    {
+      "case_id": "action-tool-array-arguments",
+      "valid": false,
+      "value": {
+        "kind": "tool",
+        "tool_call": {
+          "call_id": "call-1",
+          "name": "echo",
+          "arguments": [],
+          "idempotency_key": "echo-1"
+        },
+        "cost_usd": 0
+      }
+    },
+    {
+      "case_id": "action-tool-extra-top-level-field",
+      "valid": false,
+      "value": {
+        "kind": "tool",
+        "tool_call": {
+          "call_id": "call-1",
+          "name": "echo",
+          "arguments": {},
+          "idempotency_key": "echo-1"
+        },
+        "cost_usd": 0,
+        "unexpected": true
+      }
+    },
+    {
+      "case_id": "action-tool-extra-call-field",
+      "valid": false,
+      "value": {
+        "kind": "tool",
+        "tool_call": {
+          "call_id": "call-1",
+          "name": "echo",
+          "arguments": {},
+          "idempotency_key": "echo-1",
+          "unexpected": true
+        },
+        "cost_usd": 0
+      }
+    },
+    {
+      "case_id": "action-tool-missing-cost",
+      "valid": false,
+      "value": {
+        "kind": "tool",
+        "tool_call": {
+          "call_id": "call-1",
+          "name": "echo",
+          "arguments": {},
+          "idempotency_key": "echo-1"
+        }
+      }
+    }
+  ]
+}

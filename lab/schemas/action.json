@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://about-harness.local/schemas/action-v1.json",
+  "title": "About Harness action v1",
+  "$defs": {
+    "toolCall": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["call_id", "name", "arguments", "idempotency_key"],
+      "properties": {
+        "call_id": { "type": "string", "minLength": 1 },
+        "name": { "type": "string", "minLength": 1 },
+        "arguments": { "type": "object" },
+        "idempotency_key": { "type": "string", "minLength": 1 }
+      }
+    }
+  },
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "output", "cost_usd"],
+      "properties": {
+        "kind": { "const": "complete" },
+        "output": {},
+        "cost_usd": { "type": "number", "minimum": 0 }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "tool_call", "cost_usd"],
+      "properties": {
+        "kind": { "const": "tool" },
+        "tool_call": { "$ref": "#/$defs/toolCall" },
+        "cost_usd": { "type": "number", "minimum": 0 }
+      }
+    }
+  ]
+}

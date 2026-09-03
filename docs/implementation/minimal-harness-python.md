@@ -134,7 +134,7 @@ run_started
 
 Task ID 必须匹配公共 pattern；goal 为 1–4000 字符；`allowed_tools` 不能含空名或重复名。预算要求正整数 step/model-call/timeout，step 和 model-call 不超过 10,000，timeout 不超过 86,400,000 ms，cost 必须有限且非负。
 
-`TaskSpec.from_dict` 还拒绝未知顶层字段和未知 budget 字段，避免拼写错误被静默忽略。
+`TaskSpec.from_dict` 还拒绝未知顶层/预算字段以及非有限或循环的 JSON 输入，避免拼写错误和不可序列化值被静默带入运行。`Action.from_dict` / `ToolCall.from_dict` 对 `action-v1` 线协议做同样的运行时收窄；直接构造 dataclass 适合内部可信测试对象，不应代替外部解析。
 
 ### Action 与 ToolCall
 

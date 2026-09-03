@@ -33,10 +33,23 @@ rejects('infinite budget', () => validateTask({ ...taskValue, budgets: { ...task
 rejects('unknown task field', () => validateTask({ ...taskValue, unexpected: true }))
 rejects('NaN action cost', () => validateAction({ kind: 'complete', output: null, cost_usd: Number.NaN }))
 rejects('infinite action cost', () => validateAction({ kind: 'complete', output: null, cost_usd: Number.POSITIVE_INFINITY }))
+rejects('non-finite completion output', () => validateAction({
+  kind: 'complete', output: { value: Number.POSITIVE_INFINITY }, cost_usd: 0
+}))
 rejects('empty action tool name', () => validateAction({
   kind: 'tool',
   cost_usd: 0,
   tool_call: { call_id: 'call-1', name: '', arguments: {}, idempotency_key: 'key-1' }
+}))
+rejects('non-finite tool arguments', () => validateAction({
+  kind: 'tool',
+  cost_usd: 0,
+  tool_call: {
+    call_id: 'call-1',
+    name: 'echo',
+    arguments: { value: Number.NEGATIVE_INFINITY },
+    idempotency_key: 'key-1'
+  }
 }))
 
 const unsafeAdapter = {

@@ -196,26 +196,27 @@ Few-shot example（少样本示例）适合展示输出 schema、边界案例和
 
 需要 Python 3.11+、uv 0.11、Node.js 22+，依赖由 `uv.lock` 与 `package-lock.json` 固定。从仓库根目录离线执行，不配置真实模型、API key、网络或外部写权限。
 
-输入是 `lab/schemas/task.json`、Python `TaskSpec` runtime validator、正例/负例测试，以及 `evals/` 中六条离线 E1 task 样例与固定 fixture lineage。
+输入是 `lab/schemas/task.json`、Python `TaskSpec.from_dict`、TypeScript `validateTask` 共用的 `runtime-contract-v1.json`，以及 `evals/` 中六条离线 E1 task 样例与固定 fixture lineage。
 
 ### 命令
 
 ```powershell
-uv run --frozen --offline pytest -q lab/tests/test_contracts_and_schema.py::test_task_dataclass_and_json_schema_accept_same_positive_fixture lab/tests/test_contracts_and_schema.py::test_invalid_tasks_are_rejected lab/tests/test_contracts_and_schema.py::test_task_rejects_unknown_top_level_and_budget_fields
+uv run --frozen --offline pytest -q lab/tests/test_contracts_and_schema.py::test_shared_task_wire_contract
+npm run lab:ts-runtime-test
 npm run eval:validate
 ```
 
 ### 预期输出与断言
 
-pytest 应显示 9 项通过：一个合法 Task 同时被 JSON Schema 与 Python runtime 接受；非法 ID、空/过长 goal、空/重复工具、零/超限预算被拒绝；未知顶层或预算字段也被拒绝。
+pytest 应显示 17 项通过：合法 Task 同时被 JSON Schema 与 Python runtime 接受；空白 goal、非法 ID、空/重复工具、缺失/布尔/非有限/超限预算、负成本、非 object input、非有限或循环 input 及未知字段被一致拒绝。TypeScript runtime 输出还应报告同一文件中的 30 个 Task/Action 案例通过。
 
 Eval validator 应退出 0，并报告 20 tasks、6 workloads、6 holdout、2 configs、3 repeats、6 fixture refs、120 个预期 cell、12 个已有 cell、108 个缺失，以及 `sample_matrix_complete=false`。这证明样例契约与谱系可解析，不代表评测已经完成。
 
 ### 失败、停止、清理与回退
 
-若坏 Task 被接受、Python 与 Schema 结果不同、fixture ref/hash 无法交叉验证，或 validator 把 12 行称为完整矩阵，立即停止使用该任务集。不要放宽 validator、补虚构 run 或改历史 hash 来过门禁；保留负例并修契约/数据。
+若坏 Task 被接受、Python/TypeScript/Schema 结果不同、fixture ref/hash 无法交叉验证，或 validator 把 12 行称为完整矩阵，立即停止使用该任务集。不要放宽 validator、补虚构 run 或改历史 hash 来过门禁；保留负例并修契约/数据。
 
-命令只读取固定输入并产生可忽略测试缓存；需要时只清理 `.pytest_cache/`。误改时用 `git diff -- lab/schemas/task.json lab/src/about_harness/contracts.py lab/tests/test_contracts_and_schema.py evals/` 定位，并只恢复自己的修改。候选 prompt 失败时继续使用锁定 baseline，保存失败 task/run 和 prompt identity。
+命令只读取固定输入并产生可忽略测试缓存；需要时只清理 `.pytest_cache/`。误改时用 `git diff -- lab/schemas/task.json lab/fixtures/contracts/runtime-contract-v1.json lab/src/about_harness/contracts.py lab/ts/contracts.ts lab/tests/test_contracts_and_schema.py evals/` 定位，并只恢复自己的修改。候选 prompt 失败时继续使用锁定 baseline，保存失败 task/run 和 prompt identity。
 
 ### 证据边界
 

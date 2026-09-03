@@ -103,7 +103,7 @@ Adapter 至少要保证：
 - stream 只有在结构完整并通过校验后才提交 Action；
 - 不能从 provider 文本猜一个 shell 命令并直接执行。
 
-当前 Python `Action` 构造器会拒绝非法 kind、tool/complete 混合形态和非有限成本；runner 还会拒绝 adapter 返回 dict 等非 `Action` 对象。它不等于完整 wire validator：真实 adapter 仍要验证 provider 原始字段、消息连续性和参数 schema。
+当前 `action-v1` schema、Python `Action.from_dict` 与 TypeScript `validateAction` 会共同拒绝非法 kind、tool/complete 混合形态、坏 tool call、非 JSON 参数和非有限成本；runner 还会拒绝 adapter 直接返回未解析 dict。这个公共 wire validator 仍不是 provider adapter：真实接入还要验证原始响应字段、消息连续性、stream 装配、usage 和工具参数的业务 schema。
 
 ## 三种 ID 解决三种问题
 

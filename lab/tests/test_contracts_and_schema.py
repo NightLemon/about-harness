@@ -4,11 +4,18 @@ from __future__ import annotations
 import json
 import math
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import pytest
 from about_harness.adapters.fake import FakeAdapter
-from about_harness.contracts import Action, Budgets, ContractError, RunCheckpoint, TaskSpec
+from about_harness.contracts import (
+    Action,
+    Budgets,
+    ContractError,
+    RunCheckpoint,
+    TaskSpec,
+    ToolCall,
+)
 from about_harness.loop import HarnessRunner
 from about_harness.tools import ToolRegistry
 from jsonschema import Draft202012Validator
@@ -16,6 +23,40 @@ from jsonschema.exceptions import ValidationError
 
 ROOT = Path(__file__).parents[1]
 SCHEMAS = ROOT / "schemas"
+CONTRACT_FIXTURE = ROOT / "fixtures" / "contracts" / "runtime-contract-v1.json"
+
+
+def _load_contract_cases(section: str) -> list[dict[str, Any]]:
+    document: dict[str, Any] = json.loads(CONTRACT_FIXTURE.read_text(encoding="utf-8"))
+    if document.get("schema_version") != "1.0" or document.get("evidence") != "E1":
+        raise ValueError("shared runtime contract fixture metadata is invalid")
+    raw_cases = document.get(section)
+    if not isinstance(raw_cases, list) or not raw_cases:
+        raise ValueError(f"shared runtime contract fixture has no {section}")
+    cases: list[dict[str, Any]] = []
+    seen_ids: set[str] = set()
+    for raw_case_value in cast(list[object], raw_cases):
+        if not isinstance(raw_case_value, dict):
+            raise ValueError(f"{section} entries must be objects")
+        raw_case = cast(dict[str, Any], raw_case_value)
+        case_id = raw_case.get("case_id")
+        valid = raw_case.get("valid")
+        value = raw_case.get("value")
+        if (
+            not isinstance(case_id, str)
+            or not case_id
+            or case_id in seen_ids
+            or not isinstance(valid, bool)
+            or not isinstance(value, dict)
+        ):
+            raise ValueError(f"{section} contains an invalid case")
+        seen_ids.add(case_id)
+        cases.append(raw_case)
+    return cases
+
+
+SHARED_TASK_CASES = _load_contract_cases("task_cases")
+SHARED_ACTION_CASES = _load_contract_cases("action_cases")
 
 
 def valid_task() -> dict[str, Any]:
@@ -34,6 +75,44 @@ def valid_task() -> dict[str, Any]:
         "acceptance": {"equals": 1},
         "metadata": {"evidence": "E1"},
     }
+
+
+@pytest.mark.parametrize(
+    "case",
+    SHARED_TASK_CASES,
+    ids=[case["case_id"] for case in SHARED_TASK_CASES],
+)
+def test_shared_task_wire_contract(case: dict[str, Any]) -> None:
+    data = cast(dict[str, Any], case["value"])
+    expected_valid = cast(object, case["valid"])
+    assert isinstance(expected_valid, bool)
+    try:
+        TaskSpec.from_dict(data)
+        python_valid = True
+    except ContractError:
+        python_valid = False
+    schema = json.loads((SCHEMAS / "task.json").read_text(encoding="utf-8"))
+    schema_valid = Draft202012Validator(schema).is_valid(data)
+    assert (python_valid, schema_valid) == (expected_valid, expected_valid)
+
+
+@pytest.mark.parametrize(
+    "case",
+    SHARED_ACTION_CASES,
+    ids=[case["case_id"] for case in SHARED_ACTION_CASES],
+)
+def test_shared_action_wire_contract(case: dict[str, Any]) -> None:
+    data = cast(dict[str, Any], case["value"])
+    expected_valid = cast(object, case["valid"])
+    assert isinstance(expected_valid, bool)
+    try:
+        Action.from_dict(data)
+        python_valid = True
+    except ContractError:
+        python_valid = False
+    schema = json.loads((SCHEMAS / "action.json").read_text(encoding="utf-8"))
+    schema_valid = Draft202012Validator(schema).is_valid(data)
+    assert (python_valid, schema_valid) == (expected_valid, expected_valid)
 
 
 def test_task_dataclass_and_json_schema_accept_same_positive_fixture() -> None:
@@ -81,6 +160,7 @@ def test_task_rejects_unknown_top_level_and_budget_fields() -> None:
 def test_all_schemas_are_valid_draft_2020_12() -> None:
     for name in (
         "task",
+        "action",
         "run",
         "trace",
         "trace-v1.0",
@@ -127,6 +207,7 @@ def test_runtime_completion_result_and_trace_match_public_schemas() -> None:
 def test_schema_inventory_contains_only_runtime_and_evaluation_contracts() -> None:
     expected = {
         "task.json",
+        "action.json",
         "run.json",
         "trace.json",
         "trace-v1.0.json",
@@ -150,6 +231,32 @@ def test_budget_and_action_reject_unsafe_costs(value: float) -> None:
         Budgets(max_cost_usd=value)
     with pytest.raises(ContractError):
         Action.complete("unsafe", cost_usd=value)
+
+
+def test_wire_parsers_reject_non_json_runtime_values() -> None:
+    task_data = valid_task()
+    task_data["input"] = {"value": math.nan}
+    with pytest.raises(ContractError):
+        TaskSpec.from_dict(task_data)
+
+    with pytest.raises(ContractError):
+        Action.from_dict(
+            {"kind": "complete", "output": {"value": math.inf}, "cost_usd": 0}
+        )
+
+    cyclic: dict[str, Any] = {}
+    cyclic["self"] = cyclic
+    with pytest.raises(ContractError):
+        Action.from_dict({"kind": "complete", "output": cyclic, "cost_usd": 0})
+
+
+def test_internal_tool_action_rejects_completion_output() -> None:
+    with pytest.raises(ContractError):
+        Action(
+            kind="tool",
+            tool_call=ToolCall("call-1", "echo", {}, "echo-1"),
+            output="unexpected",
+        )
 
 
 def test_checkpoint_rejects_inconsistent_or_negative_counters() -> None:
