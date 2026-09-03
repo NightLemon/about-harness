@@ -72,11 +72,11 @@ controller + adapter + policy + tool 集成
 
 ## 当前 Python 测试矩阵
 
-当前基线由 `pytest --collect-only -q` 得到 73 项：
+当前基线由 `pytest --collect-only -q` 得到 77 项：
 
 | 文件 | 数量 | 主要责任 |
 | --- | ---: | --- |
-| `test_acceptance.py` | 11 | JSON 子集验收、类型/数值/路径、循环对象失败关闭 |
+| `test_acceptance.py` | 15 | 九个跨语言 JSON 样例、非有限数、结果契约与循环对象 |
 | `test_contracts_and_schema.py` | 18 | Task/Action/budget/checkpoint、Result/Trace 与 JSON Schema |
 | `test_loop.py` | 13 | completion/验收修正、预算、权限、retry、恢复、取消、timeout |
 | `test_m5_labs.py` | 22 | 六类 fixture、hash、领域负例、公开摘要一致性 |
@@ -90,7 +90,7 @@ controller + adapter + policy + tool 集成
 | 层 | 当前入口 | 证明范围 |
 | --- | --- | --- |
 | TypeScript 静态映射 | `npm run lab:typecheck` | strict/noEmit 下源码可编译 |
-| TypeScript 运行时 | `npm run lab:ts-runtime-test` | 坏 Task/Action 在 metrics 前失败关闭 |
+| TypeScript 运行时 | `npm run lab:ts-runtime-test` | 坏 Task/Action 失败关闭，并重放九个共享验收样例 |
 | 六类领域 Lab | `npm run labs:all` | 固定 hash fixture 的 E1 接缝 |
 | 内容/导航/模型/教程 checkers | 多个 `*:check` | Markdown 契约、链接和结构规则 |
 | Checker self-tests | 多个 `*:self-test` | 门禁会拒绝故意损坏的 canary |
@@ -131,7 +131,7 @@ Static check（静态检查）、build 和 visual smoke 都是必要证据，但
 - checkpoint 计数一致、adapter state 精确字段和 cursor 上下限；
 - Python 与 TypeScript 对共享 wire contract 的同一正负 fixture。
 
-当前 Python 和 TypeScript 分别覆盖主要 Task/Action 边界，并各自验证 JSON 子集验收、失败修正、预算停止与 validator 失败关闭；但还没有自动生成的跨语言差分集，也没有共同 Action/RunResult wire schema。不能因为两边各自通过就声称完全等价。
+当前 Python 和 TypeScript 分别覆盖主要 Task/Action 边界，并各自验证 JSON 子集验收、失败修正、预算停止与 validator 失败关闭。`lab/fixtures/contracts/acceptance-v1.json` 中九个纯 JSON 案例会被两边读取，并对 `accepted`、`feedback` 和完整 `evidence` 使用同一预期；但 Task/Action 负例仍未由同一 fixture 生成，也没有共同 Action/RunResult wire schema。不能因为一个组件对齐就声称实现完全等价。
 
 ## Controller 必测停止路径
 
@@ -217,6 +217,8 @@ Negative test（负例测试）有两层：
 
 当前 Python `HarnessRunner` 与 TypeScript `MinimalLoop` 都实现 `completion proposal → AcceptanceValidator → completed/continue`。默认 `JsonSubsetAcceptanceValidator` 要求完成输出包含 `TaskSpec.acceptance` 声明的 JSON 子集，失败时记录 `failed_paths` 与已消费预算，再把结果交给下一次 Adapter 决策；Python 还保存 checkpoint，TS 只保存当前进程内 trace 和 Adapter 状态。
 
+共享 fixture 固定九类可跨 JSON 传输的语义：空条件、嵌套子集与额外字段、boolean/number 区分、array 长度、嵌套缺失、JSON Pointer 转义、多失败顺序、根类型错误和等价 JSON number。Python 的 `NaN/Infinity`、循环对象以及 TS 自定义 validator 的异常/坏返回仍是语言内负例，因为它们不是标准 JSON 值。共享预期能发现一边悄悄改变路径或反馈的漂移，但不能替代各语言的运行时攻击面测试。
+
 测试同时证明：
 
 - 布尔值不会与整数混为同一个验收值，`NaN/Infinity` 不会通过；
@@ -242,12 +244,12 @@ uv run --frozen --offline python --version
 ### 快速 runtime 回归
 
 ```bash
-uv run --frozen --offline pytest -q lab/tests/test_loop.py
+uv run --frozen --offline pytest -q lab/tests/test_acceptance.py lab/tests/test_loop.py
 npm run lab:typecheck
 npm run lab:ts-runtime-test
 ```
 
-预期 Python 有 13 项通过，TypeScript typecheck 退出 0，runtime test 输出坏 Task/Action 在 metrics 前失败关闭。这里没有运行 `test_acceptance.py` 的全部边界、领域 fixture、站点或 checker self-tests。
+预期 Python 有 28 项通过，TypeScript typecheck 退出 0；runtime test 先输出 Task/Action 与 completion proposal 检查通过，再输出 `Shared acceptance fixture passed in TypeScript: 9 cases.`。这里没有运行领域 fixture、站点或 checker self-tests。
 
 ### 证明高价值门禁会拒绝坏输入
 
@@ -264,7 +266,7 @@ npm run repo:self-test
 npm run verify
 ```
 
-当前基线应包含 73 项 pytest 全通过，以及 Ruff、Pyright、TypeScript typecheck、文档/事实/站点/安全/工作流/视觉和 checker self-tests 通过。不要只看最后一行；保留首个失败子命令和退出码。
+当前基线应包含 77 项 pytest 全通过，以及 Ruff、Pyright、TypeScript typecheck、文档/事实/站点/安全/工作流/视觉和 checker self-tests 通过。不要只看最后一行；保留首个失败子命令和退出码。
 
 ## 失败时的停止、清理与回滚
 
@@ -276,7 +278,7 @@ npm run verify
 
 ## 当前测试体系的限制
 
-当前没有：artifact/测试/业务系统 acceptance validator、独立 validator-error 枚举、coverage threshold、mutation testing、property-based contracts、自动跨语言差分、真实 provider/stream/usage、持久数据库和队列故障、跨进程幂等、真实浏览器 Agent、完整 accessibility audit、性能/负载基线或生产数据删除演练。
+当前没有：artifact/测试/业务系统 acceptance validator、独立 validator-error 枚举、coverage threshold、mutation testing、property-based contracts、Task/Action/RunResult 自动跨语言差分、真实 provider/stream/usage、持久数据库和队列故障、跨进程幂等、真实浏览器 Agent、完整 accessibility audit、性能/负载基线或生产数据删除演练。
 
 这些缺口不能通过增加门禁名称来解决。优先补能改变错误结论的 oracle 和真实故障路径；低风险格式规则只有在持续阻止实际问题时才值得保留。
 

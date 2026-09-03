@@ -48,6 +48,7 @@ const result = loop.run(task)
 | 文件 | 当前职责 | 关键边界 |
 | --- | --- | --- |
 | `lab/schemas/task.json` | 公共 Task JSON Schema | 跨语言输入基线 |
+| `lab/fixtures/contracts/acceptance-v1.json` | 九个共享验收案例与预期 | 防止两种实现的结构语义漂移 |
 | `lab/ts/contracts.ts` | TS 类型与运行时 Validator（校验器） | 拒绝未知字段、非法数字和非 JSON 值 |
 | `lab/ts/acceptance.ts` | 验收结果契约与 JSON 子集验收器 | `complete` 仍需独立决定才能提交 |
 | `lab/ts/minimal-loop.ts` | 最小 controller、policy 与工具调用 | 只演示离线控制流 |
@@ -179,7 +180,7 @@ Object 允许完成输出含额外字段；array 要求长度和逐项值一致�
 
 Validator 是外部信任边界。`validateAcceptanceResult` 要求决定为 boolean、反馈为非空字符串、evidence 为有限且无循环的 JSON object；validator 名称、返回值或执行异常都不能变成 completed。Validator 返回后，loop 再检查取消和总 timeout，迟到的通过结果会被丢弃。
 
-这只是结构语义对齐，不是实现完全相同：Python 拒绝后保存 Adapter snapshot/checkpoint；TS 没有 snapshot 接口，只保留内存 Adapter 状态和 trace。两边也没有共用的 Action/RunResult wire schema 或自动差分 fixture。
+这只是结构语义对齐，不是实现完全相同：九个纯 JSON 案例由 Python 与 TS 共同读取并核对同一完整预期；Python 拒绝后保存 Adapter snapshot/checkpoint，TS 没有 snapshot 接口，只保留内存 Adapter 状态和 trace。两边仍没有共用的 Action/RunResult wire schema，也没有 Task/Action 的自动差分 fixture。
 
 ### `ReadonlyMap` 的真实含义
 
@@ -202,7 +203,7 @@ Validator 是外部信任边界。`validateAcceptanceResult` 要求决定为 boo
 | Deadline | 调用边界检查，可配合 sleeper/retry | 同步调用前检查 | 都不提供任意 callable 的硬抢占 |
 | Memory / context | 有独立实现与污染测试 | 未实现 | 不应宣称能力对等 |
 
-跨语言真正共用的是公开 Task schema 和若干控制不变量，不是所有 class 或返回字段。若要交换 RunResult，应先定义共同 JSON Schema、版本迁移和双向 fixtures，不能直接把两个语言的对象当作同一种 wire format。
+跨语言真正共用的是公开 Task schema、JSON 子集验收 fixture 和若干控制不变量，不是所有 class 或返回字段。若要交换 RunResult，应先定义共同 JSON Schema、版本迁移和双向 fixtures，不能直接把两个语言的对象当作同一种 wire format。
 
 ## 动手验证
 
@@ -217,7 +218,7 @@ node node_modules/typescript/bin/tsc --version
 
 预期第一条输出 `v22` 或更高主版本，第二条输出 `Version 5.9.3`。如果版本或依赖不符，先停止，不要让 `npx` 临时下载另一个 TypeScript 版本来掩盖环境差异。
 
-本练习的输入是 `lab/ts/runtime-test.ts` 中的固定 Task、若干非法 Task/Action、一个 unsafe adapter（故意返回非法值的适配器），以及验收拒绝、修正、异常和超时样例。它们只构造内存对象，不读取环境变量、用户文件或网络。
+本练习的输入是 `lab/ts/runtime-test.ts` 中的固定 Task、若干非法 Task/Action、一个 unsafe adapter（故意返回非法值的适配器），以及验收拒绝、修正、异常和超时样例；`lab/fixtures/contracts/acceptance-v1.json` 还提供九个与 Python 共用的纯 JSON 案例。它们只读取版本库内 fixture 和构造内存对象，不读取环境变量、用户文件或网络。
 
 ### 第一步：只验证静态类型
 
@@ -244,6 +245,7 @@ npm run lab:ts-runtime-test
 
 ```text
 TypeScript runtime test passed: Task/Action values fail closed and completion proposals require acceptance.
+Shared acceptance fixture passed in TypeScript: 9 cases.
 ```
 
 脚本会临时编译到操作系统临时目录、执行生成的 JavaScript，并在 `finally` 中删除目录。它至少断言：
@@ -258,14 +260,15 @@ TypeScript runtime test passed: Task/Action values fail closed and completion pr
 - boolean/number 不混淆，array 长度不一致会失败；
 - 反复拒绝在第三次模型调用前以 `model_budget` 停止；
 - validator 抛错、返回坏结果、超时或取消都不会释放 completion output。
+- 九个共享案例的 accepted、feedback 和 evidence 与 Python 使用同一预期。
 
 ### 第三步：核对 Python 公共边界
 
 ```bash
-uv run --frozen --offline pytest -q lab/tests/test_contracts_and_schema.py
+uv run --frozen --offline pytest -q lab/tests/test_acceptance.py lab/tests/test_contracts_and_schema.py
 ```
 
-预期测试全部通过。这里的 assertion（断言）证明 Python dataclass 拒绝固定非法 Task、预算与 Action，同时证明公共 JSON Schema 本身有效且与正例兼容。Python 与 TS 现在分别覆盖 JSON 子集验收的相同关键语义，但仍没有由同一份 fixture 自动驱动的 TS、Python 和 schema 三方差分；两边 RunResult 与 checkpoint 的能力差异也应保留为显式边界。
+预期 33 项测试全部通过。这里的 assertion（断言）证明 Python 从同一 fixture 重放九个验收案例、dataclass 拒绝固定非法 Task/预算/Action，并证明公共 JSON Schema 本身有效且与正例兼容。共享 fixture 没有覆盖 Task/Action 的 TS、Python 和 schema 三方差分；两边 RunResult 与 checkpoint 的能力差异也应保留为显式边界。
 
 ## 失败练习：证明类型断言会破坏防线
 
@@ -328,7 +331,7 @@ npm run lab:ts-runtime-test
 - acceptance validator 是同步接口，默认实现只比较内存 JSON，不读取文件、测试退出码或目标系统回执；
 - allowlist 只比较名称，参数策略只是敏感键示例，不是通用授权系统；
 - cache 没有把参数 hash 与幂等键绑定，不能防止同键异参；
-- 没有共同 Action/RunResult schema，也没有自动 TS/Python 差分生成；
+- 共享 fixture 只覆盖 JSON 子集验收，没有共同 Action/RunResult schema，也没有 Task/Action 自动差分生成；
 - E1 负例覆盖已知边界，不证明所有 JavaScript object、并发和资源耗尽攻击均安全。
 
 这些限制不是让类型变得更复杂就能自动解决。下一步先阅读[Adapter 契约](/implementation/adapter-contract)和[测试策略](/implementation/testing)，再对照[Python 最小 Harness](/implementation/minimal-harness-python)决定哪些能力需要进入共同 wire contract，哪些只属于某个实现。
