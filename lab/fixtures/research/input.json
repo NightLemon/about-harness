@@ -1,8 +1,40 @@
 {
-  "query": "Which retention policy is current?",
+  "query": "What retention and review obligations are documented?",
+  "required_claims": [
+    "retention_days",
+    "review_required",
+    "deletion_process"
+  ],
   "sources": [
-    {"id": "policy-v1", "claim": "retention_days", "value": "30"},
-    {"id": "policy-v2", "claim": "retention_days", "value": "45"},
-    {"id": "legal-note", "claim": "review_required", "value": "yes"}
+    {
+      "id": "policy-v1",
+      "opened": true,
+      "snapshot": "Retention policy v1\nRecords are retained for 30 days.",
+      "claim": "retention_days",
+      "value": "30",
+      "locator": "line:2",
+      "quote": "Records are retained for 30 days.",
+      "relation": "supports"
+    },
+    {
+      "id": "policy-v2",
+      "opened": true,
+      "snapshot": "Retention policy v2\nRecords are retained for 45 days.",
+      "claim": "retention_days",
+      "value": "45",
+      "locator": "line:2",
+      "quote": "Records are retained for 45 days.",
+      "relation": "supports"
+    },
+    {
+      "id": "legal-note",
+      "opened": true,
+      "snapshot": "Legal review note\nA review is required: yes.",
+      "claim": "review_required",
+      "value": "yes",
+      "locator": "line:2",
+      "quote": "A review is required: yes.",
+      "relation": "supports"
+    }
   ]
 }

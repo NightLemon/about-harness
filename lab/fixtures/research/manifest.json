@@ -1,13 +1,13 @@
 {
-  "fixture_version": "1.0",
+  "fixture_version": "1.1",
   "case_id": "research",
   "source": "project-synthetic",
   "license": "CC-BY-4.0",
-  "checked": "2026-08-20",
+  "checked": "2026-09-04",
   "contains_personal_data": false,
   "files": {
-    "input.json": "e514ea02a3b3bfa88ba7fa4e7d5f62de8feb7ba839ea9f20e86b4531bc62a0c5",
-    "expected.json": "a038391de3bcba117ff412ed0c65245ad21441f0bf57acce21b1d61eb01c554b",
-    "negative.json": "11a09b083dc7f3875ee8a658eaba10e28891175460dd7bc21351768e5c770aed"
+    "input.json": "b180d61dc58ba63ca21b6aa2890e1e85163bfe9a1c3c733cd14a12786830f170",
+    "expected.json": "9a1fd58eb8f25ea9ad03b47c480fbf5afc14d080c1c3663d4f9be30e5b82c4e0",
+    "negative.json": "8b014f9c05dba59396659a8a52cb6a81477a72bf77a5f6343c553061903c02f4"
   }
 }

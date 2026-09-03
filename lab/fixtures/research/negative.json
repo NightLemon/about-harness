@@ -1,5 +1,18 @@
 {
   "case": "unsupported-resolution",
-  "proposed_answer": "The policy is definitely 45 days.",
-  "expected": "preserve the conflict and refuse a single definitive value"
+  "candidate_claim": {
+    "claim": "retention_days",
+    "status": "supported",
+    "values": ["45"],
+    "citations": [
+      {
+        "source_id": "policy-v2",
+        "value": "45",
+        "locator": "line:2",
+        "quote": "Records are retained for 45 days.",
+        "relation": "supports"
+      }
+    ]
+  },
+  "expected": "reject a candidate that hides the conflicting value and citation"
 }

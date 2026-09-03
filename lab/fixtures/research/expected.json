@@ -1,17 +1,46 @@
 {
   "claims": [
     {
+      "claim": "deletion_process",
+      "status": "insufficient",
+      "values": [],
+      "citations": []
+    },
+    {
       "claim": "retention_days",
       "status": "conflict",
       "values": ["30", "45"],
-      "citations": ["policy-v1", "policy-v2"]
+      "citations": [
+        {
+          "source_id": "policy-v1",
+          "value": "30",
+          "locator": "line:2",
+          "quote": "Records are retained for 30 days.",
+          "relation": "supports"
+        },
+        {
+          "source_id": "policy-v2",
+          "value": "45",
+          "locator": "line:2",
+          "quote": "Records are retained for 45 days.",
+          "relation": "supports"
+        }
+      ]
     },
     {
       "claim": "review_required",
       "status": "supported",
       "values": ["yes"],
-      "citations": ["legal-note"]
+      "citations": [
+        {
+          "source_id": "legal-note",
+          "value": "yes",
+          "locator": "line:2",
+          "quote": "A review is required: yes.",
+          "relation": "supports"
+        }
+      ]
     }
   ],
-  "unsupported_claims": 0
+  "unsupported_claims": 1
 }
