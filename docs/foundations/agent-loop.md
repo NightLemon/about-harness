@@ -251,7 +251,7 @@ remaining blockers
 
 Action fingerprint（动作指纹）可由规范化 kind/tool/参数 hash 生成。连续请求相同 Tool、参数和状态，却没有新结果或 acceptance 改善，说明 cycle（循环）；角色不断互相退回任务但 blocker 不减少，是 livelock（活锁）。达到预注册阈值时停止为 `no_progress/cycle_detected`、升级人工或切换已声明 fallback。
 
-这些 stop reason 是目标设计，当前 `result-v1` 尚未枚举。不能为了记录它们把当前 `tool_error` 随意改名；应发布新 schema/映射，保留旧 reader 和历史含义。
+这些 stop reason 是目标设计，当前 `result-v1.1` 尚未枚举。不能为了记录它们把当前 `tool_error` 随意改名；应发布新 schema/映射，保留旧 reader 和历史含义。
 
 “文件内容变化”也不一定是进展：格式化来回抖动、生成时间戳变化或重复创建同一 artifact 都是 no-op（无有效变化）。进展标记应与 Task acceptance 和依赖图相关。
 
@@ -373,7 +373,7 @@ npm run debug:workshop
 - Timeout 是边界检查，不能强制抢占任意永久阻塞的 Python callable；取消也在 Adapter 返回后才被观察。
 - PermissionPolicy 只有同步 allow/deny 接缝，没有持久 `waiting-approval` 状态、审批 ID 和过期恢复。
 - 幂等 cache 只在进程内，不能证明外部系统 exactly-once（恰好一次）。
-- 默认验收器只做 JSON 子集比对；没有 artifact/测试/业务系统对账、补偿事务或真实 model/provider Adapter；validator 异常在 result-v1 暂映射为 `invalid_action`。
+- 默认验收器只做 JSON 子集比对；没有 artifact/测试/业务系统对账、补偿事务或真实 model/provider Adapter；validator 异常在 result-v1.1 暂映射为 `invalid_action`。
 
 这些限制意味着九条测试证明的是固定控制路径，不是生产可靠性或模型质量。
 

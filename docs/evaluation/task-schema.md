@@ -89,28 +89,32 @@ Trace 应 append-only（只追加）：已写事件不可因后续成功而删�
 
 新增 `acceptance_result` 扩大了事件枚举，因此当前 schema 使用 `schema_version=1.1`；旧 `trace-v1.0.json` 原样保留，只接受此前七类事件。不要用 1.0 包络承载新事件，也不要修改历史 Trace 的版本号。
 
-JSON Schema 只保证每个 `sequence` 是非负整数，不保证唯一、连续或按数组顺序排列；这些是 recorder/validator 的语义责任。同样，schema 不验证第一条一定是 `run_started`、最后一条一定是 `run_stopped`。因此需要正例和乱序、重复、缺终止事件等负例。
+独立 Trace JSON Schema 只保证每个 `sequence` 是非负整数，不保证唯一、连续或按数组顺序排列；这些是 recorder/validator 的语义责任。当前 `RunResult` 运行时 validator 会进一步要求内嵌 trace 从 `run_started` 开始、以匹配 Result 终态的 `run_stopped` 结束，且序号从 0 连续；独立 Trace reader 仍需执行同类关系校验。
 
 事件 `data` 不是倾倒 prompt、源码和工具原始响应的借口。采集前就做字段 allowlist、敏感值替换和大小限制；公开时再做第二次脱敏。只保存 `"redacted": true` 而没有脱敏规则和抽查证据，也不能证明安全。
 
 ## Result：终态快照与停止语义
 
-`result-v1` 需要 `run_id`、`task_id`、`status`、`stop_reason`、metrics 和 trace。当前状态有 `completed/stopped/failed`，停止原因包括：
+当前 `result-v1.1` 固定十个字段：`schema_version`、`run_id`、`task_id`、`status`、`stop_reason`、`output`、metrics、trace、checkpoint 和 error。字段必须显式存在；没有 checkpoint/error 时写 `null`，避免消费者猜测“未生成”“被截断”还是“不适用”。旧 `result-v1.0.json` 原样保留；它只做较宽松的字段检查，不能承载本节新增的关系保证。当前状态有 `completed/stopped/failed`，停止原因包括：
 
 | stop_reason | 含义 | 常见 status |
 | --- | --- | --- |
 | `completed` | 当前运行时声明的验收条件通过 | `completed` |
 | `max_steps` / `model_budget` / `timeout` | 到达资源边界 | `stopped` |
 | `cancelled` | 用户或上游取消 | `stopped` |
-| `permission_denied` | policy 拒绝动作 | `stopped` 或按产品规则失败 |
+| `permission_denied` | policy 拒绝动作 | `stopped` |
 | `tool_error` | 工具执行失败且无法恢复 | `failed` |
 | `invalid_action` | 模型 action 不满足契约 | `failed` |
 
-状态与停止原因的组合需要语义验证。例如 `status=completed` 却写 `stop_reason=timeout` 虽可能分别满足枚举，整体仍矛盾。当前运行时对 invalid action 采用 fail-closed（失败关闭）：在指标累计前返回 `failed/invalid_action`，防止 `NaN` cost 或坏工具名进入预算计算。
+状态与停止原因不是两列独立枚举：`completed` 只配 `completed`；`stopped` 只配预算、timeout、cancelled 或 permission denial；`failed` 只配 tool/contract error。未完成结果的 output 必须为 `null`，失败结果必须给非空 error，完成结果的 error 必须为 `null`。当前运行时对 invalid action 采用 fail-closed（失败关闭）：在指标累计前返回 `failed/invalid_action`，防止 `NaN` cost 或坏工具名进入预算计算。
 
 当前默认验收器把 `Task.acceptance` 解释为完成输出必须包含的 JSON 子集，并产生 `acceptance_result`；失败可在预算内返回下一轮，成功后才允许 completed。这个事件证明比对被执行，不证明 acceptance 足够或字段来自真实测试/外部系统。空 acceptance 会记录零条件后通过；自定义 validator 异常暂使用 `failed/invalid_action`，新增独立停止原因需要发布新 schema 版本。
 
-Metrics（指标）中的 steps、model/tool calls、复用计数、duration 和 cost 必须是有限非负数；计数必须与 trace/checkpoint 一致。Checkpoint（检查点）是可恢复状态，不是“成功”标志；恢复后仍沿用原预算已消费量，并产生能区分恢复段的事件。
+Metrics（指标）中的 steps、model/tool calls、复用计数、duration 和 cost 必须是有限非负数。这里把 `steps` 明确定义为已完成的工具状态转移，因此 `steps = tool_calls + reused_tool_calls`；completion proposal 与 acceptance repair 会消耗 model call，却不增加 tool step。这个定义同时用于预算、Python 和 TypeScript，避免成功结果出现 off-by-one。
+
+Checkpoint（检查点）是最近一次可恢复状态，不是终态副本。它的计数和 cost 可以早于最终 Result，例如 checkpoint 后又发生一次成功 completion；但不能超过最终 metrics，且内部仍满足 `step = tool_calls + reused_tool_calls`。内嵌 trace 必须从 0 连续，首尾事件合法，最后 `run_stopped.status/reason` 与 Result 一致。
+
+`run-result-v1.json` 的 14 个共享案例区分 `schema_valid` 与 `runtime_valid`。字段缺失、错类型和大部分终态矛盾由 JSON Schema 拒绝；`steps` 求和、连续序号、终止事件对账和 checkpoint 是否超前属于跨字段/跨项关系，由 Python `RunResult.from_dict` 与 TypeScript `validateRunResult` 一致拒绝。Schema 通过不是跳过运行时 validator 的理由。
 
 Result 可以内嵌脱敏 trace 方便消费，也可以引用独立 Trace；项目必须选择一种权威来源。两份副本并存时要比较 hash，避免报告读到旧副本。
 
@@ -127,7 +131,7 @@ EvalRun 的 `passed` 与 `failure_type` 有跨字段约束：通过时 failure �
 | 层 | 回答的问题 | 当前入口 | 示例失败 |
 | --- | --- | --- | --- |
 | 1. 语法/schema | 单对象字段、类型、枚举是否合法 | JSON Schema 测试 | 缺预算、负数、额外字段 |
-| 2. 运行时契约 | 值在语言运行时是否安全、组合是否一致 | Python/TypeScript tests | `NaN`、空工具名、坏 checkpoint |
+| 2. 运行时契约 | 值在语言运行时是否安全、组合是否一致 | Python/TypeScript tests | `NaN`、空工具名、Result 终态/计数/trace 矛盾 |
 | 3. 关系/谱系 | 多文件是否指向同一冻结事实 | `npm run eval:validate` | hash、split、身份、重复 cell |
 | 4. 研究充分性 | 覆盖、证据、指标和门槛能否支持结论 | summary + 报告复核 | 缺 holdout、矩阵不全、E1 冒充 E3 |
 
@@ -145,7 +149,7 @@ Schema 校验通过只证明第一层。反过来，runner 顺利退出也不证
 - 同一 `config_id` 下 config version、model、harness、instruction hash 和 evidence 身份不漂移；
 - 观察 cell 加缺失 cell 等于预期矩阵，而不是用总行数代替覆盖率。
 
-仍需正式系统补充的关系包括：Run/Trace/Result 的 ID 一致性、trace 连续性、metrics 与事件计数、重试的 `attempt_of`、Judge/rubric 版本、environment/config hash 和 artifact 签名。这些缺口应在报告中公开，不能由读者从文件名猜测。
+仍需正式系统补充的关系包括：独立 Run/Trace/Result 的 ID 与 hash 一致性、metrics 与具体事件数量、重试的 `attempt_of`、Judge/rubric 版本、environment/config hash 和 artifact 签名。当前 Result validator 只对内嵌 trace 做连续性和终态对账；这些更大的跨 artifact 缺口应在报告中公开，不能由读者从文件名猜测。
 
 ## Schema 怎样安全演进
 
@@ -178,7 +182,7 @@ npm run eval:validate
 
 ### 预期输出与断言
 
-Python 契约/schema 测试应显示 50 个测试通过，其中 17 个 Task 与 13 个 Action 案例同时符合预期和公共 schema，运行时 completed Result 与含 `acceptance_result` 的 Trace 也能通过各自 schema；TypeScript 输出应报告 30 个共享运行时契约案例与九个共享验收案例通过；Eval validator 应报告 20 tasks、6 workloads、6 holdout、2 configs、3 repeats、6 fixture refs、120 个预期矩阵单元、12 个唯一样例单元和 108 个缺失单元。
+Python 契约/schema 测试应显示 64 个测试通过：17 个 Task、13 个 Action 和 14 个 Result 案例按各自 schema/runtime 预期通过或拒绝，运行时 completed Result 与含 `acceptance_result` 的 Trace 也能通过公共 schema；TypeScript 输出应报告 30 个 Task/Action、14 个 RunResult 与九个共享验收案例通过；Eval validator 应报告 20 tasks、6 workloads、6 holdout、2 configs、3 repeats、6 fixture refs、120 个预期矩阵单元、12 个唯一样例单元和 108 个缺失单元。
 
 不要只看退出码。还要确认 validator 明确写出 `sample_matrix_complete=false` 和 E1 边界；这表示 schema/谱系样例有效，但正式比较尚未完成。
 

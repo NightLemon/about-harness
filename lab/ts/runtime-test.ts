@@ -1,4 +1,4 @@
-import { validateAction, validateTask } from './contracts.js'
+import { validateAction, validateRunResult, validateTask } from './contracts.js'
 import { CancellationToken, MinimalLoop } from './minimal-loop.js'
 
 function assert(condition: unknown, message: string): asserts condition {
@@ -60,6 +60,7 @@ const unsafeAdapter = {
 }
 let clock = 0
 const result = new MinimalLoop(unsafeAdapter, new Map()).run(task, () => clock++)
+validateRunResult(result)
 assert(result.status === 'failed', 'bad action must fail the run')
 assert(result.stop_reason === 'invalid_action', 'bad action must use invalid_action')
 assert(result.metrics.model_calls === 0, 'bad action must not increment model_calls')
@@ -91,6 +92,7 @@ const toolLoop = new MinimalLoop(toolLoopAdapter, new Map([
     return 'ok'
   }]
 ])).run(task, () => 0)
+validateRunResult(toolLoop)
 assert(toolLoop.stop_reason === 'max_steps', 'tool loop must stop at max_steps')
 assert(toolActions === 2, 'max_steps must prevent an extra adapter call')
 assert(handlerCalls === 2, 'max_steps must prevent an extra tool side effect')
@@ -116,6 +118,14 @@ const repairAdapter = {
   }
 }
 const repaired = new MinimalLoop(repairAdapter, new Map()).run(acceptanceTask, () => 0)
+validateRunResult(repaired)
+rejects('non-finite result metric', () => validateRunResult({
+  ...repaired,
+  metrics: { ...repaired.metrics, cost_usd: Number.NaN }
+}))
+const cyclicResultOutput: Record<string, unknown> = {}
+cyclicResultOutput.self = cyclicResultOutput
+rejects('cyclic result output', () => validateRunResult({ ...repaired, output: cyclicResultOutput }))
 assert(repaired.status === 'completed', 'a repaired completion must finish')
 assert(repaired.metrics.model_calls === 2, 'acceptance repair must consume two model calls')
 assert(repaired.metrics.steps === 0, 'acceptance rejection must not consume a tool step')

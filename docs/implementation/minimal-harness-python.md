@@ -144,15 +144,23 @@ Action 只有 `tool` 或 `complete`：tool 必须携带 ToolCall，complete 不�
 
 计数器必须是非负整数，`tool_calls + reused_tool_calls == step`，model call 不能少于已完成 step，cost 必须有限。Adapter state 只能是 JSON object。
 
+### RunResult
+
+Result 固定 `run_id/task_id/status/stop_reason/output/metrics/trace/checkpoint/error`。`RunResult.from_dict` 是外部 JSON 的读取边界：它拒绝未知/缺失字段、非法终态组合、非有限或循环值、非连续 trace、与最终 `run_stopped` 不一致的状态，以及计数超前的 checkpoint。
+
+`steps` 在这里不是“模型思考了几次”，而是已经完成的工具状态转移，所以始终满足 `steps = tool_calls + reused_tool_calls`。完成 Action 与 acceptance repair 消耗 model call，但不增加 tool step。Checkpoint 表示最近可恢复位置，允许比最终 metrics 早；例如工具后保存 checkpoint，再经一次 completion 才结束。
+
+公共 `result-v1.1` 让 Python 与 TypeScript 使用相同十字段线协议。TypeScript 当前不实现恢复，因此写 `checkpoint: null`；协议一致不代表内部 adapter state 可以跨语言恢复。原 `result-v1.0` schema 继续作为历史 reader 保留，不把旧 artifact 悄悄解释成新语义。
+
 运行契约测试：
 
 ```powershell
 uv run --frozen --offline pytest -q lab/tests/test_contracts_and_schema.py
 ```
 
-预期退出 0，并覆盖 JSON Schema 与 Python dataclass 的正例对齐、坏 Task、未知字段、非有限成本和不一致 checkpoint。
+预期退出 0，显示 64 项通过，并覆盖 30 个 Task/Action 与 14 个 Result 共享案例、schema/runtime 分层预期、未知字段、非有限成本、终态/trace/metrics/checkpoint 矛盾。
 
-这些检查证明结构一致，不证明 goal 合理、工具安全或 acceptance 充分。
+这些检查提供固定 E1 契约证据，不证明 goal 合理、工具安全、acceptance 充分或 checkpoint 能跨实现恢复。
 
 ## 第四步：预算与终态
 
@@ -317,7 +325,7 @@ completion proposed
   → only then publish business completion
 ```
 
-任务专用 validator 应返回结构化 `AcceptanceResult`，但它仍需固定版本、artifact identity 和失败分类。当前 result-v1 没有独立 `validator_error` stop reason，validator 契约或执行异常暂映射为 `invalid_action`；这项兼容限制必须在消费者中写明，后续新增停止原因时应发布新 schema，而不是改写历史结果。
+任务专用 validator 应返回结构化 `AcceptanceResult`，但它仍需固定版本、artifact identity 和失败分类。当前 result-v1.1 没有独立 `validator_error` stop reason，validator 契约或执行异常暂映射为 `invalid_action`；这项兼容限制必须在消费者中写明，后续新增停止原因时应发布新 schema，而不是改写历史结果。
 
 ## 失败排查
 

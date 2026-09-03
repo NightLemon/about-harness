@@ -72,12 +72,12 @@ controller + adapter + policy + tool 集成
 
 ## 当前 Python 测试矩阵
 
-当前基线由 `pytest --collect-only -q` 得到 109 项：
+当前基线由 `pytest --collect-only -q` 得到 123 项：
 
 | 文件 | 数量 | 主要责任 |
 | --- | ---: | --- |
 | `test_acceptance.py` | 15 | 九个跨语言 JSON 样例、非有限数、结果契约与循环对象 |
-| `test_contracts_and_schema.py` | 50 | 30 个跨语言 Task/Action 案例、非 JSON 值、内部互斥、checkpoint 与公共 schema |
+| `test_contracts_and_schema.py` | 64 | 30 个 Task/Action 与 14 个 Result 跨语言案例、非 JSON 值、内部互斥和公共 schema |
 | `test_loop.py` | 13 | completion/验收修正、预算、权限、retry、恢复、取消、timeout |
 | `test_m5_labs.py` | 22 | 六类 fixture、hash、领域负例、公开摘要一致性 |
 | `test_memory_context_trace.py` | 4 | 上下文选择、记忆污染/过期/删除、trace 脱敏 |
@@ -90,7 +90,7 @@ controller + adapter + policy + tool 集成
 | 层 | 当前入口 | 证明范围 |
 | --- | --- | --- |
 | TypeScript 静态映射 | `npm run lab:typecheck` | strict/noEmit 下源码可编译 |
-| TypeScript 运行时 | `npm run lab:ts-runtime-test` | 重放 30 个 Task/Action 契约案例和九个验收案例 |
+| TypeScript 运行时 | `npm run lab:ts-runtime-test` | 重放 30 个 Task/Action、14 个 RunResult 契约案例和九个验收案例 |
 | 六类领域 Lab | `npm run labs:all` | 固定 hash fixture 的 E1 接缝 |
 | 内容/导航/模型/教程 checkers | 多个 `*:check` | Markdown 契约、链接和结构规则 |
 | Checker self-tests | 多个 `*:self-test` | 门禁会拒绝故意损坏的 canary |
@@ -131,7 +131,9 @@ Static check（静态检查）、build 和 visual smoke 都是必要证据，但
 - checkpoint 计数一致、adapter state 精确字段和 cursor 上下限；
 - Python 与 TypeScript 对共享 wire contract 的同一正负 fixture。
 
-当前 `runtime-contract-v1.json` 固定 17 个 Task 与 13 个 Action 正反例。JSON Schema、Python `TaskSpec.from_dict` / `Action.from_dict` 和 TypeScript `validateTask` / `validateAction` 都读取这些案例并接受或拒绝同一边界；`action-v1` 也明确了 tool/complete 的互斥线协议。`acceptance-v1.json` 另以九个纯 JSON 案例核对两边完整的 `accepted`、`feedback` 和 `evidence`。目前仍没有共同 RunResult wire schema；不能因为输入契约和一个 validator 对齐就声称实现完全等价。
+当前 `runtime-contract-v1.json` 固定 17 个 Task 与 13 个 Action 正反例；`run-result-v1.json` 固定 14 个 Result 正反例。公共 JSON Schema、Python `from_dict` 和 TypeScript `validate*` 读取相同值。Result 案例分别声明 schema/runtime 预期，显式展示 JSON Schema 能检查字段与终态组合，却不能独自证明 steps 求和、trace 连续或 checkpoint 不超前。`acceptance-v1.json` 另以九个纯 JSON 案例核对两边完整的 `accepted`、`feedback` 和 `evidence`。
+
+公共 Result 把 `steps` 固定为成功工具步骤，所以必须等于 `tool_calls + reused_tool_calls`；completion/验收只增加 model call。Python 能产出 checkpoint，TypeScript 当前总是写 `checkpoint: null`，但两边序列化字段、终态组合和 reader 接受边界相同。Wire contract 对齐不等于恢复、retry 或工具实现能力相同。
 
 ## Controller 必测停止路径
 
@@ -227,7 +229,7 @@ Negative test（负例测试）有两层：
 - validator 返回后重新检查 timeout，迟到的通过结果不能成为 completed；
 - validator 抛错时结果为 failed，完成输出不会泄漏到 Result。
 
-这个 oracle 仍不知道 JSON 字段是否真实：模型自己返回 `{"tests_passed": true}` 并不等于测试执行。空 acceptance 也会明确记录零条件后通过。正式任务应注入会读取冻结 artifact、退出码、diff 或目标系统回执的 validator，并测试 validator 版本/身份、坏 artifact、异常、超时与脱敏。当前 result-v1 把 validator 契约/执行异常暂映射到 `invalid_action`，还没有独立错误枚举。
+这个 oracle 仍不知道 JSON 字段是否真实：模型自己返回 `{"tests_passed": true}` 并不等于测试执行。空 acceptance 也会明确记录零条件后通过。正式任务应注入会读取冻结 artifact、退出码、diff 或目标系统回执的 validator，并测试 validator 版本/身份、坏 artifact、异常、超时与脱敏。当前 result-v1.1 把 validator 契约/执行异常暂映射到 `invalid_action`，还没有独立错误枚举。
 
 ## 动手验证
 
@@ -249,7 +251,7 @@ npm run lab:typecheck
 npm run lab:ts-runtime-test
 ```
 
-预期 Python 有 28 项通过，TypeScript typecheck 退出 0；runtime test 依次输出本地边界通过、九个共享验收案例通过和 `Shared runtime contract fixture passed in TypeScript: 30 cases.`。这里没有运行完整契约/schema 测试、领域 fixture、站点或 checker self-tests。
+预期 Python 有 28 项通过，TypeScript typecheck 退出 0；runtime test 依次输出本地边界通过、九个共享验收案例、30 个 Task/Action 案例和 14 个 RunResult 案例通过。这里没有运行完整 Python 契约/schema 测试、领域 fixture、站点或 checker self-tests。
 
 ### 证明高价值门禁会拒绝坏输入
 
@@ -266,7 +268,7 @@ npm run repo:self-test
 npm run verify
 ```
 
-当前基线应包含 109 项 pytest 全通过，以及 Ruff、Pyright、TypeScript typecheck、文档/事实/站点/安全/工作流/视觉和 checker self-tests 通过。不要只看最后一行；保留首个失败子命令和退出码。
+当前基线应包含 123 项 pytest 全通过，以及 Ruff、Pyright、TypeScript typecheck、文档/事实/站点/安全/工作流/视觉和 checker self-tests 通过。不要只看最后一行；保留首个失败子命令和退出码。
 
 ## 失败时的停止、清理与回滚
 
@@ -278,7 +280,7 @@ npm run verify
 
 ## 当前测试体系的限制
 
-当前没有：artifact/测试/业务系统 acceptance validator、独立 validator-error 枚举、coverage threshold、mutation testing、property-based contracts、共同 RunResult wire schema/跨语言差分、真实 provider/stream/usage、持久数据库和队列故障、跨进程幂等、真实浏览器 Agent、完整 accessibility audit、性能/负载基线或生产数据删除演练。
+当前没有：artifact/测试/业务系统 acceptance validator、独立 validator-error 枚举、coverage threshold、mutation/property-based contracts、跨 artifact Run/Trace/Result lineage、可交换的 checkpoint 恢复实现、真实 provider/stream/usage、持久数据库和队列故障、跨进程幂等、真实浏览器 Agent、完整 accessibility audit、性能/负载基线或生产数据删除演练。
 
 这些缺口不能通过增加门禁名称来解决。优先补能改变错误结论的 oracle 和真实故障路径；低风险格式规则只有在持续阻止实际问题时才值得保留。
 

@@ -1,21 +1,11 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://about-harness.local/schemas/result-v1.json",
-  "title": "About Harness result v1",
-  "type": "object",
-  "additionalProperties": false,
-  "required": ["schema_version", "run_id", "task_id", "status", "stop_reason", "metrics", "trace"],
-  "properties": {
-    "schema_version": { "const": "1.0" },
-    "run_id": { "type": "string", "minLength": 1 },
-    "task_id": { "type": "string", "minLength": 1 },
-    "status": { "enum": ["completed", "stopped", "failed"] },
-    "stop_reason": {
-      "enum": ["completed", "max_steps", "model_budget", "timeout", "cancelled", "permission_denied", "tool_error", "invalid_action"]
-    },
-    "output": {},
+  "$id": "https://about-harness.local/schemas/result-v1.1.json",
+  "title": "About Harness result v1.1",
+  "$defs": {
     "metrics": {
       "type": "object",
+      "additionalProperties": false,
       "required": ["steps", "model_calls", "tool_calls", "reused_tool_calls", "duration_ms", "cost_usd"],
       "properties": {
         "steps": { "type": "integer", "minimum": 0 },
@@ -26,8 +16,105 @@
         "cost_usd": { "type": "number", "minimum": 0 }
       }
     },
-    "trace": { "type": "array" },
-    "checkpoint": { "type": ["object", "null"] },
-    "error": { "type": ["string", "null"] }
-  }
+    "traceEvent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sequence", "kind", "timestamp_ms", "data"],
+      "properties": {
+        "sequence": { "type": "integer", "minimum": 0 },
+        "kind": {
+          "enum": ["run_started", "model_action", "acceptance_result", "tool_result", "policy_denied", "retry", "checkpoint", "run_stopped"]
+        },
+        "timestamp_ms": { "type": "number", "minimum": 0 },
+        "data": { "type": "object" }
+      }
+    },
+    "checkpoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["step", "model_calls", "tool_calls", "reused_tool_calls", "cost_usd", "adapter_state"],
+      "properties": {
+        "step": { "type": "integer", "minimum": 0 },
+        "model_calls": { "type": "integer", "minimum": 0 },
+        "tool_calls": { "type": "integer", "minimum": 0 },
+        "reused_tool_calls": { "type": "integer", "minimum": 0 },
+        "cost_usd": { "type": "number", "minimum": 0 },
+        "adapter_state": { "type": "object" }
+      }
+    }
+  },
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "run_id", "task_id", "status", "stop_reason", "output", "metrics", "trace", "checkpoint", "error"],
+  "properties": {
+    "schema_version": { "const": "1.1" },
+    "run_id": { "type": "string", "minLength": 1 },
+    "task_id": { "type": "string", "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._-]{0,127}$" },
+    "status": { "enum": ["completed", "stopped", "failed"] },
+    "stop_reason": {
+      "enum": ["completed", "max_steps", "model_budget", "timeout", "cancelled", "permission_denied", "tool_error", "invalid_action"]
+    },
+    "output": {},
+    "metrics": { "$ref": "#/$defs/metrics" },
+    "trace": {
+      "type": "array",
+      "minItems": 2,
+      "prefixItems": [
+        {
+          "allOf": [
+            { "$ref": "#/$defs/traceEvent" },
+            { "properties": { "sequence": { "const": 0 }, "kind": { "const": "run_started" } } }
+          ]
+        }
+      ],
+      "items": { "$ref": "#/$defs/traceEvent" }
+    },
+    "checkpoint": {
+      "oneOf": [
+        { "$ref": "#/$defs/checkpoint" },
+        { "type": "null" }
+      ]
+    },
+    "error": {
+      "oneOf": [
+        { "type": "string", "minLength": 1 },
+        { "type": "null" }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "status": { "const": "completed" } }, "required": ["status"] },
+      "then": {
+        "properties": {
+          "stop_reason": { "const": "completed" },
+          "error": { "type": "null" }
+        }
+      },
+      "else": { "properties": { "output": { "type": "null" } } }
+    },
+    {
+      "if": { "properties": { "status": { "const": "stopped" } }, "required": ["status"] },
+      "then": {
+        "properties": {
+          "stop_reason": {
+            "enum": ["max_steps", "model_budget", "timeout", "cancelled", "permission_denied"]
+          }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "status": { "const": "failed" } }, "required": ["status"] },
+      "then": {
+        "properties": {
+          "stop_reason": { "enum": ["tool_error", "invalid_action"] },
+          "error": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "stop_reason": { "const": "completed" } }, "required": ["stop_reason"] },
+      "then": { "properties": { "status": { "const": "completed" } } }
+    }
+  ]
 }

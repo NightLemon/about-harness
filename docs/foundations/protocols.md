@@ -240,7 +240,7 @@ Provider alias、默认模型、schema 子集、event shape、错误字段和工
 
 需要 Python 3.11+、uv 0.11、Node.js 22+，依赖由 `uv.lock` 和 `package-lock.json` 固定。从仓库根目录离线执行；不配置真实 provider、credential、网络或费用。
 
-输入包括固定 replay actions、hard-disabled live adapter、进程内工具、权限/重试/timeout 负例，以及 30 个由 Action/Task schema、Python 和 TypeScript 共用的 runtime contract fixture。
+输入包括固定 replay actions、hard-disabled live adapter、进程内工具、权限/重试/timeout 负例，以及 30 个 Task/Action 与 14 个 Result 跨语言 runtime contract fixture。
 
 ### 命令
 
@@ -260,7 +260,7 @@ pytest 应有 6 项通过：
 - 非 `Action` adapter 返回被分类为 `failed/invalid_action`；
 - deadline 后到达的 completion 保持 `timeout`。
 
-TypeScript runtime 测试应退出 0，报告 30 个共享 Task/Action 案例通过；其中混合 Action、坏 tool call、空/重复工具和错误预算等在进入 loop/metrics 前被拒绝。`NaN/Infinity` 不是合法 JSON，继续由两种语言各自的运行时负例覆盖。
+TypeScript runtime 测试应退出 0，报告 30 个共享 Task/Action 与 14 个 RunResult 案例通过；其中混合 Action、坏 tool call、空/重复工具、错误预算和矛盾终态等被拒绝。`NaN/Infinity` 不是合法 JSON，继续由两种语言各自的运行时负例覆盖。
 
 ### 失败、停止、清理与回退
 
