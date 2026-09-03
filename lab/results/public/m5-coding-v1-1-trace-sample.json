@@ -1,0 +1,51 @@
+{
+  "schema_version": "1.0",
+  "run_id": "m5-coding-v1-1-offline-sample",
+  "task_id": "collect-last-item",
+  "evidence": "E1",
+  "offline": true,
+  "fixture_hash": "18f8153ad36cbbc99ff66a30b311f0ede9316ac3cde2eedae25738df87da71af",
+  "trace": [
+    {
+      "sequence": 0,
+      "kind": "fixture_loaded",
+      "data": {"source": "project-synthetic", "fixture_version": "1.1"}
+    },
+    {
+      "sequence": 1,
+      "kind": "workspace_bound",
+      "data": {
+        "snapshot_id": "coding-workspace-01",
+        "path": "src/collect.py",
+        "base_hash": "4c0d18777d21f94708ef40f50e7e0169fc172d26516a65ed2263d5a20e62ce59"
+      }
+    },
+    {
+      "sequence": 2,
+      "kind": "patch_applied_in_memory",
+      "data": {
+        "format": "unified-diff",
+        "changed_files": ["src/collect.py"],
+        "added_lines": 1,
+        "deleted_lines": 1,
+        "result_hash": "2652c76a095519a39ad7c8713e082785fe0533033d3f0eac5a7f6171f0ced4e5"
+      }
+    },
+    {
+      "sequence": 3,
+      "kind": "baseline_executed",
+      "data": {"failures": ["single", "multiple"]}
+    },
+    {
+      "sequence": 4,
+      "kind": "candidate_executed",
+      "data": {"tests": 3, "passed": 3}
+    },
+    {
+      "sequence": 5,
+      "kind": "negative_matrix_rejected",
+      "data": {"cases": ["path-traversal", "stale-base", "dependency-import"]}
+    }
+  ],
+  "redaction": "No credentials, personal paths, private data, model output, or live repository content are present."
+}

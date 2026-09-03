@@ -1,5 +1,21 @@
 {
-  "before": "def collect(items):\n    index = 0\n    output = []\n    while index < len(items) - 1:\n        output.append(items[index])\n        index += 1\n    return output\n",
-  "candidate_patch": "def collect(items):\n    index = 0\n    output = []\n    while index < len(items):\n        output.append(items[index])\n        index += 1\n    return output\n",
-  "tests": ["empty", "single", "multiple"]
+  "task": {
+    "task_id": "collect-last-item",
+    "allowed_paths": ["src/collect.py"],
+    "max_files_changed": 1,
+    "tests": ["empty", "single", "multiple"]
+  },
+  "workspace": {
+    "snapshot_id": "coding-workspace-01",
+    "files": {
+      "src/collect.py": "def collect(items):\n    index = 0\n    output = []\n    while index < len(items) - 1:\n        output.append(items[index])\n        index += 1\n    return output\n"
+    }
+  },
+  "candidate_patch": {
+    "format": "unified-diff",
+    "base_hashes": {
+      "src/collect.py": "4c0d18777d21f94708ef40f50e7e0169fc172d26516a65ed2263d5a20e62ce59"
+    },
+    "diff": "--- a/src/collect.py\n+++ b/src/collect.py\n@@ -1,7 +1,7 @@\n def collect(items):\n     index = 0\n     output = []\n-    while index < len(items) - 1:\n+    while index < len(items):\n         output.append(items[index])\n         index += 1\n     return output\n"
+  }
 }

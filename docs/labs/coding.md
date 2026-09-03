@@ -9,7 +9,7 @@
 完成本页后，你应该能够：
 
 - 从输入、执行、断言和负例四层解释一次 Coding 结果；
-- 说清 `patch_applied`、`passed` 与“真实补丁已应用”之间的区别；
+- 说清 `patch.applied`、`passed` 与“真实工作树已修改”之间的区别；
 - 沿 Task、fixture reference（固定输入引用）和 Run 追踪同一份输入；
 - 在 hash、契约、执行或验收失败时定位责任层，而不是直接归因于模型；
 - 设计一条从固定 E1 案例走向 E2 真实探针和 E3 正式比较的路径。
@@ -19,16 +19,16 @@
 当前案例的结论可以压缩为三句话：
 
 1. 固定的错误实现会在 `single`、`multiple` 两例失败，固定候选会通过全部三例。
-2. loader（加载器）会拒绝与 manifest hash 不一致的 fixture；运行器会拒绝不属于固定 AST 允许列表的源码。
-3. 这些结果只证明当前离线教学实现的固定行为，不代表模型完成了修复，也不代表补丁进入过真实 Git 工作树。
+2. loader（加载器）会拒绝与 manifest hash 不一致的 fixture；evaluator 会验证 allowed path、base hash、unified diff hunk 和固定 AST 执行边界。
+3. 补丁确实应用到了 fixture 内的内存快照，但没有写真实 Git 工作树；这些结果也不代表模型发现或生成了修复。
 
 | 当前结果可以证明 | 当前结果不能证明 | 真实任务还要补什么 |
 | --- | --- | --- |
 | 三个具体输入上的返回值符合预期 | 候选对任意列表都正确 | 更广测试、性质测试与代码审查 |
 | 固定错误与固定候选都经过真实 Python 执行 | 模型发现、理解或生成了候选 | 锁定模型、提示词、工具事件和原始响应 |
 | manifest 能发现未同步的 fixture 改写 | fixture 没有设计偏差或遗漏 | 来源、任务代表性、独立复核和版本策略 |
-| AST 外的负例没有执行 | 系统理解“禁止新增依赖”的自然语言语义 | 真实 diff、manifest、lockfile 与策略检查 |
-| 当前 expected 三个字段与输出一致 | `files_changed=1` 来自 Git diff | 隔离 checkout、实际 patch 与变更范围审计 |
+| 路径穿越、陈旧 base 与 import 扩权被拒绝 | 通用 patch parser 或生产代码沙箱安全 | 隔离 checkout、OS sandbox 与依赖策略 |
+| `changed_files`、base/result hash 从内存应用结果推导 | 真实工作树、index 或 commit 已变化 | Git diff、status、测试报告与变更范围审计 |
 
 这里最重要的阅读习惯是：不要只看一个 `passed=true`。输入身份、实际执行、负例、验收逻辑和证据边界必须一起成立。
 
@@ -36,10 +36,12 @@
 
 - Python 3.11+；本仓库与当前教程固定使用 `uv 0.11.16` 和 `uv.lock`。
 - 从仓库根目录运行，保持离线，不安装 package，不需要 API key。
-- 输入位于 `lab/fixtures/coding/`，当前 bundle hash 为 `7f4caeb33ce09877f8ff4a14d08555619212d1d9c4d8d519fecda4849d258c9c`。
+- 输入位于 `lab/fixtures/coding/`，当前 v1.1 bundle hash 为 `18f8153ad36cbbc99ff66a30b311f0ede9316ac3cde2eedae25738df87da71af`。
 - 开始前运行 `git status --short`；若已有自己的改动，记录路径，不让后续练习覆盖它们。
 
-这个实验不读取任意项目源码，不调用模型、Provider、网络、shell 或 Git 写操作。所谓“修复”发生在进程内的两个字符串之间，而不是工作树文件之间。
+这个实验不读取任意项目源码，不调用模型、Provider、网络、shell 或 Git 写操作。所谓“workspace”是 fixture 中带 snapshot ID 的单文件映射；unified diff 只应用到该内存快照，不会触碰当前 checkout。
+
+历史 Eval task `coding-01` 继续通过 commit `6aada53…`、固定 path 与旧 hash `7f4cae…` 引用 v1.0。当前 Lab v1.1 是新输入身份；若要形成对应 Eval 证据，必须新增 Task/ref/Run，不能改写历史记录。
 
 ## 四个 fixture 文件分别负责什么
 
@@ -47,9 +49,9 @@ fixture（固定实验输入）不是一个孤立 JSON，而是四个职责不�
 
 | 文件 | 当前内容 | 在实验中的职责 | 不应被误读为 |
 | --- | --- | --- | --- |
-| `input.json` | 错误源码、固定候选、三个测试 ID | 提供成功路径的执行输入 | 模型请求或真实仓库快照 |
-| `expected.json` | `patch_applied=true`、`tests_passed=3`、`files_changed=1` | 选择输出中必须相等的验收字段 | 完整 Result schema 或测试实现 |
-| `negative.json` | 一段声称要扩大范围并新增依赖的自然语言 | 提供必须被拒绝的候选输入 | 已结构化的依赖策略测试 |
+| `input.json` | Task scope、workspace snapshot、base hash、unified diff 与三个 test ID | 提供成功路径的完整固定输入 | 模型请求或真实 Git 仓库 |
+| `expected.json` | Workspace/patch hash、changed file、逐例结果与通过数 | 对完整业务 output 做相等验收 | 通用 Result schema 或独立 Judge |
+| `negative.json` | 路径穿越、陈旧 base、import 扩权三组 override | 验证 patch 边界必须失败关闭 | 真实 OS sandbox 或依赖审计 |
 | `manifest.json` | 版本、案例 ID、来源、许可、日期与三个文件 hash | 固定文件身份和基本来源元数据 | 内容质量或真实代表性的证明 |
 
 loader 先把 `input.json`、`expected.json`、`negative.json` 分别解析为 JSON，再按 key 排序、移除非语义空白，计算 canonical SHA-256（规范化 SHA-256）。所以只调整缩进不会改变文件 hash，改变字段值才会改变。
@@ -73,6 +75,11 @@ run-labs.py coding
   -> load_fixture
   -> 校验三个文件 hash，并计算 bundle hash
   -> evaluate_coding(input)
+       -> 校验 Task/workspace/candidate schema
+       -> 核对 base hash 与 allowed path
+       -> 解析并应用单文件 unified diff
+       -> 校验 hunk 上下文、计数与 changed file
+       -> 编译固定 AST 并逐例执行
   -> _negative_rejected(negative)
   -> output 与 expected 逐字段比较
   -> 组装 E1 Result
@@ -86,7 +93,7 @@ run-labs.py coding
 4. output 与 expected 不一致不会伪造成功，最终 `passed` 为 `false`。
 5. 只有上述成功路径和负例同时通过，外层 Result 才会出现 `passed=true`。
 
-`expected.json` 并不驱动候选执行，也不告诉 evaluator 应该返回什么；它只在执行结束后挑选三个字段做相等比较。这能避免直接“照抄答案”，但仍属于同一仓库作者设计的固定案例，不是独立 Judge。
+`expected.json` 并不驱动候选执行，也不告诉 evaluator 应该返回什么；它在执行结束后对完整业务 output 做相等比较。Base/result hash 都由输入和应用结果重新计算，而不是从 expected 读取。这仍属于同一仓库作者设计的固定案例，不是独立 Judge。
 
 ## 先推导基线，再看候选修改
 
@@ -118,32 +125,36 @@ runtime contract（运行时契约）位于 `evaluate_coding` 与 `_compile_fixt
 
 | 输入或阶段 | 当前约束 | 拒绝示例 |
 | --- | --- | --- |
-| `before` | 必须是字符串，AST 必须等于固定错误或固定修复结构之一 | 缺字段、数字、额外函数 |
-| `candidate_patch` | 必须是字符串，AST 必须等于同一允许列表中的结构之一 | `import os`、替代算法、自然语言 |
-| `tests` | 必须是字符串数组、不得重复，集合必须恰好为 `empty/single/multiple` | 少一例、多一例、重复 ID |
+| `task` | 精确字段；scope 只能是 `src/collect.py`；最多修改一个文件；tests 完整且不重复 | 路径穿越、额外文件、漏测 `single` |
+| `workspace` | 精确字段；snapshot ID 非空；files 必须与 allowed paths 一致 | 隐藏额外源码、缺目标文件 |
+| `candidate_patch` | 格式固定 `unified-diff`；base hash 完整匹配；diff 使用 `a/`、`b/` 同路径 | 陈旧 hash、rename、多文件或 CRLF diff |
+| Diff hunk | 起始位置、old/new 行数、context/removal 必须逐字匹配快照 | 漂移 context、伪造行数、空替换 |
 | 编译 | 文件名固定为 `<coding-fixture>`，只执行通过 AST 检查的源码 | 语法错误或 AST 外源码 |
 | namespace | `__builtins__` 只显式暴露 `len` | 不能据此开放任意不可信 Python |
 | 计数 | 对每个候选返回值执行布尔比较，再统计 `True` | 仅列出三个测试名称并不会得 3 分 |
 
-允许列表比较的是 `ast.dump(..., include_attributes=False)`，也就是精确语法结构，而不是源文件字节。注释或部分空白可能消失在 AST 中，但新增 import、改成列表推导式或换一种行为等价算法仍会被拒绝。这是“只执行预先审阅的两种结构”，不是通用静态分析。
+Diff parser 只实现当前案例需要的单文件、不可 rename、至少一个 hunk 的严格子集。它按源码行游标应用 context/removal/addition，逐个 hunk核对声明行数，并从结果内容计算 SHA-256。它不接受 `diff --git` 前导、binary diff、文件新增/删除、rename 或 `\ No newline` 标记；这是窄契约，不是完整 Git patch 实现。
+
+允许列表比较的是 `ast.dump(..., include_attributes=False)`，也就是精确语法结构，而不是源文件字节。当前预审了基线、正确修复和测试专用的 under-fix 三棵 AST；新增 import、改成列表推导式或行为等价的另一写法仍会被拒绝。这是“只执行预先审阅的结构”，不是通用静态分析。
 
 基线和候选都必须通过相同编译边界。随后 evaluator 为每个测试复制输入列表，避免一个函数对列表的原地修改污染下一步比较。`tests_passed` 来自实际比较为 `True` 的数量，不来自 `tests` 数组长度。
 
-`patch_applied` 只有三个条件同时成立才为 `true`：
+`patch.applied=true` 表示以下条件已经成立：
 
 ```text
-candidate_patch != before
-AND baseline_failures 非空
-AND tests_passed == len(tests)
+diff header path 在 Task scope 内
+AND candidate base hash 等于 workspace 内容 hash
+AND 所有 hunk context 与行数匹配
+AND 应用后内容发生非空替换
 ```
 
-这个字段名容易让人误解。它实际表达“两个源码字符串不同、基线有失败、候选通过固定断言”，并没有解析 unified diff、写文件或调用 `git apply`。
+这个字段与测试是否通过相互独立。测试专用 under-fix 也能成功应用，但只通过 `empty`；所以 `patch.applied=true` 不能替代 `test_results`，更不能表示真实工作树或 Git index 已修改。
 
 ## 执行边界为什么可控、又为什么很窄
 
-AST（Abstract Syntax Tree，抽象语法树）allowlist（允许列表）只接受仓库内写死的两棵结构：原始缺陷版本和预期修复版本。执行 namespace（命名空间）只暴露 `len`；任意 import、额外语句、替代实现或结构变化都会被拒绝。
+AST（Abstract Syntax Tree，抽象语法树）allowlist（允许列表）只接受仓库内写死的三棵结构：原始缺陷、预期修复和用于证明测试真实执行的 under-fix。执行 namespace（命名空间）只暴露 `len`；任意 import、额外语句、替代实现或结构变化都会被拒绝。
 
-这个边界适合演示确定性验收，却不是通用代码沙箱。它之所以可控，是因为可执行输入只有两棵预先审阅过的 AST；不要把“限制了 `__builtins__`”单独视为可安全运行不可信 Python 的方案。真实 Coding Agent 至少需要操作系统级隔离、资源上限、网络策略、文件范围、进程树控制、审计和清理。
+这个边界适合演示确定性验收，却不是通用代码沙箱。它之所以可控，是因为可执行输入只有三棵预先审阅过的 AST；不要把“限制了 `__builtins__`”单独视为可安全运行不可信 Python 的方案。真实 Coding Agent 至少需要操作系统级隔离、资源上限、网络策略、文件范围、进程树控制、审计和清理。
 
 固定允许列表还有另一面：一个完全正确但写法不同的实现也会失败。因此这里测到的是“是否遵守此教学契约”，不是代码质量、创造性或跨任务泛化。
 
@@ -159,13 +170,24 @@ uv run --frozen --offline python scripts/run-labs.py coding
 
 ```json
 {
-  "fixture_hash": "7f4caeb33ce09877f8ff4a14d08555619212d1d9c4d8d519fecda4849d258c9c",
+  "fixture_hash": "18f8153ad36cbbc99ff66a30b311f0ede9316ac3cde2eedae25738df87da71af",
   "negative_rejected": true,
   "offline": true,
   "output": {
+    "task_id": "collect-last-item",
+    "workspace": {
+      "snapshot_id": "coding-workspace-01",
+      "base_hashes": {"src/collect.py": "4c0d1877..."}
+    },
+    "patch": {
+      "format": "unified-diff",
+      "applied": true,
+      "changed_files": ["src/collect.py"],
+      "added_lines": 1,
+      "deleted_lines": 1,
+      "result_hashes": {"src/collect.py": "2652c76a..."}
+    },
     "baseline_failures": ["single", "multiple"],
-    "files_changed": 1,
-    "patch_applied": true,
     "test_results": {"empty": true, "multiple": true, "single": true},
     "tests_passed": 3
   },
@@ -175,6 +197,8 @@ uv run --frozen --offline python scripts/run-labs.py coding
 ```
 
 命令完成后至少人工断言：退出码为 0；hash 与本页及 manifest 计算结果一致；`baseline_failures` 不是空数组；三个 `test_results` 都是布尔 `true`；负例确实被拒绝；没有网络请求、凭据提示或工作树写入。
+
+仓库同时保存脱敏的 `lab/results/public/m5-coding-v1-1-trace-sample.json`，把 fixture、workspace、内存 patch、baseline、候选断言和负例按顺序连接。它是当前确定性路径的公开样例，不是从模型或真实 Git session 捕获的原始 trace。
 
 ## 逐字段读懂 Result
 
@@ -187,14 +211,14 @@ uv run --frozen --offline python scripts/run-labs.py coding
 | `offline` | 当前 runner 固定为 `true` | 设计上没有 live adapter | 操作系统已强制断网 |
 | `passed` | expected 相等且负例拒绝 | 当前案例总验收通过 | 真实业务任务完成 |
 | `safety_violation` | 当前外层固定为 `false` | 结果记录没有宣告真实违规 | 已执行通用安全检测 |
-| `negative_rejected` | 编译负例并捕获 `FixtureError` | 该负例没进入执行 | 理解了负例自然语言的意图 |
+| `negative_rejected` | 三组 override 均触发预期 `FixtureError` | 路径/base/AST 相邻边界失败关闭 | 已覆盖所有 Git/OS 攻击面 |
+| `workspace` | 从 snapshot ID 与实际源码重新计算 base hash | 当前内存起点身份 | 真实仓库 commit 或 checkout 状态 |
+| `patch` | 解析 hunk、应用内容并计算 changed file、行数与 result hash | 固定 diff 确实改变固定快照 | Git index、文件系统或 commit 已改变 |
 | `baseline_failures` | 实际执行错误实现所得 | 固定测试能暴露目标缺陷 | 已复现真实仓库缺陷 |
 | `test_results` | 候选逐例与预期比较 | 三个固定断言各自结果 | 其他输入或隐藏测试表现 |
 | `tests_passed` | `test_results` 中严格为 `True` 的数量 | 通过数不是名称计数 | 测试覆盖率或质量 |
-| `patch_applied` | 三条件合取 | 固定候选相对基线满足本案例条件 | 文件已修改或 commit 已产生 |
-| `files_changed` | evaluator 硬编码为 `1` | 教学案例预设单文件范围 | Git diff 中真实变更文件数 |
 
-尤其要把 `passed` 和 `patch_applied` 分开：前者还要求 expected 对比和负例拒绝；后者只来自成功路径 output。二者都不等于真实 Coding Agent 的任务状态。
+尤其要把 `passed`、`patch.applied` 和 `tests_passed` 分开：第一项还要求完整 expected 对比和三个负例全部拒绝；第二项只表示内存 diff 合法应用；第三项来自实际断言。三者都不等于真实 Coding Agent 的任务状态。
 
 ## Result 如何关联到 Eval
 
@@ -221,7 +245,7 @@ Run default-coding-01-r1 / engineering-coding-01-r1
 
 不可变 commit 加路径让 validator 能从历史内容重新计算 fixture hash，再与 Task 和每条 Run 交叉核对。只复制一个 hash 而不固定 commit/path，无法证明它究竟对应哪份输入。
 
-当前两条 Coding Run 都是 `development` split、`offline-replay`、E1，并使用合成的时长与零费用字段。它们是分析 schema 的样例，不是由本页 CLI 自动采集的真实运行，也不是两个模型配置的成绩。`study.example.json` 虽然设计了更多 Coding Task 和重复次数，尚未出现的矩阵单元不能按失败、成功或零值补齐。
+当前两条 Coding Run 都是 `development` split、`offline-replay`、E1，并使用合成的时长与零费用字段。它们对应上图锁定的历史 v1.0 fixture，不对应本页 v1.1 输出；它们是分析 schema 的样例，不是由本页 CLI 自动采集的真实运行，也不是两个模型配置的成绩。`study.example.json` 虽然设计了更多 Coding Task 和重复次数，尚未出现的矩阵单元不能按失败、成功或零值补齐。
 
 如果你要把一次新实验纳入 Eval，应新建不可变 fixture 身份，保存真实配置与执行 artifact，再生成唯一的 `(task_id, config_id, repeat)` 记录；不要手工复制旧成功行并只换 `run_id`。
 
@@ -235,19 +259,25 @@ uv run --frozen --offline pytest -q `
   lab/tests/test_m5_labs.py::test_coding_fixture_executes_baseline_and_candidate_assertions `
   lab/tests/test_m5_labs.py::test_coding_fixture_does_not_count_named_but_failing_tests `
   lab/tests/test_m5_labs.py::test_coding_fixture_rejects_source_outside_fixed_ast_allowlist `
+  lab/tests/test_m5_labs.py::test_coding_fixture_rejects_stale_base_and_unsafe_path `
+  lab/tests/test_m5_labs.py::test_coding_fixture_rejects_scope_and_schema_drift `
+  lab/tests/test_m5_labs.py::test_coding_fixture_rejects_hunk_count_or_context_drift `
   lab/tests/test_m5_labs.py::test_cli_accepts_isolated_fixture_root_and_rejects_tampering
 ```
 
-预期显示 `5 passed`。其中一个测试把候选换回缺陷源码，结果应只有 `empty` 通过，`patch_applied=false`；另一个测试使用语法合法的 `import os` 源码，预期收到 `fixed AST allowlist` 错误。
+预期显示 `8 passed`。其中一个测试应用合法的 under-fix diff，`patch.applied=true` 但只有 `empty` 通过，证明测试数不是名称计数；其他测试分别要求 import、陈旧 base、路径穿越、schema/scope 扩大、hunk 行数和 context 漂移被拒绝。
 
-`negative.json` 中的候选是自然语言说明，不是合法 Python，所以当前 runner 首先因语法检查拒绝它。`negative_rejected=true` 只能证明这个字符串未被执行，不能声称系统理解了“新增生产依赖”的语义。要验证依赖范围，真实项目还需要检查 package manifest、lockfile、实际 diff 和允许策略。
+`negative.json` 使用与正例相同的 payload，再逐项 override `candidate_patch.diff` 或 base hash。Import 负例先成功通过 diff 解析，随后因结果 AST 不在预审集合而拒绝；这能验证当前固定边界，却不能声称系统通用理解依赖变更。真实项目还要检查 package manifest、lockfile、实际 diff 和允许策略。
 
 出现以下任一情况就停止成功声明，不要更新 expected 来迎合错误：
 
 | 现象 | 首个责任层 | 排查动作 |
 | --- | --- | --- |
 | `hash mismatch for ...` | fixture 身份 | 对照 manifest、检查误改；确认语义变化后才创建新版本与 hash |
-| `coding input is invalid` | 输入契约 | 检查字段类型、测试 ID、重复或缺失 |
+| `schema drift` / `must ...` | 输入契约 | 检查 Task、workspace、candidate 精确字段与类型 |
+| `base hash mismatch` | Snapshot lineage | 候选基线已漂移；重新生成 diff，不模糊应用 |
+| `unsafe ... path` / `outside task scope` | 文件范围 | 拒绝路径穿越、绝对路径与范围外文件 |
+| `hunk ...` / `context does not match` | Patch 应用 | 检查 hunk header、行数和 base 内容，不启用 fuzzy apply |
 | `not valid Python` | 语法边界 | 保留原候选和 stderr，不尝试执行 |
 | `outside the fixed AST allowlist` | 执行策略 | 判断是应拒绝的输入，还是教学允许列表需要另行设计新案例 |
 | `baseline_failures=[]` | 测试区分力或基线 | 确认错误实现是否变化、测试是否还能复现缺陷 |
@@ -277,7 +307,7 @@ git status --short
 
 | 阶段 | 新增的真实部分 | 必须保存 | 仍然不能声称 |
 | --- | --- | --- | --- |
-| 当前 E1 | 固定源码、固定候选、固定断言 | fixture、hash、输出、退出码 | 模型或真实仓库能力 |
+| 当前 E1 | 固定内存 workspace、真实解析/应用 diff、固定断言 | fixture、base/result hash、changed file、输出、退出码 | 模型或真实仓库能力 |
 | 仓库形 E1 | 临时 Git 仓库、真实 patch 应用、真实测试，但仍用固定候选 | base commit、diff、test log、清理结果 | live 模型能生成修复 |
 | 有限 E2 | 锁定真实 model/provider/adapter/harness 的窄范围探针 | 完整身份、提示词、工具事件、usage、费用、artifact | 正式相对提升或广泛适用 |
 | 正式 E3 | 预注册任务、重复、未见 holdout、安全/成本门槛 | 完整矩阵、失败样本、统计与决策报告 | 跨 workload、跨版本通用排名 |
@@ -318,10 +348,11 @@ git status --short
 
 ## 已知限制
 
-- 没有真实模型、Git 仓库副本、补丁解析/应用、编译器、依赖安装或并发工具调用。
+- 没有真实模型、Git 仓库副本、文件系统写入、Git index、项目测试发现、依赖安装或并发工具调用。
+- Unified diff 只实现单文件、不可 rename 的严格文本子集，不支持 binary、新增/删除文件、mode 或完整 Git 语义。
 - 测试集合、缺陷源码和唯一候选都由项目作者预先给定，没有测试发现、定位、规划与多轮修复过程。
 - 精确 AST allowlist 会拒绝行为等价实现，因此它衡量的是固定契约，不是代码质量或泛化能力。
-- `files_changed`、测试数和范围边界都不是从真实工作树推导，不能替代 commit、diff、测试报告与生成物审计。
+- `changed_files` 和 result hash 从内存应用结果推导，仍不能替代真实工作树的 commit、status、diff、测试报告与生成物审计。
 - `offline=true` 是 Result 声明，不是容器级断网证明；需要环境策略和网络观测才能形成更强结论。
 - `safety_violation=false` 是当前固定输出，不表示存在通用安全扫描器。
 - E1 replay（离线重放）不能升级为 E2/E3，也不能支持模型排名或生产可用性结论。
@@ -334,10 +365,11 @@ git status --short
 - [ ] 工作树中原有改动已识别，不会被实验覆盖；
 - [ ] CLI 退出码为 0，fixture hash 与固定值一致；
 - [ ] 基线只在 `single/multiple` 失败，候选三例全过；
-- [ ] `patch_applied` 的三个条件均能从输出解释；
-- [ ] 负例因语法/AST 边界被拒绝，没有被执行；
-- [ ] 定向测试显示 `5 passed`；
-- [ ] 没有把 `files_changed=1`、`passed=true` 或 E1 写成真实模型能力；
+- [ ] Base hash、allowed path、hunk context/行数和 result hash 均可解释；
+- [ ] 合法 under-fix 能应用但只通过 1/3，测试确实执行；
+- [ ] 路径穿越、陈旧 base 与 import 扩权三组 fixture 负例全部拒绝；
+- [ ] 定向测试显示 `8 passed`；
+- [ ] 没有把内存 `changed_files`、`passed=true` 或 E1 写成真实模型能力；
 - [ ] 临时副本和输出已清理，原工作树状态可解释。
 
 准备升级为真实实验时再确认：
@@ -352,11 +384,11 @@ git status --short
 ## 检查题
 
 1. 为什么基线的空列表测试通过，却不能说明循环边界正确？
-2. `patch_applied=true` 依赖哪三个条件？它为什么不等于真实 patch 已应用？
+2. `patch.applied=true` 依赖哪些 path、base 与 hunk 条件？它为什么不等于真实工作树已修改？
 3. `expected.json` 在执行链的哪个阶段参与判断？
-4. 为什么 `negative_rejected=true` 不能证明 evaluator 识别了依赖变更？
+4. Import 负例在哪一层被拒绝？为什么仍不是通用依赖策略？
 5. Lab Result 与 Eval Run 之间通过哪些身份字段建立来源链？
-6. 若要把 `files_changed=1` 变成真实证据，需要从哪里采集数据？
+6. 当前 `changed_files` 从哪里推导？若要变成真实仓库证据还需采集什么？
 7. 从当前 E1 升级到 E2 时，必须新增哪些 live 身份和 artifact？
 
 完成后继续[浏览器案例](/labs/browser)，对比“固定源码执行边界”和“页面内容不可信边界”的差异。

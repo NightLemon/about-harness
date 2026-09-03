@@ -299,7 +299,7 @@ Rollback（回退）按精确 commit/patch/feature flag/schema migration 设计�
 
 ## 当前离线工作例
 
-仓库 fixture 固定一个 `collect(items)` 边界错误：修改前条件为 `index < len(items) - 1`，候选条件为 `index < len(items)`。Runner 只允许这两个已知安全 AST（抽象语法树）形状，在移除其他 builtins 的命名空间中编译并实际运行 empty/single/multiple 三个用例。
+仓库 v1.1 fixture 固定一个 `collect(items)` 边界错误和单文件内存 workspace。候选是带 base hash 的 unified diff；runner 先验证 allowed path、hash 与 hunk context/行数，再把 diff 应用到快照。结果源码只有通过预审 AST 边界后，才在移除其他 builtins 的命名空间中运行 empty/single/multiple 三个用例。
 
 ### 前置条件与固定输入
 
@@ -308,9 +308,9 @@ Rollback（回退）按精确 commit/patch/feature flag/schema migration 设计�
 输入位于 `lab/fixtures/coding/`：
 
 - `manifest.json` 固定 project-synthetic 来源、CC BY 4.0 与三个文件 hash；
-- `input.json` 固定错误实现、候选实现和三个 test ID；
-- `expected.json` 要求 `patch_applied=true`、`tests_passed=3`、`files_changed=1`；
-- `negative.json` 是越界依赖文字，不属于 AST allowlist，必须拒绝。
+- `input.json` 固定 Task scope、workspace snapshot、base hash、unified diff 和三个 test ID；
+- `expected.json` 固定 workspace/patch identity、changed file、逐例结果与通过数；
+- `negative.json` 包含路径穿越、陈旧 base 和 import 扩权，必须全部拒绝。
 
 ### 命令
 
@@ -320,13 +320,13 @@ uv run --frozen --offline python scripts/run-labs.py coding
 
 ### 预期输出与断言
 
-命令退出 0，输出 `evidence=E1`、`offline=true`、`passed=true` 和 `negative_rejected=true`。`baseline_failures=[single,multiple]`，`test_results` 中 empty/single/multiple 均为 true，`tests_passed=3`、`patch_applied=true`、`files_changed=1`；fixture hash 保持与 manifest bundle 一致。
+命令退出 0，输出 `evidence=E1`、`offline=true`、`passed=true` 和 `negative_rejected=true`。Fixture hash 为 `18f8153a…`；base/result hash 分别为 `4c0d1877…` 与 `2652c76a…`，`patch.changed_files=[src/collect.py]`、added/deleted 各一行。`baseline_failures=[single,multiple]`，候选三例全过。
 
-人工复核：没有文件写入、编译器/项目测试、Git 操作、模型或外部动作。`files_changed=1` 只是这个固定逻辑案例的预期范围字段，不是从真实 diff 计算。
+人工复核：changed file 与 result hash 来自内存 diff 应用，不是 expected 硬编码计数；没有文件系统写入、项目测试发现、Git 操作、模型或外部动作。历史 Eval 仍通过固定 commit/path/hash 读取 v1.0，不被当前 v1.1 覆盖。
 
 ### 失败、停止、清理与回退
 
-若 baseline 没有失败、候选少于三个用例通过、AST 外候选能执行、fixture hash 不一致、负例未拒绝或命令需要网络，停止 Coding 能力声明。先修 evaluator/fixture/validator 并保留失败输出；不要修改 expected 迎合错误、扩大 AST allowlist 或安装依赖绕过失败。
+若 base hash 漂移、hunk context/行数不符、范围外 path 被接受、baseline 没有失败、候选少于三个用例通过、AST 外候选能执行、fixture hash 不一致、负例未拒绝或命令需要网络，停止 Coding 能力声明。先修 evaluator/fixture/validator 并保留失败输出；不要启用 fuzzy apply、修改 expected 迎合错误、扩大 AST allowlist 或安装依赖绕过失败。
 
 命令只读固定 JSON，在进程内执行白名单函数，不写工作树。误改时先运行：
 
@@ -338,9 +338,9 @@ git diff -- lab/fixtures/coding lab/src/about_harness/labs.py lab/tests/test_m5_
 
 ### 证据边界
 
-实验提供 E1：当前 runner 校验固定 fixture hash，白名单化两个精确 AST，真实执行三个小输入，证明 baseline 在 single/multiple 失败、候选全部通过，并拒绝 AST 外负例。
+实验提供 E1：当前 runner 校验固定 fixture hash、Task scope、workspace base hash 与单文件 unified diff，真实推导 changed file/result hash；它白名单化预审 AST，执行三个小输入，并拒绝路径穿越、陈旧 base、hunk 漂移与 import 扩权。
 
-它没有真实 repository/file/diff、编译器、测试发现、shell、依赖、Git、模型或 code review。固定 AST allowlist 只保护这个教学 evaluator，不是通用 Python sandbox；`patch_applied/files_changed` 也不是实际 patch 证据。因此不能证明真实 Coding Agent 会定位、生成或安全提交修复。
+它没有真实 repository checkout、文件系统写入、Git index、项目测试发现、shell、依赖、模型或 code review。Diff parser 只支持当前单文件文本子集，固定 AST allowlist 也不是通用 Python sandbox；内存 patch 证据不能证明真实 Coding Agent 会定位、生成或安全提交修复。
 
 ## 完成检查表
 

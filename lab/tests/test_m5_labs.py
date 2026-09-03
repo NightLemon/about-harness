@@ -52,28 +52,155 @@ def test_fixture_hash_tampering_is_rejected(tmp_path: Path) -> None:
 def test_coding_fixture_executes_baseline_and_candidate_assertions() -> None:
     bundle = load_fixture(FIXTURES, "coding")
     result = evaluate_coding(bundle.input)
+    assert result == bundle.expected
     assert result["baseline_failures"] == ["single", "multiple"]
     assert result["test_results"] == {"empty": True, "single": True, "multiple": True}
     assert result["tests_passed"] == 3
-    assert result["patch_applied"] is True
+    assert result["workspace"] == {
+        "snapshot_id": "coding-workspace-01",
+        "base_hashes": {
+            "src/collect.py": "4c0d18777d21f94708ef40f50e7e0169fc172d26516a65ed2263d5a20e62ce59"
+        },
+    }
+    assert result["patch"] == {
+        "format": "unified-diff",
+        "applied": True,
+        "changed_files": ["src/collect.py"],
+        "added_lines": 1,
+        "deleted_lines": 1,
+        "result_hashes": {
+            "src/collect.py": "2652c76a095519a39ad7c8713e082785fe0533033d3f0eac5a7f6171f0ced4e5"
+        },
+    }
 
 
 def test_coding_fixture_does_not_count_named_but_failing_tests() -> None:
     bundle = load_fixture(FIXTURES, "coding")
     payload = copy.deepcopy(bundle.input)
-    payload["candidate_patch"] = payload["before"]
+    candidate_patch = payload["candidate_patch"]
+    assert isinstance(candidate_patch, dict)
+    candidate_patch["diff"] = (
+        "--- a/src/collect.py\n"
+        "+++ b/src/collect.py\n"
+        "@@ -1,7 +1,7 @@\n"
+        " def collect(items):\n"
+        "     index = 0\n"
+        "     output = []\n"
+        "-    while index < len(items) - 1:\n"
+        "+    while index < len(items) - 2:\n"
+        "         output.append(items[index])\n"
+        "         index += 1\n"
+        "     return output\n"
+    )
     result = evaluate_coding(payload)
     assert result["test_results"] == {"empty": True, "single": False, "multiple": False}
     assert result["tests_passed"] == 1
-    assert result["patch_applied"] is False
+    patch = result["patch"]
+    assert isinstance(patch, dict)
+    assert patch["applied"] is True
 
 
 def test_coding_fixture_rejects_source_outside_fixed_ast_allowlist() -> None:
     bundle = load_fixture(FIXTURES, "coding")
     payload = copy.deepcopy(bundle.input)
-    payload["candidate_patch"] = "import os\n\ndef collect(items):\n    return items\n"
+    candidate_patch = payload["candidate_patch"]
+    assert isinstance(candidate_patch, dict)
+    candidate_patch["diff"] = (
+        "--- a/src/collect.py\n"
+        "+++ b/src/collect.py\n"
+        "@@ -1,7 +1,9 @@\n"
+        "+import os\n"
+        "+\n"
+        " def collect(items):\n"
+        "     index = 0\n"
+        "     output = []\n"
+        "-    while index < len(items) - 1:\n"
+        "+    while index < len(items):\n"
+        "         output.append(items[index])\n"
+        "         index += 1\n"
+        "     return output\n"
+    )
     with pytest.raises(FixtureError, match="fixed AST allowlist"):
         evaluate_coding(payload)
+
+
+def test_coding_fixture_rejects_stale_base_and_unsafe_path() -> None:
+    bundle = load_fixture(FIXTURES, "coding")
+    stale = copy.deepcopy(bundle.input)
+    candidate_patch = stale["candidate_patch"]
+    assert isinstance(candidate_patch, dict)
+    base_hashes = candidate_patch["base_hashes"]
+    assert isinstance(base_hashes, dict)
+    base_hashes["src/collect.py"] = "0" * 64
+    with pytest.raises(FixtureError, match="base hash mismatch"):
+        evaluate_coding(stale)
+
+    unsafe = copy.deepcopy(bundle.input)
+    candidate_patch = unsafe["candidate_patch"]
+    assert isinstance(candidate_patch, dict)
+    candidate_patch["diff"] = (
+        "--- a/../pyproject.toml\n"
+        "+++ b/../pyproject.toml\n"
+        "@@ -1 +1 @@\n"
+        "-old\n"
+        "+new\n"
+    )
+    with pytest.raises(FixtureError, match="unsafe repository-relative path"):
+        evaluate_coding(unsafe)
+
+
+def test_coding_fixture_rejects_scope_and_schema_drift() -> None:
+    bundle = load_fixture(FIXTURES, "coding")
+    unknown_field = copy.deepcopy(bundle.input)
+    task = unknown_field["task"]
+    assert isinstance(task, dict)
+    task["trust_me"] = True
+    with pytest.raises(FixtureError, match="schema drift"):
+        evaluate_coding(unknown_field)
+
+    widened_scope = copy.deepcopy(bundle.input)
+    task = widened_scope["task"]
+    assert isinstance(task, dict)
+    task["allowed_paths"] = ["src/collect.py", "pyproject.toml"]
+    with pytest.raises(FixtureError, match="scope must be exactly"):
+        evaluate_coding(widened_scope)
+
+    raised_budget = copy.deepcopy(bundle.input)
+    task = raised_budget["task"]
+    assert isinstance(task, dict)
+    task["max_files_changed"] = 2
+    with pytest.raises(FixtureError, match="max_files_changed must be 1"):
+        evaluate_coding(raised_budget)
+
+
+def test_coding_fixture_rejects_hunk_count_or_context_drift() -> None:
+    bundle = load_fixture(FIXTURES, "coding")
+    bad_count = copy.deepcopy(bundle.input)
+    candidate_patch = bad_count["candidate_patch"]
+    assert isinstance(candidate_patch, dict)
+    diff = candidate_patch["diff"]
+    assert isinstance(diff, str)
+    candidate_patch["diff"] = diff.replace("@@ -1,7 +1,7 @@", "@@ -1,7 +1,8 @@")
+    with pytest.raises(FixtureError, match="line counts"):
+        evaluate_coding(bad_count)
+
+    bad_target = copy.deepcopy(bundle.input)
+    candidate_patch = bad_target["candidate_patch"]
+    assert isinstance(candidate_patch, dict)
+    diff = candidate_patch["diff"]
+    assert isinstance(diff, str)
+    candidate_patch["diff"] = diff.replace("@@ -1,7 +1,7 @@", "@@ -1,7 +2,7 @@")
+    with pytest.raises(FixtureError, match="target start"):
+        evaluate_coding(bad_target)
+
+    stale_context = copy.deepcopy(bundle.input)
+    candidate_patch = stale_context["candidate_patch"]
+    assert isinstance(candidate_patch, dict)
+    diff = candidate_patch["diff"]
+    assert isinstance(diff, str)
+    candidate_patch["diff"] = diff.replace("    index = 0", "    index = 99")
+    with pytest.raises(FixtureError, match="context does not match"):
+        evaluate_coding(stale_context)
 
 
 def test_cli_accepts_isolated_fixture_root_and_rejects_tampering(tmp_path: Path) -> None:
@@ -694,3 +821,44 @@ def test_public_summary_matches_current_fixture_results() -> None:
         assert recorded[name]["fixture_hash"] == result["fixture_hash"]
         assert recorded[name]["passed"] is result["passed"] is True
         assert recorded[name]["negative_rejected"] is result["negative_rejected"] is True
+
+
+def test_public_coding_trace_matches_current_fixture_output() -> None:
+    bundle = load_fixture(FIXTURES, "coding")
+    output = evaluate_coding(bundle.input)
+    trace_path = ROOT / "results" / "public" / "m5-coding-v1-1-trace-sample.json"
+    artifact = json.loads(trace_path.read_text(encoding="utf-8"))
+    assert artifact["fixture_hash"] == bundle.fixture_hash
+    assert artifact["task_id"] == output["task_id"]
+    assert artifact["evidence"] == "E1"
+    assert artifact["offline"] is True
+    assert [event["sequence"] for event in artifact["trace"]] == list(range(6))
+    events = {event["kind"]: event["data"] for event in artifact["trace"]}
+
+    workspace = output["workspace"]
+    assert isinstance(workspace, dict)
+    base_hashes = workspace["base_hashes"]
+    assert isinstance(base_hashes, dict)
+    assert events["workspace_bound"] == {
+        "snapshot_id": workspace["snapshot_id"],
+        "path": "src/collect.py",
+        "base_hash": base_hashes["src/collect.py"],
+    }
+    patch = output["patch"]
+    assert isinstance(patch, dict)
+    result_hashes = patch["result_hashes"]
+    assert isinstance(result_hashes, dict)
+    assert events["patch_applied_in_memory"] == {
+        "format": patch["format"],
+        "changed_files": patch["changed_files"],
+        "added_lines": patch["added_lines"],
+        "deleted_lines": patch["deleted_lines"],
+        "result_hash": result_hashes["src/collect.py"],
+    }
+    assert events["baseline_executed"]["failures"] == output["baseline_failures"]
+    assert events["candidate_executed"] == {"tests": 3, "passed": output["tests_passed"]}
+    negative_cases = bundle.negative["cases"]
+    assert isinstance(negative_cases, list)
+    assert events["negative_matrix_rejected"]["cases"] == [
+        case["case"] for case in negative_cases if isinstance(case, dict)
+    ]

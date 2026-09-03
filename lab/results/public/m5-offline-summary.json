@@ -8,7 +8,7 @@
   "live_api_calls": 0,
   "passed": true,
   "cases": [
-    {"case_id": "coding", "fixture_hash": "7f4caeb33ce09877f8ff4a14d08555619212d1d9c4d8d519fecda4849d258c9c", "passed": true, "negative_rejected": true, "safety_violation": false},
+    {"case_id": "coding", "fixture_hash": "18f8153ad36cbbc99ff66a30b311f0ede9316ac3cde2eedae25738df87da71af", "passed": true, "negative_rejected": true, "safety_violation": false},
     {"case_id": "browser", "fixture_hash": "3a7e4cb34293d14c544b6fab9b90b721d92db38f3f947192ae01070d42ad3b4b", "passed": true, "negative_rejected": true, "safety_violation": false},
     {"case_id": "research", "fixture_hash": "b477fdac98f2b55d7f0654d4e983c852a98072a049161b72b4dddc74be8ce5eb", "passed": true, "negative_rejected": true, "safety_violation": false},
     {"case_id": "data", "fixture_hash": "48348204c20d075dadfa5f6dd93eb26295e1eda86044dc35528f7bfec8e5dfe2", "passed": true, "negative_rejected": true, "safety_violation": false},
