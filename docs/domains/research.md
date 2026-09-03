@@ -295,7 +295,7 @@ unresolved.md          # 缺口和会改变结论的证据
 
 ## 当前离线工作例
 
-仓库 fixture 预先给出三条结构化记录：`policy-v1` 和 `policy-v2` 对 `retention_days` 分别给出 30 与 45，`legal-note` 对 `review_required` 给出 yes。确定性函数只按 claim 分组，值集合为一项则 `supported`，多项则 `conflict`。
+仓库 fixture 预先给出三条带合成 snapshot、line locator、quote 和 relation 的结构化记录：`policy-v1` 和 `policy-v2` 对 `retention_days` 分别给出 30 与 45，`legal-note` 对 `review_required` 给出 yes；`deletion_process` 被列为 required claim，但故意没有 evidence。确定性函数先验证字面引用落点，再按 claim 分组：零条 evidence 为 `insufficient`，一个 unique value 为 `supported`，多项则 `conflict`。
 
 ### 前置条件与固定输入
 
@@ -304,9 +304,9 @@ unresolved.md          # 缺口和会改变结论的证据
 输入位于 `lab/fixtures/research/`：
 
 - `manifest.json` 固定 project-synthetic 来源、CC BY 4.0 和三个文件 hash；
-- `input.json` 固定 query 与三个 source/claim/value 元组；
-- `expected.json` 要求保留一个冲突和一个支持主张；
-- `negative.json` 提议“确定是 45 天”，runner 必须拒绝。
+- `input.json` 固定 query、required claims 与三个带 snapshot/locator/quote 的 evidence records；
+- `expected.json` 要求保留一个冲突、一个支持和一个证据不足主张；
+- `negative.json` 提交只保留 45 与 policy-v2 的结构化 candidate claim，runner 必须拒绝。
 
 ### 命令
 
@@ -316,7 +316,7 @@ uv run --frozen --offline python scripts/run-labs.py research
 
 ### 预期输出与断言
 
-命令退出 0，输出 `evidence=E1`、`offline=true`、`passed=true` 和 `negative_rejected=true`。`retention_days` 为 `conflict`，values 同时保留 `30/45`，citations 同时保留 `policy-v1/policy-v2`；`review_required` 为 `supported` 并引用 `legal-note`；`unsupported_claims=0`。
+命令退出 0，输出 `evidence=E1`、`offline=true`、`passed=true` 和 `negative_rejected=true`。`retention_days` 为 `conflict`，values 同时保留 `30/45`，结构化 citations 回到 `policy-v1/policy-v2` 的 `line:2` quote；`review_required` 为 `supported` 并引用 `legal-note`；`deletion_process` 为 `insufficient`，因此 `unsupported_claims=1`。
 
 人工复核：没有网络/credential/model action；`integration=LangGraph` 只是职责映射，`mode=offline-contract-seam` 才是实际执行方式。
 
@@ -334,9 +334,9 @@ git diff -- lab/fixtures/research lab/src/about_harness/integrations/langgraph.p
 
 ### 证据边界
 
-实验提供 E1：当前仓库会校验固定 fixture bundle，并能在已结构化、完整输入中按值集合保留一个冲突和引用，拒绝单一确定答案。
+实验提供 E1：当前仓库会校验固定 fixture bundle，并能在已结构化输入中验证 opened/snapshot/locator/quote/value 的字面链，保留冲突、显式输出 coverage 缺口，并拒绝隐藏冲突的结构化 candidate claim。
 
-它不生成 query、不搜索或打开来源、不验证 publisher/版本/日期/许可、不判断来源独立性，也没有模型综合或真实 LangGraph。`unsupported_claims=0` 只因 fixture 没有未支持 claim，不证明系统能检测任意无依据陈述。
+它不生成 query、不搜索或真实打开来源、不验证 publisher/版本/日期/许可、不判断来源独立性，也没有语义蕴含、自然语言报告解析、模型综合或真实 LangGraph。`unsupported_claims=1` 只证明预先声明的 required list 中有一项缺证据，不证明系统能检测报告里的任意无依据陈述。
 
 ## 完成检查表
 
@@ -360,5 +360,5 @@ git diff -- lab/fixtures/research lab/src/about_harness/integrations/langgraph.p
 1. 为什么搜索摘要不能直接作为最终主张的引用？
 2. 十个不同 URL 为什么可能仍然只有一个独立来源？
 3. 新日期的来源为什么不能自动消除旧来源冲突？
-4. `unsupported_claims=0` 在当前 fixture 中为什么不能证明系统会发现所有无依据陈述？
+4. `unsupported_claims=1` 在当前 fixture 中为什么不能证明系统会发现所有无依据陈述？
 5. 什么时候继续搜索的价值低于停止并报告 `insufficient/conflict`？

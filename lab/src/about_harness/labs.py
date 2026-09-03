@@ -335,14 +335,23 @@ def _negative_rejected(bundle: FixtureBundle, output: dict[str, JsonValue]) -> b
         return False
     if bundle.name == "research":
         claims = output.get("claims")
-        proposed = bundle.negative.get("proposed_answer")
-        return (
-            isinstance(proposed, str)
-            and isinstance(claims, list)
-            and any(
-                isinstance(claim, dict) and claim.get("status") == "conflict"
+        candidate = bundle.negative.get("candidate_claim")
+        if not isinstance(candidate, dict) or not isinstance(claims, list):
+            return False
+        candidate_id = candidate.get("claim")
+        ledger_claim = next(
+            (
+                claim
                 for claim in claims
-            )
+                if isinstance(claim, dict) and claim.get("claim") == candidate_id
+            ),
+            None,
+        )
+        if not isinstance(ledger_claim, dict):
+            return True
+        compared_fields = ("status", "values", "citations")
+        return any(
+            candidate.get(field) != ledger_claim.get(field) for field in compared_fields
         )
     if bundle.name == "data":
         row = bundle.negative.get("row")

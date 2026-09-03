@@ -106,19 +106,48 @@ def test_research_fixture_preserves_conflict_and_claim_citations() -> None:
     result = resolve_versioned_claims(bundle.input)
     assert result["claims"] == [
         {
+            "claim": "deletion_process",
+            "status": "insufficient",
+            "values": [],
+            "citations": [],
+        },
+        {
             "claim": "retention_days",
             "status": "conflict",
             "values": ["30", "45"],
-            "citations": ["policy-v1", "policy-v2"],
+            "citations": [
+                {
+                    "source_id": "policy-v1",
+                    "value": "30",
+                    "locator": "line:2",
+                    "quote": "Records are retained for 30 days.",
+                    "relation": "supports",
+                },
+                {
+                    "source_id": "policy-v2",
+                    "value": "45",
+                    "locator": "line:2",
+                    "quote": "Records are retained for 45 days.",
+                    "relation": "supports",
+                },
+            ],
         },
         {
             "claim": "review_required",
             "status": "supported",
             "values": ["yes"],
-            "citations": ["legal-note"],
+            "citations": [
+                {
+                    "source_id": "legal-note",
+                    "value": "yes",
+                    "locator": "line:2",
+                    "quote": "A review is required: yes.",
+                    "relation": "supports",
+                }
+            ],
         },
     ]
-    assert result["unsupported_claims"] == 0
+    assert result["unsupported_claims"] == 1
     assert result["integration"] == "LangGraph"
     assert result["mode"] == "offline-contract-seam"
 
@@ -126,8 +155,18 @@ def test_research_fixture_preserves_conflict_and_claim_citations() -> None:
 def test_research_rejects_duplicate_source_identity() -> None:
     payload: dict[str, JsonValue] = {
         "query": "Which policy is current?",
+        "required_claims": ["retention_days"],
         "sources": [
-            {"id": "policy", "claim": "retention_days", "value": "30"},
+            {
+                "id": "policy",
+                "opened": True,
+                "snapshot": "Records are retained for 30 days.",
+                "claim": "retention_days",
+                "value": "30",
+                "locator": "line:1",
+                "quote": "Records are retained for 30 days.",
+                "relation": "supports",
+            },
             {"id": "policy", "claim": "retention_days", "value": "45"},
         ],
     }
@@ -135,9 +174,53 @@ def test_research_rejects_duplicate_source_identity() -> None:
         resolve_versioned_claims(payload)
 
 
-def test_research_requires_non_empty_query() -> None:
+@pytest.mark.parametrize("query", ["", "   "])
+def test_research_requires_non_empty_query(query: str) -> None:
     with pytest.raises(IntegrationContractError, match="query must be a non-empty string"):
-        resolve_versioned_claims({"query": "", "sources": []})
+        resolve_versioned_claims({"query": query, "sources": []})
+
+
+def test_research_requires_at_least_one_required_claim() -> None:
+    with pytest.raises(IntegrationContractError, match="at least one claim"):
+        resolve_versioned_claims(
+            {"query": "Which policy applies?", "required_claims": [], "sources": []}
+        )
+
+
+def test_research_rejects_quote_outside_declared_locator() -> None:
+    bundle = load_fixture(FIXTURES, "research")
+    payload = copy.deepcopy(bundle.input)
+    sources = payload["sources"]
+    assert isinstance(sources, list)
+    source = sources[0]
+    assert isinstance(source, dict)
+    source["locator"] = "line:1"
+    with pytest.raises(IntegrationContractError, match="quote is not present at locator"):
+        resolve_versioned_claims(payload)
+
+
+def test_research_rejects_quote_without_structured_value() -> None:
+    bundle = load_fixture(FIXTURES, "research")
+    payload = copy.deepcopy(bundle.input)
+    sources = payload["sources"]
+    assert isinstance(sources, list)
+    source = sources[0]
+    assert isinstance(source, dict)
+    source["value"] = "31"
+    with pytest.raises(IntegrationContractError, match="quote does not contain"):
+        resolve_versioned_claims(payload)
+
+
+def test_research_rejects_unopened_source() -> None:
+    bundle = load_fixture(FIXTURES, "research")
+    payload = copy.deepcopy(bundle.input)
+    sources = payload["sources"]
+    assert isinstance(sources, list)
+    source = sources[0]
+    assert isinstance(source, dict)
+    source["opened"] = False
+    with pytest.raises(IntegrationContractError, match="must be opened"):
+        resolve_versioned_claims(payload)
 
 
 def test_document_fixture_filters_stale_version_and_cites_latest() -> None:

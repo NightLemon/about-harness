@@ -1,30 +1,30 @@
-# 研究实验：冲突来源与逐项引用
+# 研究实验：冲突来源、证据定位与覆盖缺口
 
-本实验用三个结构化 synthetic sources（合成来源）验证研究流程中最容易被写作掩盖的一步：同一 claim 出现互不相容的值时，必须保留冲突和双方出处，不能挑一个更顺眼的值写成确定结论。
+本实验用三个结构化 synthetic sources（合成来源）验证研究流程中最容易被写作掩盖的三步：同一 claim 出现互不相容的值时保留冲突；每条 citation 必须回到已打开 snapshot 的具体 locator 与 quote；required claim 没有证据时输出 `insufficient`，不能从报告中消失。
 
-它不安装 LangGraph，不搜索网页，不打开来源，也不运行模型。实验验证的是“固定 fixture → 来源身份校验 → 按 claim 分组 → 支持/冲突状态 → 引用 → 负例”的离线状态转换。
+它不安装 LangGraph，不搜索网页，也不运行模型。这里的“已打开”是 fixture 中冻结的布尔状态，snapshot 是合成文本；实验验证的是“固定 fixture → 来源与定位校验 → required-claim coverage → 支持/冲突/不足状态 → 结构化引用 → 负例”的离线状态转换。
 
 完成本页后，你应该能：
 
 - 从 manifest、input、expected 和 negative 重建案例；
-- 解释 source、claim、value、citation 和 status 的关系；
+- 解释 source、claim、value、snapshot、locator、quote、citation 和 status 的关系；
 - 区分“多个 URL”“多个 citation”和“多个独立来源”；
-- 运行冲突保留、重复来源身份和空 query 负例；
-- 说清 `unsupported_claims=0` 与自然语言负例当前没有证明什么。
+- 运行冲突保留、引用错位、未打开来源、重复身份和空 query 负例；
+- 解释 `unsupported_claims=1` 如何从 required claims 计算，以及它仍不能发现任意自然语言幻觉。
 
 ## 先看证据结论
 
-当前合法结论是：锁定的 Python 函数要求非空 query、拒绝重复 source ID，把结构化 source records 按 claim 分组；一个 unique value 标记为 `supported`，多个 unique values 标记为 `conflict`，并保留输入中的所有 source IDs 作为 citations。
+当前合法结论是：锁定的 Python 函数要求非空 query 和显式 required claims，拒绝重复 source ID 与未打开来源；每条 evidence 必须使用 `line:N` 定位到 snapshot 中实际包含 quote 的行，quote 必须字面包含结构化 value。函数按 claim 分组：零条 evidence 为 `insufficient`，一个 unique value 为 `supported`，多个 unique values 为 `conflict`；每条 citation 保留 source、value、locator、quote 和 relation。
 
 当前不能推出：
 
 - LangGraph 已安装、导入或目标版本可用；
 - Query 会生成搜索词、筛选 claim 或控制 scope；
-- 来源真实存在、已打开、版本正确、许可可用或彼此独立；
-- Citation 指向可定位 evidence span 并实际支持主张；
+- 来源真实存在、网络获取成功、版本正确、许可可用或彼此独立；
+- Quote 在语言学和业务语义上蕴含 claim，或 value 的单位、scope 与定义正确；
 - 模型能发现无依据主张或在开放文本中稳定保留冲突；
-- `unsupported_claims=0` 来自独立的 claim coverage 检查；
-- 自然语言 proposal 被真正解析和事实核验。
+- required claims 覆盖了用户问题中所有应回答的事实；
+- 自然语言报告被解析并逐项事实核验。
 
 因此结果保持 E1：离线契约接缝，而不是 E2 live 搜索/Framework 探针或 E3 研究质量。
 
@@ -33,18 +33,19 @@
 Query 固定为：
 
 ```text
-Which retention policy is current?
+What retention and review obligations are documented?
 ```
 
-输入 records 为：
+输入要求回答 `retention_days`、`review_required` 与 `deletion_process`。其中前两项有 evidence，最后一项故意没有：
 
-| Source ID | Claim | Value | 当前转换结果 |
-| --- | --- | --- | --- |
-| `policy-v1` | `retention_days` | `30` | 与 v2 形成 conflict |
-| `policy-v2` | `retention_days` | `45` | 与 v1 形成 conflict |
-| `legal-note` | `review_required` | `yes` | 单一值，supported |
+| Source ID | Claim | Value | Locator | 当前转换结果 |
+| --- | --- | --- | --- | --- |
+| `policy-v1` | `retention_days` | `30` | `line:2` | quote 命中 snapshot；与 v2 形成 conflict |
+| `policy-v2` | `retention_days` | `45` | `line:2` | quote 命中 snapshot；与 v1 形成 conflict |
+| `legal-note` | `review_required` | `yes` | `line:2` | 单一值，supported |
+| — | `deletion_process` | — | — | required 但无 evidence，insufficient |
 
-注意：函数不会根据 Query 只选择 retention claim，所以还会返回 `review_required`。Query 当前只是被校验为非空的 Task 元数据，不参与搜索、过滤、scope 或状态判定。
+注意：函数不会从 Query 自动推导 claim；输出来自 `required_claims` 与 evidence 中出现的 claim 并集。Query 当前只是被校验为非空的 Task 元数据，不参与搜索、过滤、scope 或状态判定。
 
 ## 实际执行链
 
@@ -55,58 +56,66 @@ manifest.json
             ↓
 input.json ──→ resolve_versioned_claims(payload)
                  1. query 必须为非空 string
-                 2. sources 必须为 list
-                 3. 每个 source 必须为 object
-                 4. id/claim/value 必须为非空 string
-                 5. source ID 全局唯一，否则拒绝
-                 6. 按 claim 收集 (source_id, value)
-                 7. 一个 unique value → supported
-                 8. 多个 unique values → conflict
-                 9. 对 claim/value/citation 做确定性排序
+                 2. required_claims 必须为无重复的 string list
+                 3. sources 必须为 list，每项必须为 object
+                 4. source ID 全局唯一且 opened=true
+                 5. id/claim/value/snapshot/locator/quote/relation 必须合法
+                 6. locator 的 line:N 必须存在且该行包含 quote
+                 7. quote 必须字面包含结构化 value
+                 8. 按 claim 收集带定位的 evidence
+                 9. 零/一/多个 unique value → insufficient/supported/conflict
+                10. 对 claim/value/citation 做确定性排序
             ↓
 expected.json ──→ 对列出的 claims 与 unsupported count 做相等检查
-negative.json ──→ proposed_answer 存在且输出中有 conflict
+negative.json ──→ candidate claim 必须与 ledger 的 status/values/citations 一致
             ↓
 case result ──→ expected matched AND negative rejected
 ```
 
-这里没有搜索、图节点、LLM synthesis（模型综合）或 citation entailment（引用蕴含）判断。函数处理的来源已被 fixture 预先结构化。
+这里没有搜索、图节点、LLM synthesis（模型综合）或 citation entailment（引用蕴含）模型。Quote/location/value 检查是字面 grounding（落点验证），不是语义真值判断；函数处理的来源已被 fixture 预先结构化。
 
 ## 四个 fixture 文件分别负责什么
 
 | 文件 | 当前内容 | 责任 |
 | --- | --- | --- |
 | `manifest.json` | 来源、许可、核对日、个人数据标记、三个文件 hash | 冻结输入并阻止静默篡改 |
-| `input.json` | Query 与三个 source/claim/value records | 固定 claim ledger 的原始输入 |
-| `expected.json` | 一个 conflict、一个 supported、零 unsupported | 定义状态与 citation 断言 |
-| `negative.json` | “The policy is definitely 45 days.” | 表达不能强行消解冲突的教学负例 |
+| `input.json` | Query、required claims 与三个带 snapshot/locator/quote 的 evidence records | 固定 claim ledger 的原始输入 |
+| `expected.json` | 一个 conflict、一个 supported、一个 insufficient | 定义覆盖状态与结构化 citation 断言 |
+| `negative.json` | 只保留 45 和 policy-v2 的 candidate claim | 证明不能隐藏冲突值与另一条引用 |
 
 整个 fixture hash 当前为：
 
 ```text
-23b3ff2a78d63ee51b2b7cf911f76082c8490c31c338abd1d4b81678b3c353ac
+b477fdac98f2b55d7f0654d4e983c852a98072a049161b72b4dddc74be8ce5eb
 ```
 
-Eval task 通过固定 commit、path 与 hash 引用这组输入。改变来源、expected 或负例时必须产生新 fixture identity 和新 run；不能只更新 manifest hash 后沿用旧证据。
+当前 lab 使用上面的 v1.1 fixture。历史 Eval task `research-01` 仍通过 commit `6aada53…`、固定 path 与旧 hash `23b3ff2…` 读取 v1.0 输入；它不会被本次升级静默改写。若要用 v1.1 形成新评测证据，应新增 fixture ref、Task/run identity 和结果，而不是给旧 run 换 hash。
 
 ## 当前运行时契约
 
 | 字段 | 接受值 | 用途 | 当前未覆盖 |
 | --- | --- | --- | --- |
 | `query` | 非空 string | 证明 Task 输入存在 | 不参与筛选、scope 或状态 |
-| `sources` | list | Claim ledger 输入 | 空集合合法，未定义 insufficiency |
-| `source.id` | 非空且全局唯一 string | Citation identity | URL、版本、hash、publisher、许可 |
+| `required_claims` | 至少一项、无重复的非空 string list | 定义 coverage 分母 | 是否完整覆盖真实问题仍靠 brief 复核 |
+| `sources` | list | Claim evidence 输入 | 真实搜索、抓取与候选排除 |
+| `source.id` | 非空且全局唯一 string | Citation identity | Canonical URL、版本、hash、publisher、许可 |
+| `source.opened` | 必须为 `true` | 防止未打开候选进入引用 | 这里只是冻结状态，不执行网络获取 |
+| `source.snapshot` | 非空合成文本 | Locator 的固定载体 | 独立 artifact、媒体类型、真实内容 hash |
 | `source.claim` | 非空 string | 分组键 | Claim type、scope、时间和粒度 |
 | `source.value` | 非空 string | 冲突判定 | 规范化、单位、语义等价和置信度 |
+| `source.locator` | `line:<positive-integer>` | 定位 snapshot 行 | Page/section/table/cell 等真实定位器 |
+| `source.quote` | 必须出现在定位行且包含 value | 字面 grounding | 语义蕴含、scope、否定与单位判断 |
+| `source.relation` | 当前只能是 `supports` | 声明 evidence 关系 | `contradicts/qualifies` 与关系验证 |
 | 其他字段 | 当前被忽略 | 无 | Unknown-field policy 与 schema version |
 
 Source ID 唯一性是必要但不充分的 provenance（来源链）控制。两个 ID 仍可能转载同一公告；同一个组织也可能发布两个彼此依赖的页面。真实 independent source count 必须分析 `derived_from/cites/republishes/shares_dataset`。
 
 ## 冲突是怎样算出来的
 
-函数对同一 claim 的所有 value 去重并排序：
+函数先为 required claim 建立 coverage 集合，再对同一 claim 的所有已验证 evidence value 去重并排序：
 
 ```text
+len(evidence) == 0       → insufficient
 len(unique_values) == 1  → supported
 len(unique_values) > 1   → conflict
 ```
@@ -124,7 +133,7 @@ len(unique_values) > 1   → conflict
 
 ### 相同值不等于独立验证
 
-如果两个 source IDs 都给 `yes`，结果仍是 `supported` 并保留两个 citations。但函数不检查二者是否独立、是否同 scope、是否复制同一来源。因此 citation 数不能直接当证据强度。
+如果两个 source IDs 都给 `yes`，结果仍是 `supported` 并保留两个结构化 citations。但函数不检查二者是否独立、是否同 scope、是否复制同一来源。因此 citation 数不能直接当证据强度。
 
 ### 同一来源不能制造自我冲突
 
@@ -141,22 +150,29 @@ Claims 按 claim 字符串排序。每项包含：
   "claim": "retention_days",
   "status": "conflict",
   "values": ["30", "45"],
-  "citations": ["policy-v1", "policy-v2"]
+  "citations": [
+    {
+      "source_id": "policy-v1",
+      "value": "30",
+      "locator": "line:2",
+      "quote": "Records are retained for 30 days.",
+      "relation": "supports"
+    }
+  ]
 }
 ```
 
-Citation 只是 source ID，不含 URL、locator、quote、checked date 或 relation。当前实现能保证 ID 来自输入，不能保证 source 内容实际支持 value。
+示例为节省篇幅只展示第一条 citation，真实输出还保留 policy-v2。当前实现能保证 source ID 来自输入、locator 行存在、quote 位于该行且字面包含 value；它仍不含真实 URL、独立 snapshot hash、checked date 或 publisher，也不能判断否定、条件句、单位与 scope，因此不能把字面命中叫作语义蕴含。
 
 ### `status`
 
-当前只有 `supported` 和 `conflict`。没有：
+当前有 `supported`、`conflict` 和 `insufficient`。仍没有：
 
 - `contradicted`：需要明确待判断的候选主张与反证关系；
-- `insufficient`：需要问题所需 claims/coverage contract；
 - `qualified`：需要 scope 限定关系；
 - `pending/unavailable`：需要来源获取状态。
 
-空 sources 会返回空 claims，而不是自动生成 `insufficient`，因为函数不知道 query 必须回答哪些 claims。
+空 sources 会把所有 `required_claims` 返回为 `insufficient`。这解决了“缺失 claim 从输出消失”的结构问题，但 required list 本身是否完整、是否正确拆分，仍需由 research brief 和 reviewer 决定。
 
 ### `values`
 
@@ -164,13 +180,13 @@ Citation 只是 source ID，不含 URL、locator、quote、checked date 或 rela
 
 ### `citations`
 
-Citation list 按 `(source_id, value)` 排序，保留输入的每条 evidence record。不同 source IDs 提供相同值时都会保留；函数不做转载去重或引用支持检查。
+Citation list 按 `(source_id, value, locator, quote, relation)` 排序，保留输入的每条 evidence record。不同 source IDs 提供相同值时都会保留；函数验证字面 locator/quote/value 链，但不做转载去重或自然语言蕴含检查。
 
 ### `unsupported_claims`
 
-当前固定返回 `0`，不是从 draft、required claims 或 evidence coverage 计算。Fixture 也没有无来源 claim。因此它只能表示“这个最小输出契约预期没有显式 unsupported 项”，不能证明系统会识别模型新编的事实。
+当前值为 `1`，由 `required_claims` 中状态为 `insufficient` 的条目计数：`deletion_process` 没有 evidence，因此不会被静默删除。它证明固定 coverage contract 生效，不证明 required list 已覆盖问题，也不证明系统会识别模型在最终报告中新编的事实。
 
-未来要使该字段有意义，至少需要 candidate claims、required scope、claim-to-evidence links 和独立 validator；对每条 draft claim 判断 supported/conflict/insufficient 后再统计。
+要覆盖最终报告，还需要解析 candidate claims，并将每条 draft claim 链回这个 ledger；新出现、扩大 scope 或改变限定条件的主张都应单独判为 unsupported。当前 structured negative 只验证一个候选 claim 是否完整复现 ledger 的 status、values 与 citations。
 
 ### `integration` 与 `mode`
 
@@ -178,9 +194,9 @@ Citation list 按 `(source_id, value)` 排序，保留输入的每条 evidence r
 
 ### `negative_rejected`
 
-现有 runner 只检查两件事：`proposed_answer` 是 string；输出 claims 中至少有一个 `status=conflict`。它不解析句子中的 `45`，也不验证 proposal 与 `retention_days` 的对应关系。
+现有 runner 读取结构化 `candidate_claim`，按 claim ID 找到 ledger 条目，再比较 `status`、`values` 与 `citations`。负例把 `retention_days` 从 conflict 改成 supported，只保留 45 和 policy-v2，因此必须被拒绝。
 
-因此负例提供的是“冲突存在时，测试要求拒绝单一答案”的结构信号，不是自然语言事实核验。若把 proposed text 换成另一任意字符串，只要输出仍有 conflict，当前负例也可能通过。这是必须公开的限制。
+这比“任意文本 + 输出里存在 conflict”更强，但仍只是结构化 ledger 一致性，不解析自然语言答案。真实报告 validator 还要抽取复合主张、限定词、否定、数值单位和 citation span，不能把这个负例称为开放文本事实核验。
 
 ## 运行固定正例
 
@@ -207,16 +223,19 @@ uv run --frozen --offline python scripts/run-labs.py research
 
 ```text
 case_id                = research
-fixture_hash           = 23b3ff2a78d63ee51b2b7cf911f76082c8490c31c338abd1d4b81678b3c353ac
+fixture_hash           = b477fdac98f2b55d7f0654d4e983c852a98072a049161b72b4dddc74be8ce5eb
 negative_rejected      = true
 safety_violation       = false
+deletion_process.status = insufficient
+deletion_process.citations = []
 retention_days.status  = conflict
 retention_days.values  = [30, 45]
-retention_days.citations = [policy-v1, policy-v2]
+retention_days.citations[*].source_id = [policy-v1, policy-v2]
+retention_days.citations[*].locator = [line:2, line:2]
 review_required.status = supported
 review_required.values = [yes]
-review_required.citations = [legal-note]
-unsupported_claims     = 0
+review_required.citations[0].source_id = legal-note
+unsupported_claims     = 1
 integration            = LangGraph
 mode                   = offline-contract-seam
 ```
@@ -225,13 +244,13 @@ mode                   = offline-contract-seam
 
 ## 运行直接契约测试
 
-以下命令分别验证固定 claim ledger、重复来源身份与空 query：
+以下命令验证固定 claim ledger、重复来源身份、空 query、错误 locator、quote/value 不一致和未打开来源：
 
 ```powershell
-uv run --frozen --offline pytest -q lab/tests/test_m5_labs.py::test_research_fixture_preserves_conflict_and_claim_citations lab/tests/test_m5_labs.py::test_research_rejects_duplicate_source_identity lab/tests/test_m5_labs.py::test_research_requires_non_empty_query
+uv run --frozen --offline pytest -q lab/tests/test_m5_labs.py -k research
 ```
 
-预期 `3 passed`、退出码 0。后两项通过表示坏输入被异常拒绝，不表示重复来源或空 query 被接受。
+预期所有 research 测试通过、退出码 0。拒绝类测试通过表示坏输入被异常拒绝，不表示错误引用、重复来源或空 query 被接受。
 
 再检查上一步结果中的 `offline=true`、`evidence=E1` 与 `mode=offline-contract-seam`。它们证明固定研究职责接缝运行过，不证明 LangGraph 已安装、graph/checkpointer 实际执行或 live provider 可用；字段缺失或结论越界时停止引用。证据边界必须从真实结果和依赖状态得出，不能由映射名或页面关键词自动判定。
 
@@ -243,9 +262,9 @@ uv run --frozen --offline pytest -q lab/tests/test_m5_labs.py::test_research_fix
 - Allowed tools：`fixture.read`、`assert`；
 - Budget：8 steps、8 model calls、1000 ms、0 美元；
 - Acceptance：`passed=true`；
-- Fixture ref：固定 commit、path 与上述 hash。
+- Fixture ref：历史 Eval 固定 commit、path 与 v1.0 hash `23b3ff2…`，不指向当前 v1.1 工作树。
 
-样例 runs 中，`offline-default` 记录 `failure_type=verification` 与一个 human turn，`offline-engineering` 记录通过。它们是合成 E1 分析数据，不是真实搜索、模型或 LangGraph run，不能用两行样例比较 Framework/模型研究质量。
+样例 runs 中，`offline-default` 记录 `failure_type=verification` 与一个 human turn，`offline-engineering` 记录通过。它们引用历史 v1.0 fixture，是合成 E1 分析数据，不是真实搜索、模型或 LangGraph run，也不证明本轮 v1.1 引用验证；不能用两行样例比较 Framework/模型研究质量。
 
 真实研究 Eval 还需保存 brief、query logs、source candidates、opened snapshots、claim/evidence ledger、conflicts、report、citation verification 和 unresolved。
 
@@ -258,9 +277,12 @@ uv run --frozen --offline pytest -q lab/tests/test_m5_labs.py::test_research_fix
 | Source ID 重复 | Source registry/provenance | 拒绝并修正身份 | 当成两个独立来源 |
 | 30/45 被写成 supported | Value set 与 status 规则 | 保留 conflict | 选择较新名字 |
 | Citation 丢失 | Evidence grouping 与排序 | 判失败，修映射 | 因值保留而放行 |
+| Quote 不在 locator 行 | Snapshot/locator/quote identity | 拒绝 evidence，修提取路径 | 只保留 source ID |
+| Quote 不含结构化 value | Claim extraction | 拒绝不一致记录 | 相信预填 value |
+| Required claim 无 evidence | Coverage | 输出 insufficient | 从报告中删掉该项 |
 | 两个 citations 实为转载 | Provenance graph | 合并独立来源计数 | 数 URL 当共识 |
-| `unsupported_claims=0` 但 draft 编造 | Draft/claim validator 缺失 | 增加 coverage 检查 | 相信硬编码指标 |
-| 负例任意文本也通过 | Proposal validator 缺失 | 结构化 candidate claim | 把它叫自然语言核验 |
+| `unsupported_claims=1` 仍有 draft 编造 | Draft parser/validator 缺失 | 将 draft claim 链回 ledger | 把 coverage 数当无幻觉证明 |
+| 结构化负例通过但自然语言越界 | Report parser 缺失 | 增加 candidate-claim extraction | 把结构一致叫自然语言核验 |
 | `integration` 被当成接入 | Boundary mode 与依赖 | 降回 E1 描述 | 安装包让措辞成立 |
 
 诊断顺序建议为 brief/query → source acquisition → source identity/provenance → claim extraction → evidence linking → conflict/coverage → synthesis → citation validator → evaluator。语言流畅度不能修复上游来源和状态错误。
@@ -269,7 +291,7 @@ uv run --frozen --offline pytest -q lab/tests/test_m5_labs.py::test_research_fix
 
 ### 阶段 A：丰富结构化 ledger
 
-给 source 增加 canonical ID、publisher、version、checked/effective date、hash、license、scope 和 locator；给 claim 增加 type、scope、unit 与 relation。增加 `insufficient/contradicted/qualified` 状态和 required-claim coverage。
+当前已有最小 required-claim coverage 与合成 snapshot/line locator。下一步给 source 增加 canonical ID、publisher、version、checked/effective date、独立 snapshot hash、license 和 scope；给 claim 增加 type、scope、unit，并增加 `contradicted/qualified/pending` 状态与可验证 relation。
 
 ### 阶段 B：候选发现与来源获取
 
@@ -345,7 +367,7 @@ git diff -- lab/fixtures/research lab/src/about_harness/integrations/langgraph.p
 
 ### 已知限制
 
-当前只有一个非空 query、三个已结构化来源、两个 claims、一个冲突和一个弱自然语言负例。没有真实来源、版本/scope、搜索、snapshot、模型、引用支持验证或 unsupported detection；这些限制决定结果不能外推到真实研究完整性或 LangGraph 质量。
+当前只有一个非空 query、三个已结构化来源、三个 required claims、一个冲突、一个支持、一个不足和一个结构化 candidate 负例。Snapshot 是 fixture 内合成字符串；line locator 与 value 只做字面验证。没有真实来源获取、独立 snapshot artifact、版本/scope、搜索、模型、语义蕴含或自然语言报告解析；这些限制决定结果不能外推到真实研究完整性或 LangGraph 质量。
 
 ## 完成检查表
 
@@ -354,9 +376,10 @@ git diff -- lab/fixtures/research lab/src/about_harness/integrations/langgraph.p
 - 是否明白当前 Query 不参与检索或 claim 选择？
 - 30/45 是否同时保留并引用双方？
 - 是否区分 citations 数与 independent sources 数？
-- 是否明白 `supported` 只由字符串值集合决定？
-- 是否明白 `unsupported_claims=0` 当前是常量？
-- 是否明白负例没有解析 proposed answer 的语义？
+- 是否确认每条 citation 的 locator、quote 与 value 字面一致？
+- 是否明白 `supported` 仍主要由字符串值集合决定？
+- 是否明白 `unsupported_claims=1` 只来自预先声明的 required list？
+- 是否明白结构化负例没有解析自然语言报告？
 - Integration 映射名是否没有被写成 LangGraph 已接入？
 - 新 source bundle/config 是否产生新 identity 与 run？
 - 真实计划是否覆盖 opened snapshot、locator、scope、冲突分类和 citation validator？
@@ -368,6 +391,6 @@ git diff -- lab/fixtures/research lab/src/about_harness/integrations/langgraph.p
 
 1. 为什么两个不同 source IDs 仍可能只有一个独立来源？
 2. 当前函数为什么不能决定 v2 的 45 天是“最新真值”？
-3. `unsupported_claims=0` 为什么不是开放报告的无幻觉证明？
-4. 现有 negative case 实际检查了 proposed answer 的哪些内容？
+3. `unsupported_claims=1` 为什么仍不是开放报告的无幻觉证明？
+4. 现有 negative case 实际检查了 candidate claim 的哪些字段？
 5. 从结构化 ledger 升级到真实研究 Agent 时，哪几层必须新增独立 artifact？
