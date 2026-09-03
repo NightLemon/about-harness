@@ -32,7 +32,9 @@ export function readJsonl(file) {
 }
 
 export function assertStudy(study) {
-  if (study.schema_version !== '1.0') throw new Error('study.schema_version must be 1.0')
+  if (!['1.0', '1.1'].includes(study.schema_version)) {
+    throw new Error('study.schema_version must be 1.0 or 1.1')
+  }
   if (!Array.isArray(study.configs) || new Set(study.configs).size < 2) {
     throw new Error('study requires at least two unique configs')
   }
@@ -63,6 +65,25 @@ export function assertStudy(study) {
   if (study.promotion === null || typeof study.promotion !== 'object' || Array.isArray(study.promotion)) {
     throw new Error('study.promotion must be an object')
   }
+  const analysisUnit = study.schema_version === '1.1' ? 'task' : 'run'
+  const taskPassMinRuns = study.schema_version === '1.1'
+    ? study.promotion.task_pass_min_runs
+    : null
+  const allowedPromotionFields = study.schema_version === '1.1'
+    ? new Set(['pass_rate_analysis_unit', 'task_pass_min_runs', 'min_pass_rate_delta', 'max_p90_cost_delta', 'safety_violations'])
+    : new Set(['min_pass_rate_delta', 'max_p90_cost_delta', 'safety_violations'])
+  const unknownPromotionFields = Object.keys(study.promotion).filter((key) => !allowedPromotionFields.has(key))
+  if (unknownPromotionFields.length > 0) {
+    throw new Error(`study ${study.schema_version} has unknown promotion fields: ${unknownPromotionFields.join(', ')}`)
+  }
+  if (study.schema_version === '1.1') {
+    if (study.promotion.pass_rate_analysis_unit !== 'task') {
+      throw new Error('promotion.pass_rate_analysis_unit must be task for study 1.1')
+    }
+    if (!Number.isInteger(taskPassMinRuns) || taskPassMinRuns < 1 || taskPassMinRuns > study.repeats) {
+      throw new Error('promotion.task_pass_min_runs must be an integer between 1 and study.repeats')
+    }
+  }
   if (!Number.isFinite(study.promotion.min_pass_rate_delta)
       || study.promotion.min_pass_rate_delta < -1
       || study.promotion.min_pass_rate_delta > 1) {
@@ -74,7 +95,7 @@ export function assertStudy(study) {
   if (study.promotion.safety_violations !== 0) {
     throw new Error('promotion.safety_violations must be zero')
   }
-  return { taskIds, workloads, holdout }
+  return { taskIds, workloads, holdout, analysisUnit, taskPassMinRuns }
 }
 
 function numberAtLeast(row, key, minimum = 0) {

@@ -108,16 +108,17 @@ npm run eval:summary
 
 ### 预期输出与断言
 
-Validator 应报告 20 个 task、6 类 workload、2 个 config、3 次重复、6 个 holdout，故正式矩阵是 `20 × 2 × 3 = 120` 个单元。样例只有 12 个 development E1 单元，缺 108 个，`sample_matrix_complete=false`。
+Validator 应报告 Study 1.1、task-level 2/3 成功规则、20 个 task、6 类 workload、2 个 config、3 次重复、6 个 holdout，故正式矩阵是 `20 × 2 × 3 = 120` 个单元。样例只有 12 个 development E1 单元，缺 108 个，`sample_matrix_complete=false`。
 
 Summary 应满足：
 
 - `matrix.complete=false`、`promotion_eligible=false`；
 - 阻断项同时包含 `incomplete_matrix` 与 `evidence_below_target`；
 - 两个 config 的 `by_split.holdout` 都是 `null`；
+- 两个 config 都有 6 个不完整 development task，没有可进入 2/3 聚合分母的任务；
 - development 配对为 5 win、0 loss、1 tie，但这不能覆盖缺失矩阵或证据边界。
 
-这个输出是 E1：它证明 schema、fixture lineage、矩阵统计和报告路径能处理固定样例，不证明 `offline-engineering` 对真实模型更好。汇总器只会在结构条件满足后，用完整 holdout 执行 run-level 通过率和 P90 费用点估计阈值；当前样例因此保持 `blocked`。Task-level 聚合、区间、污染审计和最终采用仍必须按[指标与区间](/evaluation/metrics)另行复核。
+这个输出是 E1：它证明 schema、fixture lineage、矩阵统计和报告路径能处理固定样例，不证明 `offline-engineering` 对真实模型更好。`study-v1.1` 先按 2/3 规则聚合任务；汇总器只会在结构条件满足后，用完整 holdout 执行 task-level 通过率和 run-level P90 费用点估计阈值，当前样例因此保持 `blocked`。配对差异区间、污染审计和最终采用仍必须按[指标与区间](/evaluation/metrics)另行复核。
 
 ### 失败案例、停止与恢复
 

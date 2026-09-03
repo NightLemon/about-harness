@@ -75,7 +75,7 @@ Task（任务）通常是主要独立样本；同一任务的多次 run 是对�
 - **Workload-level 结果**：按 coding、browser 等任务族分层，防止一个大类掩盖另一个小类；
 - **Pair-level 差异**：同一 task、repeat 下候选与 baseline 的直接对照，减少任务难度差异。
 
-Task-level 聚合必须提前定义，例如“3 次中至少 2 次通过”或“3 次全部通过”。`npm run eval:summary` 当前输出的是 run-level `pass_rate` 和 `distinct_tasks`，并没有计算 task-level 成功率；报告不能仅凭这两个字段拼出未预注册的 task-level 结论。
+Task-level 聚合必须提前定义，例如“3 次中至少 2 次通过”或“3 次全部通过”。当前 `study-v1.1` 用 `task_pass_min_runs=2` 固定前一种规则；`npm run eval:summary` 同时保留 run-level 原始汇总和 task-level 结果。一个任务只有收齐 `study.repeats` 个矩阵单元才可聚合，缺失重复进入 `incomplete_tasks`，不能被静默算作失败或从分母消失。
 
 ### 数据通常是嵌套的
 
@@ -308,11 +308,11 @@ Sensitivity analysis（敏感性分析）还可以比较：基础设施首次尝
 2. 每行 evidence 等于 study 的目标等级；
 3. 没有 `safety_violation=true`。
 
-结构前置条件全部满足后，汇总器才按 candidate 分别读取 holdout：`min_pass_rate_delta` 是候选减基线的 run-level 成功率绝对差，例如 `0.05` 表示至少增加 5 个百分点；`max_p90_cost_delta` 是候选减基线的单次运行 P90 费用绝对差，单位为 USD，例如 `0.2` 表示最多增加 0.20 美元。两者不是相对百分比。`promotion_analysis` 会保存基线、split、分析单位、阈值、观察值和每个候选的 blocker；顶层 `promotion_eligible=true` 表示至少一个候选同时通过结构条件和这两个点估计阈值。
+结构前置条件全部满足后，汇总器才按 candidate 分别读取 holdout。`study-v1.1` 先按预注册的成功次数把 repeats 聚合为任务结果；`min_pass_rate_delta` 是候选减基线的 task-level 成功率绝对差，例如 `0.05` 表示至少增加 5 个百分点。`max_p90_cost_delta` 仍是候选减基线的单次运行 P90 费用绝对差，单位为 USD，例如 `0.2` 表示最多增加 0.20 美元。两者不是相对百分比。`promotion_analysis` 会保存 Study 版本、基线、split、分析单位、任务聚合规则、阈值、观察值和每个候选的 blocker；顶层 `promotion_eligible=true` 表示至少一个候选同时通过结构条件和这两个点估计阈值。
 
-这仍不是自动采用决定。当前工具没有把 repeats 聚合成 task-level 指标，也没有计算配对效应区间、bootstrap、统计检验、关键 workload 非劣界限或 holdout 污染状态。点估计刚过线但区间很宽时，负责人仍应给出 `inconclusive`，不能把 `promotion_eligible` 当成发布命令。
+这仍不是自动采用决定。当前工具虽会计算 task-level 比例和各配置的 Wilson 区间，但没有计算候选减基线的配对效应区间、task bootstrap、关键 workload 非劣界限、多重比较修正或 holdout 污染状态。点估计刚过线但差异区间很宽时，负责人仍应给出 `inconclusive`，不能把 `promotion_eligible` 当成发布命令。
 
-当前 12 行样例因为缺 108 个单元、没有 holdout run，且 E1 低于目标 E3，正确输出是 `promotion_eligible=false`；候选在 `promotion_analysis` 中为 `blocked`，阈值观察值保持 `null`，而不是拿 development 代替 holdout。即使 development 的 candidate 为 6/6，也不能晋级。
+当前 12 行样例因为缺 108 个单元、每个 development task 也只有 1/3 次重复、没有 holdout run，且 E1 低于目标 E3，正确输出是 `promotion_eligible=false`。两组 development 的 task-level 汇总都显示 6 个 `incomplete_tasks`、0 个 `evaluable_tasks`；候选在 `promotion_analysis` 中为 `blocked`，阈值观察值保持 `null`。即使 candidate 的六个单次 run 都通过，也不能把它们伪装成六个达到 2/3 规则的任务。
 
 ### 把区间映射为三种决定
 
@@ -336,7 +336,7 @@ npm run eval:validate
 npm run eval:summary
 ```
 
-预期 validator 报告 20 tasks、2 configs、3 repeats、120 个预期单元、12 个已观察单元和 108 个缺失单元。Summary 应显示 development 的两组 `k/n`、Wilson 区间、5/0/1 配对结果、`holdout: null`、`promotion_eligible: false`，阻断项含 `incomplete_matrix` 与 `evidence_below_target`；`promotion_analysis.candidates.offline-engineering.status` 为 `blocked`，两个 delta 为 `null`。
+预期 validator 报告 `study_schema_version=1.1`、`pass_rate_analysis_unit=task`、`task_pass_min_runs=2`、20 tasks、2 configs、3 repeats、120 个预期单元、12 个已观察单元和 108 个缺失单元。Summary 应显示 development 的 run-level 两组 `k/n`、task-level `evaluable_tasks=0`、5/0/1 run 配对、`holdout: null`、`promotion_eligible: false`，阻断项含 `incomplete_matrix` 与 `evidence_below_target`；候选状态为 `blocked`，两个 delta 为 `null`。
 
 任一数字不符时先停止，不要直接改期望输出。检查 study、run identity、repeat、split 和 fixture lineage；若为了练习修改样例，保存 diff，并只还原自己改动的文件。本命令只读取输入，无需额外清理。
 

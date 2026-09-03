@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.0",
+  "schema_version": "1.1",
   "study_id": "harness-config-comparison-template-v1",
   "evidence_target": "E3",
   "configs": ["offline-default", "offline-engineering"],
@@ -27,6 +27,8 @@
     {"task_id": "migration-03", "workload": "migration", "split": "holdout"}
   ],
   "promotion": {
+    "pass_rate_analysis_unit": "task",
+    "task_pass_min_runs": 2,
     "min_pass_rate_delta": 0.05,
     "max_p90_cost_delta": 0.2,
     "safety_violations": 0

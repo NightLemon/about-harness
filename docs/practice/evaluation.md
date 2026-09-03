@@ -67,11 +67,14 @@ npm run eval:validate
 
 ```json
 {
+  "study_schema_version": "1.1",
   "tasks": 20,
   "workloads": 6,
   "holdout": 6,
   "configs": 2,
   "repeats": 3,
+  "pass_rate_analysis_unit": "task",
+  "task_pass_min_runs": 2,
   "sample_rows": 12,
   "fixture_refs": 6,
   "formal_matrix_rows": 120,
@@ -102,9 +105,9 @@ npm run eval:summary
 
 Study 的目标是 E3，当前 run 全是 E1，所以即使 120 cells 全部补齐也不能仅凭这些离线记录达到目标证据。当前合成数据中 `offline-default` 为 1/6、`offline-engineering` 为 6/6，配对结果为 5 wins、0 losses、1 tie；这些数字由作者构造来演示分析路径，不是模型测量值。
 
-汇总器输出的是 **run-level pass rate**，并给出成功数、run 数、distinct tasks 和 Wilson 95% 区间。它没有按“3 次中至少 2 次通过”等规则计算 task-level 成功，也没有做显著性检验。报告时必须写清分析单位，不能用 `distinct_tasks` 和 run 通过率自行拼成任务通过率。
+汇总器同时输出 **run-level pass rate** 和 `study-v1.1` 预注册的 task-level 结果。当前规则是“3 次中至少 2 次通过”；只有收齐三次的任务才进入 task 分母，缺失重复单列为 `incomplete_tasks`。两层都给出成功数、分母和 Wilson 95% 区间；报告仍须写清分析单位，不能拿 run 数冒充独立任务数。
 
-只有矩阵完整、证据达到目标且安全违规为零时，汇总器才对 holdout 执行预注册阈值。`min_pass_rate_delta=0.05` 表示候选的 run-level 成功率至少比基线高 5 个百分点；`max_p90_cost_delta=0.2` 表示候选的每次运行 P90 费用最多高 0.20 USD。当前样例没有 holdout，因此 `promotion_analysis` 将候选标为 `blocked` 并把观察值留为 `null`，不会借用 development 数字。
+只有矩阵完整、证据达到目标且安全违规为零时，汇总器才对 holdout 执行预注册阈值。`min_pass_rate_delta=0.05` 表示候选的 task-level 成功率至少比基线高 5 个百分点；`max_p90_cost_delta=0.2` 表示候选的每次运行 P90 费用最多高 0.20 USD。当前样例没有 holdout，development 任务也都缺 2 次重复，因此 `promotion_analysis` 将候选标为 `blocked` 并把观察值留为 `null`，不会借用单次 development 数字。
 
 ## 第三步：证明门禁真的会失败
 
@@ -117,7 +120,8 @@ npm run eval:self-test
 - 重复 `run_id` 与不同 ID 的重复矩阵 cell；
 - 同一配置的 `instruction_hash` 漂移；
 - 被篡改的 fixture ref、错误 path、Task hash 和 run hash；
-- 会让不完整 E1 样例错误晋级的条件，以及完整矩阵中的通过率不足、P90 费用超限和非法阈值；
+- 会让不完整 E1 样例错误晋级的条件，以及完整矩阵中的 task-level 通过率不足、P90 费用超限、非法阈值和超过 repeats 的任务成功规则；
+- `study-v1.0` 的 run-level 历史语义与 `study-v1.1` 的 task-level 新语义；
 - 含合成 Secret、`rawPrompt` 或不支持 `.log` 格式的公开产物。
 
 外层命令通过，含义是“坏输入按预期失败”，不是坏输入被接受。测试会删除自己创建的临时目录，不修改 `evals/`。
@@ -162,8 +166,8 @@ npm run results:redact
 
 ## 当前实现尚未替你做什么
 
-- `promotion_eligible` 会执行完整 holdout 的 run-level 成功率与 P90 费用点估计阈值，但它不是自动采用决定；task-level 重复聚合、区间和业务复核仍需独立完成。
-- 汇总器不计算 task-level 聚合、bootstrap、配对区间、统计检验或多重比较修正。
+- `promotion_eligible` 会执行完整 holdout 的 task-level 成功率与 run-level P90 费用点估计阈值，但它不是自动采用决定；差异区间和业务复核仍需独立完成。
+- 汇总器不计算 task bootstrap、候选—基线配对差异区间、关键 workload 非劣门槛或多重比较修正。
 - Validator 证明六个当前示例的 lineage，不证明 formal study 中其余 14 个 Task 已实现。
 - `instruction_hash` 证明字节身份，不证明指令实际被 harness 加载；模型、provider 和 harness 字段也需要运行时采集来源。
 - 当前样例没有 trace、真实 usage、外部副作用对账或 Judge（模型/人工评分器）结果。
