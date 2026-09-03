@@ -15,7 +15,7 @@ const asOf = new Date(`${asOfText}T00:00:00Z`)
 if (Number.isNaN(asOf.valueOf())) errors.push(`invalid FACTS_AS_OF date: ${asOfText}`)
 if (maxAge !== null && (!Number.isInteger(maxAge) || maxAge < 0)) errors.push('max age must be a non-negative integer')
 
-const header = '| ID | Claim | Kind | Source | Version | Checked | Volatility | Evidence | Status | Used by |'
+const header = '| ID | Claim | Kind | Source | Version | Checked | Volatility | Source status | Experiment level | Experiment ref | Used by |'
 if (!text.includes(header)) errors.push('fact registry header changed; update parser deliberately')
 
 const rows = text
@@ -26,8 +26,8 @@ const rows = text
 const ids = new Set()
 const allowedKinds = new Set(['project', 'repository', 'product', 'standard'])
 const allowedVolatility = new Set(['low', 'medium', 'high'])
-const allowedEvidence = new Set(['E0', 'E1', 'E2', 'E3'])
-const allowedStatus = new Set(['verified', 'pending', 'conflict', 'retired'])
+const allowedExperimentLevels = new Set(['E0', 'E1', 'E2', 'E3'])
+const allowedSourceStatuses = new Set(['verified', 'pending', 'conflict', 'retired'])
 const datePattern = /^\d{4}-\d{2}-\d{2}$/
 
 function routeFile(route) {
@@ -44,11 +44,11 @@ function routeExists(route) {
 }
 
 for (const cells of rows) {
-  if (cells.length !== 10) {
-    errors.push(`registry row has ${cells.length} cells instead of 10: ${cells[0] || '<unknown>'}`)
+  if (cells.length !== 11) {
+    errors.push(`registry row has ${cells.length} cells instead of 11: ${cells[0] || '<unknown>'}`)
     continue
   }
-  const [id, claim, kind, source, version, checked, volatility, evidence, status, usedBy] = cells
+  const [id, claim, kind, source, version, checked, volatility, sourceStatus, experimentLevel, experimentRef, usedBy] = cells
   if (ids.has(id)) errors.push(`${id}: duplicate ID`)
   ids.add(id)
   if (claim.length < 8) errors.push(`${id}: claim is too vague`)
@@ -57,23 +57,38 @@ for (const cells of rows) {
   if (!version) errors.push(`${id}: missing version`)
   if (!datePattern.test(checked)) errors.push(`${id}: checked date must be YYYY-MM-DD`)
   if (!allowedVolatility.has(volatility)) errors.push(`${id}: invalid volatility ${volatility}`)
-  if (!allowedEvidence.has(evidence)) errors.push(`${id}: invalid evidence ${evidence}`)
-  if (!allowedStatus.has(status)) errors.push(`${id}: invalid status ${status}`)
-  if (status === 'verified' && evidence === 'E0') errors.push(`${id}: verified fact cannot remain E0`)
+  if (!allowedSourceStatuses.has(sourceStatus)) errors.push(`${id}: invalid source status ${sourceStatus}`)
+  if (!allowedExperimentLevels.has(experimentLevel)) errors.push(`${id}: invalid experiment level ${experimentLevel}`)
+  if (experimentLevel === 'E0' && experimentRef !== '-') {
+    errors.push(`${id}: E0 must use - as Experiment ref`)
+  }
+  if (experimentLevel !== 'E0') {
+    if (!experimentRef || experimentRef === '-') {
+      errors.push(`${id}: ${experimentLevel} requires an Experiment ref`)
+    } else {
+      const experimentPath = path.resolve(root, experimentRef)
+      const relativeExperimentPath = path.relative(root, experimentPath)
+      if (relativeExperimentPath.startsWith('..') || path.isAbsolute(relativeExperimentPath)) {
+        errors.push(`${id}: Experiment ref must stay inside the repository`)
+      } else if (!fs.existsSync(experimentPath) || !fs.statSync(experimentPath).isFile()) {
+        errors.push(`${id}: Experiment ref does not exist: ${experimentRef}`)
+      }
+    }
+  }
   if (datePattern.test(checked) && !Number.isNaN(asOf.valueOf())) {
     const checkedAt = new Date(`${checked}T00:00:00Z`)
     const ageDays = Math.floor((asOf - checkedAt) / 86_400_000)
     if (ageDays < 0) errors.push(`${id}: checked date ${checked} is after as-of date ${asOfText}`)
-    if (status === 'verified' && ageDays > 30) warnings.push(`${id}: ${ageDays} days old; queued for review`)
-    if (status === 'verified' && ageDays > 90) warnings.push(`${id}: ${ageDays} days old; online page needs an expired notice`)
-    if (maxAge !== null && status === 'verified' && volatility === 'high' && ageDays > maxAge) {
+    if (sourceStatus === 'verified' && ageDays > 30) warnings.push(`${id}: ${ageDays} days old; queued for review`)
+    if (sourceStatus === 'verified' && ageDays > 90) warnings.push(`${id}: ${ageDays} days old; online page needs an expired notice`)
+    if (maxAge !== null && sourceStatus === 'verified' && volatility === 'high' && ageDays > maxAge) {
       errors.push(`${id}: high-volatility fact is ${ageDays} days old; freshness limit is ${maxAge}`)
     }
   }
   const usedByFile = routeFile(usedBy)
   if (!usedBy.startsWith('/')) errors.push(`${id}: Used by must be a site route: ${usedBy}`)
   else if (!usedByFile) errors.push(`${id}: Used by route does not exist: ${usedBy}`)
-  else if (status !== 'retired' && !fs.readFileSync(usedByFile, 'utf8').includes(`[FACT:${id}]`)) {
+  else if (sourceStatus !== 'retired' && !fs.readFileSync(usedByFile, 'utf8').includes(`[FACT:${id}]`)) {
     errors.push(`${id}: Used by route ${usedBy} is missing [FACT:${id}]`)
   }
   if (source.startsWith('/') && !routeExists(source)) errors.push(`${id}: source route does not exist: ${source}`)
@@ -110,6 +125,7 @@ if (errors.length) {
   process.exit(1)
 }
 
-const statusCounts = Object.fromEntries([...allowedStatus].map((status) => [status, rows.filter((row) => row[8] === status).length]))
+const sourceStatusCounts = Object.fromEntries([...allowedSourceStatuses].map((status) => [status, rows.filter((row) => row[7] === status).length]))
+const experimentCounts = Object.fromEntries([...allowedExperimentLevels].map((level) => [level, rows.filter((row) => row[8] === level).length]))
 for (const warning of warnings) console.warn(`Warning: ${warning}`)
-console.log(`Fact check passed: ${rows.length} claims; ${JSON.stringify(statusCounts)}; as-of ${asOfText}; stale notices ${warnings.length}.`)
+console.log(`Fact check passed: ${rows.length} claims; sources ${JSON.stringify(sourceStatusCounts)}; experiments ${JSON.stringify(experimentCounts)}; as-of ${asOfText}; stale notices ${warnings.length}.`)

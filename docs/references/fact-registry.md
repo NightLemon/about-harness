@@ -2,6 +2,8 @@
 
 本表供读者追溯易变主张，也供 `npm run facts:check` 解析。每行只登记一个可定位事实；正文使用 `[FACT:ID]` 引用。表格列名和顺序是机器接口。
 
+来源状态与实验等级是两条独立证据轴。官方页面已核验只会把 `Source status` 设为 `verified`，不会自动提升 `Experiment level`。E1–E3 必须在 `Experiment ref` 指向仓库内实际结果；没有实验时保持 E0 并填写 `-`。
+
 ## 状态与时效
 
 - `verified`：来源、目标版本与核对日期已实际检查；
@@ -13,24 +15,26 @@
 
 ## Registry
 
-| ID | Claim | Kind | Source | Version | Checked | Volatility | Evidence | Status | Used by |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| boundary-harness | 本项目将 harness 定义为承载和约束 agent loop 的工作环境 | project | /foundations/what-is-harness | handbook-v1 | 2026-08-20 | low | E1 | verified | /guide/roadmap |
-| codex-agents-md | Codex 项目指令的发现、作用域与覆盖行为 | product | https://learn.chatgpt.com/docs/agent-configuration/agents-md | rolling | 2026-08-27 | high | E1 | verified | /harnesses/codex |
-| codex-config | Codex 配置层、字段与 surface 行为 | product | https://learn.chatgpt.com/docs/config-file/config-basic | rolling | 2026-08-27 | high | E1 | verified | /harnesses/codex |
-| codex-sandbox-approval | Codex sandbox mode、approval policy 与 network 是相互配合但职责独立的控制层 | product | https://learn.chatgpt.com/docs/agent-approvals-security | rolling | 2026-08-27 | high | E1 | verified | /harnesses/codex |
-| openai-function-calling | OpenAI function/tool calling 由模型请求、应用执行并用 call ID 回传结果组成 | product | https://developers.openai.com/api/docs/guides/function-calling | rolling | 2026-08-21 | high | E1 | verified | /models/openai |
-| openai-reasoning-items | Responses reasoning model 的连续 function calling 需要保留相关 reasoning/function/output items，可用 previous response ID 或完整回放 | product | https://developers.openai.com/api/docs/guides/reasoning | rolling | 2026-08-21 | high | E1 | verified | /models/openai |
-| openai-reasoning-effort | Reasoning effort 的支持值和默认值依具体模型而异 | product | https://developers.openai.com/api/docs/guides/reasoning | rolling | 2026-08-21 | high | E1 | verified | /models/openai |
-| claude-memory | Claude Code 的 CLAUDE.md 作用域与加载行为 | product | https://code.claude.com/docs/en/memory | rolling | 2026-08-20 | high | E1 | verified | /harnesses/claude-code |
-| claude-settings | Claude Code settings 与权限配置行为 | product | https://code.claude.com/docs/en/settings | rolling | 2026-08-27 | high | E1 | verified | /harnesses/claude-code |
-| pi-readme | Pi coding agent 的工具、session、compaction、context、skills 与 extensions 行为 | product | https://github.com/earendil-works/pi/tree/496185f6e4267b979e3663c45f7eb70b0c6a97b4/packages/coding-agent | 496185f6e4267b979e3663c45f7eb70b0c6a97b4 | 2026-08-27 | medium | E1 | verified | /harnesses/pi |
-| mcp-spec | MCP 定义 host/client/server 间的能力与消息协议，而不是自动授予工具权限 | standard | https://modelcontextprotocol.io/specification | rolling | 2026-08-20 | medium | E1 | verified | /foundations/tools |
-| langgraph-overview | LangGraph 是面向长运行、有状态 agent 的低层 orchestration framework/runtime | product | https://docs.langchain.com/oss/python/langgraph/overview | rolling | 2026-08-20 | high | E1 | verified | /frameworks/langgraph |
-| openai-agents-sdk | OpenAI Agents SDK 提供 code-first agent runtime 组件 | product | https://developers.openai.com/api/docs/guides/agents-sdk | rolling | 2026-08-20 | high | E1 | verified | /frameworks/openai-agents-sdk |
-| google-adk | Google ADK 提供 agent、tool、session、runtime、deployment、observability 与 evaluation 等构件 | product | https://google.github.io/adk-docs/ | rolling | 2026-08-20 | high | E1 | verified | /frameworks/google-adk |
-| autogen-overview | AutoGen 区分 AgentChat、Core、Extensions 与 Studio 等层 | product | https://microsoft.github.io/autogen/stable/ | stable-docs | 2026-08-20 | high | E1 | verified | /frameworks/autogen |
-| deepseek-api-surface | DeepSeek API 的价格、model alias、上下文和可用性尚待网络复核 | product | https://api-docs.deepseek.com/ | rolling | 2026-08-20 | high | E0 | pending | /models/deepseek |
+| ID | Claim | Kind | Source | Version | Checked | Volatility | Source status | Experiment level | Experiment ref | Used by |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| boundary-harness | 本项目将 harness 定义为承载和约束 agent loop 的工作环境 | project | /foundations/what-is-harness | handbook-v1 | 2026-08-20 | low | verified | E0 | - | /guide/roadmap |
+| codex-agents-md | Codex 项目指令的发现、作用域与覆盖行为 | product | https://learn.chatgpt.com/docs/agent-configuration/agents-md | rolling | 2026-08-27 | high | verified | E0 | - | /harnesses/codex |
+| codex-config | Codex 配置层、字段与 surface 行为 | product | https://learn.chatgpt.com/docs/config-file/config-basic | rolling | 2026-08-27 | high | verified | E0 | - | /harnesses/codex |
+| codex-sandbox-approval | Codex sandbox mode、approval policy 与 network 是相互配合但职责独立的控制层 | product | https://learn.chatgpt.com/docs/agent-approvals-security | rolling | 2026-08-27 | high | verified | E0 | - | /harnesses/codex |
+| openai-function-calling | OpenAI function/tool calling 由模型请求、应用执行并用 call ID 回传结果组成 | product | https://developers.openai.com/api/docs/guides/function-calling | rolling | 2026-08-21 | high | verified | E0 | - | /models/openai |
+| openai-reasoning-items | Responses reasoning model 的连续 function calling 需要保留相关 reasoning/function/output items，可用 previous response ID 或完整回放 | product | https://developers.openai.com/api/docs/guides/reasoning | rolling | 2026-08-21 | high | verified | E0 | - | /models/openai |
+| openai-reasoning-effort | Reasoning effort 的支持值和默认值依具体模型而异 | product | https://developers.openai.com/api/docs/guides/reasoning | rolling | 2026-08-21 | high | verified | E0 | - | /models/openai |
+| claude-memory | Claude Code 的 CLAUDE.md 作用域与加载行为 | product | https://code.claude.com/docs/en/memory | rolling | 2026-08-20 | high | verified | E0 | - | /harnesses/claude-code |
+| claude-settings | Claude Code settings 与权限配置行为 | product | https://code.claude.com/docs/en/settings | rolling | 2026-08-27 | high | verified | E0 | - | /harnesses/claude-code |
+| pi-readme | Pi coding agent 的工具、session、compaction、context、skills 与 extensions 行为 | product | https://github.com/earendil-works/pi/tree/496185f6e4267b979e3663c45f7eb70b0c6a97b4/packages/coding-agent | 496185f6e4267b979e3663c45f7eb70b0c6a97b4 | 2026-08-27 | medium | verified | E0 | - | /harnesses/pi |
+| mcp-spec | MCP 定义 host/client/server 间的能力与消息协议，而不是自动授予工具权限 | standard | https://modelcontextprotocol.io/specification | rolling | 2026-08-20 | medium | verified | E0 | - | /foundations/tools |
+| langgraph-overview | LangGraph 是面向长运行、有状态 agent 的低层 orchestration framework/runtime | product | https://docs.langchain.com/oss/python/langgraph/overview | rolling | 2026-08-20 | high | verified | E0 | - | /frameworks/langgraph |
+| openai-agents-sdk | OpenAI Agents SDK 提供 code-first agent runtime 组件 | product | https://developers.openai.com/api/docs/guides/agents-sdk | rolling | 2026-08-20 | high | verified | E0 | - | /frameworks/openai-agents-sdk |
+| google-adk | Google ADK 提供 agent、tool、session、runtime、deployment、observability 与 evaluation 等构件 | product | https://google.github.io/adk-docs/ | rolling | 2026-08-20 | high | verified | E0 | - | /frameworks/google-adk |
+| autogen-overview | AutoGen 区分 AgentChat、Core、Extensions 与 Studio 等层 | product | https://microsoft.github.io/autogen/stable/ | stable-docs | 2026-08-20 | high | verified | E0 | - | /frameworks/autogen |
+| deepseek-api-surface | DeepSeek API 的价格、model alias、上下文和可用性尚待网络复核 | product | https://api-docs.deepseek.com/ | rolling | 2026-08-20 | high | pending | E0 | - | /models/deepseek |
+| vite-dev-server-advisory | 当前锁定的 Vite 5.4.21 位于 Windows alternate path 可绕过 server.fs.deny 的受影响范围 | product | https://github.com/advisories/GHSA-fx2h-pf6j-xcff | 5.4.21 | 2026-09-03 | medium | verified | E0 | - | /security/supply-chain |
+| esbuild-dev-server-advisory | 当前锁定的 esbuild 0.21.5 位于任意网站可读取开发服务器响应的受影响范围 | product | https://github.com/advisories/GHSA-67mh-4wv8-2f99 | 0.21.5 | 2026-09-03 | medium | verified | E0 | - | /security/supply-chain |
 
 ## 冲突处理
 

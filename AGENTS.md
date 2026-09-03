@@ -21,7 +21,7 @@ This repository is a Chinese learning site about AI agent harnesses. Keep stable
 - Register volatile claims in `docs/references/fact-registry.md`.
 - Prefer official documentation or the maintained repository; pin a tag or commit when possible.
 - A checked date means the cited source or target version was actually inspected on that date.
-- If online verification is unavailable, mark the claim `待核验` or E0; do not invent a checked result.
+- If online verification is unavailable, set its source status to `pending`; do not change the experiment level or invent a checked result.
 - Product comparisons must state version, surface, workload, configuration, and evidence boundary.
 
 ## Experiments and safety
