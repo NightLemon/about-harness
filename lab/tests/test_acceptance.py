@@ -1,12 +1,16 @@
 from __future__ import annotations
 
+import json
 import math
 from collections.abc import Callable
+from pathlib import Path
 from typing import cast
 
 import pytest
 from about_harness.acceptance import AcceptanceResult, JsonSubsetAcceptanceValidator
 from about_harness.contracts import Budgets, ContractError, JsonValue, TaskSpec
+
+SHARED_FIXTURE = Path(__file__).parents[1] / "fixtures" / "contracts" / "acceptance-v1.json"
 
 
 def task(criteria: dict[str, JsonValue]) -> TaskSpec:
@@ -19,40 +23,68 @@ def task(criteria: dict[str, JsonValue]) -> TaskSpec:
     )
 
 
-def test_json_subset_accepts_nested_values_and_extra_output_fields() -> None:
+def _load_shared_cases() -> list[dict[str, JsonValue]]:
+    raw = cast(object, json.loads(SHARED_FIXTURE.read_text(encoding="utf-8")))
+    if not isinstance(raw, dict):
+        raise ValueError("shared acceptance fixture must be an object")
+    document = cast(dict[str, object], raw)
+    if (
+        document.get("schema_version") != "1.0"
+        or document.get("validator") != "json-subset-v1"
+        or document.get("evidence") != "E1"
+    ):
+        raise ValueError("shared acceptance fixture metadata is invalid")
+    raw_cases = document.get("cases")
+    if not isinstance(raw_cases, list) or not raw_cases:
+        raise ValueError("shared acceptance fixture must contain cases")
+    cases: list[dict[str, JsonValue]] = []
+    seen_ids: set[str] = set()
+    for raw_case in cast(list[object], raw_cases):
+        if not isinstance(raw_case, dict):
+            raise ValueError("shared acceptance case must be an object")
+        case = cast(dict[str, JsonValue], raw_case)
+        case_id = case.get("case_id")
+        criteria = case.get("criteria")
+        expected = case.get("expected")
+        if (
+            not isinstance(case_id, str)
+            or not case_id
+            or case_id in seen_ids
+            or not isinstance(criteria, dict)
+            or "output" not in case
+            or not isinstance(expected, dict)
+        ):
+            raise ValueError("shared acceptance case shape or identity is invalid")
+        seen_ids.add(case_id)
+        cases.append(case)
+    return cases
+
+
+SHARED_CASES = _load_shared_cases()
+SHARED_CASE_IDS = [cast(str, case["case_id"]) for case in SHARED_CASES]
+
+
+@pytest.mark.parametrize("case", SHARED_CASES, ids=SHARED_CASE_IDS)
+def test_shared_json_subset_case(case: dict[str, JsonValue]) -> None:
+    criteria = case["criteria"]
+    expected = case["expected"]
+    assert isinstance(criteria, dict)
+    assert isinstance(expected, dict)
+    result = JsonSubsetAcceptanceValidator().validate(task(criteria), case["output"])
+    actual: dict[str, JsonValue] = {
+        "accepted": result.accepted,
+        "feedback": result.feedback,
+        "evidence": result.evidence,
+    }
+    assert actual == expected
+
+
+def test_json_subset_rejects_non_finite_numbers() -> None:
     result = JsonSubsetAcceptanceValidator().validate(
-        task({"passed": True, "details": {"rows": [1, 2]}}),
-        {"passed": True, "details": {"rows": [1, 2], "note": "kept"}, "extra": 3},
+        task({"score": math.inf}), {"score": math.inf}
     )
-    assert result.accepted
-    assert result.evidence["failed_paths"] == []
-
-
-@pytest.mark.parametrize(
-    ("criteria", "output", "failed_path"),
-    [
-        ({"passed": True}, {"passed": 1}, "/passed"),
-        ({"score": math.inf}, {"score": math.inf}, "/score"),
-        ({"rows": [1, 2]}, {"rows": [1]}, "/rows"),
-        ({"details": {"count": 2}}, {"details": {}}, "/details/count"),
-    ],
-)
-def test_json_subset_rejects_type_value_and_shape_mismatches(
-    criteria: dict[str, JsonValue],
-    output: JsonValue,
-    failed_path: str,
-) -> None:
-    result = JsonSubsetAcceptanceValidator().validate(task(criteria), output)
     assert not result.accepted
-    assert result.evidence["failed_paths"] == [failed_path]
-
-
-def test_failed_paths_use_json_pointer_escaping() -> None:
-    result = JsonSubsetAcceptanceValidator().validate(
-        task({"a/b~c": "expected"}),
-        {},
-    )
-    assert result.evidence["failed_paths"] == ["/a~1b~0c"]
+    assert result.evidence["failed_paths"] == ["/score"]
 
 
 @pytest.mark.parametrize(

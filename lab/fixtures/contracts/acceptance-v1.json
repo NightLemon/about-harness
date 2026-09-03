@@ -1,0 +1,179 @@
+{
+  "schema_version": "1.0",
+  "validator": "json-subset-v1",
+  "evidence": "E1",
+  "description": "Synthetic JSON-subset cases shared by the Python and TypeScript implementations.",
+  "cases": [
+    {
+      "case_id": "empty-criteria",
+      "criteria": {},
+      "output": "no criteria declared",
+      "expected": {
+        "accepted": true,
+        "feedback": "no acceptance constraints were declared",
+        "evidence": {
+          "validator": "json-subset-v1",
+          "top_level_criteria": 0,
+          "failed_paths": []
+        }
+      }
+    },
+    {
+      "case_id": "nested-subset-with-extra-fields",
+      "criteria": {
+        "passed": true,
+        "details": {
+          "rows": [1, 2]
+        }
+      },
+      "output": {
+        "passed": true,
+        "details": {
+          "rows": [1, 2],
+          "note": "kept"
+        },
+        "extra": 3
+      },
+      "expected": {
+        "accepted": true,
+        "feedback": "all declared acceptance values matched",
+        "evidence": {
+          "validator": "json-subset-v1",
+          "top_level_criteria": 2,
+          "failed_paths": []
+        }
+      }
+    },
+    {
+      "case_id": "boolean-is-not-number",
+      "criteria": {
+        "passed": true
+      },
+      "output": {
+        "passed": 1
+      },
+      "expected": {
+        "accepted": false,
+        "feedback": "acceptance mismatch at /passed",
+        "evidence": {
+          "validator": "json-subset-v1",
+          "top_level_criteria": 1,
+          "failed_paths": ["/passed"]
+        }
+      }
+    },
+    {
+      "case_id": "array-length-mismatch",
+      "criteria": {
+        "rows": [1, 2]
+      },
+      "output": {
+        "rows": [1]
+      },
+      "expected": {
+        "accepted": false,
+        "feedback": "acceptance mismatch at /rows",
+        "evidence": {
+          "validator": "json-subset-v1",
+          "top_level_criteria": 1,
+          "failed_paths": ["/rows"]
+        }
+      }
+    },
+    {
+      "case_id": "nested-key-missing",
+      "criteria": {
+        "details": {
+          "count": 2
+        }
+      },
+      "output": {
+        "details": {}
+      },
+      "expected": {
+        "accepted": false,
+        "feedback": "acceptance mismatch at /details/count",
+        "evidence": {
+          "validator": "json-subset-v1",
+          "top_level_criteria": 1,
+          "failed_paths": ["/details/count"]
+        }
+      }
+    },
+    {
+      "case_id": "json-pointer-escaping",
+      "criteria": {
+        "a/b~c": "expected"
+      },
+      "output": {},
+      "expected": {
+        "accepted": false,
+        "feedback": "acceptance mismatch at /a~1b~0c",
+        "evidence": {
+          "validator": "json-subset-v1",
+          "top_level_criteria": 1,
+          "failed_paths": ["/a~1b~0c"]
+        }
+      }
+    },
+    {
+      "case_id": "deterministic-failure-order",
+      "criteria": {
+        "passed": true,
+        "details": {
+          "count": 2
+        },
+        "path/key": "ready"
+      },
+      "output": {
+        "passed": false,
+        "details": {
+          "count": 1
+        }
+      },
+      "expected": {
+        "accepted": false,
+        "feedback": "acceptance mismatch at /passed, /details/count, /path~1key",
+        "evidence": {
+          "validator": "json-subset-v1",
+          "top_level_criteria": 3,
+          "failed_paths": ["/passed", "/details/count", "/path~1key"]
+        }
+      }
+    },
+    {
+      "case_id": "root-type-mismatch",
+      "criteria": {
+        "passed": true
+      },
+      "output": "not an object",
+      "expected": {
+        "accepted": false,
+        "feedback": "acceptance mismatch at /",
+        "evidence": {
+          "validator": "json-subset-v1",
+          "top_level_criteria": 1,
+          "failed_paths": ["/"]
+        }
+      }
+    },
+    {
+      "case_id": "equivalent-json-numbers",
+      "criteria": {
+        "score": 1
+      },
+      "output": {
+        "score": 1.0
+      },
+      "expected": {
+        "accepted": true,
+        "feedback": "all declared acceptance values matched",
+        "evidence": {
+          "validator": "json-subset-v1",
+          "top_level_criteria": 1,
+          "failed_paths": []
+        }
+      }
+    }
+  ]
+}
