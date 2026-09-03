@@ -38,14 +38,22 @@ def answer_from_latest(payload: dict[str, JsonValue]) -> dict[str, JsonValue]:
         if any(term in text.casefold() for term in query.split()):
             candidates.append((doc_id, version, text))
     candidates.sort()
+    stale_versions_ignored = len(documents) - len(latest)
     if not candidates:
-        return {"status": "insufficient", "answer": None, "citations": []}
+        return {
+            "status": "insufficient",
+            "answer": None,
+            "citations": [],
+            "stale_versions_ignored": stale_versions_ignored,
+            "integration": BOUNDARY.name,
+            "mode": BOUNDARY.execution_mode,
+        }
     doc_id, version, text = candidates[0]
     return {
         "status": "answered",
         "answer": text,
         "citations": [f"{doc_id}@v{version}"],
-        "stale_versions_ignored": len(documents) - len(latest),
+        "stale_versions_ignored": stale_versions_ignored,
         "integration": BOUNDARY.name,
         "mode": BOUNDARY.execution_mode,
     }
