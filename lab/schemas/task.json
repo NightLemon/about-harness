@@ -8,7 +8,7 @@
   "properties": {
     "schema_version": { "const": "1.0" },
     "task_id": { "type": "string", "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._-]{0,127}$" },
-    "goal": { "type": "string", "minLength": 1, "maxLength": 4000 },
+    "goal": { "type": "string", "minLength": 1, "maxLength": 4000, "pattern": "\\S" },
     "input": { "type": "object" },
     "allowed_tools": {
       "type": "array",

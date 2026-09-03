@@ -4,7 +4,7 @@ import math
 import re
 from dataclasses import asdict, dataclass, field
 from enum import StrEnum
-from typing import TypeAlias
+from typing import TypeAlias, cast
 
 JsonScalar: TypeAlias = str | int | float | bool | None
 JsonValue: TypeAlias = JsonScalar | list["JsonValue"] | dict[str, "JsonValue"]
@@ -156,6 +156,20 @@ class ToolCall:
         if not self.call_id or not self.name or not self.idempotency_key:
             raise ContractError("tool call ID, name, and idempotency key are required")
 
+    @classmethod
+    def from_dict(cls, data: dict[str, JsonValue]) -> ToolCall:
+        _require_exact_fields(
+            data,
+            {"call_id", "name", "arguments", "idempotency_key"},
+            "tool_call",
+        )
+        return cls(
+            call_id=_required_str(data, "call_id"),
+            name=_required_str(data, "name"),
+            arguments=_required_object(data, "arguments"),
+            idempotency_key=_required_str(data, "idempotency_key"),
+        )
+
 
 @dataclass(frozen=True, slots=True)
 class Action:
@@ -169,6 +183,8 @@ class Action:
             raise ContractError(f"unsupported action kind: {self.kind}")
         if self.kind == "tool" and self.tool_call is None:
             raise ContractError("tool action requires a tool call")
+        if self.kind == "tool" and self.output is not None:
+            raise ContractError("tool action cannot contain completion output")
         if self.kind == "complete" and self.tool_call is not None:
             raise ContractError("complete action cannot contain a tool call")
         if not _is_finite_non_negative_number(self.cost_usd):
@@ -181,6 +197,26 @@ class Action:
     @classmethod
     def complete(cls, output: JsonValue, *, cost_usd: float = 0.0) -> Action:
         return cls(kind="complete", output=output, cost_usd=cost_usd)
+
+    @classmethod
+    def from_dict(cls, data: dict[str, JsonValue]) -> Action:
+        kind = _required_str(data, "kind")
+        if kind == "complete":
+            _require_exact_fields(data, {"kind", "output", "cost_usd"}, "complete action")
+            return cls.complete(
+                _required_json_value(data, "output"),
+                cost_usd=_required_number(data, "cost_usd"),
+            )
+        if kind == "tool":
+            _require_exact_fields(data, {"kind", "tool_call", "cost_usd"}, "tool action")
+            tool_call = data.get("tool_call")
+            if not isinstance(tool_call, dict):
+                raise ContractError("tool_call must be an object")
+            return cls.tool(
+                ToolCall.from_dict(tool_call),
+                cost_usd=_required_number(data, "cost_usd"),
+            )
+        raise ContractError(f"unsupported action kind: {kind}")
 
 
 @dataclass(frozen=True, slots=True)
@@ -266,8 +302,67 @@ def _optional_number(data: dict[str, JsonValue], key: str, default: float) -> fl
     return float(value)
 
 
+def _required_number(data: dict[str, JsonValue], key: str) -> float:
+    if key not in data:
+        raise ContractError(f"{key} is required")
+    value = data[key]
+    if not _is_finite_non_negative_number(value):
+        raise ContractError(f"{key} must be finite and non-negative")
+    return float(cast(int | float, value))
+
+
+def _require_exact_fields(
+    data: dict[str, JsonValue], required: set[str], label: str
+) -> None:
+    missing = required.difference(data)
+    if missing:
+        raise ContractError(f"missing {label} fields: {sorted(missing)}")
+    unknown = set(data).difference(required)
+    if unknown:
+        raise ContractError(f"unknown {label} fields: {sorted(unknown)}")
+
+
+def _required_json_value(data: dict[str, JsonValue], key: str) -> JsonValue:
+    if key not in data:
+        raise ContractError(f"{key} is required")
+    value = data[key]
+    if not _is_json_tree(cast(object, value), set()):
+        raise ContractError(f"{key} must be a finite JSON value")
+    return value
+
+
+def _required_object(data: dict[str, JsonValue], key: str) -> dict[str, JsonValue]:
+    value = data.get(key)
+    if not isinstance(value, dict) or not _is_json_tree(cast(object, value), set()):
+        raise ContractError(f"{key} must be a finite JSON object")
+    return value
+
+
 def _optional_object(data: dict[str, JsonValue], key: str) -> dict[str, JsonValue]:
     value = data.get(key, {})
-    if not isinstance(value, dict):
-        raise ContractError(f"{key} must be an object with string keys")
+    if not isinstance(value, dict) or not _is_json_tree(cast(object, value), set()):
+        raise ContractError(f"{key} must be a finite JSON object with string keys")
     return value
+
+
+def _is_json_tree(value: object, seen: set[int]) -> bool:
+    if value is None or isinstance(value, (str, bool, int)):
+        return True
+    if isinstance(value, float):
+        return math.isfinite(value)
+    if isinstance(value, (list, dict)):
+        collection = cast(list[object] | dict[object, object], value)
+        identity = id(collection)
+        if identity in seen:
+            return False
+        seen.add(identity)
+        try:
+            if isinstance(collection, list):
+                return all(_is_json_tree(item, seen) for item in collection)
+            return all(
+                isinstance(key, str) and _is_json_tree(item, seen)
+                for key, item in collection.items()
+            )
+        finally:
+            seen.remove(identity)
+    return False

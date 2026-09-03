@@ -240,7 +240,7 @@ Provider alias、默认模型、schema 子集、event shape、错误字段和工
 
 需要 Python 3.11+、uv 0.11、Node.js 22+，依赖由 `uv.lock` 和 `package-lock.json` 固定。从仓库根目录离线执行；不配置真实 provider、credential、网络或费用。
 
-输入包括固定 replay actions、hard-disabled live adapter、进程内工具、权限/重试/timeout 负例，以及 TypeScript runtime validator。
+输入包括固定 replay actions、hard-disabled live adapter、进程内工具、权限/重试/timeout 负例，以及 30 个由 Action/Task schema、Python 和 TypeScript 共用的 runtime contract fixture。
 
 ### 命令
 
@@ -260,7 +260,7 @@ pytest 应有 6 项通过：
 - 非 `Action` adapter 返回被分类为 `failed/invalid_action`；
 - deadline 后到达的 completion 保持 `timeout`。
 
-TypeScript runtime 测试应退出 0，证明列出的坏 Task/Action（空/重复工具、非有限预算或 action cost 等）在进入 loop/metrics 前被拒绝。
+TypeScript runtime 测试应退出 0，报告 30 个共享 Task/Action 案例通过；其中混合 Action、坏 tool call、空/重复工具和错误预算等在进入 loop/metrics 前被拒绝。`NaN/Infinity` 不是合法 JSON，继续由两种语言各自的运行时负例覆盖。
 
 ### 失败、停止、清理与回退
 
@@ -270,7 +270,7 @@ TypeScript runtime 测试应退出 0，证明列出的坏 Task/Action（空/重�
 
 ### 证据边界
 
-这些测试提供 E1：当前本地 Python/TypeScript 最小契约能执行固定 replay，拒绝 live、未授权工具和部分坏值，并验证有限重试、进程内幂等与 timeout 分类。
+这些测试提供 E1：当前本地 Python/TypeScript 最小契约能执行固定 replay，对共享 Task/Action 案例保持接受边界一致，拒绝 live、未授权工具和部分坏值，并验证有限重试、进程内幂等与 timeout 分类。
 
 当前实现没有真实 transport/stream assembler、provider message/state carrier、并行 tool call、usage 映射、跨进程幂等、partial/unknown outcome 或 schema negotiation。测试通过不能证明任何真实 model/provider/harness/MCP 组合兼容或安全。
 

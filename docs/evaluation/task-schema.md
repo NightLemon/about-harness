@@ -1,14 +1,15 @@
-# Task、Run、Trace 与 Result Schema
+# Task、Action、Run、Trace 与 Result Schema
 
-结构化记录的价值不只是“方便解析”，而是把一次 agent 运行拆成可以独立验证、交叉引用和长期迁移的事实。Task 定义要做什么，Run 固定在哪些条件下做，Trace 保存过程中发生了什么，Result 说明怎样结束；Study 与 EvalRun 再把多次运行组织成比较研究。
+结构化记录的价值不只是“方便解析”，而是把一次 agent 运行拆成可以独立验证、交叉引用和长期迁移的事实。Task 定义要做什么，Action 表达模型提议的下一步，Run 固定在哪些条件下做，Trace 保存过程中发生了什么，Result 说明怎样结束；Study 与 EvalRun 再把多次运行组织成比较研究。
 
 本项目的 `lab/schemas/` 使用 JSON Schema draft 2020-12。Schema（结构契约）只验证单个对象的形状；业务语义、对象关系和研究充分性还需要其他层的检查，不能把“JSON 合法”当成“结果可信”。
 
-## 八类对象与各自所有权
+## 九类对象与各自所有权
 
 | 对象 | 何时创建 | 负责回答 | 不应承载 |
 | --- | --- | --- | --- |
 | `Task` | 运行前 | 目标、输入、工具、预算和验收是什么 | 某次运行的实际结果 |
+| `Action` | 每次模型决策后 | 提议调用哪个工具或提交什么输出 | 工具授权、执行结果或完成事实 |
 | `Config` | 运行前 | 模型、adapter、控制与工具组合是什么 | 针对单个 task 的临时状态 |
 | `Run` | 启动时 | 本次执行的 task、环境、config 和 fixture 是什么 | 不断覆盖的过程日志 |
 | `Trace` | 执行中追加 | action、工具、policy、重试与停止如何发生 | 聚合后的成功率 |
@@ -25,6 +26,7 @@
 Task(task_id, goal, input, allowed_tools, budgets, acceptance)
   ├─ FixtureLineage(task_id → immutable commit/path/hash)
   └─ Run(run_id, task_id, environment, config, fixture_hash)
+       ├─ Action(kind, tool_call/output, cost) → policy/validator
        ├─ Trace(run_id, ordered events)
        └─ Result(run_id, task_id, status, stop_reason, metrics, checkpoint)
 
@@ -50,6 +52,14 @@ Study(study_id, task_id[], config_id[], repeats, split, promotion)
 Task 还应在关联协议中记录禁止动作、cleanup（清理）、人工 rubric 和任务版本。当前 JSON Schema 允许 `acceptance`、`metadata` 为任意对象，因此“字段存在”不证明验收足够；task 作者和 checker 仍需验证语义。
 
 一个好任务能回答“怎样算完成”和“即使输出正确，哪些行为也算失败”。例如浏览器提取不仅断言返回记录，还要断言外部导航为 0、页面注入被拒绝。
+
+## Action：候选动作不是授权或完成
+
+`action-v1` 使用 `oneOf` 表达两个互斥分支：`tool` 必须含完整 `tool_call` 与有限非负 `cost_usd`，`complete` 必须含 `output` 与成本；任何混合字段、缺失字段或额外字段都拒绝。Tool call 至少固定 `call_id`、非空名称、JSON object 参数与 `idempotency_key`。
+
+Schema 只定义线协议。Python `Action.from_dict` / `ToolCall.from_dict` 和 TypeScript `validateAction` 才是在进程边界把不可信对象转成内部 Action；两边都递归拒绝非有限 JSON 数字，Python 还显式拒绝循环对象。直接调用 dataclass 构造器或写 `as Action` 不能替代 wire parsing。
+
+Action 合法仍不代表可以执行：tool 分支还需 policy、参数约束、预算和幂等检查；complete 分支还需 acceptance validator。`cost_usd` 只是当前动作申报值，也不能替代 provider usage 对账。公共 fixture 用 13 个 Action 正反例固定结构接受边界，不声称覆盖 provider stream、消息连续性或业务授权。
 
 ## Config：把控制变量变成可比较身份
 
@@ -168,13 +178,13 @@ npm run eval:validate
 
 ### 预期输出与断言
 
-Python 契约/schema 测试应显示 18 个测试通过，其中运行时 completed Result 与含 `acceptance_result` 的 Trace 也能通过公共 schema；TypeScript 输出应说明无效 Task/Action 会 fail closed、completion proposal 必须经过验收，并报告九个共享验收案例通过；Eval validator 应报告 20 tasks、6 workloads、6 holdout、2 configs、3 repeats、6 fixture refs、120 个预期矩阵单元、12 个唯一样例单元和 108 个缺失单元。
+Python 契约/schema 测试应显示 50 个测试通过，其中 17 个 Task 与 13 个 Action 案例同时符合预期和公共 schema，运行时 completed Result 与含 `acceptance_result` 的 Trace 也能通过各自 schema；TypeScript 输出应报告 30 个共享运行时契约案例与九个共享验收案例通过；Eval validator 应报告 20 tasks、6 workloads、6 holdout、2 configs、3 repeats、6 fixture refs、120 个预期矩阵单元、12 个唯一样例单元和 108 个缺失单元。
 
 不要只看退出码。还要确认 validator 明确写出 `sample_matrix_complete=false` 和 E1 边界；这表示 schema/谱系样例有效，但正式比较尚未完成。
 
 ### 失败案例与停止
 
-缺字段、非法 `task_id`、空/重复工具、非有限预算或 action cost、矛盾 checkpoint、重复 cell、身份漂移、错误 split、坏 fixture ref/hash 都应被拒绝。若任何坏值进入 metrics、历史 commit 无法解析或 validator 把 12 行称为完整矩阵，立即停止，不要补虚构 run 或修改历史 hash 来过门禁。
+缺字段、非法 `task_id`、空/重复工具、混合 Action 分支、坏 tool call、非有限预算/输出/action cost、矛盾 checkpoint、重复 cell、身份漂移、错误 split、坏 fixture ref/hash 都应被拒绝。若 schema 与任一语言对共享案例给出不同结论、坏值进入 metrics、历史 commit 无法解析或 validator 把 12 行称为完整矩阵，立即停止，不要补虚构 run 或修改历史 hash 来过门禁。
 
 ### 清理、回滚与限制
 

@@ -34,7 +34,7 @@ try {
   const { JsonSubsetAcceptanceValidator } = await import(
     pathToFileURL(path.join(temp, 'acceptance.js')).href
   )
-  const { validateTask } = await import(pathToFileURL(path.join(temp, 'contracts.js')).href)
+  const { validateAction, validateTask } = await import(pathToFileURL(path.join(temp, 'contracts.js')).href)
   const validator = new JsonSubsetAcceptanceValidator()
   const caseIds = new Set()
   for (const fixtureCase of fixture.cases) {
@@ -62,10 +62,43 @@ try {
     assert.deepStrictEqual(actual, fixtureCase.expected, `${fixtureCase.case_id}: TypeScript result drifted`)
   }
   console.log(`Shared acceptance fixture passed in TypeScript: ${fixture.cases.length} cases.`)
+
+  const runtimeFixturePath = path.join(root, 'lab', 'fixtures', 'contracts', 'runtime-contract-v1.json')
+  const runtimeFixture = JSON.parse(fs.readFileSync(runtimeFixturePath, 'utf8'))
+  assert.equal(runtimeFixture.schema_version, '1.0', 'shared runtime fixture schema_version changed')
+  assert.equal(runtimeFixture.evidence, 'E1', 'shared runtime fixture evidence boundary changed')
+  checkContractCases(runtimeFixture.task_cases, 'task', validateTask)
+  checkContractCases(runtimeFixture.action_cases, 'action', validateAction)
+  console.log(
+    `Shared runtime contract fixture passed in TypeScript: ${runtimeFixture.task_cases.length + runtimeFixture.action_cases.length} cases.`
+  )
 } finally {
   fs.rmSync(temp, { recursive: true, force: true })
 }
 
 function isRecord(value) {
   return typeof value === 'object' && value !== null && !Array.isArray(value)
+}
+
+function checkContractCases(cases, label, validator) {
+  assert.ok(Array.isArray(cases) && cases.length > 0, `shared runtime fixture has no ${label} cases`)
+  const caseIds = new Set()
+  for (const fixtureCase of cases) {
+    assert.ok(isRecord(fixtureCase), `shared ${label} case must be an object`)
+    assert.ok(
+      typeof fixtureCase.case_id === 'string' && fixtureCase.case_id.length > 0,
+      `shared ${label} case_id must be non-empty`
+    )
+    assert.ok(!caseIds.has(fixtureCase.case_id), `duplicate shared ${label} case: ${fixtureCase.case_id}`)
+    caseIds.add(fixtureCase.case_id)
+    assert.equal(typeof fixtureCase.valid, 'boolean', `${fixtureCase.case_id}: valid must be boolean`)
+    assert.ok(isRecord(fixtureCase.value), `${fixtureCase.case_id}: value must be an object`)
+    let accepted = true
+    try {
+      validator(fixtureCase.value)
+    } catch {
+      accepted = false
+    }
+    assert.equal(accepted, fixtureCase.valid, `${fixtureCase.case_id}: TypeScript acceptance drifted`)
+  }
 }
