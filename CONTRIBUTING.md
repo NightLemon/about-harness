@@ -30,7 +30,7 @@ npm run pages:check
 npm run verify
 ```
 
-`content:check` 检查内部开发语言、页面契约、来源与学习链接；`examples:check` 静态验证三套 harness 示例；`repo:self-test` 用负例确认隐私、许可、workflow 与事实时效门禁会真实失败。真实 API、费用或账号不是这些命令的一部分。
+`docs:check` 只检查断链、重复锚点、孤立页面、未闭合代码块和损坏字符等确定性结构问题；`examples:check` 静态验证三套 harness 示例；`repo:self-test` 用负例确认隐私、许可、workflow 与事实时效门禁会真实失败。篇幅、措辞、章节模板和是否“足够深入”由人工内容审阅判断，不用关键词或字数正则阻断贡献。真实 API、费用或账号不是这些命令的一部分。
 
 ## 依赖、构建与 Pages
 

@@ -183,7 +183,7 @@ Negative test（负例测试）有两层：
 1. 产品负例：系统接收坏 Action、污染 memory 或未授权工具，内部结果应为拒绝/停止；
 2. 门禁自测：测试程序构造一份坏文档/fixture，再要求 checker 以非零退出拒绝它。
 
-门禁自测的外层命令应退出 0，因为“坏输入确实被拒绝”就是成功。例如 `content:self-test` 在临时目录把页面替换成短占位文本，确认 checker 报出 thin page、缺来源/下一步和内部 milestone；`eval:self-test` 则检查多类 lineage 与脱敏 canary。
+门禁自测的外层命令应退出 0，因为“坏输入确实被拒绝”就是成功。例如 `eval:self-test` 检查多类 lineage 与脱敏 canary，`repo:self-test` 检查 Secret、许可、workflow 权限和事实时效。字数、固定章节名和关键词出现与否没有可靠 oracle，不应伪装成内容质量负例。
 
 如果外层只看 checker 非零，却不核对错误标记，checker 可能因语法崩溃而被误判为正确拒绝。Self-test 应同时断言 exit code 和预期错误类别。
 
@@ -248,14 +248,14 @@ npm run lab:ts-runtime-test
 
 预期 Python 有 9 项通过，TypeScript typecheck 退出 0，runtime test 输出坏 Task/Action 在 metrics 前失败关闭。这里没有运行全部领域 fixture、站点或 checker self-tests。
 
-### 证明门禁会拒绝坏输入
+### 证明高价值门禁会拒绝坏输入
 
 ```bash
-npm run content:self-test
 npm run eval:self-test
+npm run repo:self-test
 ```
 
-两条外层命令都应退出 0。输出应分别说明短占位内容被拒绝，以及 fixture lineage、matrix integrity、promotion、JSON/JSONL redaction 与 unsupported format canary 被检查。若坏输入被接受，self-test 本身必须非零退出。
+两条外层命令都应退出 0。输出应说明 fixture lineage、matrix integrity、promotion、JSON/JSONL redaction、unsupported format、Secret、许可、workflow 权限与事实引用 canary 被检查。若坏输入被接受，self-test 本身必须非零退出。
 
 ### 完整本地入口
 
