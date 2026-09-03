@@ -5,6 +5,7 @@ from collections import defaultdict
 from about_harness.contracts import JsonValue
 from about_harness.integrations.base import (
     IntegrationBoundary,
+    IntegrationContractError,
     require_list,
     require_object,
     require_string,
@@ -21,11 +22,16 @@ BOUNDARY = IntegrationBoundary(
 def resolve_versioned_claims(payload: dict[str, JsonValue]) -> dict[str, JsonValue]:
     """Execute the deterministic state transition used by the research fixture."""
 
+    require_string(payload.get("query"), "query")
     sources = require_list(payload.get("sources"), "sources")
     claims: dict[str, list[tuple[str, str]]] = defaultdict(list)
+    seen_source_ids: set[str] = set()
     for index, raw in enumerate(sources):
         source = require_object(raw, f"sources[{index}]")
         source_id = require_string(source.get("id"), f"sources[{index}].id")
+        if source_id in seen_source_ids:
+            raise IntegrationContractError(f"duplicate source id: {source_id}")
+        seen_source_ids.add(source_id)
         claim = require_string(source.get("claim"), f"sources[{index}].claim")
         value = require_string(source.get("value"), f"sources[{index}].value")
         claims[claim].append((source_id, value))

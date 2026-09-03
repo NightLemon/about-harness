@@ -13,6 +13,7 @@ import pytest
 from about_harness.contracts import JsonValue
 from about_harness.integrations.base import IntegrationContractError
 from about_harness.integrations.browser_use import extract_local_catalog
+from about_harness.integrations.langgraph import resolve_versioned_claims
 from about_harness.integrations.llama_index import answer_from_latest
 from about_harness.integrations.pydantic_ai import normalize_rows
 from about_harness.labs import (
@@ -98,6 +99,45 @@ def test_cli_accepts_isolated_fixture_root_and_rejects_tampering(tmp_path: Path)
 def test_browser_external_navigation_negative_case_is_rejected() -> None:
     with pytest.raises(IntegrationContractError, match=r"lab\.local"):
         extract_local_catalog({"url": "https://evil.invalid", "page_text": "x", "rows": []})
+
+
+def test_research_fixture_preserves_conflict_and_claim_citations() -> None:
+    bundle = load_fixture(FIXTURES, "research")
+    result = resolve_versioned_claims(bundle.input)
+    assert result["claims"] == [
+        {
+            "claim": "retention_days",
+            "status": "conflict",
+            "values": ["30", "45"],
+            "citations": ["policy-v1", "policy-v2"],
+        },
+        {
+            "claim": "review_required",
+            "status": "supported",
+            "values": ["yes"],
+            "citations": ["legal-note"],
+        },
+    ]
+    assert result["unsupported_claims"] == 0
+    assert result["integration"] == "LangGraph"
+    assert result["mode"] == "offline-contract-seam"
+
+
+def test_research_rejects_duplicate_source_identity() -> None:
+    payload: dict[str, JsonValue] = {
+        "query": "Which policy is current?",
+        "sources": [
+            {"id": "policy", "claim": "retention_days", "value": "30"},
+            {"id": "policy", "claim": "retention_days", "value": "45"},
+        ],
+    }
+    with pytest.raises(IntegrationContractError, match="duplicate source id"):
+        resolve_versioned_claims(payload)
+
+
+def test_research_requires_non_empty_query() -> None:
+    with pytest.raises(IntegrationContractError, match="query must be a non-empty string"):
+        resolve_versioned_claims({"query": "", "sources": []})
 
 
 def test_document_fixture_filters_stale_version_and_cites_latest() -> None:
