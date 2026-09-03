@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Any
 
 import pytest
+from about_harness.contracts import JsonValue
 from about_harness.integrations.base import IntegrationContractError
 from about_harness.integrations.browser_use import extract_local_catalog
 from about_harness.integrations.llama_index import answer_from_latest
@@ -128,6 +129,28 @@ def test_document_returns_auditable_insufficient_result_without_match() -> None:
 def test_data_schema_drift_negative_case_is_rejected() -> None:
     with pytest.raises(IntegrationContractError, match="schema drift"):
         normalize_rows({"rows": [{"userId": "u-3", "score": 9}]})
+
+
+def test_data_fixture_preserves_null_and_redacts_email() -> None:
+    bundle = load_fixture(FIXTURES, "data")
+    result = normalize_rows(bundle.input)
+    assert result["rows"] == [
+        {"user_id": "u-1", "score": 7.5, "email": "[REDACTED]"},
+        {"user_id": "u-2", "score": None, "email": "[REDACTED]"},
+    ]
+    assert result["row_count"] == 2
+    assert result["sensitive_values_exposed"] == 0
+    assert result["integration"] == "PydanticAI"
+    assert result["mode"] == "offline-contract-seam"
+
+
+@pytest.mark.parametrize("score", [float("nan"), float("inf"), float("-inf")])
+def test_data_rejects_non_finite_scores(score: float) -> None:
+    payload: dict[str, JsonValue] = {
+        "rows": [{"user_id": "u-1", "score": score, "email": None}]
+    }
+    with pytest.raises(IntegrationContractError, match="finite number"):
+        normalize_rows(payload)
 
 
 def test_configs_and_eval_examples_match_formal_schemas() -> None:
