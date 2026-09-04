@@ -26,6 +26,7 @@ ROOT = Path(__file__).parents[1]
 SCHEMAS = ROOT / "schemas"
 CONTRACT_FIXTURE = ROOT / "fixtures" / "contracts" / "runtime-contract-v1.json"
 RESULT_FIXTURE = ROOT / "fixtures" / "contracts" / "run-result-v1.json"
+PORTFOLIO_STARTER = ROOT.parent / "examples" / "portfolio-starter"
 
 
 def _load_contract_cases(section: str) -> list[dict[str, Any]]:
@@ -179,6 +180,27 @@ def test_task_dataclass_and_json_schema_accept_same_positive_fixture() -> None:
     assert task.task_id == "schema-smoke"
     schema = json.loads((SCHEMAS / "task.json").read_text(encoding="utf-8"))
     Draft202012Validator(schema).validate(data)
+
+
+def test_portfolio_starter_task_and_config_match_public_schemas() -> None:
+    task_path = PORTFOLIO_STARTER / "harness" / "task.json"
+    config_path = PORTFOLIO_STARTER / "harness" / "config.json"
+    task_data = cast(dict[str, Any], json.loads(task_path.read_text(encoding="utf-8")))
+    config_data = cast(
+        dict[str, Any], json.loads(config_path.read_text(encoding="utf-8"))
+    )
+
+    task_schema = json.loads((SCHEMAS / "task.json").read_text(encoding="utf-8"))
+    config_schema = json.loads((SCHEMAS / "config.json").read_text(encoding="utf-8"))
+    Draft202012Validator(task_schema).validate(task_data)
+    Draft202012Validator(config_schema).validate(config_data)
+    task = TaskSpec.from_dict(task_data)
+
+    assert task.metadata["evidence"] == "E0"
+    assert task.metadata["status"] == "template"
+    assert config_data["evidence"] == "E0"
+    assert config_data["live_enabled"] is False
+    assert config_data["network"] == "none"
 
 
 @pytest.mark.parametrize(

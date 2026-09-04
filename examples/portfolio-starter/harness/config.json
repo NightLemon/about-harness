@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "config_id": "portfolio-offline-template",
+  "description": "E0 作品集模板：默认离线、零费用、最小工具；运行前固定真实 Adapter 与输入身份。",
+  "model_id": "not-applicable",
+  "adapter": "replace-before-running",
+  "evidence": "E0",
+  "live_enabled": false,
+  "network": "none",
+  "max_steps": 8,
+  "max_model_calls": 8,
+  "tools": [
+    "fixture.read",
+    "workspace.edit",
+    "test.run"
+  ],
+  "controls": [
+    "workspace-path-allowlist",
+    "no-network",
+    "independent-acceptance",
+    "zero-live-cost"
+  ]
+}

@@ -56,6 +56,7 @@ features:
 | 比较 Codex、Pi、Claude Code | [Harness 对照](/harnesses/comparison) | 运行[迁移实验](/labs/migration) | 六类责任表、gap 与补偿控制 |
 | 设计可靠的 Tool | [工具设计](/foundations/tools) | 对照[Adapter 契约](/implementation/adapter-contract) | 输入 schema、policy、错误与幂等契约 |
 | 开始做可复现评测 | [评测方法](/evaluation/method) | 运行[评测实验室](/practice/evaluation) | Task、Study、Run、Result 与限定结论 |
+| 把学习结果整理成作品集 | [作品集评分](/guide/portfolio) | 从[Capstone Starter](/guide/capstone)开始 | 一条贯穿设计、验证、安全与迁移的证据链 |
 | 先亲手跑通一次 | [实验环境](/labs/setup) | 选择下方一个离线案例 | 命令、fixture hash、结果与证据边界 |
 
 ## 六个离线案例怎样选

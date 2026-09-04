@@ -7,7 +7,8 @@ const sidebars = {
       { text: '前置知识', link: '/guide/prerequisites' },
       { text: '学习路径', link: '/guide/start' },
       { text: '知识地图', link: '/guide/roadmap' },
-      { text: '作品集与评分', link: '/guide/portfolio' }
+      { text: '作品集与评分', link: '/guide/portfolio' },
+      { text: 'Capstone 综合项目', link: '/guide/capstone' }
     ]
   }],
   '/foundations/': [{

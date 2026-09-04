@@ -1,0 +1,32 @@
+{
+  "schema_version": "1.0",
+  "task_id": "portfolio-boundary-fix-v1",
+  "goal": "修复固定合成工作区中的边界错误，并生成可独立验收的结果",
+  "input": {
+    "fixture_ref": "replace-with-immutable-commit-path-hash",
+    "starting_state": "replace-before-running"
+  },
+  "allowed_tools": [
+    "fixture.read",
+    "workspace.edit",
+    "test.run"
+  ],
+  "budgets": {
+    "max_steps": 8,
+    "max_model_calls": 8,
+    "timeout_ms": 60000,
+    "max_cost_usd": 0
+  },
+  "acceptance": {
+    "original_failure_reproduced": true,
+    "target_tests_passed": true,
+    "regression_tests_passed": true,
+    "changed_paths_within_allowlist": true
+  },
+  "metadata": {
+    "evidence": "E0",
+    "status": "template",
+    "live_enabled": false,
+    "note": "replace input identity and acceptance oracle before running"
+  }
+}
