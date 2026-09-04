@@ -198,6 +198,8 @@ status / expiry / writer version
 
 最危险的窗口是“外部动作成功，但本地 receipt/checkpoint 尚未保存”。如果目标系统不支持幂等键或查询，Harness 无法仅靠本地状态消除重复风险。此时应把结果标为 `unknown` 并转人工，而不是把重试包装成可靠恢复。
 
+仓库的[可靠性恢复工作坊](/practice/reliability-recovery)专门复现这个窗口：合成服务先提交写入再丢失响应，安全路径查询原 key 的 receipt，危险路径换新 key 后确定性地产生第二个副作用。它补充 E1 教学接缝，不表示 `HarnessRunner` 已获得持久恢复能力。
+
 Transactional outbox（事务发件箱）可以把业务状态变化与待发送 intent 放在同一事务，worker 再至少一次投递；inbox/去重表在接收侧拒绝重复。它们降低窗口风险，但仍要处理过期、冲突、乱序和人工对账。
 
 ## 取消、迟到结果与并发
@@ -336,7 +338,7 @@ uv run --frozen --offline pytest
 
 ## 证据边界与已知限制
 
-当前项目提供 E1 的 fake/replay 证据：运行时契约拒绝坏 checkpoint；runner 在 Adapter 边界检查预算、timeout 和 cancel；retry 有固定退避；内存 cache 只复用同 key、同 tool、同 canonical arguments 的结果并拒绝两类冲突；FakeAdapter 能恢复游标。
+当前项目提供 E1 的 fake/replay 证据：运行时契约拒绝坏 checkpoint；runner 在 Adapter 边界检查预算、timeout 和 cancel；retry 有固定退避；内存 cache 只复用同 key、同 tool、同 canonical arguments 的结果并拒绝两类冲突；FakeAdapter 能恢复游标。独立恢复工作坊还能在内存合成服务中复现提交后丢响应，按 receipt 对账保持一次副作用，并证明换新 key 会重复写入。
 
 当前实现没有：
 
@@ -345,7 +347,7 @@ uv run --frozen --offline pytest
 - 持久 intent/receipt/idempotency ledger、subject/target/version 身份与跨 worker 原子 reservation；
 - 工具级 timeout、可取消 retry sleep 或任意 callable 强制终止；
 - 等待审批状态、分布式 lease/CAS/fencing 或多 worker 恢复；
-- 外部目标系统对账、unknown 状态、补偿工作流和 artifact/测试/业务系统 validator；当前 validator 异常仍映射为 `invalid_action`。
+- `HarnessRunner` 内建的外部目标系统对账、持久 unknown 状态、补偿工作流和 artifact/测试/业务系统 validator；当前 validator 异常仍映射为 `invalid_action`。恢复工作坊的内存 fake 不替代这些生产能力。
 
 因此不能从这些测试声称生产环境具备“恰好一次”、硬 timeout、崩溃安全恢复或分布式一致性。命令退出 0 也不证明任何真实模型质量。
 
@@ -373,4 +375,4 @@ uv run --frozen --offline pytest
 6. CAS、lease 和 fencing token 分别解决哪类并发问题？
 7. 默认 JSON 子集 validator 通过后，为什么高影响任务仍需要 artifact 与业务系统证据？
 
-下一步：在[Python 最小 Harness](/implementation/minimal-harness-python)逐行观察控制循环，在[测试策略](/implementation/testing)设计 crash injection（崩溃注入），再到[可观测性](/foundations/observability)定义恢复所需事件。
+下一步：先用[可靠性恢复工作坊](/practice/reliability-recovery)观察 unknown outcome 与 receipt 对账，再在[Python 最小 Harness](/implementation/minimal-harness-python)逐行观察控制循环，在[测试策略](/implementation/testing)设计 crash injection（崩溃注入），并到[可观测性](/foundations/observability)定义恢复所需事件。

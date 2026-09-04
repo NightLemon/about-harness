@@ -138,6 +138,7 @@ const sidebars = {
       { text: 'Agent 安全评审工作表', link: '/practice/security-review' },
       { text: '端到端适配案例', link: '/practice/end-to-end' },
       { text: '评测实验室', link: '/practice/evaluation' },
+      { text: '可靠性恢复工作坊', link: '/practice/reliability-recovery' },
       { text: '诊断工作表', link: '/practice/debugging' }
     ]
   }],

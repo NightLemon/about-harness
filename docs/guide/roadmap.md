@@ -49,7 +49,7 @@ Policy/Sandbox ── State/Trace/Recovery
 
 ## 三、可靠执行与人工控制
 
-可靠 harness 还需覆盖 timeout、有限重试、幂等、取消、checkpoint、可观测性、多 agent 委派与高风险批准。进入实现前先读[状态与可靠执行](/foundations/state-reliability)、[可观测性](/foundations/observability)、[多 Agent 编排](/foundations/multi-agent)和[人在循环中](/foundations/human-control)，再对照[Python 最小实现](/implementation/minimal-harness-python)、[Adapter 契约](/implementation/adapter-contract)和[扩展机制](/implementation/extensions)。
+可靠 harness 还需覆盖 timeout、有限重试、幂等、取消、checkpoint、可观测性、多 agent 委派与高风险批准。进入实现前先读[状态与可靠执行](/foundations/state-reliability)、[可观测性](/foundations/observability)、[多 Agent 编排](/foundations/multi-agent)和[人在循环中](/foundations/human-control)，再对照[Python 最小实现](/implementation/minimal-harness-python)、[Adapter 契约](/implementation/adapter-contract)和[扩展机制](/implementation/extensions)。需要亲手观察“写入已提交但响应丢失”时，运行[可靠性恢复工作坊](/practice/reliability-recovery)。
 
 ## 四、指定模型适配
 
@@ -148,7 +148,7 @@ harness comparison → 目标 Harness 专题
 | --- | --- | --- |
 | 模型似乎没看到项目规则 | Effective context 与指令作用域 | [指令系统](/foundations/instructions) |
 | Tool 参数常错或错误无法恢复 | Schema、协议、错误分类 | [Adapter 契约](/implementation/adapter-contract) |
-| 同一动作被重复执行 | Checkpoint、幂等、unknown outcome | [状态与可靠执行](/foundations/state-reliability) |
+| 同一动作被重复执行 | Checkpoint、幂等、unknown outcome | [可靠性恢复工作坊](/practice/reliability-recovery) |
 | 测试通过但任务仍错 | Acceptance 与独立 Validator | [测试策略](/implementation/testing) |
 | 换模型后结果无法归因 | 身份、控制变量、配对 Task | [模型—Harness 匹配](/optimization/model-fit) |
 | 页面/文档内容诱导越权 | 不可信 Observation 与 capability policy | [Prompt Injection](/security/prompt-injection) |

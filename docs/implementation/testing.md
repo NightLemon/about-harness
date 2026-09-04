@@ -72,7 +72,7 @@ controller + adapter + policy + tool 集成
 
 ## 当前 Python 测试矩阵
 
-当前基线由 `pytest --collect-only -q` 得到 168 项：
+当前基线由 `pytest --collect-only -q` 得到 172 项：
 
 | 文件 | 数量 | 主要责任 |
 | --- | ---: | --- |
@@ -81,6 +81,7 @@ controller + adapter + policy + tool 集成
 | `test_loop.py` | 17 | completion/验收修正、Adapter Action 深层重验、预算、权限、retry、幂等冲突、恢复、取消、timeout |
 | `test_m5_labs.py` | 48 | 六类 fixture、hash/CLI 隔离、领域身份与边界负例、公开 Trace/摘要一致性 |
 | `test_memory_context_trace.py` | 4 | 上下文选择、记忆污染/过期/删除、trace 脱敏 |
+| `test_recovery.py` | 4 | 明确回执、提交后丢响应、receipt 冲突与换 key 重复副作用 |
 | `test_replay_and_live.py` | 5 | Replay 精确字段、Fake state、Live 硬禁用 |
 | `test_streaming.py` | 14 | 合成 stream 的顺序、ID、tool JSON、终态、重放与失败关闭 |
 
@@ -271,7 +272,7 @@ npm run repo:self-test
 npm run verify
 ```
 
-当前基线应包含 168 项 pytest 全通过，以及 Ruff、Pyright、TypeScript typecheck、文档/事实/站点/安全/工作流/视觉和 checker self-tests 通过。不要只看最后一行；保留首个失败子命令和退出码。
+当前基线应包含 172 项 pytest 全通过，以及 Ruff、Pyright、TypeScript typecheck、文档/事实/站点/安全/工作流/视觉和 checker self-tests 通过。不要只看最后一行；保留首个失败子命令和退出码。
 
 ## 失败时的停止、清理与回滚
 
