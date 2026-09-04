@@ -154,6 +154,6 @@ git diff -- pyproject.toml uv.lock package.json package-lock.json docs/framework
 2. Handoff 与广播在 owner、预算和上下文上有什么不同？
 3. 多个 participant 投票为什么不能消除共同来源错误？
 4. 怎样证明多 Agent 相对单 Agent 解决了可测瓶颈？
-5. 当前三条命令能证明哪些边界，又不能证明什么？
+5. 当前两条命令能证明哪些边界，又不能证明什么？
 
 先读[多 Agent 编排](/foundations/multi-agent)，再按[Framework 对照](/frameworks/comparison)建立单 Agent 基线，并用[评测指标](/evaluation/metrics)比较完整工作流成本。

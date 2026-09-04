@@ -300,7 +300,7 @@ git diff -- pyproject.toml uv.lock package.json package-lock.json lab docs/frame
 - Required 能力没有 `untested`，未知项不会被默认值掩盖；
 - E0 来源、E1 离线、E2 live 兼容与 E3 workload 质量严格分开。
 
-下一步按任务形状选择候选：状态图看[LangGraph](/frameworks/langgraph)，code-first loop 看[OpenAI Agents SDK](/frameworks/openai-agents-sdk)，组件组合看[Google ADK](/frameworks/google-adk)，conversation/event 分层看[AutoGen](/frameworks/autogen)。然后用[Adapter 契约](/implementation/adapter-contract)建立统一内部边界，以[评测方法](/evaluation/method)设计同条件实验。
+下一步先把自己的任务填入[Framework 选型工作表](/practice/framework-selection)，再按形状选择候选：状态图看[LangGraph](/frameworks/langgraph)，code-first loop 看[OpenAI Agents SDK](/frameworks/openai-agents-sdk)，组件组合看[Google ADK](/frameworks/google-adk)，conversation/event 分层看[AutoGen](/frameworks/autogen)。然后用[Adapter 契约](/implementation/adapter-contract)建立统一内部边界，以[评测方法](/evaluation/method)设计同条件实验。
 
 ## 检查题
 
