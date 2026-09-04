@@ -184,7 +184,7 @@ npm run eval:validate
 
 ### 预期输出与断言
 
-Python 契约/schema 测试应显示 64 个测试通过：17 个 Task、13 个 Action 和 14 个 Result 案例按各自 schema/runtime 预期通过或拒绝，运行时 completed Result 与含 `acceptance_result` 的 Trace 也能通过公共 schema；TypeScript 输出应报告 30 个 Task/Action、14 个 RunResult 与九个共享验收案例通过；Eval validator 应报告 20 tasks、6 workloads、6 holdout、2 configs、3 repeats、6 fixture refs、120 个预期矩阵单元、12 个唯一样例单元和 108 个缺失单元。
+Python 契约/schema 测试应显示 65 个测试通过：17 个 Task、13 个 Action 和 14 个 Result 案例按各自 schema/runtime 预期通过或拒绝，运行时 completed Result 与含 `acceptance_result` 的 Trace 也能通过公共 schema，Portfolio Starter 的 Task/Config 也应保持公共契约合法；TypeScript 输出应报告 30 个 Task/Action、14 个 RunResult 与九个共享验收案例通过；Eval validator 应报告 20 tasks、6 workloads、6 holdout、2 configs、3 repeats、6 fixture refs、120 个预期矩阵单元、12 个唯一样例单元和 108 个缺失单元。
 
 不要只看退出码。还要确认 validator 明确写出 `sample_matrix_complete=false` 和 E1 边界；这表示 schema/谱系样例有效，但正式比较尚未完成。
 

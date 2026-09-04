@@ -13,6 +13,8 @@
 
 作品集不是截图合集、Prompt 收藏或一次成功 demo。最有价值的部分通常是失败样例、归因过程、未决项和你为什么没有扩大结论。
 
+希望直接开始时，复制仓库的 `examples/portfolio-starter/`，并按[Capstone 综合项目](/guide/capstone)用同一个 Task 贯穿六项产物。Starter 是 E0 模板，不是已完成证据。
+
 ## 建议目录
 
 可以使用下面的结构，也可以映射到现有仓库；文件名不是评分对象，责任和证据才是：
@@ -294,4 +296,4 @@ npm run verify
 6. 迁移到另一 Harness 时，哪个责任无法逐字复制？
 7. 候选晋级后出现账单、安全或质量异常，如何停止和恢复？
 
-下一步按[学习路径](/guide/start)选择贯穿任务，从[实验环境](/labs/setup)收集第一条 E1 证据，再用[评测实践](/practice/evaluation)形成可复核报告。
+下一步按[学习路径](/guide/start)选择贯穿任务，或直接从[Capstone 综合项目](/guide/capstone)复制脚手架；再从[实验环境](/labs/setup)收集第一条 E1 证据，用[评测实践](/practice/evaluation)形成可复核报告。
