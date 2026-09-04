@@ -131,6 +131,7 @@ const sidebars = {
   '/practice/': [{
     text: '实践手册',
     items: [
+      { text: 'Harness 设计工作表', link: '/practice/harness-design' },
       { text: '模型适配卡', link: '/practice/model-playbook' },
       { text: 'Framework 选型工作表', link: '/practice/framework-selection' },
       { text: '端到端适配案例', link: '/practice/end-to-end' },

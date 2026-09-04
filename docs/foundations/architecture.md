@@ -344,7 +344,7 @@ stopped permission_denied 0
 
 当前 E1 架构是模块化单体：同步 Fake/Replay adapter、provider-neutral 合成 stream assembler、进程内 policy/tool/cache、JSON 子集验收、线程取消、内存 checkpoint、有限 trace 与 JSON Schema。它没有真实 context integration、artifact/测试/业务系统 validator、Provider transport/stream adapter/usage 映射、持久数据库、队列、分布式 revision、外部幂等台账、硬 timeout、异步审批或多 Agent 调度。
 
-下一步在[状态与可靠执行](/foundations/state-reliability)深入 checkpoint 与副作用窗口，在[Prompt Injection 防护](/security/prompt-injection)检查数据如何越过权限边界，再到[Python 最小 Harness](/implementation/minimal-harness-python)逐文件观察当前实现。
+下一步用[Harness 设计工作表](/practice/harness-design)把 Task、责任、Action 生命周期与验证计划落成一份可审核方案；再在[状态与可靠执行](/foundations/state-reliability)深入 checkpoint 与副作用窗口，在[Prompt Injection 防护](/security/prompt-injection)检查数据如何越过权限边界，并到[Python 最小 Harness](/implementation/minimal-harness-python)逐文件观察当前实现。
 
 ## 检查题
 

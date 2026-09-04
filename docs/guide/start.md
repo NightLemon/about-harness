@@ -62,7 +62,7 @@ uv run --frozen --offline python scripts/lab-smoke.py
 2. [系统架构](/foundations/architecture)：把组件放入 data/control/evidence plane；
 3. [Agent 循环](/foundations/agent-loop)：跟踪 Action 从提议到执行、验证与停止。
 
-阶段产物：画一张你正在使用的 Agent 系统图，标出 Task ingress、Adapter、controller、policy、tool、state、validator 和 trace。未知项写 `unknown`。
+阶段产物：画一张你正在使用的 Agent 系统图，标出 Task ingress、Adapter、controller、policy、tool、state、validator 和 trace。未知项写 `unknown`；需要从空白任务开始时，直接填写[Harness 设计工作表](/practice/harness-design)。
 
 ### 第二阶段：理解最常见的质量杠杆
 
