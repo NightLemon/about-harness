@@ -132,6 +132,7 @@ const sidebars = {
     text: '实践手册',
     items: [
       { text: '模型适配卡', link: '/practice/model-playbook' },
+      { text: 'Framework 选型工作表', link: '/practice/framework-selection' },
       { text: '端到端适配案例', link: '/practice/end-to-end' },
       { text: '评测实验室', link: '/practice/evaluation' },
       { text: '诊断工作表', link: '/practice/debugging' }
