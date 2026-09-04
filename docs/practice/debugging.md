@@ -202,6 +202,8 @@ npm run debug:workshop
 
 这些事件回答“在哪一层停止”和“handler 是否执行”。它们没有保存原始 prompt 或真实工具返回，也不能证明分布式 worker、进程重启后的幂等或外部 API 取消。
 
+`retry-idempotency` 的暂时错误发生在副作用之前。要观察更危险的“外部写入已提交、响应随后丢失”，继续运行[可靠性恢复工作坊](/practice/reliability-recovery)；它会比较先按原 key 对账与换新 key 盲目重试。
+
 ### 第二步：让 oracle 故意失败
 
 ```bash

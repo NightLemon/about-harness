@@ -50,6 +50,7 @@ uv sync --frozen --offline
 | `policies.py` | Task allowlist、敏感参数与人工批准 | Handler 前拒绝 |
 | `tools.py` | 注册、执行、retry 与进程内幂等 cache | 未注册或最终失败停止 |
 | `retry.py` | 可重试错误和指数 backoff | 只重试显式 `RetryableError` |
+| `recovery.py` | 合成外部 receipt 与 unknown outcome 对账 | 教学 seam，不是 `HarnessRunner` 的持久状态 |
 | `trace.py` | 有序 event 与递归脱敏 | Pattern 脱敏不是完整 DLP |
 | `context.py` | required/trusted/priority 的 token 选择 | 必需内容超预算时失败 |
 | `memory.py` | 工作记忆、过期、可信过滤和删除 | 不可信记录默认不检索 |
@@ -218,6 +219,8 @@ metrics.reused_tool_calls=1
 预期 3 项通过。`ToolRegistry` 只对显式 `RetryableError` 做有界 retry；确定性 ToolError 不重试。相同 idempotency key 还必须匹配 tool name 和 canonical arguments 的 SHA-256 指纹，才会在当前进程 cache 中复用结果；`call_id` 可以不同，object key 顺序也不改变指纹。
 
 两个负例分别把 `true` 改为 JSON number `1`、把 `first` 工具改为 `second`；两者都必须得到 `failed/tool_error`，第二个 handler 调用数为 0，`reused_tool_calls` 也不增加。这里的 canonical JSON 使用排序 key 和紧凑编码，保守地区分 `1` 与 `1.0`；它不是完整 JSON Canonicalization Scheme（JCS）。cache 也没有持久化到 checkpoint 或跨进程存储。生产实现还必须绑定 subject、target identity、operation/schema version，并由目标系统或持久 store 支持幂等与对账。
+
+这组测试的暂时错误发生在副作用之前。要复现“目标系统已提交，但响应和本地 cache 都没有落下”的窗口，运行[可靠性恢复工作坊](/practice/reliability-recovery)。它把 attempt、receipt lookup 与实际副作用次数分开，并用换新 key 的反例证明内存 cache 不能替代目标系统对账。
 
 ## 第七步：Checkpoint 恢复
 

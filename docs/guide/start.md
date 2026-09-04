@@ -86,7 +86,8 @@ uv run --frozen --offline python scripts/lab-smoke.py
 1. [实验环境](/labs/setup)：理解 fixture、runner、result、eval；
 2. [离线 Runner](/labs/runner)：运行 hash 失败和负例；
 3. [Python 最小 Harness](/implementation/minimal-harness-python)：阅读真实 contract/loop/policy/tool/trace；
-4. 选择一个领域 Lab，保存命令、fixture hash、结果与限制。
+4. 运行[可靠性恢复工作坊](/practice/reliability-recovery)，观察 unknown outcome 怎样对账以及换 key 怎样重复副作用；
+5. 选择一个领域 Lab，保存命令、fixture hash、结果与限制。
 
 完成标志：能从 trace 说明哪个组件提出动作、哪个组件允许执行、哪个组件判定通过，并准确写出 E1 不能证明什么。
 
