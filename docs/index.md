@@ -52,6 +52,7 @@ features:
 | 判断失败来自模型还是工作环境 | [问题诊断](/optimization/debugging) | 用[可观测性](/foundations/observability)补证据 | 最小失败 fixture、根因与回归用例 |
 | 为指定模型选择配置 | [模型适配方法](/models/adaptation) | 完成[模型适配卡](/practice/model-playbook) | 固定身份、协议探针、路由与回退规则 |
 | 判断是否值得引入 Framework | [Framework 对照](/frameworks/comparison) | 填写[选型工作表](/practice/framework-selection) | Task 形状、基线、资格矩阵与采用决定 |
+| 审查 Agent 的权限与数据风险 | [威胁模型](/security/threat-model) | 填写[安全评审工作表](/practice/security-review) | 数据流、攻击链、控制负例与事件 Runbook |
 | 比较 Codex、Pi、Claude Code | [Harness 对照](/harnesses/comparison) | 运行[迁移实验](/labs/migration) | 六类责任表、gap 与补偿控制 |
 | 设计可靠的 Tool | [工具设计](/foundations/tools) | 对照[Adapter 契约](/implementation/adapter-contract) | 输入 schema、policy、错误与幂等契约 |
 | 开始做可复现评测 | [评测方法](/evaluation/method) | 运行[评测实验室](/practice/evaluation) | Task、Study、Run、Result 与限定结论 |

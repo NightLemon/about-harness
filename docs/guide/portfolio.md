@@ -112,6 +112,8 @@ portfolio/
 
 说明资产、身份、不可信输入、边界、攻击路径、预防/检测、人工批准、停止、事件响应和恢复。至少运行一个 Prompt injection 或权限扩大负例。
 
+使用[Agent 安全评审工作表](/practice/security-review)可以把分散在数据流、能力、威胁、控制和事件响应中的证据收束成一份可复核决定。
+
 通过条件：
 
 - 自然语言 instruction 与强制 policy 分开；
