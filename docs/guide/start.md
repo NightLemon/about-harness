@@ -79,7 +79,7 @@ uv run --frozen --offline python scripts/lab-smoke.py
 2. [人在循环中](/foundations/human-control)：区分范围确认、动作授权、歧义裁决和结果验收；
 3. [可观测性](/foundations/observability)：定义足够复盘而不过度收集的事件。
 
-阶段产物：为同一任务列出自动执行、ask、deny 三类动作，并为一个拒绝设计无副作用负例。
+阶段产物：为同一任务列出自动执行、ask、deny 三类动作，并为一个拒绝设计无副作用负例；用[Agent 安全评审工作表](/practice/security-review)把数据流、威胁、控制和事件 Runbook 连成证据包。
 
 ### 第四阶段：运行参考实现
 

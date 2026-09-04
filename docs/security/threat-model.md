@@ -220,7 +220,7 @@ Loop 测试应有 13 项通过，并证明：未授权工具在 handler 前停�
 
 这些 E1 测试只证明固定实现和合成威胁能触发预期控制，不证明真实浏览器、MCP、provider、操作系统隔离或生产身份安全。未覆盖项必须保留为 residual risk（残余风险）。
 
-下一步用[Prompt Injection](/security/prompt-injection)细化不可信内容路径，到[Secret 与隐私](/security/secrets-privacy)建立数据清单，并在[事件响应](/security/incident-response)定义控制失效后的顺序。供应链入口见[扩展与供应链](/security/supply-chain)。
+下一步使用[Agent 安全评审工作表](/practice/security-review)把数据流、能力、威胁、控制负例和事件 Runbook 汇总为一份可复核决定；再用[Prompt Injection](/security/prompt-injection)细化不可信内容路径，到[Secret 与隐私](/security/secrets-privacy)建立数据清单，并在[事件响应](/security/incident-response)定义控制失效后的顺序。供应链入口见[扩展与供应链](/security/supply-chain)。
 
 ## 检查题
 
