@@ -66,6 +66,8 @@ portfolio/
 
 使用 fake/replay 完成一个小任务，支持完成、拒权、无效 Action、未知工具、超时、预算耗尽和 checkpoint 恢复，产生结构化 trace/result。
 
+还没有自己的设计时，先用[Harness 设计工作表](/practice/harness-design)冻结 Task、责任、Action 生命周期、权限和恢复规则，再进入实现。
+
 通过条件：
 
 - Task 明确输入、工具、acceptance、预算和 stop；
