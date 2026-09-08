@@ -4,18 +4,10 @@ from urllib.parse import urlparse
 
 from about_harness.contracts import JsonValue
 from about_harness.integrations.base import (
-    IntegrationBoundary,
     IntegrationContractError,
     require_list,
     require_object,
     require_string,
-)
-
-BOUNDARY = IntegrationBoundary(
-    name="Browser Use",
-    distribution="browser-use",
-    import_name="browser_use",
-    representative_domain="browser",
 )
 
 _ALLOWED_ORIGIN = "http://lab.local"
@@ -242,6 +234,6 @@ def extract_local_catalog(payload: dict[str, JsonValue]) -> dict[str, JsonValue]
             "executed_actions": 0,
         },
         "side_effects": 0,
-        "integration": BOUNDARY.name,
-        "mode": BOUNDARY.execution_mode,
+        "example": "local-catalog",
+        "mode": "offline-domain-v2",
     }

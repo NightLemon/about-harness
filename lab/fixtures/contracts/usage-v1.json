@@ -1,0 +1,148 @@
+[
+  {
+    "name": "known-fixture",
+    "valid": true,
+    "value": {
+      "schema_version": "1.0",
+      "token_status": "known",
+      "input_tokens": 20,
+      "output_tokens": 5,
+      "cost_status": "known",
+      "cost_usd": 0,
+      "source": "fixture"
+    }
+  },
+  {
+    "name": "unknown",
+    "valid": true,
+    "value": {
+      "schema_version": "1.0",
+      "token_status": "unknown",
+      "input_tokens": null,
+      "output_tokens": null,
+      "cost_status": "unknown",
+      "cost_usd": null,
+      "source": "provider"
+    }
+  },
+  {
+    "name": "price-missing",
+    "valid": true,
+    "value": {
+      "schema_version": "1.0",
+      "token_status": "known",
+      "input_tokens": 20,
+      "output_tokens": 5,
+      "cost_status": "unknown",
+      "cost_usd": null,
+      "source": "provider"
+    }
+  },
+  {
+    "name": "zero-is-not-unknown",
+    "valid": false,
+    "value": {
+      "schema_version": "1.0",
+      "token_status": "unknown",
+      "input_tokens": 20,
+      "output_tokens": 5,
+      "cost_status": "known",
+      "cost_usd": 0,
+      "source": "fixture"
+    }
+  },
+  {
+    "name": "partial",
+    "valid": false,
+    "value": {
+      "schema_version": "1.0",
+      "token_status": "known",
+      "input_tokens": null,
+      "output_tokens": 5,
+      "cost_status": "known",
+      "cost_usd": 0,
+      "source": "fixture"
+    }
+  },
+  {
+    "name": "negative",
+    "valid": false,
+    "value": {
+      "schema_version": "1.0",
+      "token_status": "known",
+      "input_tokens": 20,
+      "output_tokens": 5,
+      "cost_status": "known",
+      "cost_usd": -1,
+      "source": "fixture"
+    }
+  },
+  {
+    "name": "fraction",
+    "valid": false,
+    "value": {
+      "schema_version": "1.0",
+      "token_status": "known",
+      "input_tokens": 1.5,
+      "output_tokens": 5,
+      "cost_status": "known",
+      "cost_usd": 0,
+      "source": "fixture"
+    }
+  },
+  {
+    "name": "boolean",
+    "valid": false,
+    "value": {
+      "schema_version": "1.0",
+      "token_status": "known",
+      "input_tokens": 20,
+      "output_tokens": true,
+      "cost_status": "known",
+      "cost_usd": 0,
+      "source": "fixture"
+    }
+  },
+  {
+    "name": "unknown-cost-with-value",
+    "valid": false,
+    "value": {
+      "schema_version": "1.0",
+      "token_status": "known",
+      "input_tokens": 20,
+      "output_tokens": 5,
+      "cost_status": "unknown",
+      "cost_usd": 0,
+      "source": "fixture"
+    }
+  },
+  {
+    "name": "extra",
+    "valid": false,
+    "value": {
+      "schema_version": "1.0",
+      "token_status": "known",
+      "input_tokens": 20,
+      "output_tokens": 5,
+      "cost_status": "known",
+      "cost_usd": 0,
+      "source": "fixture",
+      "extra": true
+    }
+  },
+  {
+    "name": "source-array-is-not-a-string",
+    "valid": false,
+    "value": {
+      "schema_version": "1.0",
+      "token_status": "unknown",
+      "input_tokens": null,
+      "output_tokens": null,
+      "cost_status": "unknown",
+      "cost_usd": null,
+      "source": [
+        "provider"
+      ]
+    }
+  }
+]

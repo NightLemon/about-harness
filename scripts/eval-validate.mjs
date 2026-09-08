@@ -1,4 +1,5 @@
-import { assertFixtureLineage, assertRuns, assertStudy, readJson, readJsonl } from './eval-lib.mjs'
+import { assertArtifactLineage, assertExecutionTasks, assertFixtureLineage, assertRuns, assertStudy, readJson, readJsonl } from './eval-lib.mjs'
+import path from 'node:path'
 
 const [taskFile, fixtureRefFile, studyFile, runFile] = process.argv.slice(2)
 if (!taskFile || !fixtureRefFile || !studyFile || !runFile) {
@@ -13,7 +14,9 @@ try {
   const rows = readJsonl(runFile)
   const design = assertStudy(study)
   const coverage = assertRuns(rows, study)
-  const lineage = assertFixtureLineage(tasks, fixtureRefs, rows, design.taskIds)
+  const lineage = study.schema_version === '1.2'
+    ? (assertArtifactLineage(rows, path.dirname(runFile)), assertExecutionTasks(tasks, fixtureRefs, rows, study, path.dirname(runFile)))
+    : assertFixtureLineage(tasks, fixtureRefs, rows, design.taskIds)
   const expectedRows = study.tasks.length * study.configs.length * study.repeats
   console.log(JSON.stringify({
     schema_version: '1.0',

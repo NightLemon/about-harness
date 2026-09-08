@@ -1,0 +1,6 @@
+--- a/solution.py
++++ b/solution.py
+@@ -1,2 +1,2 @@
+ def solve(value):
+-    return value.lower()
++    return value.strip().lower()

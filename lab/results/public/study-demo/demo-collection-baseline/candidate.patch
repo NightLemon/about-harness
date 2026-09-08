@@ -1,0 +1,6 @@
+--- a/solution.py
++++ b/solution.py
+@@ -1,2 +1,3 @@
++# Reviewed baseline attempt.
+ def solve(value):
+     return value[:-1]

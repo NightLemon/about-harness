@@ -1,0 +1,47 @@
+{
+  "fixture_hash": "1970df3dd73e124f08f6762c00a0959eea57489d5ec1f7d5a4755e1c6760e69f",
+  "manifest": {
+    "checked": "2026-09-08",
+    "files": {
+      "tasks.json": "1970df3dd73e124f08f6762c00a0959eea57489d5ec1f7d5a4755e1c6760e69f"
+    },
+    "hash_algorithm": "sha256-raw-bytes",
+    "license": "CC-BY-4.0",
+    "personal_data": false,
+    "schema_version": "1.0",
+    "source": "project-synthetic"
+  },
+  "source": {
+    "path": "fixtures/tasks.json",
+    "sha256": "1970df3dd73e124f08f6762c00a0959eea57489d5ec1f7d5a4755e1c6760e69f"
+  },
+  "task": {
+    "baseline": "# Reviewed baseline attempt.\ndef solve(value):\n    return value.get(\"count\") or 7\n",
+    "candidate": "def solve(value):\n    return value.get(\"count\", 7)\n",
+    "goal": "缺失值：仅缺少键时使用默认值",
+    "initial": "def solve(value):\n    return value.get(\"count\") or 7\n",
+    "split": "holdout",
+    "task_id": "demo-missing",
+    "tests": [
+      {
+        "expected": 7,
+        "id": "case-0",
+        "input": {}
+      },
+      {
+        "expected": 0,
+        "id": "case-1",
+        "input": {
+          "count": 0
+        }
+      },
+      {
+        "expected": 3,
+        "id": "case-2",
+        "input": {
+          "count": 3
+        }
+      }
+    ]
+  }
+}

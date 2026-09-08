@@ -1,0 +1,286 @@
+{
+  "configs": {
+    "baseline": {
+      "by_split": {
+        "development": {
+          "cost_usd_p90": 0,
+          "cost_usd_total": 0,
+          "distinct_tasks": 3,
+          "duration_ms_p50": 562.9999999946449,
+          "duration_ms_p90": 578.9999999979045,
+          "failure_types": {
+            "verification": 3
+          },
+          "human_turns_total": 0,
+          "input_tokens_total": 0,
+          "output_tokens_total": 0,
+          "pass_rate": 0,
+          "pass_rate_wilson95": [
+            0,
+            0.5615
+          ],
+          "passed": 0,
+          "runs": 3,
+          "safety_violations": 0,
+          "tool_errors_total": 0
+        },
+        "holdout": {
+          "cost_usd_p90": 0,
+          "cost_usd_total": 0,
+          "distinct_tasks": 3,
+          "duration_ms_p50": 593.9999999827705,
+          "duration_ms_p90": 625,
+          "failure_types": {
+            "verification": 3
+          },
+          "human_turns_total": 0,
+          "input_tokens_total": 0,
+          "output_tokens_total": 0,
+          "pass_rate": 0,
+          "pass_rate_wilson95": [
+            0,
+            0.5615
+          ],
+          "passed": 0,
+          "runs": 3,
+          "safety_violations": 0,
+          "tool_errors_total": 0
+        }
+      },
+      "cost_usd_p90": 0,
+      "cost_usd_total": 0,
+      "distinct_tasks": 6,
+      "duration_ms_p50": 562.9999999946449,
+      "duration_ms_p90": 625,
+      "failure_types": {
+        "verification": 6
+      },
+      "human_turns_total": 0,
+      "input_tokens_total": 0,
+      "output_tokens_total": 0,
+      "pass_rate": 0,
+      "pass_rate_wilson95": [
+        0,
+        0.3903
+      ],
+      "passed": 0,
+      "runs": 6,
+      "safety_violations": 0,
+      "task_level": {
+        "by_split": {
+          "development": {
+            "evaluable_tasks": 3,
+            "incomplete_tasks": 0,
+            "pass_rate": 0,
+            "pass_rate_wilson95": [
+              0,
+              0.5615
+            ],
+            "passed_tasks": 0,
+            "tasks_observed": 3
+          },
+          "holdout": {
+            "evaluable_tasks": 3,
+            "incomplete_tasks": 0,
+            "pass_rate": 0,
+            "pass_rate_wilson95": [
+              0,
+              0.5615
+            ],
+            "passed_tasks": 0,
+            "tasks_observed": 3
+          }
+        },
+        "scheduled_runs_per_task": 1,
+        "successful_runs_required": 1
+      },
+      "tool_errors_total": 0
+    },
+    "candidate": {
+      "by_split": {
+        "development": {
+          "cost_usd_p90": 0,
+          "cost_usd_total": 0,
+          "distinct_tasks": 3,
+          "duration_ms_p50": 437.0000000053551,
+          "duration_ms_p90": 437.9999999946449,
+          "failure_types": {},
+          "human_turns_total": 0,
+          "input_tokens_total": 0,
+          "output_tokens_total": 0,
+          "pass_rate": 1,
+          "pass_rate_wilson95": [
+            0.4385,
+            1
+          ],
+          "passed": 3,
+          "runs": 3,
+          "safety_violations": 0,
+          "tool_errors_total": 0
+        },
+        "holdout": {
+          "cost_usd_p90": 0,
+          "cost_usd_total": 0,
+          "distinct_tasks": 3,
+          "duration_ms_p50": 422.0000000204891,
+          "duration_ms_p90": 437.9999999946449,
+          "failure_types": {},
+          "human_turns_total": 0,
+          "input_tokens_total": 0,
+          "output_tokens_total": 0,
+          "pass_rate": 1,
+          "pass_rate_wilson95": [
+            0.4385,
+            1
+          ],
+          "passed": 3,
+          "runs": 3,
+          "safety_violations": 0,
+          "tool_errors_total": 0
+        }
+      },
+      "cost_usd_p90": 0,
+      "cost_usd_total": 0,
+      "distinct_tasks": 6,
+      "duration_ms_p50": 422.0000000204891,
+      "duration_ms_p90": 437.9999999946449,
+      "failure_types": {},
+      "human_turns_total": 0,
+      "input_tokens_total": 0,
+      "output_tokens_total": 0,
+      "pass_rate": 1,
+      "pass_rate_wilson95": [
+        0.6097,
+        1
+      ],
+      "passed": 6,
+      "runs": 6,
+      "safety_violations": 0,
+      "task_level": {
+        "by_split": {
+          "development": {
+            "evaluable_tasks": 3,
+            "incomplete_tasks": 0,
+            "pass_rate": 1,
+            "pass_rate_wilson95": [
+              0.4385,
+              1
+            ],
+            "passed_tasks": 3,
+            "tasks_observed": 3
+          },
+          "holdout": {
+            "evaluable_tasks": 3,
+            "incomplete_tasks": 0,
+            "pass_rate": 1,
+            "pass_rate_wilson95": [
+              0.4385,
+              1
+            ],
+            "passed_tasks": 3,
+            "tasks_observed": 3
+          }
+        },
+        "scheduled_runs_per_task": 1,
+        "successful_runs_required": 1
+      },
+      "tool_errors_total": 0
+    }
+  },
+  "eligible_candidates": [],
+  "evidence": "E1",
+  "evidence_levels": [
+    "E1"
+  ],
+  "matrix": {
+    "complete": true,
+    "expected_cells": 12,
+    "missing_cells": 0,
+    "observed_cells": 12
+  },
+  "pairwise": [
+    {
+      "baseline": "baseline",
+      "candidate": "candidate",
+      "complete_pairs": 3,
+      "losses": 0,
+      "split": "development",
+      "ties": 0,
+      "wins": 3
+    },
+    {
+      "baseline": "baseline",
+      "candidate": "candidate",
+      "complete_pairs": 3,
+      "losses": 0,
+      "split": "holdout",
+      "ties": 0,
+      "wins": 3
+    }
+  ],
+  "promotion_analysis": {
+    "analysis_unit": "task",
+    "baseline": "baseline",
+    "candidates": {
+      "candidate": {
+        "blockers": [
+          "learning_only"
+        ],
+        "eligible": false,
+        "observed": {
+          "baseline_p90_cost_usd": 0,
+          "baseline_pass_rate": 0,
+          "baseline_passed_tasks": 0,
+          "baseline_tasks": 3,
+          "candidate_p90_cost_usd": 0,
+          "candidate_pass_rate": 1,
+          "candidate_passed_tasks": 3,
+          "candidate_tasks": 3,
+          "p90_cost_usd_delta": 0,
+          "paired_task_effect": {
+            "baseline_only_passed": 0,
+            "baseline_passed_tasks": 0,
+            "bootstrap": {
+              "computation": "exact_empirical_distribution",
+              "confidence_level": 0.95,
+              "method": "nonparametric_percentile",
+              "pass_rate_delta_interval": {
+                "lower": 1,
+                "upper": 1
+              }
+            },
+            "both_failed": 0,
+            "both_passed": 0,
+            "candidate_only_passed": 3,
+            "candidate_passed_tasks": 3,
+            "paired_tasks": 3
+          },
+          "pass_rate_delta": 1
+        },
+        "status": "blocked"
+      }
+    },
+    "p90_cost_delta_unit": "absolute_usd_per_run",
+    "pass_rate_delta_unit": "absolute_proportion",
+    "split": "holdout",
+    "task_success_rule": {
+      "scheduled_runs_per_task": 1,
+      "successful_runs_required": 1
+    },
+    "thresholds": {
+      "max_p90_cost_delta": 0,
+      "min_pass_rate_delta": 0.05,
+      "pass_rate_analysis_unit": "task",
+      "safety_violations": 0,
+      "task_pass_min_runs": 1
+    }
+  },
+  "promotion_blockers": [
+    "learning_only"
+  ],
+  "promotion_eligible": false,
+  "schema_version": "1.0",
+  "study_kind": "learning",
+  "study_schema_version": "1.2",
+  "warning": "Synthetic/offline sample; do not use it as a model ranking."
+}

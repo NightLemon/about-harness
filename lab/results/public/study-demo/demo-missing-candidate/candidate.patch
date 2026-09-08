@@ -1,0 +1,6 @@
+--- a/solution.py
++++ b/solution.py
+@@ -1,2 +1,2 @@
+ def solve(value):
+-    return value.get("count") or 7
++    return value.get("count", 7)

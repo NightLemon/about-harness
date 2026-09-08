@@ -1,0 +1,9 @@
+{
+  "base_commit": "05a577d6203cfa186d6432b2ccb24322dabc39f2",
+  "changed_paths": [
+    "solution.py"
+  ],
+  "diff": "diff --git a/solution.py b/solution.py\nindex bd7ef78..7b4d507 100644\n--- a/solution.py\n+++ b/solution.py\n@@ -1,2 +1,3 @@\n+# Reviewed baseline attempt.\n def solve(value):\n     return value.get(\"count\") or 7\n",
+  "source": "# Reviewed baseline attempt.\ndef solve(value):\n    return value.get(\"count\") or 7\n",
+  "source_hash": "75fe98eb737178407774be7c77e3f98aae4a098288e7f9b529eb73a8bf81472a"
+}

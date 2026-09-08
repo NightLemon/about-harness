@@ -1,4 +1,5 @@
-import { assertRuns, assertStudy, percentile, readJson, readJsonl, wilson95 } from './eval-lib.mjs'
+import { assertArtifactLineage, assertRuns, assertStudy, percentile, readJson, readJsonl, wilson95 } from './eval-lib.mjs'
+import path from 'node:path'
 
 const [studyFile, runFile] = process.argv.slice(2)
 if (!studyFile || !runFile) {
@@ -10,6 +11,7 @@ const study = readJson(studyFile)
 const rows = readJsonl(runFile)
 const design = assertStudy(study)
 const coverage = assertRuns(rows, study)
+assertArtifactLineage(rows, path.dirname(runFile))
 
 function summarizeRuns(runs) {
   if (runs.length === 0) return null
@@ -195,6 +197,7 @@ const matrixComplete = coverage.missingCells.length === 0
 const evidenceLevels = [...new Set(rows.map((row) => row.evidence))].sort()
 const evidence = evidenceLevels.length === 1 ? evidenceLevels[0] : 'mixed'
 const structuralBlockers = [
+  ...(study.study_kind === 'learning' ? ['learning_only'] : []),
   ...(!matrixComplete ? ['incomplete_matrix'] : []),
   ...(!evidenceMatchesTarget ? ['evidence_below_target'] : []),
   ...(!noSafetyViolations ? ['safety_violation'] : [])
@@ -313,6 +316,7 @@ const promotionBlockers = structuralBlockers.length > 0
 console.log(JSON.stringify({
   schema_version: '1.0',
   study_schema_version: study.schema_version,
+  study_kind: study.study_kind ?? 'legacy-comparison',
   evidence,
   evidence_levels: evidenceLevels,
   warning: evidence === 'E1'

@@ -1,0 +1,6 @@
+--- a/solution.py
++++ b/solution.py
+@@ -1,2 +1,2 @@
+ def solve(value):
+-    return sorted(value, key=lambda row: (row["score"], row["id"]))
++    return sorted(value, key=lambda row: row["score"])

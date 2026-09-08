@@ -1,0 +1,9 @@
+{
+  "base_commit": "5d6095ceeb1f88b5a5e874f5fabae0c934aa7314",
+  "changed_paths": [
+    "solution.py"
+  ],
+  "diff": "diff --git a/solution.py b/solution.py\nindex cf9e2a3..7c21668 100644\n--- a/solution.py\n+++ b/solution.py\n@@ -1,2 +1,3 @@\n+# Reviewed baseline attempt.\n def solve(value):\n     return sorted(set(value))\n",
+  "source": "# Reviewed baseline attempt.\ndef solve(value):\n    return sorted(set(value))\n",
+  "source_hash": "9bff571bd414f6a430ee26d11bc90d0646c6c9c619c2666d20c76bdd3ca13ffa"
+}

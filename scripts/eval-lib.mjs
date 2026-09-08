@@ -1,6 +1,7 @@
 import crypto from 'node:crypto'
 import { spawnSync } from 'node:child_process'
 import fs from 'node:fs'
+import path from 'node:path'
 
 export const RUN_REQUIRED = [
   'schema_version', 'run_id', 'task_id', 'config_id', 'config_version', 'repeat',
@@ -32,53 +33,67 @@ export function readJsonl(file) {
 }
 
 export function assertStudy(study) {
-  if (!['1.0', '1.1'].includes(study.schema_version)) {
-    throw new Error('study.schema_version must be 1.0 or 1.1')
+  if (!['1.0', '1.1', '1.2'].includes(study.schema_version)) {
+    throw new Error('study.schema_version must be 1.0, 1.1 or 1.2')
   }
-  if (!Array.isArray(study.configs) || new Set(study.configs).size < 2) {
+  const modern = study.schema_version === '1.2'
+  if (modern && (!['learning', 'comparison'].includes(study.study_kind)
+    || typeof study.sampling_rationale !== 'string' || !study.sampling_rationale.trim())) {
+    throw new Error('study 1.2 requires study_kind and sampling_rationale')
+  }
+  if (modern && study.study_kind === 'learning' && study.evidence_target !== 'E1') {
+    throw new Error('learning study must target E1')
+  }
+  if (!Array.isArray(study.configs) || new Set(study.configs).size < 2
+    || new Set(study.configs).size !== study.configs.length
+    || study.configs.some((id) => typeof id !== 'string' || !id.trim() || id.includes('#'))) {
     throw new Error('study requires at least two unique configs')
   }
-  if (!Number.isInteger(study.repeats) || study.repeats < 3) {
-    throw new Error('study.repeats must be at least 3')
+  if (!Number.isInteger(study.repeats) || study.repeats < (modern ? 1 : 3)) {
+    throw new Error(`study.repeats must be at least ${modern ? 1 : 3}`)
   }
-  if (!Array.isArray(study.tasks) || study.tasks.length < 20) {
-    throw new Error('study requires at least 20 tasks')
+  if (!Array.isArray(study.tasks) || study.tasks.length < (modern ? 1 : 20)) {
+    throw new Error(`study requires at least ${modern ? 1 : 20} tasks`)
   }
   const taskIds = new Set()
   const workloads = new Set()
   let holdout = 0
   for (const task of study.tasks) {
-    if (typeof task.task_id !== 'string' || taskIds.has(task.task_id)) {
+    if (typeof task.task_id !== 'string' || !task.task_id.trim() || task.task_id.includes('#') || taskIds.has(task.task_id)) {
       throw new Error(`invalid or duplicate task_id: ${task.task_id}`)
     }
     if (!['development', 'holdout'].includes(task.split)) {
       throw new Error(`invalid split for ${task.task_id}`)
     }
     taskIds.add(task.task_id)
+    if (typeof task.workload !== 'string' || !task.workload.trim()) throw new Error('workload must be non-empty')
     workloads.add(task.workload)
     if (task.split === 'holdout') holdout += 1
   }
-  if (workloads.size < 4) throw new Error('study requires at least four workloads')
-  if (holdout < 5 || holdout / study.tasks.length < 0.2) {
+  if (!modern && workloads.size < 4) throw new Error('study requires at least four workloads')
+  if (!modern && (holdout < 5 || holdout / study.tasks.length < 0.2)) {
     throw new Error('holdout must be at least five tasks and 20%')
+  }
+  if (modern && study.study_kind === 'comparison' && (holdout === 0 || holdout === study.tasks.length)) {
+    throw new Error('comparison requires separate development and holdout tasks')
   }
   if (study.promotion === null || typeof study.promotion !== 'object' || Array.isArray(study.promotion)) {
     throw new Error('study.promotion must be an object')
   }
-  const analysisUnit = study.schema_version === '1.1' ? 'task' : 'run'
-  const taskPassMinRuns = study.schema_version === '1.1'
+  const analysisUnit = study.schema_version !== '1.0' ? 'task' : 'run'
+  const taskPassMinRuns = study.schema_version !== '1.0'
     ? study.promotion.task_pass_min_runs
     : null
-  const allowedPromotionFields = study.schema_version === '1.1'
+  const allowedPromotionFields = study.schema_version !== '1.0'
     ? new Set(['pass_rate_analysis_unit', 'task_pass_min_runs', 'min_pass_rate_delta', 'max_p90_cost_delta', 'safety_violations'])
     : new Set(['min_pass_rate_delta', 'max_p90_cost_delta', 'safety_violations'])
   const unknownPromotionFields = Object.keys(study.promotion).filter((key) => !allowedPromotionFields.has(key))
   if (unknownPromotionFields.length > 0) {
     throw new Error(`study ${study.schema_version} has unknown promotion fields: ${unknownPromotionFields.join(', ')}`)
   }
-  if (study.schema_version === '1.1') {
+  if (study.schema_version !== '1.0') {
     if (study.promotion.pass_rate_analysis_unit !== 'task') {
-      throw new Error('promotion.pass_rate_analysis_unit must be task for study 1.1')
+      throw new Error('promotion.pass_rate_analysis_unit must be task for study 1.1/1.2')
     }
     if (!Number.isInteger(taskPassMinRuns) || taskPassMinRuns < 1 || taskPassMinRuns > study.repeats) {
       throw new Error('promotion.task_pass_min_runs must be an integer between 1 and study.repeats')
@@ -114,7 +129,10 @@ export function assertRuns(rows, study) {
     for (const key of RUN_REQUIRED) {
       if (!(key in row)) throw new Error(`${row.run_id || '<unknown>'}: missing ${key}`)
     }
-    if (row.schema_version !== '1.0') throw new Error(`${row.run_id}: unsupported schema`)
+    if (!['1.0', '1.1'].includes(row.schema_version)) throw new Error(`${row.run_id}: unsupported schema`)
+    if (row.schema_version === '1.1' && (!row.artifacts || typeof row.artifacts !== 'object')) {
+      throw new Error(`${row.run_id}: missing artifacts`)
+    }
     if (ids.has(row.run_id)) throw new Error(`duplicate run_id: ${row.run_id}`)
     ids.add(row.run_id)
     const task = taskMap.get(row.task_id)
@@ -135,6 +153,7 @@ export function assertRuns(rows, study) {
       model_id: row.model_id,
       harness_version: row.harness_version,
       instruction_hash: row.instruction_hash,
+      ...(row.schema_version === '1.1' ? { config_hash: row.artifacts.config?.sha256 } : {}),
       evidence: row.evidence
     })
     const previousIdentity = configIdentities.get(row.config_id)
@@ -175,6 +194,101 @@ export function assertRuns(rows, study) {
   }
   const missingCells = expectedCells.filter((cell) => !cells.has(cell))
   return { ids, cells, expectedCells, missingCells, configIdentities }
+}
+
+/** Validate portable execution artifacts before a new run can enter analysis. */
+export function assertArtifactLineage(runs, directory) {
+  const root = fs.realpathSync(directory)
+  for (const row of runs.filter((item) => item.schema_version === '1.1')) {
+    const objects = {}
+    for (const key of ['task', 'run', 'trace', 'result', 'config', 'fixture']) {
+      const ref = row.artifacts?.[key]
+      if (!ref || typeof ref.path !== 'string' || !/^[a-f0-9]{64}$/.test(ref.sha256 || '')
+        || path.isAbsolute(ref.path) || ref.path.includes('\\') || ref.path.split('/').includes('..')) {
+        throw new Error(`${row.run_id}: invalid ${key} artifact reference`)
+      }
+      const target = path.resolve(root, ref.path)
+      const relative = path.relative(root, fs.realpathSync(target))
+      if (relative.startsWith('..') || path.isAbsolute(relative) || fs.lstatSync(target).isSymbolicLink()) {
+        throw new Error(`${row.run_id}: artifact escapes result directory`)
+      }
+      const bytes = fs.readFileSync(target)
+      if (sha256(bytes) !== ref.sha256) throw new Error(`${row.run_id}: ${key} artifact hash mismatch`)
+      objects[key] = JSON.parse(bytes.toString('utf8'))
+    }
+    if (objects.run.run_id !== row.run_id || objects.result.run_id !== row.run_id || objects.trace.run_id !== row.run_id
+      || objects.task.task_id !== row.task_id || objects.run.task_id !== row.task_id || objects.result.task_id !== row.task_id
+      || objects.config.config_id !== row.config_id || objects.run.fixture_hash !== row.fixture_hash
+      || objects.fixture.fixture_hash !== row.fixture_hash || objects.task.metadata?.fixture_hash !== row.fixture_hash
+      || (objects.result.status === 'completed') !== row.passed
+      || objects.result.metrics.duration_ms !== row.duration_ms
+      || objects.result.metrics.cost_usd !== row.cost_usd
+      || JSON.stringify(objects.result.trace) !== JSON.stringify(objects.trace.events)) {
+      throw new Error(`${row.run_id}: execution artifact identity or result mismatch`)
+    }
+    const source = objects.fixture.source
+    if (!source || source.path !== 'fixtures/tasks.json' || source.sha256 !== row.fixture_hash) {
+      throw new Error(`${row.run_id}: missing raw fixture source`)
+    }
+    const sourcePath = path.join(root, source.path)
+    if (!fs.realpathSync(sourcePath).startsWith(root + path.sep)
+      || sha256(fs.readFileSync(sourcePath)) !== row.fixture_hash) {
+      throw new Error(`${row.run_id}: raw fixture hash mismatch`)
+    }
+    const sourceTask = JSON.parse(fs.readFileSync(sourcePath, 'utf8')).find(item => item.task_id === row.task_id)
+    if (canonicalJson(sourceTask) !== canonicalJson(objects.fixture.task)) {
+      throw new Error(`${row.run_id}: task does not match raw source bundle`)
+    }
+    if (objects.run.environment?.offline === true && row.evidence !== 'E1') {
+      throw new Error(`${row.run_id}: offline execution cannot be upgraded to live evidence`)
+    }
+    for (const key of ['task', 'trace', 'result', 'config', 'fixture']) {
+      const ref = objects.run.artifacts?.[key]
+      if (!ref || !row.artifacts[key] || row.artifacts[key].sha256 !== ref.sha256 || row.artifacts[key].path !== ref.path) {
+        throw new Error(`${row.run_id}: run envelope reference mismatch`)
+      }
+    }
+    if (canonicalJson(objects.run.config) !== canonicalJson(objects.config)) {
+      throw new Error(`${row.run_id}: run configuration mismatch`)
+    }
+    const execution = objects.run.execution_artifacts
+    if (!execution?.['workspace.json'] || !execution['baseline-test.json']) {
+      throw new Error(`${row.run_id}: missing execution artifacts`)
+    }
+    for (const [name, ref] of Object.entries(execution)) {
+      if (!/^(workspace\.json|baseline-test\.json|candidate\.patch|test-\d+\.json)$/.test(name)
+        || ref.path !== `${row.run_id}/${name}` || !/^[a-f0-9]{64}$/.test(ref.sha256 || '')) {
+        throw new Error(`${row.run_id}: invalid execution artifact reference`)
+      }
+      const artifact = fs.realpathSync(path.join(root, ref.path))
+      if (!artifact.startsWith(root + path.sep) || sha256(fs.readFileSync(artifact)) !== ref.sha256) {
+        throw new Error(`${row.run_id}: execution artifact hash mismatch`)
+      }
+    }
+  }
+}
+
+export function assertExecutionTasks(tasks, registry, runs, study, directory) {
+  if (registry.schema_version !== '1.1' || registry.source !== 'execution-artifacts') {
+    throw new Error('execution fixture registry must identify execution-artifacts v1.1')
+  }
+  const taskMap = new Map(tasks.map(task => [task.task_id, task]))
+  if (taskMap.size !== tasks.length || taskMap.size !== study.tasks.length
+    || study.tasks.some(task => !taskMap.has(task.task_id))) {
+    throw new Error('execution task list differs from study design')
+  }
+  for (const row of runs) {
+    if (row.schema_version !== '1.1') throw new Error('execution study requires EvalRun 1.1')
+    const declared = taskMap.get(row.task_id)
+    const executed = readJson(path.join(directory, row.artifacts.task.path))
+    // Budgets are treatment variables; the task and acceptance remain frozen.
+    const { budgets: declaredBudgets, ...declaredTask } = declared
+    const { budgets: executedBudgets, ...executedTask } = executed
+    if (canonicalJson(declaredTask) !== canonicalJson(executedTask)) {
+      throw new Error(`${row.run_id}: declared task differs from execution`)
+    }
+  }
+  return { refs: taskMap }
 }
 
 function canonicalJson(value) {

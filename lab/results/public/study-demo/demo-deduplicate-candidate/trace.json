@@ -1,0 +1,217 @@
+{
+  "events": [
+    {
+      "data": {
+        "adapter": "replay",
+        "offline": true,
+        "resumed": false,
+        "task_id": "demo-deduplicate"
+      },
+      "kind": "run_started",
+      "sequence": 0,
+      "timestamp_ms": 0.0
+    },
+    {
+      "data": {
+        "cost_usd": 0.0,
+        "kind": "tool",
+        "model_calls": 1
+      },
+      "kind": "model_action",
+      "sequence": 1,
+      "timestamp_ms": 0.0
+    },
+    {
+      "data": {
+        "attempts": 1,
+        "call_id": "call-0",
+        "reused": false,
+        "tool": "workspace.read",
+        "value": {
+          "content": "def solve(value):\n    return sorted(set(value))\n",
+          "path": "solution.py"
+        }
+      },
+      "kind": "tool_result",
+      "sequence": 2,
+      "timestamp_ms": 0.0
+    },
+    {
+      "data": {
+        "adapter_state": {
+          "index": 1
+        },
+        "cost_usd": 0.0,
+        "model_calls": 1,
+        "reused_tool_calls": 0,
+        "step": 1,
+        "tool_calls": 1
+      },
+      "kind": "checkpoint",
+      "sequence": 3,
+      "timestamp_ms": 0.0
+    },
+    {
+      "data": {
+        "cost_usd": 0.0,
+        "kind": "tool",
+        "model_calls": 2
+      },
+      "kind": "model_action",
+      "sequence": 4,
+      "timestamp_ms": 0.0
+    },
+    {
+      "data": {
+        "attempts": 1,
+        "call_id": "call-1",
+        "reused": false,
+        "tool": "workspace.patch",
+        "value": {
+          "changed_paths": [
+            "solution.py"
+          ],
+          "source_hash": "fc7ccd0cf8b71403738989ae6ad0eb1cb67233af5c4de3c57231491a306e96b0"
+        }
+      },
+      "kind": "tool_result",
+      "sequence": 5,
+      "timestamp_ms": 109.99999998603016
+    },
+    {
+      "data": {
+        "adapter_state": {
+          "index": 2
+        },
+        "cost_usd": 0.0,
+        "model_calls": 2,
+        "reused_tool_calls": 0,
+        "step": 2,
+        "tool_calls": 2
+      },
+      "kind": "checkpoint",
+      "sequence": 6,
+      "timestamp_ms": 109.99999998603016
+    },
+    {
+      "data": {
+        "cost_usd": 0.0,
+        "kind": "tool",
+        "model_calls": 3
+      },
+      "kind": "model_action",
+      "sequence": 7,
+      "timestamp_ms": 109.99999998603016
+    },
+    {
+      "data": {
+        "attempts": 1,
+        "call_id": "call-2",
+        "reused": false,
+        "tool": "test.run",
+        "value": {
+          "assertions": [
+            {
+              "id": "case-0",
+              "passed": true
+            },
+            {
+              "id": "case-1",
+              "passed": true
+            },
+            {
+              "id": "case-2",
+              "passed": true
+            }
+          ],
+          "command": [
+            "python",
+            "-I",
+            "-B",
+            "verify.py"
+          ],
+          "execution": 1,
+          "exit_code": 0,
+          "source_hash": "fc7ccd0cf8b71403738989ae6ad0eb1cb67233af5c4de3c57231491a306e96b0",
+          "verifier_hash": "aa20e7948655ac1025f88dd09a12c2e3a8632c3f636d6c15424687ee481dc12e"
+        }
+      },
+      "kind": "tool_result",
+      "sequence": 8,
+      "timestamp_ms": 265.9999999741558
+    },
+    {
+      "data": {
+        "adapter_state": {
+          "index": 3
+        },
+        "cost_usd": 0.0,
+        "model_calls": 3,
+        "reused_tool_calls": 0,
+        "step": 3,
+        "tool_calls": 3
+      },
+      "kind": "checkpoint",
+      "sequence": 9,
+      "timestamp_ms": 265.9999999741558
+    },
+    {
+      "data": {
+        "cost_usd": 0.0,
+        "kind": "complete",
+        "model_calls": 4
+      },
+      "kind": "model_action",
+      "sequence": 10,
+      "timestamp_ms": 265.9999999741558
+    },
+    {
+      "data": {
+        "accepted": true,
+        "evidence": {
+          "assertions": [
+            {
+              "id": "case-0",
+              "passed": true
+            },
+            {
+              "id": "case-1",
+              "passed": true
+            },
+            {
+              "id": "case-2",
+              "passed": true
+            }
+          ],
+          "command": [
+            "python",
+            "-I",
+            "-B",
+            "verify.py"
+          ],
+          "execution": 2,
+          "exit_code": 0,
+          "source_hash": "fc7ccd0cf8b71403738989ae6ad0eb1cb67233af5c4de3c57231491a306e96b0",
+          "verifier_hash": "aa20e7948655ac1025f88dd09a12c2e3a8632c3f636d6c15424687ee481dc12e"
+        },
+        "feedback": "workspace tests passed",
+        "validator": "workspace-tests-v1"
+      },
+      "kind": "acceptance_result",
+      "sequence": 11,
+      "timestamp_ms": 405.99999998812564
+    },
+    {
+      "data": {
+        "error": null,
+        "reason": "completed",
+        "status": "completed"
+      },
+      "kind": "run_stopped",
+      "sequence": 12,
+      "timestamp_ms": 405.99999998812564
+    }
+  ],
+  "run_id": "demo-deduplicate-candidate",
+  "schema_version": "1.1"
+}

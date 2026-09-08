@@ -1,0 +1,5 @@
+user_id,score,email,cohort
+u-1,7.5,one@example.invalid,a
+u-2,null,two@example.invalid,a
+u-3,,,b
+u-4,2.5,,b
