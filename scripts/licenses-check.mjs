@@ -43,6 +43,28 @@ if (!errors.length) {
   if (!docsLicense.includes('Creative Commons Attribution 4.0')) {
     errors.push('LICENSE-DOCS must state CC BY 4.0')
   }
+  const frameworkRoot = path.join(root, 'examples/frameworks')
+  if (fs.existsSync(frameworkRoot)) {
+    const policyFile = path.join(frameworkRoot, 'license-policy.json')
+    const optionalAllowed = new Set([...allowed, 'MPL-2.0', 'MIT-0', 'MIT-CMU',
+      'Apache-2.0 AND MIT', 'Apache-2.0 OR MIT', 'MIT OR Apache-2.0',
+      'Apache-2.0 OR BSD-3-Clause', 'MPL-2.0 AND (Apache-2.0 OR MIT)'])
+    if (!fs.existsSync(policyFile)) errors.push('missing framework license policy')
+    else {
+      const policy = JSON.parse(fs.readFileSync(policyFile, 'utf8'))
+      const packages = new Set()
+      for (const name of ['langgraph', 'openai-agents-sdk', 'google-adk', 'autogen']) {
+        const lockPath = path.join(frameworkRoot, name, 'uv.lock')
+        if (!fs.existsSync(lockPath)) { errors.push(`${name}: missing independent lock`); continue }
+        for (const match of fs.readFileSync(lockPath, 'utf8').matchAll(/\[\[package\]\]\s+name = "([^"]+)"\s+version = "([^"]+)"/g)) {
+          const id = `${match[1].toLowerCase().replaceAll('_', '-')}@${match[2]}`
+          packages.add(id)
+          if (!optionalAllowed.has(policy[id])) errors.push(`Framework ${id}: unreviewed license ${policy[id] || '<missing>'}`)
+        }
+      }
+      for (const id of Object.keys(policy)) if (!packages.has(id)) errors.push(`Framework policy contains stale package ${id}`)
+    }
+  }
 }
 
 if (errors.length) {
