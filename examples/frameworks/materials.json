@@ -1,0 +1,4 @@
+[
+  {"id": "policy-a", "retention_days": 30, "text": "Records are retained for 30 days."},
+  {"id": "policy-b", "retention_days": 45, "text": "Records are retained for 45 days."}
+]
