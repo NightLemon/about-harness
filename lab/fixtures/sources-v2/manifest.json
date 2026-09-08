@@ -1,0 +1,18 @@
+{
+  "schema_version": "2.0",
+  "source": "project-synthetic",
+  "license": "CC-BY-4.0",
+  "checked": "2026-09-08",
+  "personal_data": false,
+  "hash_algorithm": "sha256-raw-bytes",
+  "files": {
+    "policy-a.md": "8716de2d779efe693c257be29013b83f5c376ec009b19e582a15d351bf40c09f",
+    "policy-b.md": "96158ddbc3237829419f66e0e0d7de043d5aa9e16cd9498aa05fc332e942336a",
+    "policy-copy.md": "1852dfdf33ace0d602f71d6d9ef4327a6b720d3ae92fce4b316ed9960132241c",
+    "scores.csv": "9b12e8e1b28fcbc17a2a800892dfdc41abd9e5cb995202f01e9b78b13f6a5338",
+    "handbook-v1.md": "de69e4dc960851947f35a0584e43882c5b1b3b4488536284e279ec686b4233a0",
+    "handbook-v2.html": "d400c930f3ce9210da1339634c90dd63a7c8827f707a4a50b55a67b57c9d110b",
+    "documents.json": "f42a15354529a7090bdffd889bcea088803ce306a6f0d4a7a3bf24e42203d437",
+    "catalog.html": "d6445a5f0597e8b8ca73a85d0e001b8a96b878111e1066ca26bc1fca6b530c76"
+  }
+}

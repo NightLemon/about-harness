@@ -1,0 +1,11 @@
+{
+  "schema_version": "1.0",
+  "source": "project-synthetic",
+  "license": "CC-BY-4.0",
+  "checked": "2026-09-08",
+  "personal_data": false,
+  "hash_algorithm": "sha256-raw-bytes",
+  "files": {
+    "tasks.json": "1970df3dd73e124f08f6762c00a0959eea57489d5ec1f7d5a4755e1c6760e69f"
+  }
+}

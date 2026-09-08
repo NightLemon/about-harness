@@ -1,0 +1,18 @@
+{
+  "assertions": [
+    {
+      "id": "case-0",
+      "passed": false
+    },
+    {
+      "id": "case-1",
+      "passed": true
+    },
+    {
+      "id": "case-2",
+      "passed": true
+    }
+  ],
+  "base_commit": "eb8588d03aceac238c76d27855d267ab97a607c2",
+  "exit_code": 1
+}

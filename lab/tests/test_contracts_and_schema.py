@@ -310,12 +310,19 @@ def test_schema_inventory_contains_only_runtime_and_evaluation_contracts() -> No
         "study.json",
         "study-v1.0.json",
         "fixture-lineage.json",
+        "study-v1.1.json",
+        "study-v1.2.json",
+        "eval-run-v1.0.json",
+        "eval-run-v1.1.json",
+        "usage-v1.json",
+        "run-v1.0.json",
+        "run-v1.1.json",
     }
     assert {item.name for item in SCHEMAS.glob("*.json")} == expected
     current_study = json.loads(
         (ROOT.parent / "evals" / "study.example.json").read_text(encoding="utf-8")
     )
-    current_schema = json.loads((SCHEMAS / "study.json").read_text(encoding="utf-8"))
+    current_schema = json.loads((SCHEMAS / "study-v1.1.json").read_text(encoding="utf-8"))
     legacy_schema = json.loads(
         (SCHEMAS / "study-v1.0.json").read_text(encoding="utf-8")
     )

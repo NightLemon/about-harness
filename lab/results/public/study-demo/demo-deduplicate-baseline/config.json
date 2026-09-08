@@ -1,0 +1,5 @@
+{
+  "config_id": "baseline",
+  "max_model_calls": 5,
+  "variant": "baseline"
+}

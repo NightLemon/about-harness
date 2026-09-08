@@ -13,7 +13,7 @@ const forbidden = [
   { name: 'Windows user path', pattern: /[A-Za-z]:\\Users\\[^\\\s"}]+/ },
   { name: 'Unix home path', pattern: /\/(?:home|Users)\/[^/\s"}]+/ }
 ]
-const allowedExtensions = new Set(['.json', '.jsonl'])
+const allowedExtensions = new Set(['.json', '.jsonl', '.md', '.patch'])
 const forbiddenKeys = new Set([
   'rawtrace',
   'rawprompt',
@@ -65,7 +65,7 @@ const files = walk(root, findings).sort((left, right) => left.localeCompare(righ
 for (const file of files) {
   const extension = path.extname(file).toLowerCase()
   if (!allowedExtensions.has(extension)) {
-    findings.push(`${file}: unsupported public artifact format ${extension || '<none>'}; only .json and .jsonl are allowed`)
+    findings.push(`${file}: unsupported public artifact format ${extension || '<none>'}; only JSON, JSONL, Markdown and reviewed patch text are allowed`)
     continue
   }
 
@@ -76,7 +76,7 @@ for (const file of files) {
     } catch (error) {
       findings.push(`${file}: invalid JSON: ${error.message}`)
     }
-  } else {
+  } else if (extension === '.jsonl') {
     const lines = text.split(/\r?\n/)
     for (const [index, line] of lines.entries()) {
       if (!line.trim()) continue
@@ -98,4 +98,4 @@ if (findings.length) {
   console.error(['Public result redaction failed:', ...findings].join('\n'))
   process.exit(1)
 }
-console.log(`Public result redaction passed: ${files.length} JSON/JSONL file(s).`)
+console.log(`Public result redaction passed: ${files.length} structured or text artifact(s).`)

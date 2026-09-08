@@ -12,7 +12,7 @@ from about_harness.acceptance import (
     AcceptanceValidator,
     JsonSubsetAcceptanceValidator,
 )
-from about_harness.adapters.base import Adapter
+from about_harness.adapters.base import Adapter, ToolObservation, ToolResultReceiver
 from about_harness.contracts import (
     Action,
     ContractError,
@@ -72,9 +72,7 @@ class HarnessRunner:
     retry: RetryPolicy = field(default_factory=RetryPolicy)
     cancellation: CancellationToken = field(default_factory=CancellationToken)
     clock: Clock = time.monotonic
-    acceptance_validator: AcceptanceValidator = field(
-        default_factory=JsonSubsetAcceptanceValidator
-    )
+    acceptance_validator: AcceptanceValidator = field(default_factory=JsonSubsetAcceptanceValidator)
 
     def run(
         self,
@@ -100,7 +98,7 @@ class HarnessRunner:
                 "task_id": task.task_id,
                 "adapter": self.adapter.name,
                 "resumed": checkpoint is not None,
-                "offline": True,
+                "offline": getattr(self.adapter, "offline", True),
             },
         )
 
@@ -342,6 +340,32 @@ class HarnessRunner:
                     "attempts": execution.attempts,
                 },
             )
+            if isinstance(self.adapter, ToolResultReceiver):
+                try:
+                    self.adapter.receive_tool_result(
+                        ToolObservation(
+                            action.tool_call.call_id,
+                            action.tool_call.name,
+                            deepcopy(execution.value),
+                        )
+                    )
+                except Exception as exc:
+                    return self._result(
+                        identifier,
+                        task,
+                        recorder,
+                        started,
+                        RunStatus.FAILED,
+                        StopReason.TOOL_ERROR,
+                        None,
+                        step,
+                        model_calls,
+                        tool_calls,
+                        reused_tool_calls,
+                        cost_usd,
+                        current_checkpoint,
+                        error=f"tool result delivery failed: {type(exc).__name__}",
+                    )
             current_checkpoint = RunCheckpoint(
                 step=step,
                 model_calls=model_calls,

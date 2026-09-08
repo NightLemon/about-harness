@@ -1,0 +1,26 @@
+{
+  "assertions": [
+    {
+      "id": "case-0",
+      "passed": true
+    },
+    {
+      "id": "case-1",
+      "passed": true
+    },
+    {
+      "id": "case-2",
+      "passed": true
+    }
+  ],
+  "command": [
+    "python",
+    "-I",
+    "-B",
+    "verify.py"
+  ],
+  "execution": 1,
+  "exit_code": 0,
+  "source_hash": "e21dbdc46e13d66c9d73307b53e21fb683765843c07878fbaf5b69bf1cb0da7d",
+  "verifier_hash": "c87e41c71f96d1f64d2baeeb664caee73a123ed680d6754249533400e512a49c"
+}

@@ -1,0 +1,7 @@
+# These portable evidence bundles are hashed as raw bytes. Preserve their exact
+# bytes on every platform instead of allowing checkout newline conversion.
+lab/fixtures/sources-v2/** -text
+lab/fixtures/study-coding/** -text
+lab/results/public/study-demo/** -text
+lab/results/public/frameworks/** -text
+maintenance/execution-sources/*.json -text

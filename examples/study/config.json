@@ -1,0 +1,7 @@
+{
+  "schema_version": "1.0",
+  "configs": [
+    {"config_id": "baseline", "variant": "baseline", "max_model_calls": 5},
+    {"config_id": "candidate", "variant": "candidate", "max_model_calls": 5}
+  ]
+}

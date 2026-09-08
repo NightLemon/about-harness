@@ -1,0 +1,43 @@
+{
+  "fixture_hash": "1970df3dd73e124f08f6762c00a0959eea57489d5ec1f7d5a4755e1c6760e69f",
+  "manifest": {
+    "checked": "2026-09-08",
+    "files": {
+      "tasks.json": "1970df3dd73e124f08f6762c00a0959eea57489d5ec1f7d5a4755e1c6760e69f"
+    },
+    "hash_algorithm": "sha256-raw-bytes",
+    "license": "CC-BY-4.0",
+    "personal_data": false,
+    "schema_version": "1.0",
+    "source": "project-synthetic"
+  },
+  "source": {
+    "path": "fixtures/tasks.json",
+    "sha256": "1970df3dd73e124f08f6762c00a0959eea57489d5ec1f7d5a4755e1c6760e69f"
+  },
+  "task": {
+    "baseline": "# Reviewed baseline attempt.\ndef solve(value):\n    return value.lower()\n",
+    "candidate": "def solve(value):\n    return value.strip().lower()\n",
+    "goal": "字符串规范化：去除首尾空白并转小写",
+    "initial": "def solve(value):\n    return value.lower()\n",
+    "split": "development",
+    "task_id": "demo-normalize",
+    "tests": [
+      {
+        "expected": "a",
+        "id": "case-0",
+        "input": " A "
+      },
+      {
+        "expected": "b",
+        "id": "case-1",
+        "input": "B"
+      },
+      {
+        "expected": "",
+        "id": "case-2",
+        "input": ""
+      }
+    ]
+  }
+}

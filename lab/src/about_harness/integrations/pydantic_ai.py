@@ -2,20 +2,12 @@ from __future__ import annotations
 
 from about_harness.contracts import JsonValue
 from about_harness.integrations.base import (
-    IntegrationBoundary,
     IntegrationContractError,
     optional_string,
     require_list,
     require_number,
     require_object,
     require_string,
-)
-
-BOUNDARY = IntegrationBoundary(
-    name="PydanticAI",
-    distribution="pydantic-ai",
-    import_name="pydantic_ai",
-    representative_domain="data",
 )
 
 _DATASET_FIELDS = {"dataset_id", "snapshot_id", "schema_version", "score_unit"}
@@ -143,6 +135,6 @@ def normalize_rows(payload: dict[str, JsonValue]) -> dict[str, JsonValue]:
         },
         "redacted_fields": redacted_fields,
         "sensitive_values_exposed": sensitive_values_exposed,
-        "integration": BOUNDARY.name,
-        "mode": BOUNDARY.execution_mode,
+        "example": "local-row-normalizer",
+        "mode": "offline-domain-v2",
     }

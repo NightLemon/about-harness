@@ -1,0 +1,56 @@
+{
+  "fixture_hash": "1970df3dd73e124f08f6762c00a0959eea57489d5ec1f7d5a4755e1c6760e69f",
+  "manifest": {
+    "checked": "2026-09-08",
+    "files": {
+      "tasks.json": "1970df3dd73e124f08f6762c00a0959eea57489d5ec1f7d5a4755e1c6760e69f"
+    },
+    "hash_algorithm": "sha256-raw-bytes",
+    "license": "CC-BY-4.0",
+    "personal_data": false,
+    "schema_version": "1.0",
+    "source": "project-synthetic"
+  },
+  "source": {
+    "path": "fixtures/tasks.json",
+    "sha256": "1970df3dd73e124f08f6762c00a0959eea57489d5ec1f7d5a4755e1c6760e69f"
+  },
+  "task": {
+    "baseline": "# Reviewed baseline attempt.\ndef solve(value):\n    return sorted(value, key=lambda row: (row[\"score\"], row[\"id\"]))\n",
+    "candidate": "def solve(value):\n    return sorted(value, key=lambda row: row[\"score\"])\n",
+    "goal": "稳定排序：按 score 排序并保留同分顺序",
+    "initial": "def solve(value):\n    return sorted(value, key=lambda row: (row[\"score\"], row[\"id\"]))\n",
+    "split": "holdout",
+    "task_id": "demo-sorting",
+    "tests": [
+      {
+        "expected": [
+          {
+            "id": "b",
+            "score": 1
+          },
+          {
+            "id": "a",
+            "score": 1
+          }
+        ],
+        "id": "case-0",
+        "input": [
+          {
+            "id": "b",
+            "score": 1
+          },
+          {
+            "id": "a",
+            "score": 1
+          }
+        ]
+      },
+      {
+        "expected": [],
+        "id": "case-1",
+        "input": []
+      }
+    ]
+  }
+}

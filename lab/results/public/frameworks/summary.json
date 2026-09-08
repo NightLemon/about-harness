@@ -1,0 +1,138 @@
+{
+  "evidence": "E1",
+  "examples": [
+    {
+      "evidence": "E1",
+      "external_attempts": 0,
+      "framework": "LangGraph",
+      "observations": {
+        "interrupted": true,
+        "merged_sources": 2,
+        "next": [],
+        "resumed": true,
+        "tool_calls": 1
+      },
+      "offline": true,
+      "output": {
+        "retention_days": [
+          30,
+          45
+        ],
+        "sources": [
+          "policy-a",
+          "policy-b"
+        ],
+        "status": "conflict"
+      },
+      "passed": true,
+      "versions": {
+        "langgraph": "1.2.11"
+      }
+    },
+    {
+      "evidence": "E1",
+      "external_attempts": 0,
+      "framework": "OpenAI Agents SDK",
+      "observations": {
+        "model_requests": 2,
+        "tool_calls": 1,
+        "tool_result_received": true
+      },
+      "offline": true,
+      "output": {
+        "retention_days": [
+          30,
+          45
+        ],
+        "sources": [
+          "policy-a",
+          "policy-b"
+        ],
+        "status": "conflict"
+      },
+      "passed": true,
+      "versions": {
+        "openai-agents": "0.22.1"
+      }
+    },
+    {
+      "evidence": "E1",
+      "external_attempts": 0,
+      "framework": "Google ADK",
+      "observations": {
+        "events": 3,
+        "model_requests": 2,
+        "tool_calls": 1,
+        "tool_result_received": true
+      },
+      "offline": true,
+      "output": {
+        "retention_days": [
+          30,
+          45
+        ],
+        "sources": [
+          "policy-a",
+          "policy-b"
+        ],
+        "status": "conflict"
+      },
+      "passed": true,
+      "versions": {
+        "google-adk": "2.8.0"
+      }
+    },
+    {
+      "evidence": "E1",
+      "external_attempts": 0,
+      "framework": "AutoGen",
+      "observations": {
+        "messages": 5,
+        "participants": [
+          "reader",
+          "reviewer"
+        ],
+        "terminated": true,
+        "tool_calls": 1
+      },
+      "offline": true,
+      "output": {
+        "retention_days": [
+          30,
+          45
+        ],
+        "sources": [
+          "policy-a",
+          "policy-b"
+        ],
+        "status": "conflict"
+      },
+      "passed": true,
+      "versions": {
+        "autogen-agentchat": "0.7.5",
+        "autogen-ext": "0.7.5"
+      }
+    }
+  ],
+  "recorded_at": "2026-09-08T14:56:45.081981+00:00",
+  "command": "npm run frameworks:check",
+  "negative_cases_passed": 4,
+  "source_hashes": {
+    "examples/frameworks/license-policy.json": "6ebe15d66255f73b8e83144728192a4c00c4eac8a7bdcd4139c9ca2b0b9956f6",
+    "examples/frameworks/materials.json": "a74189b6f80a1ab79198e1b6365a72e6c99b06a7680e83add16c0fb37b50add6",
+    "examples/frameworks/replay-answer.json": "5115bda6ce50232f1e946f9552c361c69dabea647046462ba41e6abe1d32c3c7",
+    "examples/frameworks/shared.py": "44cb11638470c3be070455d6358190d7a7af187ef3b216cfbd6e84d56efefd30",
+    "examples/frameworks/autogen/demo.py": "eed201f307a9feef41910f3686e7ec166b9a163f6f686b4f2dad73520f97c461",
+    "examples/frameworks/autogen/pyproject.toml": "3676717710cf54d149ff5d5434d2f5806b7a0ec0952e0c8b973646962cdaec9d",
+    "examples/frameworks/autogen/uv.lock": "ba6011c4c69522fd5c52e9bfdd62b390ca3478dd7b271c72174c198b1f1da7de",
+    "examples/frameworks/google-adk/demo.py": "5c862dfc98cfcfe96c648f2dc5c5fc5655b4854edaa0d31bf1628651d39b90c8",
+    "examples/frameworks/google-adk/pyproject.toml": "5888e656c94607ae751fca790938de710ac660dc0e66bc4e038b15698c887261",
+    "examples/frameworks/google-adk/uv.lock": "f440637831a21d6ee587f3cc51c7287494bf0ce3e00e938cbc64c2a42ac86350",
+    "examples/frameworks/langgraph/demo.py": "745342523f82198459d98e9a63ea94bcb5eac61e20d9d317e79031e97aa657af",
+    "examples/frameworks/langgraph/pyproject.toml": "2235614ad91a28a1dd6496bf3669c098057350c39a0cc7b599fe422f100a065e",
+    "examples/frameworks/langgraph/uv.lock": "08cce4c86ae372a88d0be4a8353b55e734147d27922d838ce97c0f7a7c7da996",
+    "examples/frameworks/openai-agents-sdk/demo.py": "a6688712c5d6660fa99a93e1db344f65c53ef77c05d15e790cc28cfb68f90b0d",
+    "examples/frameworks/openai-agents-sdk/pyproject.toml": "cf508165528882f6c0db53a71cf9c50610ca9cdd1ddd85030eb20c2dc153a5f5",
+    "examples/frameworks/openai-agents-sdk/uv.lock": "243ff5a4d07c4b58b4e813bb1f552beef1969360dd0761d76ded6aea485bca42"
+  }
+}

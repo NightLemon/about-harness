@@ -1,0 +1,5 @@
+{
+  "config_id": "candidate",
+  "max_model_calls": 5,
+  "variant": "candidate"
+}
