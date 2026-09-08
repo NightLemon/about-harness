@@ -1,75 +1,41 @@
-# 资料来源与核对方法
+# 来源与核对记录
 
-本项目优先引用产品官方文档、标准规范与维护中的源代码仓库。核对日期表示维护者在当天实际查看了对应页面或固定版本；它不保证页面之后没有变化，也不证明账号、区域或套餐具备相同能力。
+来源状态描述产品事实是否核对，E0–E3 描述实验强度，两者分开。核对一个官方页面不代表账号可用；离线框架运行也不代表真实模型质量。
 
-## 产品与模型
+<span id="产品与模型"></span>
+<span id="openai-与-codex"></span>
+<span id="anthropic-与-claude-code"></span>
+<span id="pi"></span>
+<span id="其他模型家族"></span>
+<span id="framework-与协议"></span>
+<span id="如何判断一条主张"></span>
+<span id="时效、许可与刷新"></span>
+<span id="时效许可与刷新"></span>
 
-### OpenAI 与 Codex
+<span id="资料来源与核对方法"></span>
 
-核对日期：**2026-08-27**。
+## 官方入口
 
-- [Function calling](https://developers.openai.com/api/docs/guides/function-calling)：工具调用的请求、应用侧执行与结果回传。
-- [Reasoning models](https://developers.openai.com/api/docs/guides/reasoning)：推理档位及连续工具调用中的状态要求。
-- [Codex approvals and security](https://learn.chatgpt.com/docs/agent-approvals-security)：sandbox、approval 与 network 的职责。
-- [AGENTS.md](https://learn.chatgpt.com/docs/agent-configuration/agents-md)：项目指令的发现、作用域与覆盖。
-- [Config basics](https://learn.chatgpt.com/docs/config-file/config-basic)：配置层与基本字段。
-- [Models](https://developers.openai.com/api/docs/models)：运行前核对精确 model ID 的入口。
-
-### Anthropic 与 Claude Code
-
-核对日期：**2026-08-27**（settings/permissions）；memory 页面沿用 2026-08-20 的核对记录。
-
-- [Claude models](https://docs.anthropic.com/en/docs/about-claude/models/overview)：模型目录。
-- [How Claude Code works](https://code.claude.com/docs/en/how-claude-code-works)：agent loop 与 context。
-- [Memory](https://code.claude.com/docs/en/memory)：`CLAUDE.md` 与记忆的作用域。
-- [Settings](https://code.claude.com/docs/en/settings)：配置和权限。
-
-### Pi
-
-核对日期：**2026-08-27**。
-
-- [Pi coding agent，固定 commit `496185f`](https://github.com/earendil-works/pi/tree/496185f6e4267b979e3663c45f7eb70b0c6a97b4/packages/coding-agent)：工具、session、compaction、context files、skills 与 extensions。
-- [Pi 当前仓库](https://github.com/earendil-works/pi)：执行前确认新版本；滚动主分支不作为可复现结果。
-
-### 其他模型家族
-
-核对日期：**2026-08-20**。这些链接只用于解析目标模型、许可与 provider，不构成性能比较。
-
-- [Google Gemini models](https://ai.google.dev/gemini-api/docs/models)
-- [Qwen](https://qwenlm.github.io/)及目标 checkpoint 的 model card
-- [DeepSeek API docs](https://api-docs.deepseek.com/)；价格、alias 与上下文主张的来源状态仍为 `pending`，当前也没有实验记录
-- [Meta Llama docs](https://www.llama.com/docs/overview/)及目标权重的 license/model card
-
-## Framework 与协议
-
-核对日期：**2026-08-20**。
-
-- [LangGraph](https://docs.langchain.com/oss/python/langgraph/overview)
-- [OpenAI Agents SDK](https://developers.openai.com/api/docs/guides/agents-sdk)
-- [Google ADK](https://google.github.io/adk-docs/)
-- [AutoGen](https://microsoft.github.io/autogen/stable/)
-- [Browser Use](https://docs.browser-use.com/)
-- [PydanticAI](https://ai.pydantic.dev/)
-- [LlamaIndex](https://docs.llamaindex.ai/)
-- [Model Context Protocol specification](https://modelcontextprotocol.io/specification)
-- [AGENTS.md specification](https://agents.md/)
-
-本仓库没有安装或运行上述第三方 framework。实验中的同名模块是“离线职责接缝”：它们用固定 fixture 演示边界，不是上游接入或兼容性证明。
-
-## 如何判断一条主张
-
-| 类型 | 需要什么证据 | 不足以证明什么 |
+| 对象 | 主要来源 | 本轮使用方式 |
 | --- | --- | --- |
-| 稳定机制 | 解释因果、边界和反例 | 某产品当前实现完全相同 |
-| 产品事实 | 官方来源、目标版本、核对日期、事实 ID | 账号可用、模型质量或未来行为 |
-| 项目建议 | 工作负载、阈值理由、可复现实验 | 对所有团队都最优 |
-| 示例 | 脱敏输入、固定版本、验证和回滚 | 已在真实产品上成功 |
-| 性能比较 | 同任务、同预算、重复、holdout 与不确定性 | 跨任务的通用排行榜 |
+| OpenAI API | [Function calling](https://developers.openai.com/api/docs/guides/function-calling)、[Reasoning](https://developers.openai.com/api/docs/guides/reasoning) | Responses 接入与状态、工具约束 |
+| OpenAI Agents SDK | [Agents SDK](https://developers.openai.com/api/docs/guides/agents) | 运行器与应用职责 |
+| Codex | [配置](https://learn.chatgpt.com/docs/config-file/config-basic)、[AGENTS.md](https://learn.chatgpt.com/docs/agent-configuration/agents-md)、[权限](https://learn.chatgpt.com/docs/agent-approvals-security) | 配置来源与控制边界 |
+| Claude Code | [配置](https://code.claude.com/docs/en/settings)、[权限](https://code.claude.com/docs/en/permissions)、[CLI](https://code.claude.com/docs/en/cli-reference) | 配置和启动选项 |
+| Pi | [固定源码](https://github.com/earendil-works/pi/tree/496185f6e4267b979e3663c45f7eb70b0c6a97b4/packages/coding-agent) | 包身份及项目资源 |
+| LangGraph | [Overview](https://docs.langchain.com/oss/python/langgraph/overview) | 状态图与恢复 |
+| Google ADK | [模型接口](https://google.github.io/adk-docs/agents/models/) | 自定义模型与运行时组合 |
+| AutoGen | [Replay client](https://microsoft.github.io/autogen/stable/reference/python/autogen_ext.models.replay.html) | 实际回放客户端 |
+| Anthropic | [工具使用](https://docs.anthropic.com/en/docs/build-with-claude/tool-use/overview) | 工具内容块与回传 |
+| Gemini | [函数调用](https://ai.google.dev/gemini-api/docs/function-calling) | 结构化调用与响应 |
+| Qwen | [官方发布入口](https://qwenlm.github.io/) | 定位目标模型卡 |
+| Llama | [Meta Developer](https://developer.meta.com/ai/docs/overview/) | 定位目标权重与许可 |
+| DeepSeek | [API 文档](https://api-docs.deepseek.com/) | 本轮 TLS 失败，相关事实保持 pending |
 
-产品事实在[事实注册表](/references/fact-registry)登记。来源冲突时保留双方证据并把来源标为 `conflict`；无法访问时标为 `pending`。来源状态不会自动改变实验等级。外部博客与 benchmark 可形成假设，但不能单独支持通用结论。
+具体事实、目标版本和各自检查日期以[注册表](/references/fact-registry)为准，不用一行总日期覆盖不同来源。包版本另由对应锁文件固定，CLI 帮助检查与模型任务运行分别记录。
 
-## 时效、许可与刷新
+## 更新方法
 
-`npm run facts:check` 校验结构、引用和日期；`npm run facts:freshness` 对超过 30 天的高易变事实报错。季度 workflow 才运行网络外链探针，普通本地检查只校验 URL 结构，避免把网络抖动误判成内容错误。
+只在实际读取来源后更新 checked；来源变化时核对相关正文和示例。不能访问时记录 pending 和失败原因。已经运行的旧实验保持原等级与输入身份，不因为文档更新改写历史结果。
 
-引用保留原链接并只摘录必要部分。代码使用 MIT，原创文档使用 CC BY 4.0；第三方文本、图像、fixture 与 logo 仍遵循原许可。依赖升级后需重新运行许可、构建与行为检查。
+`facts:check` 检查登记与引用，`facts:freshness` 检查日期，网络探针检查可达性；三者都不能替代主张与原文的语义核对。维护入口见仓库 CONTRIBUTING.md。

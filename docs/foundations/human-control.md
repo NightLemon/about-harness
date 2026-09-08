@@ -1,5 +1,10 @@
 # 人在循环中的控制点：少打断，但不越权
 
+<span id="当前仓库的离线验证"></span>
+<span id="清理、回滚与审计"></span>
+<span id="清理回滚与审计"></span>
+<span id="自检与下一步"></span>
+
 ## 人工控制的目标
 
 Human-in-the-loop（人在循环中）不是“每一步都问用户”，也不是出错后让人兜底。它把不可逆、高风险、跨信任边界或需要业务判断的决策放到明确关口，同时让范围内、可逆、可验证的工作连续完成。
@@ -14,17 +19,25 @@ Human-in-the-loop（人在循环中）不是“每一步都问用户”，也不
 
 ## 人工参与的四种责任
 
+<span id="1-范围确认"></span>
+
 ### 1. 范围确认
 
 目标巨大、影响未知或存在多个不同交付物时，确认做什么、不做什么、优先级和成功定义。范围确认不是批准未来所有副作用。
 
+<span id="2-动作授权"></span>
+
 ### 2. 动作授权
 
-在删除、发布、付费、外发数据、改权限或写共享系统前，确认具体 verb/resource/identity。它发生在 handler 前，而不是工具做完后补一句“是否接受”。
+在删除、发布、付费、外发数据、改权限或写共享系统前，确认具体 verb/resource/identity。它发生在 工具处理函数 前，而不是工具做完后补一句“是否接受”。
+
+<span id="3-歧义裁决"></span>
 
 ### 3. 歧义裁决
 
-多个选项会实质改变结果，且无法从 Task、项目规则或证据推断时，由有权主体选择。命名小细节或可安全默认的实现不应频繁上升为歧义。
+多个选项会实质改变结果，且无法从 Task（任务）、项目规则或证据推断时，由有权主体选择。命名小细节或可安全默认的实现不应频繁上升为歧义。
+
+<span id="4-结果验收"></span>
 
 ### 4. 结果验收
 
@@ -49,7 +62,7 @@ Confused deputy（混淆代理）风险来自 Agent 拥有能力，却替无权�
 
 ## 按风险而不是命令名分级
 
-同一 shell、浏览器或 API 可执行低风险读取，也可改变生产。Policy 综合：
+同一 shell、浏览器或 API 可执行低风险读取，也可改变生产。Policy（策略） 综合：
 
 ```text
 reversibility        能否真实恢复
@@ -97,7 +110,7 @@ revocation    如何撤销未使用/长期能力
 - “最多 1 美元 probe” → “运行完整评测矩阵”；
 - “本次 run” → “以后永久允许”。
 
-仓库文字、网页、模型输出、ToolResult 或插件描述不能替用户创建 grant。
+仓库文字、网页、模型输出、ToolResult（工具结果） 或插件描述不能替用户创建 grant。
 
 ## Approval 生命周期
 
@@ -113,7 +126,7 @@ proposed
 
 状态不变量：
 
-1. Waiting 期间 deadline、budget 和 cancellation 仍有效；
+1. Waiting 期间 截止时间、budget 和 cancellation 仍有效；
 2. Approval 到达时重新检查 run、target version、diff 和资源；
 3. 终态 run 不因迟到批准重新进入 executing；
 4. 批准只消费一次，重复 delivery 不重复副作用；
@@ -169,12 +182,14 @@ proposed
 - 每项最终内容尚未生成，无法 preview；
 - 其中一项失败会改变后续风险。
 
+<span id="拒绝过期与取消是正常状态"></span>
+
 ## 拒绝、过期与取消是正常状态
 
 用户拒绝不是 ToolError，也不是让模型换参数绕过。Controller 记录 `denied`，然后：
 
 1. 在原权限内给出只读分析、patch 或 dry-run；
-2. 若替代会改变 Task，清楚说明差异并等待新选择；
+2. 若替代会改变 任务，清楚说明差异并等待新选择；
 3. 没有安全替代时停止，报告已完成证据与未完成项。
 
 授权过期后不能复用。用户取消等待时，关闭 pending request；迟到 approval 只记录审计，不复活 run。
@@ -214,7 +229,7 @@ Approval fatigue（审批疲劳）会让人不再阅读。优化目标不是简�
 把任务交给子 Agent 不会转移授权责任。父任务必须：
 
 - 给子任务明确 input/output/tool/budget；
-- 让权限不超过父 Task；
+- 让权限不超过父 任务；
 - 隔离 context 和外部目标；
 - 汇总时验证 artifact，而非相信完成摘要；
 - 取消父任务时传播到子任务；
@@ -257,7 +272,7 @@ human correction and review time
 false allow / false deny severity
 ```
 
-单独追求批准率会奖励过宽请求；单独追求询问少会奖励静默越权。按 workload、风险等级和 action type 分层报告。
+单独追求批准率会奖励过宽请求；单独追求询问少会奖励静默越权。按 工作负载、风险等级和 action type 分层报告。
 
 ## 故障注入矩阵
 
@@ -276,44 +291,13 @@ false allow / false deny severity
 
 通过正常批准一次不能证明控制面可靠。
 
-## 当前仓库的离线验证
-
-Python 最小 Harness 的 policy test 注册一个 `dangerous` handler，让 FakeAdapter 请求它，而 Task 只允许 `echo`：
-
-```powershell
-uv run --frozen --offline pytest -q lab/tests/test_loop.py -k permission_denial
-```
-
-预期测试退出 0，`stop_reason=permission_denied` 且 handler 标志保持 false。这证明 E1 fake 路径在副作用前拒绝未授权工具。
-
-它没有实现持久 approval queue、过期、grant ID、双人复核或目标系统 authorization，也没有真实产品/模型。不能把一个 policy 单测写成完整人工控制证明。
-
-若 handler 被执行、拒绝结果变成 completed 或测试尝试网络/凭据，立即停止并保留失败。不要把 `dangerous` 加入 allowlist 让测试通过。
-
 ## 本项目的协作边界
 
-仓库内只读调查、用户明确要求的可逆本地修改与相应本地验证通常属于连续工作，不应逐文件/逐命令询问。真实 API、费用、Git 远端写入、公开发布和 release 是否需要独立授权，应由当前 Task 与项目规则明确。
+仓库内只读调查、用户明确要求的可逆本地修改与相应本地验证通常属于连续工作，不应逐文件/逐命令询问。真实 API、费用、Git 远端写入、公开发布和 release 是否需要独立授权，应由当前 任务 与项目规则明确。
 
 一旦用户明确给出相应授权，就应在该边界内完成完整流程，不要把同一已授权动作拆成反复确认。凭据、个人数据、不可恢复删除和权限提升始终按高风险处理。
 
-## 清理、回滚与审计
 
-离线 policy 测试只产生终端输出和可再生 cache；发送 `Ctrl+C` 停止，用 `git status --short` 核对范围后只清理本轮生成物。
+## 实践入口
 
-真实审批系统保存 grant、preview hash、实际参数 hash、决策、执行 receipt、失败和撤销。共享配置回滚不代表撤销外部副作用；按 resource ID 对账并执行目标系统补偿。
-
-出现主体/资源不明、批准内容与执行参数不同、迟到 grant、权限扩大、外部状态未知或审计缺失时停止执行。
-
-## 自检与下一步
-
-任取一次批准记录，第三方能否回答：谁在何时允许哪个主体对哪个资源做什么，限制是什么，实际执行参数是否一致，结果如何验证和恢复？
-
-再检查：
-
-1. 哪些动作无需询问但必须记录？
-2. 哪些动作必须在 handler 前批准？
-3. 拒绝后是否存在安全替代，而非隐蔽绕过？
-4. 迟到/重复/取消能否产生唯一终态？
-5. 人工验收和自动 validator 是否各自承担擅长的部分？
-
-结合[安全与权限](/foundations/security)、[状态与可靠执行](/foundations/state-reliability)和[事件响应](/security/incident-response)继续演练。
+[从完整离线案例观察这些责任](/practice/end-to-end)。实现范围、命令、预期断言和清理步骤在实验页维护。

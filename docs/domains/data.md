@@ -15,9 +15,17 @@ task contract
 
 输出符合 JSON Schema 只证明结构合法，不证明数据、公式、样本或业务结论正确。
 
+<span id="当前离线工作例"></span>
+<span id="前置条件与固定输入"></span>
+<span id="命令"></span>
+<span id="预期输出与断言"></span>
+<span id="证据边界"></span>
+<span id="完成检查表"></span>
+<span id="检查题"></span>
+
 ## 先固定任务契约
 
-自然语言“帮我分析这些数据”既不能验收，也不授权写回。Task contract（任务契约）至少包含：
+自然语言“帮我分析这些数据”既不能验收，也不授权写回。Task（任务） contract（任务契约）至少包含：
 
 | 字段 | 要回答的问题 |
 | --- | --- |
@@ -80,6 +88,8 @@ schema version / owner / effective date
 
 拒绝或明确处理 `NaN`、`Infinity`、超范围整数、精度截断、科学计数法和 locale decimal。JSON/数据库/语言 runtime 对这些值的支持不同；坏值进入聚合后可能污染整列指标。
 
+<span id="缺失异常与零不是一回事"></span>
+
 ## 缺失、异常与零不是一回事
 
 至少区分：
@@ -94,6 +104,8 @@ schema version / owner / effective date
 每个字段预先定义策略：阻断、保留、插补、排除还是单独报告。插补必须记录方法、适用列、影响行数和敏感性分析；不能为了让模型/统计函数运行就把空值统一填 0。
 
 Outlier（异常值）也不等于错误。先根据业务约束区分 impossible、rare-but-valid 与 measurement error，再决定保留、截尾、修正或人工复核。所有改动保留原值引用和 transformation version。
+
+<span id="单位货币时间和精度"></span>
 
 ## 单位、货币、时间和精度
 
@@ -123,7 +135,7 @@ snapshot/transaction isolation
 result sampling and export limits
 ```
 
-模型不应获得任意 SQL/脚本执行权。更稳妥的路径是：模型生成 typed query plan（类型化查询计划），controller 将其编译为参数化查询，静态检查允许的表、列、join、filter 和 limit，再执行只读账号。
+模型不应获得任意 SQL/脚本执行权。更稳妥的路径是：模型生成 typed query plan（类型化查询计划），控制器 将其编译为参数化查询，静态检查允许的表、列、join、filter 和 limit，再执行只读账号。
 
 ### Query plan 示例
 
@@ -188,6 +200,8 @@ Join 前声明 `one-to-one / one-to-many / many-to-one / many-to-many`。检查 
 
 模型不应把相关性润色成因果。若任务只是数据清洗/汇总，明确禁止输出超出设计的归因。
 
+<span id="防止训练评测泄漏"></span>
+
 ## 防止训练/评测泄漏
 
 时间、用户、组织、文档或重复样本可能跨 split 泄漏。先确定泛化单位，再切分：
@@ -213,9 +227,11 @@ Join 前声明 `one-to-one / one-to-many / many-to-one / many-to-many`。检查 
 | Aggregate | 只提供群组统计 | 小分组可能重识别 |
 | Synthetic | 教学与结构测试 | 不证明真实分布表现 |
 
-敏感字段要在进入模型、trace、cache 和公开 artifact 前处理，不能只改最终 JSON。设置 minimum group size、column allowlist 和 output scanning；错误信息也不能回显整行原始数据。
+敏感字段要在进入模型、轨迹、cache 和公开 artifact 前处理，不能只改最终 JSON。设置 minimum group size、column allowlist 和 output scanning；错误信息也不能回显整行原始数据。
 
 权限按 source、tenant、column、row、operation 和 purpose 分层。模型看到数据不代表可以导出、发送或用于其他目的。
+
+<span id="写入采用-proposevalidateapprovecommit"></span>
 
 ## 写入采用 propose–validate–approve–commit
 
@@ -235,6 +251,9 @@ commit_status / external_receipt / reconciliation
 ```
 
 Approval 后 change set 变化则旧批准失效。Bulk update/delete 先 dry-run，报告匹配行、样本 diff 和上限。Timeout 后状态未知不能直接重试；按 idempotency key/transaction ID 查询外部状态。
+
+<span id="失败、停止、清理与回退"></span>
+<span id="失败停止清理与回退"></span>
 
 ### 回退类型
 
@@ -294,72 +313,7 @@ Gold set 要包含 schema 漂移、单位混用、null/zero、重复 key、many-
 
 修复后建立新 schema/transform/config identity，重跑相邻回归。旧结果保留为历史故障，不静默改分母或覆盖 source snapshot。
 
-## 当前离线工作例
 
-仓库 v1.1 fixture 包含一个固定 dataset/snapshot/schema/unit identity 与三行合成数据，row 字段严格限定为 `user_id/score/email`。确定性函数要求 snapshot 内 `user_id` 唯一，把 score 分成 `value/null/missing`，只接受 0–10 的有限 points；非空 email 替换为 `[REDACTED]`，随后扫描规范化 rows 是否仍含输入原值。
+## 实践入口
 
-### 前置条件与固定输入
-
-需要 Python 3.11+ 和 uv 0.11；依赖由 `uv.lock` 固定。从仓库根目录离线运行，不安装 PydanticAI，不使用数据库、模型、网络或真实个人数据，也不设置 credential。
-
-输入位于 `lab/fixtures/data/`：
-
-- `manifest.json` 固定 project-synthetic 来源、CC BY 4.0 与三个文件 hash；
-- `input.json` 有三行，分别包含数值 score、显式 `null` 与 missing score；
-- `expected.json` 要求 dataset identity 回链、三行守恒、score state 分离、email 脱敏；
-- `negative.json` 包含 renamed field、重复 key 与 score 越界，runner 必须全部拒绝。
-
-### 命令
-
-```powershell
-uv run --frozen --offline python scripts/run-labs.py data
-```
-
-### 预期输出与断言
-
-命令退出 0，输出 `evidence=E1`、`offline=true`、`passed=true`、`negative_rejected=true`。`row_count=3`、population 为 3/3/0；第二、三行 score 都为 `null`，但 `score_state` 分别是 `null/missing`；两个输入 email 均被替换，`redacted_fields=2`、`sensitive_values_exposed=0`。
-
-人工复核没有网络/credential/model action；`integration=PydanticAI` 只是职责映射，`mode=offline-contract-seam` 才是实际执行方式。
-
-### 失败、停止、清理与回退
-
-若 identity/unit 漂移被接受、重复 key 未阻断、行数改变、null/missing 混写、原邮箱出现在 result、manifest hash 不一致、负例未拒绝或命令需要网络，停止数据能力声明。先修 schema/normalizer/validator 并保留失败输出；不要安装上游框架、修改 expected 迎合结果或删除问题行让测试通过。
-
-命令只读固定 JSON 并打印结果，不连接数据库、不落盘写回。误改时先运行：
-
-```powershell
-git diff -- lab/fixtures/data lab/src/about_harness/integrations/pydantic_ai.py lab/src/about_harness/labs.py docs/domains/data.md
-```
-
-确认范围后只恢复自己的变化。失败时回到 manifest 锁定 fixture 和最近通过的确定性实现，不覆盖工作树其他修改。
-
-### 证据边界
-
-实验提供 E1：当前仓库会校验固定 synthetic fixture，在三行输入上验证 identity/unit，拒绝未知字段、重复 key、越界/非有限 score，保留 missing/null 区别，替换非空 email，并对已知原值执行结果内精确扫描。
-
-它没有验证真实 PII 发现、字符串变体、trace/cache 脱敏、其他单位/时区、join/聚合、统计、SQL、数据库权限、事务、写回或真实 PydanticAI。`sensitive_values_exposed=0` 只来自规范化 rows 对已知 email 的精确字符串扫描，不能扩展为“无任何泄漏”。
-
-## 完成检查表
-
-- Task 是否固定 dataset snapshot、population、schema、operation 与验收？
-- Schema 是否包含类型、nullable、key、单位、时区、敏感和未知字段策略？
-- Missing/null/unknown/redacted/invalid/zero 是否没有混写？
-- 非有限数字、精度、货币与时间窗口是否显式处理？
-- Query 是否来自受限 typed plan，并有表/列/行/成本/时间预算？
-- 每步 transform 是否记录 before/after counts、hash 和排除原因？
-- Join cardinality、重复 key 和 fanout 是否有断言？
-- 计算是否由确定性代码完成并由独立 oracle/不变量复核？
-- 模型、trace、cache 和输出前是否都执行数据最小化？
-- 写任务是否经过 propose/validate/approve/commit 和对账？
-- Rollback 是否与外部副作用现实相符，而非一律声称可恢复？
-- 当前 E1 fixture 是否没有被误写成真实数据分析或框架能力？
-
-下一步：运行[数据离线案例](/labs/data)，对照[Secret 与隐私](/security/secrets-privacy)扩展泄漏负例，再用[评测指标](/evaluation/metrics)设计数据质量与写回门槛。
-
-## 检查题
-
-1. 为什么 JSON Schema 合法仍不能证明一个聚合数字正确？
-2. `null`、`redacted` 与数值 0 为什么必须分开？
-3. Many-to-many join 如何在结构合法时制造错误总额？
-4. Timeout 后写入状态未知时，为什么不能直接 retry？
-5. 当前 data fixture 的 `sensitive_values_exposed=0` 为什么不是完整隐私证明？
+[运行对应实验](/labs/data)。实现范围、命令、预期断言和清理步骤在实验页维护。

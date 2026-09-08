@@ -15,7 +15,7 @@ concurrency:
 jobs:
   verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 40
     steps:
       - name: Check out source
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -37,5 +37,6 @@ jobs:
           npm ci
           uv sync --frozen
           npx playwright install --with-deps chromium
+          npm run frameworks:prepare
       - name: Run full repository verification
         run: npm run verify

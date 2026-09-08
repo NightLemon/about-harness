@@ -2,31 +2,15 @@
 
 Multi-agent（多 Agent）编排的价值来自上下文隔离、专长、独立复核和真正可并行的工作，不来自角色数量。一个边界清晰、工具充分的单 Agent loop，往往比多个角色反复转述同一上下文更便宜、更快，也更容易归因。
 
-本页讨论稳定机制和实验方法，不绑定某个产品。本仓库当前没有可执行的多 Agent runner，也没有 live（真实环境）委派记录，因此内容属于 E0 设计知识；任何拓扑图都不能被当成“本项目已实现”。
+本页讨论稳定机制和实验方法，不绑定某个产品。核心 HarnessRunner 仍是单智能体；[AutoGen 示例](/frameworks/autogen)使用实际团队运行时与固定回放，提供 E1 有界协作证据。本页更广的拓扑和生产调度属于 E0 设计。
 
-## 学习目标
+<span id="学习目标"></span>
+<span id="先看结论"></span>
+<span id="当前项目边界"></span>
+<span id="完成检查表"></span>
+<span id="检查题"></span>
 
-完成本页后，你应该能够：
-
-- 先定位单 Agent 的真实瓶颈，再判断是否值得拆分；
-- 把任务画成 dependency graph（依赖图），识别关键路径和可并行分支；
-- 为每个子任务定义输入、权限、预算、输出和停止条件；
-- 设计不会被重复、迟到、乱序和取消结果破坏的交接协议；
-- 区分“第二个 Agent 同意”与真正独立验证；
-- 用相同任务和验收比较单/多 Agent，而不是按角色数量评价系统。
-
-## 先看结论
-
-| 问题 | 单 Agent 更合适 | 多 Agent 可能更合适 |
-| --- | --- | --- |
-| 工作依赖 | 步骤严格串行、共享同一小上下文 | 子问题能独立输入、独立验收 |
-| 写入资源 | 修改集中在一个文件或一个业务对象 | writer 有不重叠所有权，或统一单点集成 |
-| 上下文 | 所有材料都相互依赖 | 不同资料域可隔离，合并只需结构化摘要 |
-| 验证 | 确定性测试已足够 | 需要与实现上下文隔离的审查或多来源调查 |
-| 延迟 | 协调成本接近任务成本 | 分支耗时明显大于 dispatch/merge 成本 |
-| 权限 | 所有步骤需要同一最小权限 | 不同角色可以实质收窄工具或数据范围 |
-
-多 Agent 不是能力升级开关。它引入新的失败面：路由错误、上下文复制、消息丢失、预算超支、重复副作用、语义冲突和终止检测。只有新增收益能在目标 workload（工作负载）上被测量，才值得保留。
+<span id="先诊断瓶颈再拆角色"></span>
 
 ## 先诊断瓶颈，再拆角色
 
@@ -41,7 +25,7 @@ Multi-agent（多 Agent）编排的价值来自上下文隔离、专长、独立
 | 一个步骤阻塞全局 | timeout、缓存、异步队列 | 其他分支在等待期间仍有独立价值 |
 | 单点权限过宽 | 拆分工具、最小 capability | 各子任务能使用严格不同权限集合 |
 
-若问题来自坏 Task、错误工具 schema 或缺失 validator，复制更多 Agent 会复制同一缺陷。若一个简单批量接口就能并发读取 100 个对象，也不必创建 100 个自治角色。
+若问题来自坏 Task（任务）、错误工具 schema 或缺失 验证器，复制更多 Agent 会复制同一缺陷。若一个简单批量接口就能并发读取 100 个对象，也不必创建 100 个自治角色。
 
 ## 把工作画成依赖图
 
@@ -102,6 +86,8 @@ Debate 可以暴露假设，却不能代替测试、来源和业务负责人。�
 
 Pipeline 常被误称为多 Agent，但若每个阶段只是确定性转换，普通函数或队列 worker 更简单。角色只有在需要自治判断、不同上下文或不同 capability 时才增加价值。
 
+<span id="角色是责任不是人设"></span>
+
 ## 角色是责任，不是人设
 
 “你是世界级专家”不会创建新的知识、权限或独立性。角色应该由责任边界定义：
@@ -148,13 +134,15 @@ output: {findings: [], scanned_files: [], unresolved: []}
 stop: [scope_conflict, missing_input, cancelled, deadline]
 ```
 
-这是设计格式，不是本仓库已实现的 schema。生产系统应对它做运行时校验，并由 controller 注入不可由模型改写的 identity、权限和预算字段。
+这是设计格式，不是本仓库已实现的 schema。生产系统应对它做运行时校验，并由 控制器 注入不可由模型改写的 identity、权限和预算字段。
 
 子 Agent 不自动继承父级全部上下文、凭据或工具。父级也不能把自己没有的权限转授给子级。若允许再委派，契约必须限制最大深度、总并发和剩余预算，否则 Supervisor 可能通过不断创建子任务逃逸终止条件。
 
+<span id="context-package够用但不复制整个会话"></span>
+
 ## Context package：够用，但不复制整个会话
 
-Context package（上下文包）是子任务启动时的最小、带来源输入：
+Context（上下文） package（上下文包）是子任务启动时的最小、带来源输入：
 
 ```text
 Task contract
@@ -188,9 +176,9 @@ child capability ⊆ parent capability ⊆ user/task grant
 2. child 的每次 model/tool/action 消费同时计入自身和全局；
 3. 未使用预算在终态归还；
 4. 超支请求回到父级，child 不能自行扩大；
-5. 父级 cancel、费用耗尽或 deadline 到期时，所有后代停止新工作。
+5. 父级 cancel、费用耗尽或 截止时间 到期时，所有后代停止新工作。
 
-并行分支共享墙钟 deadline，但 token、费用、工具调用与外部配额仍然求和。把每个 child 都给完整父预算，会让最坏总成本按 fan-out（扇出数）增长。
+并行分支共享墙钟 截止时间，但 token、费用、工具调用与外部配额仍然求和。把每个 child 都给完整父预算，会让最坏总成本按 fan-out（扇出数）增长。
 
 预算还要覆盖协调动作：dispatch、轮询、重试、合并、冲突解决和最终验证。只记录 worker 的模型 token 会低估多 Agent 成本。
 
@@ -206,7 +194,7 @@ producer / timestamp / status
 idempotency key / artifact digest
 ```
 
-接收方先去重，再检查结果是否仍对应当前 baseline 和 Task revision。相同 task 的 retry attempt 不能覆盖旧证据；它应有独立 attempt identity，并说明是否复用先前 artifact。
+接收方先去重，再检查结果是否仍对应当前 基线 和 任务 revision。相同 task 的 retry attempt 不能覆盖旧证据；它应有独立 attempt identity，并说明是否复用先前 artifact。
 
 父级等待多个 worker 时，要区分：
 
@@ -234,13 +222,15 @@ Join（汇合）决定父级何时停止等待：
 
 Supervisor loop 还要防止 livelock（活锁）：角色持续互相退回任务却没有状态进展。每轮记录减少了哪个未决项；连续无进展达到阈值时停止或升级人工，不通过新增角色延长循环。
 
+<span id="用-artifact-交接而不是共享长对话"></span>
+
 ## 用 Artifact 交接，而不是共享长对话
 
 Artifact（产物）可以是固定 commit、patch、测试输出、结构化 JSON、来源清单或带 hash 的摘要。它应包含版本、生产者、输入引用、证据边界和缺失项。父级根据 artifact 组合结果，而不是要求每个 Agent 重放完整聊天记录。
 
 共享可变计划会产生 lost update（更新丢失）：两个 worker 同时改写同一段状态，后写者覆盖前写者。更安全的默认流程是：
 
-1. 并行调查只读同一 baseline，各自写独立结果；
+1. 并行调查只读同一 基线，各自写独立结果；
 2. 并行实现使用独立 worktree、目录或明确不重叠的文件所有权；
 3. 单一 integrator（集成者）按 dependency graph 顺序合并；
 4. verifier 针对合并后的真实状态运行，不验证各自分支摘要；
@@ -262,11 +252,11 @@ tests were run on the candidate state
 unresolved and rejected evidence are preserved
 ```
 
-分支测试通过不等于合并状态通过。最终 validator 必须在实际组合后的 tree、配置和权限下重跑。
+分支测试通过不等于合并状态通过。最终 验证器 必须在实际组合后的 tree、配置和权限下重跑。
 
 ## 独立验证怎样才算独立
 
-Verifier 不应只阅读 implementer 的最终摘要。它至少读取原 Task、实际 diff/产物、执行环境和验收命令，并能访问失败输出。
+Verifier 不应只阅读 implementer 的最终摘要。它至少读取原 任务、实际 diff/产物、执行环境和验收命令，并能访问失败输出。
 
 独立性有多个维度：
 
@@ -294,16 +284,18 @@ Verifier 不应只阅读 implementer 的最终摘要。它至少读取原 Task�
 - result schema 分离 claim、source、instruction 和 proposed action；
 - researcher 默认只读，writer 的每个副作用仍过自身 policy；
 - 父级重新验证来源、scope 和授权，不执行 child 文本中的隐藏命令；
-- Secret、个人数据和原始 trace 不因 fan-out 进入更多存储；
+- Secret、个人数据和原始 轨迹 不因 fan-out 进入更多存储；
 - 一个分支发现注入或泄漏时，取消相关后代并审计已传播 artifact。
 
 权限隔离必须由 tool/policy/sandbox 实现，不能仅让 child 承诺“我不会写”。更完整的来源边界见[上下文工程](/foundations/context)，授权语义见[人在循环中](/foundations/human-control)。
+
+<span id="工作例并行调查单点写入"></span>
 
 ## 工作例：并行调查、单点写入
 
 假设站点 build 和 Python 测试同时失败：
 
-1. 父 Agent 冻结同一 commit、Task 和环境身份；
+1. 父 Agent 冻结同一 commit、任务 和环境身份；
 2. 派两个只读 worker，一个定位前端 build，一个定位 Python 测试；
 3. 两者返回复现命令、退出码、相关文件、第一处分歧、根因假设和未决项，不修改共享 checkout；
 4. 父级判断两个根因是否独立；都涉及同一配置时只保留一个 writer；
@@ -312,6 +304,8 @@ Verifier 不应只阅读 implementer 的最终摘要。它至少读取原 Task�
 7. 任一 child 需要网络、费用或新权限时，只暂停该子任务，父级继续权限内工作。
 
 这个拓扑并行的是独立信息收集，不是让多个 Agent 抢写同一状态。若两个失败都来自同一个 runtime 配置，最初 fan-out 仍可能帮助快速归因，但实现阶段应收敛为单 writer。
+
+<span id="一个反例三人接力改同一文件"></span>
 
 ### 一个反例：三人接力改同一文件
 
@@ -332,11 +326,11 @@ Planner 先给出改法，Implementer 修改一个小配置，Reviewer 再重写
 | verifier 总是同意 | 共享摘要/rubric 或无 oracle | 改为读取原 artifact，加入区分性负例 |
 | 成本远高于预期 | 预算按 child 重复发放 | 采用全局 reservation，限制 fan-out |
 
-恢复时保留每个 child 的 Task、attempt、输出和终态。不要删除失败分支只留下集成后的成功 commit，否则无法评估重复工作和路由质量。
+恢复时保留每个 child 的 任务、attempt、输出和终态。不要删除失败分支只留下集成后的成功 commit，否则无法评估重复工作和路由质量。
 
 ## 怎样证明多 Agent 值得
 
-比较时保留相同 Task、模型/设置、工具、权限、预算口径和验收的单 Agent baseline。至少报告：
+比较时保留相同 任务、模型/设置、工具、权限、预算口径和验收的单 Agent 基线。至少报告：
 
 - 任务成功、验收分数和安全事件；
 - end-to-end wall time、关键路径与尾部延迟；
@@ -362,7 +356,7 @@ multi-agent value
 ### 实验设计
 
 1. 预注册哪些任务理论上可并行，哪些应保持单 Agent；
-2. 冻结模型、Harness、工具、权限、Task 和 evaluator；
+2. 冻结模型、Harness、工具、权限、任务 和 evaluator；
 3. 为单 Agent 与多 Agent 设置可比较的总费用/调用上限；
 4. 对相同 task 做 paired run（配对运行），包含未见 holdout；
 5. 保存委派树、消息、artifact、取消和 merge 事件；
@@ -371,9 +365,11 @@ multi-agent value
 
 角色数量、消息数量或“讨论很充分”都不是结果指标。
 
+<span id="e0-设计练习先写调度方案不启动-agent"></span>
+
 ## E0 设计练习：先写调度方案，不启动 Agent
 
-这个练习只产出设计，不调用模型、Provider 或真实多 Agent runtime。
+这个练习只产出设计，不调用模型、Provider（供应方） 或真实多 Agent runtime。
 
 ### 前置条件与固定输入
 
@@ -407,7 +403,7 @@ verify merged tree
 
 设计至少包含：
 
-- 每个节点唯一 task ID、相同 baseline commit 和不重叠 read scope；
+- 每个节点唯一 task ID、相同 基线 commit 和不重叠 read scope；
 - 统一 finding schema：位置、事实、证据、优先级、建议、未决；
 - 全局预算和 per-child reservation，而非三份完整预算；
 - writer 的文件所有权、接口依赖和单一 Integrator；
@@ -416,6 +412,8 @@ verify merged tree
 - 合并后验证命令与停止/回滚条件。
 
 反向检查：如果三个 worker 都必须读取全部仓库、都能写所有文件、没有统一 schema，或者只用多数票解决事实冲突，方案不合格，应先改为单 Agent review 或重新切分。
+
+<span id="停止清理回滚与限制"></span>
 
 ### 停止、清理、回滚与限制
 
@@ -432,37 +430,9 @@ verify merged tree
 | E2 | 锁定真实 Harness/model 的有限委派探针 | 精确版本与窄场景可用 | 多 Agent 普遍更优 |
 | E3 | 代表任务、重复、holdout、单 Agent baseline 与成本/安全门槛 | 限定 workload 内路由决定 | 跨任务、跨版本通用结论 |
 
-E1 的第一批负例应包括：重复 child result、旧 revision、观察超时、父级取消、预算耗尽、两个 writer 冲突、恶意外部文本和 verifier 拿到错误 baseline。一次 happy path 不能证明编排可靠。
+E1 的第一批负例应包括：重复 child result、旧 revision、观察超时、父级取消、预算耗尽、两个 writer 冲突、恶意外部文本和 verifier 拿到错误 基线。一次 happy path 不能证明编排可靠。
 
-## 当前项目边界
 
-本仓库没有多 Agent Task schema、dispatcher、消息队列、预算树、委派 trace、merge controller 或 E1 fixture。相关页面描述的是设计责任；现有单 Agent Python runner 不能因为有 loop/checkpoint 就被称为多 Agent runtime。
+## 实践入口
 
-若未来实现，应先从两个 fake 只读 worker 和一个确定性 join 开始，固定单 Agent baseline，再逐步加入 cancel、stale result、权限收窄和 merge 冲突。真实 Provider、费用与外部动作仍需单独授权。
-
-## 完成检查表
-
-- [ ] 单 Agent 瓶颈已有证据，新增 Agent 对应可测假设；
-- [ ] 依赖图、关键路径和可并行节点明确；
-- [ ] 每个 child 输入闭合、输出可验、失败局部化；
-- [ ] 权限沿树收窄，预算按全局 reservation 聚合；
-- [ ] Context package 有来源、revision 和最小数据范围；
-- [ ] 消息可处理重复、迟到、乱序、retry attempt 和 stale result；
-- [ ] Join、终止、观察超时和取消语义明确；
-- [ ] 并行 writer 有独立资源或单一 Integrator；
-- [ ] Verifier 读取合并后真实状态，相关性被公开；
-- [ ] Prompt Injection、Secret 扇出和迟到副作用有负例；
-- [ ] 与同条件单 Agent baseline 比较质量、风险、墙钟和总成本；
-- [ ] 当前结论严格限制在实际达到的 E0/E1/E2/E3。
-
-## 检查题
-
-1. 哪五个条件说明一个子任务适合独立委派？
-2. 为什么并行减少墙钟，却可能增加总 token 和费用？
-3. Observation timeout 与权威终态有什么区别？
-4. 文件不重叠时，为什么两个 worker 仍可能产生语义冲突？
-5. 两个使用相同模型和摘要的 verifier 为什么不是两份独立证据？
-6. All、first valid、quorum 和 partial join 分别适合什么场景？
-7. 怎样用相同总预算公平比较单 Agent 与多 Agent？
-
-下一步：到[可观测性](/foundations/observability)定义跨 Agent 因果链，在[状态与可靠执行](/foundations/state-reliability)实现取消、迟到结果和 fencing，再看[AutoGen](/frameworks/autogen)的产品抽象边界。
+[从完整离线案例观察这些责任](/practice/end-to-end)。实现范围、命令、预期断言和清理步骤在实验页维护。

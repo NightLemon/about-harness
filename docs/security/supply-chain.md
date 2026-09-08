@@ -1,12 +1,13 @@
 # 扩展与供应链安全
 
-Agent 扩展、MCP server、CLI、browser、container image、Python/npm dependency 和 GitHub Action 都可能执行代码或读取数据。安装一个“方便的工具”实际是在扩大信任边界；即使 Agent 从未主动调用它，安装脚本、构建插件或 CI Action 也可能先执行。
+Agent 扩展、MCP server、CLI、browser、container image、Python/npm dependency 和 GitHub Action（动作提议） 都可能执行代码或读取数据。安装一个“方便的工具”实际是在扩大信任边界；即使 Agent 从未主动调用它，安装脚本、构建插件或 CI 动作提议 也可能先执行。
 
-## 学习目标与边界
-
-读完本页，你应能画出一个候选依赖从发现、下载、安装、构建、运行、更新到卸载的完整路径，区分“字节被锁定”和“代码值得信任”，并为引入、升级与紧急回退设计可验证步骤。
-
-本页关注来源、制品和执行链。扩展暴露哪些 Tool、Hook 或 MCP 能力，见[扩展机制](/implementation/extensions)；不可信内容怎样借工具越权，见[Prompt Injection](/security/prompt-injection)；已经观察到异常时转到[事件响应](/security/incident-response)。
+<span id="学习目标与边界"></span>
+<span id="在本项目验证现有门禁"></span>
+<span id="命令"></span>
+<span id="预期输出与断言"></span>
+<span id="当前证据边界"></span>
+<span id="审核清单"></span>
 
 ## 从攻击链而不是包名开始
 
@@ -109,15 +110,17 @@ npm run workflows:check
 npm run verify
 ```
 
-`workflows:check` 拒绝可变镜像、非完整 Action SHA、顶层写权限，以及 deploy job 之外的 Pages/OIDC 权限。未知或自定义许可默认阻断，直到人工确认再分发义务。
+`workflows:check` 拒绝可变镜像、非完整 动作提议 SHA、顶层写权限，以及 deploy job 之外的 Pages/OIDC 权限。未知或自定义许可默认阻断，直到人工确认再分发义务。
 
 这些检查只覆盖本仓库定义的确定性策略。它们不验证第三方 maintainer 是否可信、SHA 对应源码是否经过可复现构建，也不替代 advisory 研判。
 
+<span id="ci-action容器与发布身份"></span>
+
 ## CI Action、容器与发布身份
 
-CI 同时拥有源码、缓存和发布通道，第三方 Action 应像可执行依赖一样审查。人类可读 tag 放在注释中，真正引用固定完整 commit；workflow 顶层保持只读，只有独立 deploy job 获得 Pages/OIDC 所需写权限。来自不可信分支的代码不能在持有发布 credential 的上下文执行。
+CI 同时拥有源码、缓存和发布通道，第三方 动作提议 应像可执行依赖一样审查。人类可读 tag 放在注释中，真正引用固定完整 commit；workflow 顶层保持只读，只有独立 deploy job 获得 Pages/OIDC 所需写权限。来自不可信分支的代码不能在持有发布 credential 的上下文执行。
 
-对 Action 更新，比较的不只是 `uses:` 一行：查看 commit 间源码、入口文件、runtime、依赖、权限和网络变化。Composite Action 中每个 shell step 都是执行面；JavaScript Action 的打包文件也需要与源码/发布过程对账。
+对 动作提议 更新，比较的不只是 `uses:` 一行：查看 commit 间源码、入口文件、runtime、依赖、权限和网络变化。Composite 动作提议 中每个 shell step 都是执行面；JavaScript 动作提议 的打包文件也需要与源码/发布过程对账。
 
 容器 tag 用于人读，digest 用于机器锁定。审查基础镜像、架构、用户、入口、包管理器缓存、证书和复制进去的文件；默认以非 root 运行，限制 mount、capability、网络和临时目录。固定 digest 后仍需主动更新：不漂移意味着可复现，也意味着安全修复不会自动进入。
 
@@ -135,7 +138,7 @@ VitePress 是开发与构建依赖，GitHub Pages 只托管生成的静态文件
 
 若站点增加服务端运行时、用户输入或在线编辑器，必须重新威胁建模，不能沿用纯静态站点结论。
 
-当前构建链风险登记如下。2026-09-03 使用在线 `npm audit` 复核时，完整开发依赖图报告 1 个 high、2 个 moderate；这不是生产站点漏洞数，也不能替代对每条 advisory 的适用性分析。负责人按季度复核；退出条件满足后才升级，并运行完整站点、链接与视觉验证。
+当前构建链风险登记如下。2026-09-03 使用在线 `npm audit` 复核时，完整开发依赖图报告 1 个 high、2 个 moderate；这不是生产站点漏洞数，也不能替代对每条 advisory 的适用性分析。负责人按维护周期复核；来源时效自动任务每周检查；退出条件满足后才升级，并运行完整站点、链接与视觉验证。
 
 | 风险 | 影响边界 | 负责人 | 最近复核 | 下次复核 | 升级条件 |
 | --- | --- | --- | --- | --- | --- |
@@ -166,17 +169,24 @@ Skill/Prompt 文件本身通常不能直接扩大系统权限，但会影响 Age
 
 更完整的 manifest 与 schema diff 方法见[扩展机制](/implementation/extensions)。
 
+<span id="失败、清理与回退"></span>
+<span id="失败清理与回退"></span>
+
 ## 失败与恢复
 
-保留上一锁文件、镜像 digest、配置、capability snapshot 与验证结果。升级造成行为、许可或权限异常时，用精确 revert 恢复相关文件，不强制更新所有依赖。禁用扩展后核心 loop、checkpoint 和结果读取仍应工作；否则需保留版本化 adapter 或迁移器。
+保留上一锁文件、镜像 digest、配置、capability snapshot 与验证结果。升级造成行为、许可或权限异常时，用精确 revert 恢复相关文件，不强制更新所有依赖。禁用扩展后核心 loop、检查点 和结果读取仍应工作；否则需保留版本化 适配器 或迁移器。
 
 发现异常时先停止传播：禁用候选、暂停相关 workflow/发布入口、撤销它能访问的短期 credential，并保留进程、网络、文件和构建产物证据。不要先重新安装或清缓存，因为那会覆盖首次状态。若怀疑发布制品被污染，从已知良好 commit、干净 runner 和新缓存重新构建，再比较 hash 与内容；不能把“重新构建成功”当作旧产物未受影响。
 
 Rollback（回退）恢复技术版本，remediation（处置）还要处理已经发生的影响：轮换 Secret、撤回发布、删除污染缓存、通知受影响方、修复更新通道并增加能复现根因的负例。完整顺序见[事件响应](/security/incident-response)。
 
+<span id="工作例评估一个只读-mcp-server"></span>
+
 ## 工作例：评估一个只读 MCP Server
 
 假设候选声称只搜索公开文档，不在本仓库安装它。先把目标写成：输入查询，返回带来源的公开文本；不读取工作区、环境变量或 credential，不访问声明域名外网络，不提供写工具。
+
+<span id="前置条件与输入"></span>
 
 ### 评估输入
 
@@ -197,48 +207,7 @@ Rollback（回退）恢复技术版本，remediation（处置）还要处理已�
 
 该案例最多形成对固定候选/环境的 E1 隔离证据，不证明未来版本、其他平台或处理私人数据时安全。
 
-## 在本项目验证现有门禁
 
-### 前置条件与输入
+## 实践入口
 
-在仓库根目录执行；要求 Node.js 22+、Python 3.11+、锁定依赖已安装。命令读取 `package-lock.json`、`uv.lock`、Dockerfile、GitHub workflows、许可策略与临时负例；不配置 API key，不调用真实 Agent/MCP server。
-
-### 命令
-
-```powershell
-npm run licenses:check
-npm run workflows:check
-npm run secrets:check
-npm run repo:self-test
-```
-
-### 预期输出与断言
-
-- 许可检查确认 Node/Python 锁定依赖都有已审阅策略；
-- workflow 检查确认 Action 固定完整 SHA、权限分层、Pages deploy 独立且容器镜像不可漂移；
-- Secret 扫描不发现 credential、私人路径或禁止的环境文件；
-- `repo:self-test` 在临时目录证明未固定 Action、可变镜像、过宽权限、未批准许可和合成 token 会被拒绝；
-- 四条外层命令退出码均为 0，负例自测通过表示坏输入被成功拒绝。
-
-### 失败、清理与回退
-
-若任一正例检查失败，保留首个 stderr，按许可、workflow、镜像或 Secret 分类；不要删除 lockfile、放宽允许列表或改负例来获得绿色。若 self-test 让坏输入通过，停止依赖/发布变更，先修对应 checker。
-
-这些命令只创建并自动删除系统临时目录，可能留下可忽略测试缓存。误改时先运行 `git diff -- package.json package-lock.json pyproject.toml uv.lock Dockerfile .github scripts docs/security/supply-chain.md`，只恢复本轮修改；不要重置整个工作树。
-
-### 当前证据边界
-
-验证结果是 E1：证明固定负例下本仓库 checker 的部分策略会执行。它不扫描依赖源码、不联网查询最新 advisory、不验证签名/构建来源，也不证明第三方 Action、包或镜像没有恶意。因此检查全绿仍需人工来源审查、隔离运行和持续复核。
-
-## 审核清单
-
-- 能否画出从来源到发布产物的完整信任图，而不只列直接依赖？
-- 每个可执行节点的身份、license、脚本、权限、网络和 owner 是否明确？
-- Lock、digest、checksum 与签名分别证明什么，又不能证明什么？
-- 首次安装是否发生在无 Secret、最小 mount 和受限网络环境？
-- 更新是否比较依赖、capability、权限和行为，而不只看版本号？
-- Advisory 是否记录 reachability、影响、缓解、退出条件和复核日期？
-- 禁用后核心流程能否运行，回退是否同时处理 credential、缓存与已发布产物？
-- 自动检查的证据边界是否明确，没有把绿色结果写成“供应链安全”？
-
-下一步：[Prompt Injection](/security/prompt-injection)说明不可信内容如何借工具扩大影响，[扩展机制](/implementation/extensions)提供 manifest/schema diff 模板，[事件响应](/security/incident-response)说明异常后的处置顺序。
+[用安全工作表关联威胁与证据](/practice/security-review)。实现范围、命令、预期断言和清理步骤在实验页维护。

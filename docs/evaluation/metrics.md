@@ -2,16 +2,10 @@
 
 指标的作用是把“哪个配置更适合这个工作负载”变成可证伪判断。一个百分比没有说明样本单位、缺失数据、风险和成本时，往往比没有数字更容易误导。
 
-## 学习目标
+<span id="学习目标"></span>
+<span id="检查题与下一步"></span>
 
-完成本页后，你应该能够：
-
-- 为一个指标写清目标量、样本单位、分子、分母、聚合与缺失规则；
-- 区分 run、task、pair、workload 和 attempt，避免把重复运行当独立样本；
-- 为二元结果选择区间，并用配对差异而不是两组孤立均值比较配置；
-- 正确解释 P50/P90、timeout、未知 usage 和单位成功成本；
-- 识别选择性缺失、多重比较、权重变化和 evaluator 漂移；
-- 把结果落到 `adopt/reject/inconclusive`，同时保留证据等级与适用范围。
+<span id="用当前样例验证"></span>
 
 ## 先写测量契约
 
@@ -48,7 +42,7 @@ owner / evaluator version / rollback rule
 
 例如不要只写 `success_rate`，而要写“holdout 中满足所有确定性断言、无安全违规且在 task budget 内达到 2/3 repeats 成功的不同 task 数，除以该 holdout 全部有效 task 数；fixture/schema 错误阻断研究，timeout 计失败，基础设施重试保留原 attempt 并按预注册规则选最终 run”。
 
-指标名和公式也要版本化。改变 timeout 是否计失败、task 的 2/3 聚合规则或 workload 权重，就已经改变测量契约，不能沿用同一趋势线。
+指标名和公式也要版本化。改变 timeout 是否计失败、task 的 2/3 聚合规则或 工作负载 权重，就已经改变测量契约，不能沿用同一趋势线。
 
 ### 不要用一条总分吞掉约束
 
@@ -71,11 +65,11 @@ owner / evaluator version / rollback rule
 Task（任务）通常是主要独立样本；同一任务的多次 run 是对随机性和运行可靠性的重复观察，不能当作许多全新任务。
 
 - **Run-level 成功率**：成功 run / 有效 run，回答“一次尝试成功的概率如何”；
-- **Task-level 成功率**：达到预注册任务聚合规则的 task / 不同 task，回答“覆盖了多少问题”；
-- **Workload-level 结果**：按 coding、browser 等任务族分层，防止一个大类掩盖另一个小类；
-- **Pair-level 差异**：同一 task、repeat 下候选与 baseline 的直接对照，减少任务难度差异。
+- **任务-level 成功率**：达到预注册任务聚合规则的 task / 不同 task，回答“覆盖了多少问题”；
+- **Workload（工作负载）-level 结果**：按 coding、browser 等任务族分层，防止一个大类掩盖另一个小类；
+- **Pair-level 差异**：同一 task、repeat 下候选与 基线 的直接对照，减少任务难度差异。
 
-Task-level 聚合必须提前定义，例如“3 次中至少 2 次通过”或“3 次全部通过”。当前 `study-v1.1` 用 `task_pass_min_runs=2` 固定前一种规则；`npm run eval:summary` 同时保留 run-level 原始汇总和 task-level 结果。一个任务只有收齐 `study.repeats` 个矩阵单元才可聚合，缺失重复进入 `incomplete_tasks`，不能被静默算作失败或从分母消失。
+任务-level 聚合必须提前定义，例如“3 次中至少 2 次通过”或“3 次全部通过”。当前 `study-v1.1` 用 `task_pass_min_runs=2` 固定前一种规则；`npm run eval:summary` 同时保留 run-level 原始汇总和 task-level 结果。一个任务只有收齐 `study.repeats` 个矩阵单元才可聚合，缺失重复进入 `incomplete_tasks`，不能被静默算作失败或从分母消失。
 
 ### 数据通常是嵌套的
 
@@ -109,7 +103,7 @@ Repeat 聚合规则代表不同产品体验：
 任务数 × 配置数 × 每任务重复数
 ```
 
-每个单元由 `(task_id, config_id, repeat)` 唯一标识。缺一行不是自动失败，也不是自动成功；它是缺失单元，必须按预注册规则分类。当前模板为 `20 × 2 × 3 = 120` 个单元，样例只有 12 行，因此缺少 108 个单元。
+每个单元由 `(task_id, config_id, repeat)` 唯一标识。缺一行不是自动失败，也不是自动成功；它是缺失单元，必须按预注册规则分类。旧 Study 1.1 模板为 `20 × 2 × 3 = 120` 个单元，样例只有 12 行，因此缺少 108 个单元。
 
 同时报告 scheduled、started、completed、valid 和 analyzed 数量，才能看出结果在哪一层消失。重复 run ID、同单元重复占位、配置身份漂移或 split 不匹配应先拒绝，不能进入统计。
 
@@ -129,7 +123,7 @@ scheduled
          └─ paired_and_analyzed
 ```
 
-每一层都应满足“父计数 = 子计数之和”，并按配置和 workload 报原因。只报告 analyzed 分母会隐藏 attrition（样本流失）。若最难任务更容易 timeout 或丢失，缺失不是随机的；删掉它们会系统性抬高成功率。
+每一层都应满足“父计数 = 子计数之和”，并按配置和 工作负载 报原因。只报告 analyzed 分母会隐藏 attrition（样本流失）。若最难任务更容易 timeout 或丢失，缺失不是随机的；删掉它们会系统性抬高成功率。
 
 `invalid` 不能随意当失败，因为坏 fixture 可能与候选无关；也不能随意删除后继续晋级，因为它削弱覆盖并可能不对称。身份、schema 或 fixture 不一致通常先阻断比较，修复生产路径后建立新研究版本。
 
@@ -137,7 +131,7 @@ scheduled
 
 成功率应同时给出 `k/n`、点估计和 Wilson interval（威尔逊区间）。区间表达有限样本下的估计不确定性，不是“真实值有 95% 概率位于这里”的后验概率。
 
-当前 E1 样例中：
+历史 E1 样例中：
 
 | 配置 | 成功 | Run-level 成功率 | Wilson 95% |
 | --- | ---: | ---: | --- |
@@ -158,14 +152,14 @@ Bootstrap（自助重采样）可以对复杂的 task-level 聚合或中位差�
 
 ## 配对比较优先
 
-同一任务和 repeat 下比较 baseline 与 candidate：
+同一任务和 repeat 下比较 基线 与 candidate：
 
-- win：candidate 通过、baseline 失败；
-- loss：candidate 失败、baseline 通过；
+- win：candidate 通过、基线 失败；
+- loss：candidate 失败、基线 通过；
 - tie：两者状态相同；
 - incomplete：缺少任一配置，不能计入完整 pair。
 
-当前样例得到 5 win、0 loss、1 tie，共 6 个完整 development pair。这个结果只描述固定离线样例的相对状态，不能消除矩阵不完整、无 holdout 和 E1 证据边界。
+历史合成样例得到 5 win、0 loss、1 tie，共 6 个完整 development pair。这个结果只描述固定离线样例的相对状态，不能消除矩阵不完整、无 holdout 和 E1 证据边界。
 
 配对报告至少给出 win/loss/tie 原始计数、完整 pair 数和缺失 pair 数。只报“胜率”会隐藏大量 tie 或缺失；只比较两个配置各自的总体均值，会把任务构成差异误当配置效果。
 
@@ -180,7 +174,7 @@ Bootstrap（自助重采样）可以对复杂的 task-level 聚合或中位差�
 
 真正区分两配置的是 discordant pairs（不一致配对），即 win 和 loss。McNemar exact test（McNemar 精确检验）在小样本下可把 `wins` 与 `losses` 视为不一致 pair 内的二项结果；它仍只回答特定零假设下数据是否意外，不表示效果足够大或任务有代表性。
 
-当前样例 5 win、0 loss，只有 5 个不一致 pair。若做双侧精确检验，结果为 `2 × (1/2)^5 = 0.0625`；即使表面是 5:0，小样本也没有提供精确结论。更重要的是样例矩阵缺失、没有 holdout 且只有 E1，不能因一个 p-value 靠近某条习惯阈值就晋级。
+历史合成样例 5 win、0 loss，只有 5 个不一致 pair。若做双侧精确检验，结果为 `2 × (1/2)^5 = 0.0625`；即使表面是 5:0，小样本也没有提供精确结论。更重要的是样例矩阵缺失、没有 holdout 且只有 E1，不能因一个 p-value 靠近某条习惯阈值就晋级。
 
 Pair 的键必须在运行前定义。若同一 task/config 的 repeat 顺序不对齐，应按固定 seed、attempt lineage 或 task-level 聚合配对，不能事后挑最有利的 run 相互匹配。
 
@@ -192,9 +186,9 @@ Effect size（效应量）描述差异有多大。二元主指标可报告成功
 
 ### 选择可解释的效应
 
-对于二元结果，优先报告 absolute risk difference（绝对成功率差，百分点）。Relative risk（相对成功率比）可以补充，但 baseline 接近 0 时会很不稳定；odds ratio（优势比）也不等于成功率倍数。所有效应都带原始 `k/n`、配对计数与区间。
+对于二元结果，优先报告 absolute risk difference（绝对成功率差，百分点）。Relative risk（相对成功率比）可以补充，但 基线 接近 0 时会很不稳定；odds ratio（优势比）也不等于成功率倍数。所有效应都带原始 `k/n`、配对计数与区间。
 
-连续或有序 rubric 分数先展示每个 task 的 candidate-baseline 差值，再报告中位差、分位数和有边界的均值。若 1–4 分只是等级锚点，相邻档位未必等距，不应给“提高 0.37 分”过多小数精度。一个总分上升还要检查是多数任务小幅改善，还是少数异常值拉动。
+连续或有序 rubric 分数先展示每个 task 的 candidate-基线 差值，再报告中位差、分位数和有边界的均值。若 1–4 分只是等级锚点，相邻档位未必等距，不应给“提高 0.37 分”过多小数精度。一个总分上升还要检查是多数任务小幅改善，还是少数异常值拉动。
 
 阈值应表达 minimum meaningful effect（最小有意义效果）。例如绝对成功率至少 `+5` 个百分点，不是“任何正数都算赢”。若目标是保质量降成本，可以预注册 non-inferiority margin（不劣界限），要求质量差的区间下界不低于 `-δ`，同时成本护栏改善；界限必须来自实际损失，而不是为了让当前候选通过。
 
@@ -202,19 +196,21 @@ Effect size（效应量）描述差异有多大。二元主指标可报告成功
 
 同一组分层结果可以有不同总体答案：
 
-- **Micro average（微平均）**：每个 task 等权，任务多的 workload 权重大；
-- **Macro average（宏平均）**：每个 workload 等权，小类与大类影响相同；
+- **Micro average（微平均）**：每个 task 等权，任务多的 工作负载 权重大；
+- **Macro average（宏平均）**：每个 工作负载 等权，小类与大类影响相同；
 - **Target-weighted（目标分布加权）**：按预先估计的真实任务频率或风险权重。
 
 三种口径回答不同问题。固定任务集合的 micro 结果不能自动代表生产频率；macro 也可能过度放大稀有小类。研究前冻结主要权重，并同时报告各层原始分母。若不同配置的有效样本构成不同，聚合值甚至可能出现 Simpson's paradox（辛普森悖论）：各层方向一致或接近，整体方向却因权重变化而反转。
 
-高损失低频 workload 通常作为独立 hard gate，而不是靠很小频率权重并入平均。这样能避免“常见简单任务的收益”稀释一次严重违规。
+高损失低频 工作负载 通常作为独立 hard gate，而不是靠很小频率权重并入平均。这样能避免“常见简单任务的收益”稀释一次严重违规。
 
 ### 多个切片不是多个晋级机会
 
 同时尝试许多主指标、阈值、prompt、模型和切片，再只报告最好一个，会增加偶然发现。正式研究只设一个 primary metric 和有限的预注册关键次指标；其余标为 exploratory（探索性），用于提出下一轮假设。
 
 需要对多个确认性假设控制错误率时，预先选择校正或分层决策策略，并说明假设族。不要看到结果后才决定哪些比较算“主要”。即使经过统计校正，任务污染、错误 Judge 和身份漂移仍是设计问题，不会被数学消除。
+
+<span id="延迟成本与资源"></span>
 
 ## 延迟、成本与资源
 
@@ -233,9 +229,9 @@ Timeout 不能从延迟分布删除。到达 60 秒上限只知道真实完成�
 - 缓存命中和免费额度是否计入，回答可比性；
 - 未知 usage 数量，回答数据完整性。
 
-E1 的 `cost_usd=0` 表示没有真实调用，不等于模型免费。E2/E3 必须使用 provider/harness 的可审计 usage；采集缺失要写 `unknown` 或独立状态，不能猜测填零。baseline 成本为零时，相对百分比变化没有定义，应使用绝对差或明确的零基线规则。
+E1 的 `cost_usd=0` 表示没有真实调用，不等于模型免费。E2/E3 必须使用 供应方/harness 的可审计 usage；采集缺失要写 `unknown` 或独立状态，不能猜测填零。基线 成本为零时，相对百分比变化没有定义，应使用绝对差或明确的零基线规则。
 
-Token 也不是跨模型的通用工作量单位。比较时固定 tokenizer/计费口径和 surface；跨 provider 报告各自 token 与实际费用，不把数字直接相加成“推理量”。
+Token 也不是跨模型的通用工作量单位。比较时固定 tokenizer/计费口径和 surface；跨 供应方 报告各自 token 与实际费用，不把数字直接相加成“推理量”。
 
 单位成功成本的分子应包含失败 run、重试、fallback、Judge、工具 API 和人工成本：
 
@@ -243,7 +239,7 @@ Token 也不是跨模型的通用工作量单位。比较时固定 tokenizer/计
 cost_per_success = 同一分析范围内全部尝试的总成本 / 成功 task 数
 ```
 
-成功数为 0 时结果是 undefined（无定义），不是 0，也不应显示为无限后再参与平均。若 candidate 比 baseline 多完成任务，可以补充 incremental cost per additional success（每增加一个成功的增量成本）：
+成功数为 0 时结果是 undefined（无定义），不是 0，也不应显示为无限后再参与平均。若 candidate 比 基线 多完成任务，可以补充 incremental cost per additional success（每增加一个成功的增量成本）：
 
 ```text
 (candidate total cost - baseline total cost)
@@ -253,15 +249,15 @@ cost_per_success = 同一分析范围内全部尝试的总成本 / 成功 task �
 
 只有在任务、预算和成本覆盖范围一致且成功差为正时，这个比值才有解释；它不能替代安全、质量和绝对预算护栏。成本为负且成功更多时可以说 candidate 在该样本内占优，仍不能外推到未测工作负载。
 
-Provider 账单、Harness 采集和估算器可能不一致。保存 billed、measured、estimated 与 unknown 状态及计价版本；价格变化后历史实际费用不应按新价格静默改写。若希望回答“按今天价格会怎样”，生成明确标记的重估视图并保留原账单事实。
+Provider（供应方） 账单、Harness 采集和估算器可能不一致。保存 billed、measured、estimated 与 unknown 状态及计价版本；价格变化后历史实际费用不应按新价格静默改写。若希望回答“按今天价格会怎样”，生成明确标记的重估视图并保留原账单事实。
 
 ## 安全指标需要暴露分母
 
-报告 `safety_violations=0` 时，还要说明运行了多少安全任务、触发了多少危险机会、policy 拒绝了多少动作，以及是否存在未分类或缺失 trace。没有执行安全负例的 0，与执行 100 次均正确拒绝的 0，证据完全不同。
+报告 `safety_violations=0` 时，还要说明运行了多少安全任务、触发了多少危险机会、policy 拒绝了多少动作，以及是否存在未分类或缺失 轨迹。没有执行安全负例的 0，与执行 100 次均正确拒绝的 0，证据完全不同。
 
 `failure_type="safety"` 与 `safety_violation=true` 也不是同一字段：前者可表示安全相关任务没有满足验收，后者表示观察到违规行为。报告应同时保留任务结果和实际违规，不能从名称互相推断。
 
-高风险事件通常采用零容忍硬门槛，但“本次零事件”仍要以观察范围为边界。发现违规后保留原行和 trace，不能删除失败任务再重新计算通过率。
+高风险事件通常采用零容忍硬门槛，但“本次零事件”仍要以观察范围为边界。发现违规后保留原行和 轨迹，不能删除失败任务再重新计算通过率。
 
 安全分母最好分为 task、opportunity（危险机会）、proposed action 和 executed action。一个 task 可能没有触发任何危险机会；policy 正确拒绝十个提议也与“模型从未提议”不同。至少同时报告：
 
@@ -275,6 +271,8 @@ unclassified or missing traces
 ```
 
 这样才能区分模型行为、policy 效果和实际后果。拒绝率高不一定更安全，也可能是权限定义过宽导致正常任务无法完成；安全与可用性要分别测，安全 hard gate 不能被可用性平均值抵消。
+
+<span id="缺失重跑与排除"></span>
 
 ## 缺失、重跑与排除
 
@@ -292,7 +290,7 @@ unclassified or missing traces
 
 ### 用边界分析暴露缺失风险
 
-当少量 cell 缺失但协议允许继续做诊断时，先给 best/worst-case bounds（最好/最坏边界）：把所有缺失 candidate 依次视为成功或失败，把 baseline 同理处理，观察结论是否仍越过门槛。若任何合理处理都会改变决定，结果应是 `inconclusive`，而不是挑一个有利填充值。
+当少量 cell 缺失但协议允许继续做诊断时，先给 best/worst-case bounds（最好/最坏边界）：把所有缺失 candidate 依次视为成功或失败，把 基线 同理处理，观察结论是否仍越过门槛。若任何合理处理都会改变决定，结果应是 `inconclusive`，而不是挑一个有利填充值。
 
 Sensitivity analysis（敏感性分析）还可以比较：基础设施首次尝试 vs 最终有效尝试、timeout 计失败 vs 单独列出、macro vs target weight、有无异常 task。主分析保持冻结，其他口径说明结论对假设的依赖。敏感性结果不能替换不理想的主结果。
 
@@ -314,9 +312,9 @@ Sensitivity analysis（敏感性分析）还可以比较：基础设施首次尝
 
 例如 5 个 holdout task 中，基线通过 3 个、候选通过 4 个，且只有 1 个 task 从失败变为通过。点估计是 `+0.20`，但精确枚举的 paired bootstrap 95% 区间是 `[0, 0.60]`：它没有排除“真实改善为零”的合理不确定性。`promotion_eligible` 仍只执行预注册的点估计阈值；区间是供 `adopt/reject/inconclusive` 复核使用的诊断证据，不能在看到结果后临时改成新门槛。
 
-这仍不是自动采用决定。Percentile bootstrap 在 task 很少、任务相关、抽样不代表目标流量或两侧缺少完整 pair 时都可能失真；当前工具也没有关键 workload 非劣界限、多重比较修正、费用差异区间或 holdout 污染状态。点估计刚过线但差异区间很宽时，负责人仍应给出 `inconclusive`，不能把 `promotion_eligible` 当成发布命令。
+这仍不是自动采用决定。Percentile bootstrap 在 task 很少、任务相关、抽样不代表目标流量或两侧缺少完整 pair 时都可能失真；当前工具也没有关键 工作负载 非劣界限、多重比较修正、费用差异区间或 holdout 污染状态。点估计刚过线但差异区间很宽时，负责人仍应给出 `inconclusive`，不能把 `promotion_eligible` 当成发布命令。
 
-当前 12 行样例因为缺 108 个单元、每个 development task 也只有 1/3 次重复、没有 holdout run，且 E1 低于目标 E3，正确输出是 `promotion_eligible=false`。两组 development 的 task-level 汇总都显示 6 个 `incomplete_tasks`、0 个 `evaluable_tasks`；候选在 `promotion_analysis` 中为 `blocked`，阈值观察值保持 `null`。即使 candidate 的六个单次 run 都通过，也不能把它们伪装成六个达到 2/3 规则的任务。
+历史 12 行样例因为缺 108 个单元、每个 development task 也只有 1/3 次重复、没有 holdout run，且 E1 低于目标 E3，正确输出是 `promotion_eligible=false`。两组 development 的 task-level 汇总都显示 6 个 `incomplete_tasks`、0 个 `evaluable_tasks`；候选在 `promotion_analysis` 中为 `blocked`，阈值观察值保持 `null`。即使 candidate 的六个单次 run 都通过，也不能把它们伪装成六个达到 2/3 规则的任务。
 
 ### 把区间映射为三种决定
 
@@ -331,7 +329,7 @@ Sensitivity analysis（敏感性分析）还可以比较：基础设施首次尝
 
 Evaluator 本身变化会改变结论。聚合器、Wilson/quantile 实现、Judge、失败分类、费用转换或 redaction 规则更新后，用固定 golden rows 和负例重放，生成新 evaluator version。旧 summary 能否复算、新旧差异来自何处，都应进入报告。
 
-## 用当前样例验证
+## 用历史合成样例验证
 
 前置条件是 Node.js 22+，输入是已固定的 `evals/study.example.json` 与 `evals/runs.example.jsonl`，命令不联网、不调用真实模型：
 
@@ -340,12 +338,13 @@ npm run eval:validate
 npm run eval:summary
 ```
 
-预期 validator 报告 `study_schema_version=1.1`、`pass_rate_analysis_unit=task`、`task_pass_min_runs=2`、20 tasks、2 configs、3 repeats、120 个预期单元、12 个已观察单元和 108 个缺失单元。Summary 应显示 development 的 run-level 两组 `k/n`、task-level `evaluable_tasks=0`、5/0/1 run 配对、`holdout: null`、`promotion_eligible: false`，阻断项含 `incomplete_matrix` 与 `evidence_below_target`；候选状态为 `blocked`，两个 delta 与 `paired_task_effect` 都是 `null`。运行 `npm run eval:self-test` 还会构造完整的 5-task holdout，断言 `+0.20` 点估计对应 `[0, 0.60]` 的配对 bootstrap 区间。
+预期 验证器 报告 `study_schema_version=1.1`、`pass_rate_analysis_unit=task`、`task_pass_min_runs=2`、20 tasks、2 configs、3 repeats、120 个预期单元、12 个已观察单元和 108 个缺失单元。Summary 应显示 development 的 run-level 两组 `k/n`、task-level `evaluable_tasks=0`、5/0/1 run 配对、`holdout: null`、`promotion_eligible: false`，阻断项含 `incomplete_matrix` 与 `evidence_below_target`；候选状态为 `blocked`，两个 delta 与 `paired_task_effect` 都是 `null`。运行 `npm run eval:self-test` 还会构造完整的 5-task holdout，断言 `+0.20` 点估计对应 `[0, 0.60]` 的配对 bootstrap 区间。
 
 任一数字不符时先停止，不要直接改期望输出。检查 study、run identity、repeat、split 和 fixture lineage；若为了练习修改样例，保存 diff，并只还原自己改动的文件。本命令只读取输入，无需额外清理。
 
-这份输出是 E1 的 schema/分析样例，只证明统计管道能处理固定离线行，不能证明任何模型、provider 或 harness 配置质量。
+这份输出是 E1 的 schema/分析样例，只证明统计管道能处理固定离线行，不能证明任何模型、供应方 或 harness 配置质量。
 
-## 检查题与下一步
 
-报告是否同时给出样本单位、分子/分母、区间、配对计数、缺失和失败分布？一个候选在 20 个任务中赢 12、输 8，但出现一次未授权动作，应由哪个层级否决？继续阅读[Judge](/evaluation/judges)、[回归集](/evaluation/regression)和[报告纪律](/evaluation/reporting)。
+## 实践入口
+
+[运行完整学习研究和不完整研究反例](/practice/evaluation)。实现范围、命令、预期断言和清理步骤在实验页维护。

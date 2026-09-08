@@ -1,5 +1,8 @@
 # 什么是 Agent Harness
 
+<span id="一个最小可运行观察"></span>
+<span id="检查题与下一步"></span>
+
 ## 一句话定义
 
 **Agent Harness 是让模型能够在约束下持续观察、决策、行动和验证的运行与控制系统。** 它连接用户目标、模型、上下文、工具和外部环境，并管理权限、状态、预算、反馈与恢复。
@@ -18,7 +21,9 @@ Harness 原意是“挽具”：它让能力可以被利用，也限定力量如
 - 只有流水线编排、但没有模型决策循环的普通 CI/CD；
 - 名称中恰好包含 Harness 的无关商业产品。
 
-普通概念在英文句中写作小写 `harness` / `agent`；页面标题、句首和产品名称可大写。`surface` 指同一产品的 CLI、IDE、桌面、Web 或云端等入口，不等同于 provider（模型供应方）。
+普通概念在英文句中写作小写 `harness` / `agent`；页面标题、句首和产品名称可大写。`surface` 指同一产品的 CLI、IDE、桌面、Web 或云端等入口，不等同于 供应方（模型供应方）。
+
+<span id="模型agentharness-与环境"></span>
 
 ## 模型、Agent、Harness 与环境
 
@@ -55,41 +60,59 @@ Harness 原意是“挽具”：它让能力可以被利用，也限定力量如
 
 ## Harness 的九项核心责任
 
+<span id="1-task-ingress把目标写成契约"></span>
+
 ### 1. Task ingress：把目标写成契约
 
 把自然语言意图转换为 task ID、输入、允许工具/资源、acceptance（验收条件）、预算、停止和回滚条件。没有这层，系统很难区分“有帮助的额外工作”和“越界”。
+
+<span id="2-context-construction选择模型实际看到的内容"></span>
 
 ### 2. Context construction：选择模型实际看到的内容
 
 加载 system/project/user instruction、代码、文档、memory 和工具结果，处理优先级、来源、token 预算、冲突与压缩。仓库里存在文件不等于模型看到了它。
 
+<span id="3-model-adapter隔离-provider-协议"></span>
+
 ### 3. Model Adapter：隔离 Provider 协议
 
-处理消息 role、tool call、streaming、reasoning、stop/error、usage、cancel 与重试映射。Adapter 错误可能看起来像模型失误，因此必须单独测试。
+处理消息 role、tool call、streaming、reasoning、stop/error、usage、cancel 与重试映射。Adapter（适配器） 错误可能看起来像模型失误，因此必须单独测试。
+
+<span id="4-controller拥有状态机"></span>
 
 ### 4. Controller：拥有状态机
 
-决定何时请求模型、执行工具、等待批准、重试、checkpoint、停止和产出终态。模型不能自己决定绕过预算或把失败改成完成。
+决定何时请求模型、执行工具、等待批准、重试、检查点、停止和产出终态。模型不能自己决定绕过预算或把失败改成完成。
+
+<span id="5-tool-runtime将提议变成受控调用"></span>
 
 ### 5. Tool runtime：将提议变成受控调用
 
 执行文件、shell、浏览器或业务 API，提供 schema、timeout、idempotency（幂等）、错误和结果。工具越多不等于系统越强。
 
+<span id="6-policy-与-isolation控制能力"></span>
+
 ### 6. Policy 与 isolation：控制能力
 
-Policy 决定动作是否允许以及何时询问；sandbox、容器、账户和网络边界决定技术上能触达什么。自然语言规则不能替代强制隔离。
+Policy（策略） 决定动作是否允许以及何时询问；sandbox、容器、账户和网络边界决定技术上能触达什么。自然语言规则不能替代强制隔离。
+
+<span id="7-state-与-recovery保存可继续的事实"></span>
 
 ### 7. State 与 recovery：保存可继续的事实
 
-区分对话、工作状态、checkpoint、外部副作用和长期 memory。能恢复聊天不等于能判断一次写操作是否已经发生。
+区分对话、工作状态、检查点、外部副作用和长期 memory。能恢复聊天不等于能判断一次写操作是否已经发生。
+
+<span id="8-validator判定业务完成"></span>
 
 ### 8. Validator：判定业务完成
 
-独立运行测试、schema、diff、引用或目标系统查询。模型输出 `completed` 只是一项 Action，不是完成事实。
+独立运行测试、schema、diff、引用或目标系统查询。模型输出 `completed` 只是一项 Action（动作提议），不是完成事实。
+
+<span id="9-evidence-与-interface让过程可观察"></span>
 
 ### 9. Evidence 与 interface：让过程可观察
 
-保存 trace、配置身份、退出码、错误、成本和人工介入，并通过 CLI/UI 把关键状态展示给人。不可观察的自动化很难调试，也无法形成可信证据。
+保存 轨迹、配置身份、退出码、错误、成本和人工介入，并通过 CLI/UI 把关键状态展示给人。不可观察的自动化很难调试，也无法形成可信证据。
 
 ## 三个平面
 
@@ -101,7 +124,7 @@ Policy 决定动作是否允许以及何时询问；sandbox、容器、账户和
 | Control plane（控制面） | 谁允许、调度和停止 | policy、budget、approval、sandbox、controller |
 | Evidence plane（证据面） | 如何知道发生了什么 | trace、checkpoint、result、validator、metrics |
 
-一个字段可以跨平面关联，但不应混为一谈。例如 ToolResult 属于数据面；“该工具是否可执行”属于控制面；“这次执行的资源 ID 和退出码”属于证据面。
+一个字段可以跨平面关联，但不应混为一谈。例如 ToolResult（工具结果） 属于数据面；“该工具是否可执行”属于控制面；“这次执行的资源 ID 和退出码”属于证据面。
 
 ## 为什么同一个模型表现不同
 
@@ -113,10 +136,12 @@ Policy 决定动作是否允许以及何时询问；sandbox、容器、账户和
 - 上下文裁剪、检索、压缩与 memory 策略不同；
 - sandbox、批准或网络限制让某条路径不可用；
 - 错误是否原样反馈、是否自动重试、最大回合数不同；
-- validator 覆盖不同，一个过早接受“完成”；
-- 实际 provider、model snapshot、reasoning 或采样并不相同。
+- 验证器 覆盖不同，一个过早接受“完成”；
+- 实际 供应方、model snapshot、reasoning 或采样并不相同。
 
 因此比较模型时必须记录 Harness；比较 Harness 时也必须固定模型、任务、工具、预算和证据口径。只写“同一个 prompt”不足以控制变量。
+
+<span id="harness-怎样改变能力可靠性与风险"></span>
 
 ## Harness 怎样改变能力、可靠性与风险
 
@@ -126,7 +151,7 @@ Policy 决定动作是否允许以及何时询问；sandbox、容器、账户和
 
 ### 可靠性
 
-Schema、类型校验、失败反馈、重试、checkpoint 和 validator 将一次生成变成可恢复流程。但错误的自动重试、污染 memory 或宽松 validator 也会稳定地放大错误。
+Schema、类型校验、失败反馈、重试、检查点 和 验证器 将一次生成变成可恢复流程。但错误的自动重试、污染 memory 或宽松 验证器 也会稳定地放大错误。
 
 ### 风险
 
@@ -155,45 +180,21 @@ Schema、类型校验、失败反馈、重试、checkpoint 和 validator 将一�
 | 不询问就执行 | 模型危险 | approval policy 与执行身份配置 |
 | 询问很多次 | 系统一定安全 | sandbox/network 是否仍然过宽 |
 
-归因顺序通常是：输入与身份 → Adapter/协议 → Harness 控制 → 工具/环境 → 模型任务判断。不要一看到最终文本就把全部责任交给模型。
-
-## 一个最小可运行观察
-
-当前仓库提供一个完全离线的 Python Harness。前置条件是 Python 3.11+、`uv 0.11.16`、锁定依赖已缓存：
-
-```powershell
-uv run --frozen --offline python scripts/lab-smoke.py
-```
-
-预期 JSON 中：
-
-```text
-status=completed
-stop_reason=completed
-metrics.tool_calls=1
-trace[0].kind=run_started
-trace[0].data.offline=true
-```
-
-沿 trace 找到 `model_action → tool_result → checkpoint → model_action → acceptance_result → run_stopped`，并确认 ToolCall 由 policy/registry 处理、完成提议由 validator 处理，而不是由模型直接执行或自证。
-
-这只是 E1 控制流证据：FakeAdapter 提供预定 Action，没有调用真实模型、Provider 或外部系统。命令失败时保存退出码和 trace，先检查版本/锁文件，不删除测试或开启 live adapter。
-
-命令只产生终端输出和可再生 cache。发送 `Ctrl+C` 可停止；误改时用 `git diff -- lab scripts/lab-smoke.py` 确认范围，只恢复自己的候选。
+归因顺序通常是：输入与身份 → 适配器/协议 → Harness 控制 → 工具/环境 → 模型任务判断。不要一看到最终文本就把全部责任交给模型。
 
 ## 审核一个现有 Agent 产品
 
 不看营销描述，逐项追问：
 
-1. Task 的输入、范围、预算和 acceptance 存在哪里？
+1. Task（任务） 的输入、范围、预算和 acceptance 存在哪里？
 2. 实际加载了哪些 project instruction，优先级是什么？
-3. Model/provider/Adapter 身份能否从运行记录确认？
+3. Model/供应方/适配器 身份能否从运行记录确认？
 4. 模型能看到哪些工具，谁执行，参数如何校验？
 5. Approval、sandbox、network 和目标系统权限分别在哪里强制？
 6. Cancel、timeout、retry 和 late result 如何决定唯一终态？
-7. Checkpoint 保存了对话还是也保存工具/外部副作用？
+7. Checkpoint（检查点） 保存了对话还是也保存工具/外部副作用？
 8. 完成由模型声明、测试、人工还是业务系统确认？
-9. Trace 是否足以区分模型、Adapter、工具和基础设施失败？
+9. Trace（轨迹） 是否足以区分模型、适配器、工具和基础设施失败？
 10. 出现安全或质量退化时，怎样停用候选并恢复旧配置？
 
 答不出的部分不是自动等于缺陷，但属于 `unknown/untested`，是下一步最值得验证的 Harness 层。
@@ -204,12 +205,7 @@ trace[0].data.offline=true
 
 不要因为 Harness 能运行一次就声称模型质量高，也不要因为官方文档声明某控制就声称本地配置已强制执行。
 
-## 检查题与下一步
 
-1. Model、Agent、Harness 和执行环境分别拥有哪项责任？
-2. 为什么模型提出 ToolCall 后不能直接执行？
-3. Approval 与 sandbox 为什么必须分开记录？
-4. 能恢复对话为什么不等于能安全恢复工具写操作？
-5. `completed` Action 与 Task 真正完成之间还差什么？
+## 实践入口
 
-下一步沿[系统架构](/foundations/architecture)定位 controller、Adapter、tool、policy 和 evidence plane，再读[Agent 循环](/foundations/agent-loop)理解一次迭代的安全顺序。
+[从完整离线案例观察这些责任](/practice/end-to-end)。实现范围、命令、预期断言和清理步骤在实验页维护。

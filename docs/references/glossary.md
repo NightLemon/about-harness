@@ -33,9 +33,10 @@
 | Reasoning effort | Harness/API 给模型分配的推理深度/预算档位；不同模型不可直接等量比较 |
 | Task contract | 目标、上下文入口、边界与完成条件组成的可执行任务描述 |
 | Fixture | 可重复测试/评测的固定起始仓库、数据和环境 |
-| Fixture lineage | 用不可变 commit、path 和 hash 把 Task、fixture 与 Run 连接起来的来源链 |
+| Fixture lineage | 用不可变提交或原始材料快照、相对路径及 hash 把任务、固定输入与运行连接起来的来源链 |
 | Replay | 用保存的固定输入或事件重放执行路径；能提高可重复性，但不等同于 live 环境 |
 | Live adapter | 默认关闭、显式获准后才连接真实 Provider 或外部系统的适配路径 |
+| Usage observation | `usage-v1` 用量记录，明确区分已知与未知 token/费用；缺失不能补零 |
 | Run | 某一任务在某一配置下的一次独立执行；同一任务的多个 run 不是多个不同任务 |
 | Config identity | Model、Provider、Adapter、Harness、参数、指令、工具与策略共同构成的可复核配置身份 |
 | Rubric | 把主观质量拆为具体维度和分值/判定标准的评分规程 |
@@ -59,7 +60,7 @@
 | E0 | 没有仓库实验记录；它只描述实验强度，不表示来源是否已核验 |
 | E1 | 固定 fixture、fake、replay 或本地路径提供的确定性离线证据，只证明流程与约束 |
 | E2 | 锁定模型 ID、provider、adapter、harness、配置和日期的真实环境有限烟测 |
-| E3 | 达到任务量、重复、holdout、预注册、安全与成本门槛的正式比较证据 |
+| E3 | 按已声明的抽样理由、任务聚合、留出集、安全及采用条件完成的正式比较证据；样本规模不采用统一下限 |
 | Evidence level | 对实验强度的 E0–E3 标记；它与来源状态独立，级别高低也不替代适用范围说明 |
 | Source status | 对引用事实来源状态的标记，如 verified、pending、conflict、retired；不等于实验等级 |
 | Evidence boundary | 一条证据能够支持和明确不能支持的结论范围，包括 workload、版本、surface、配置与时间 |
@@ -69,4 +70,4 @@
 
 产品可能对同一词使用更窄或不同定义。引用产品行为时以对应官方文档为准。
 
-需要学习顺序时回到[知识地图](/guide/roadmap)；遇到同名产品能力时用[兼容性矩阵](/references/compatibility)核对责任。
+需要学习顺序时回到[学习路径](/guide/start)；遇到同名产品能力时用[兼容性矩阵](/references/compatibility)核对责任。

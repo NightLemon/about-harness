@@ -11,6 +11,16 @@ question → scope → subquestions → source candidates
 
 搜索结果数量、语言自信或“多个网页都这么说”都不能替代这条证据链。
 
+<span id="当前离线工作例"></span>
+<span id="前置条件与固定输入"></span>
+<span id="命令"></span>
+<span id="预期输出与断言"></span>
+<span id="失败、停止、清理与回退"></span>
+<span id="失败停止清理与回退"></span>
+<span id="证据边界"></span>
+<span id="完成检查表"></span>
+<span id="检查题"></span>
+
 ## 先定义研究问题
 
 一个可执行 research brief（研究简报）至少包含：
@@ -57,7 +67,7 @@ draft_sections / citation_checks / final_decision
 budget_used / trace / checked_at
 ```
 
-每次恢复从 checkpoint 读取已打开来源、未决主张和剩余预算，避免重复搜索与重复计费。Compaction 不能丢掉反证、排除理由或“尚未打开”的状态。
+每次恢复从 检查点 读取已打开来源、未决主张和剩余预算，避免重复搜索与重复计费。Compaction 不能丢掉反证、排除理由或“尚未打开”的状态。
 
 ## 发现候选不等于获得证据
 
@@ -95,7 +105,7 @@ Source policy（来源政策）决定什么证据可进入哪类主张：
 | 高质量二手分析 | 背景、线索和综合 | 回到一手材料核对关键数字 |
 | 论坛/社媒/用户报告 | 发现故障假设 | 身份、选择偏差和不可复现 |
 
-“官方”也不是万能最高分。官方文档适合证明它声明了什么，不足以证明产品在你的账号、区域、版本和 workload 中可用或更好。为每类 claim 预先定义 source eligibility，而不是结果出来后挑对自己有利的层级。
+“官方”也不是万能最高分。官方文档适合证明它声明了什么，不足以证明产品在你的账号、区域、版本和 工作负载 中可用或更好。为每类 claim 预先定义 source eligibility，而不是结果出来后挑对自己有利的层级。
 
 ## 固定来源身份与许可
 
@@ -115,6 +125,8 @@ redirect chain / parser version
 Rolling 网页保存实际检查日期和必要摘录；代码仓库尽量固定 tag/commit；PDF/数据集记录文件 hash 与页/表 locator。引用许可不等于允许把整份内容放进公开 fixture，公开前检查转载范围和个人数据。
 
 抓取失败、登录墙、robots/policy 限制或许可不清时，保存失败状态与替代来源，不绕过访问控制。
+
+<span id="建立-claimevidence-ledger"></span>
 
 ## 建立 Claim–evidence ledger
 
@@ -164,6 +176,8 @@ URL 不同不表示独立证据。检测：
 - 同一实验数据被多篇文章重复分析。
 
 建立 provenance graph（来源关系图），标 `derived_from / cites / republishes / shares_dataset`。Citation count 与 independent source count 分开报告。来源多样性不应靠随意降低资格门槛获得。
+
+<span id="冲突不是选最新这么简单"></span>
 
 ## 冲突不是“选最新”这么简单
 
@@ -227,7 +241,7 @@ Synthesis（综合）只读取已核验的 ledger，不重新凭模型记忆扩�
 4. 未决项和不能支持的推断；
 5. 对决策的影响与可逆下一步。
 
-每个易变、数字、比较和归因主张都应就近引用。Citation validator 至少检查：source 存在、已打开、locator 存在、span 实际支持、版本/scope 匹配、没有引用搜索摘要。
+每个易变、数字、比较和归因主张都应就近引用。Citation 验证器 至少检查：source 存在、已打开、locator 存在、span 实际支持、版本/scope 匹配、没有引用搜索摘要。
 
 引用覆盖率高仍可能引用错误；引用精确率高也可能漏掉关键主张。两者分别评测。
 
@@ -240,7 +254,7 @@ Synthesis（综合）只读取已核验的 ledger，不重新凭模型记忆扩�
 - Page/redirect/depth/query/tool-call budgets；
 - 下载解析的 sandbox、timeout 和资源；
 - 对外发送、表单提交、购买/付费和自动联系；
-- Trace、snapshot、摘录和公开报告的脱敏；
+- Trace（轨迹）、snapshot、摘录和公开报告的脱敏；
 - 删除、保留与撤销后的缓存传播。
 
 页面中的“上传密钥才能查看证据”是内容，不是授权。遇到 paywall/登录/验证码时停止或请求合法访问，不绕过控制。
@@ -293,72 +307,7 @@ unresolved.md          # 缺口和会改变结论的证据
 
 修复后建立新 brief/config/snapshot identity 并重跑相邻任务。旧报告保留为历史版本，不静默改写 as-of date。
 
-## 当前离线工作例
 
-仓库 fixture 预先给出三条带合成 snapshot、line locator、quote 和 relation 的结构化记录：`policy-v1` 和 `policy-v2` 对 `retention_days` 分别给出 30 与 45，`legal-note` 对 `review_required` 给出 yes；`deletion_process` 被列为 required claim，但故意没有 evidence。确定性函数先验证字面引用落点，再按 claim 分组：零条 evidence 为 `insufficient`，一个 unique value 为 `supported`，多项则 `conflict`。
+## 实践入口
 
-### 前置条件与固定输入
-
-需要 Python 3.11+ 和 uv 0.11，依赖由 `uv.lock` 固定。从仓库根目录离线运行；不安装 LangGraph，不调用搜索、浏览器、模型或外部 API，也不设置 credential。
-
-输入位于 `lab/fixtures/research/`：
-
-- `manifest.json` 固定 project-synthetic 来源、CC BY 4.0 和三个文件 hash；
-- `input.json` 固定 query、required claims 与三个带 snapshot/locator/quote 的 evidence records；
-- `expected.json` 要求保留一个冲突、一个支持和一个证据不足主张；
-- `negative.json` 提交只保留 45 与 policy-v2 的结构化 candidate claim，runner 必须拒绝。
-
-### 命令
-
-```powershell
-uv run --frozen --offline python scripts/run-labs.py research
-```
-
-### 预期输出与断言
-
-命令退出 0，输出 `evidence=E1`、`offline=true`、`passed=true` 和 `negative_rejected=true`。`retention_days` 为 `conflict`，values 同时保留 `30/45`，结构化 citations 回到 `policy-v1/policy-v2` 的 `line:2` quote；`review_required` 为 `supported` 并引用 `legal-note`；`deletion_process` 为 `insufficient`，因此 `unsupported_claims=1`。
-
-人工复核：没有网络/credential/model action；`integration=LangGraph` 只是职责映射，`mode=offline-contract-seam` 才是实际执行方式。
-
-### 失败、停止、清理与回退
-
-若丢掉任一冲突值/引用、把 45 写成确定答案、manifest hash 不一致、负例未拒绝或命令需要网络，停止研究能力声明。先修 fixture/状态转换/validator 并保留失败输出；不要安装上游框架、修改 expected 迎合结果或用语言流畅度覆盖冲突。
-
-命令只读固定 JSON 并打印结果，不保存网页或索引。误改时先运行：
-
-```powershell
-git diff -- lab/fixtures/research lab/src/about_harness/integrations/langgraph.py lab/src/about_harness/labs.py docs/domains/research.md
-```
-
-确认范围后只恢复自己的变化。失败时回到 manifest 锁定的 fixture 和最近通过的确定性实现，不覆盖工作树其他修改。
-
-### 证据边界
-
-实验提供 E1：当前仓库会校验固定 fixture bundle，并能在已结构化输入中验证 opened/snapshot/locator/quote/value 的字面链，保留冲突、显式输出 coverage 缺口，并拒绝隐藏冲突的结构化 candidate claim。
-
-它不生成 query、不搜索或真实打开来源、不验证 publisher/版本/日期/许可、不判断来源独立性，也没有语义蕴含、自然语言报告解析、模型综合或真实 LangGraph。`unsupported_claims=1` 只证明预先声明的 required list 中有一项缺证据，不证明系统能检测报告里的任意无依据陈述。
-
-## 完成检查表
-
-- Brief 是否固定 decision、scope、as-of、来源政策、预算和停止规则？
-- Claim 是否按类型和可验证粒度拆分，而非一段综合结论？
-- 搜索候选、已打开来源、snapshot 与 evidence span 是否分开？
-- 每个来源是否有版本、日期、hash、locator、许可与访问身份？
-- Citation 是否直接支持主张，且 scope/version/time 匹配？
-- 转载与共享数据是否从独立来源数中去重？
-- 支持、反驳、限定、冲突和证据不足是否都保留？
-- “当前/最新”是否有 checked/effective/target date，而非模型记忆？
-- 综合是否只读取已核验 ledger，并逐项列 unresolved？
-- 搜索、抓取、下载和公开 artifact 是否有权限、预算和脱敏？
-- 指标是否覆盖 source、claim、citation、conflict、safety 与成本？
-- 当前 E1 fixture 是否没有被误写为真实搜索/研究/框架质量？
-
-下一步：运行[研究离线案例](/labs/research)，再学习[文档 Agent](/domains/document)的 snapshot/版本机制，并用[评测报告](/evaluation/reporting)表达证据边界。
-
-## 检查题
-
-1. 为什么搜索摘要不能直接作为最终主张的引用？
-2. 十个不同 URL 为什么可能仍然只有一个独立来源？
-3. 新日期的来源为什么不能自动消除旧来源冲突？
-4. `unsupported_claims=1` 在当前 fixture 中为什么不能证明系统会发现所有无依据陈述？
-5. 什么时候继续搜索的价值低于停止并报告 `insufficient/conflict`？
+[运行对应实验](/labs/research)。实现范围、命令、预期断言和清理步骤在实验页维护。
