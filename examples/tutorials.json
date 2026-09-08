@@ -1,0 +1,404 @@
+{
+  "schema_version": "1.0",
+  "tutorials": [
+    {
+      "page": "docs/practice/end-to-end.md",
+      "kind": "offline",
+      "environment": "docs/guide/prerequisites.md",
+      "command": "study:demo",
+      "inputs": [
+        "examples/study/config.json",
+        "lab/fixtures/study-coding/tasks.json"
+      ],
+      "assertions": [
+        "完整12单元",
+        "独立工作区验收"
+      ],
+      "failure": "对应测试包含应拒绝的坏输入",
+      "cleanup": "运行器清理自己的临时资源，结果保留",
+      "rollback": "精确恢复本轮配置或实现，使用新目录重跑",
+      "limits": "E1 离线结果不支持真实模型质量；产品配置按实际版本复核"
+    },
+    {
+      "page": "docs/practice/evaluation.md",
+      "kind": "offline",
+      "environment": "docs/guide/prerequisites.md",
+      "command": "study:check",
+      "inputs": [
+        "scripts/check-study.mjs"
+      ],
+      "assertions": [
+        "产物关联",
+        "错误输入拒绝"
+      ],
+      "failure": "对应测试包含应拒绝的坏输入",
+      "cleanup": "运行器清理自己的临时资源，结果保留",
+      "rollback": "精确恢复本轮配置或实现，使用新目录重跑",
+      "limits": "E1 离线结果不支持真实模型质量；产品配置按实际版本复核"
+    },
+    {
+      "page": "docs/labs/coding.md",
+      "kind": "offline",
+      "environment": "docs/guide/prerequisites.md",
+      "command": "study:demo",
+      "inputs": [
+        "lab/fixtures/study-coding/tasks.json"
+      ],
+      "assertions": [
+        "实际补丁",
+        "实际测试"
+      ],
+      "failure": "对应测试包含应拒绝的坏输入",
+      "cleanup": "运行器清理自己的临时资源，结果保留",
+      "rollback": "精确恢复本轮配置或实现，使用新目录重跑",
+      "limits": "E1 离线结果不支持真实模型质量；产品配置按实际版本复核"
+    },
+    {
+      "page": "docs/labs/browser.md",
+      "kind": "offline",
+      "environment": "docs/guide/prerequisites.md",
+      "command": "labs:source",
+      "inputs": [
+        "lab/fixtures/sources-v2/catalog.html"
+      ],
+      "assertions": [
+        "旧观察拒绝",
+        "本地浏览器动作"
+      ],
+      "failure": "对应测试包含应拒绝的坏输入",
+      "cleanup": "运行器清理自己的临时资源，结果保留",
+      "rollback": "精确恢复本轮配置或实现，使用新目录重跑",
+      "limits": "E1 离线结果不支持真实模型质量；产品配置按实际版本复核"
+    },
+    {
+      "page": "docs/labs/research.md",
+      "kind": "offline",
+      "environment": "docs/guide/prerequisites.md",
+      "command": "labs:source",
+      "inputs": [
+        "lab/fixtures/sources-v2/policy-a.md"
+      ],
+      "assertions": [
+        "引用落点",
+        "冲突保留"
+      ],
+      "failure": "对应测试包含应拒绝的坏输入",
+      "cleanup": "运行器清理自己的临时资源，结果保留",
+      "rollback": "精确恢复本轮配置或实现，使用新目录重跑",
+      "limits": "E1 离线结果不支持真实模型质量；产品配置按实际版本复核"
+    },
+    {
+      "page": "docs/labs/data.md",
+      "kind": "offline",
+      "environment": "docs/guide/prerequisites.md",
+      "command": "labs:source",
+      "inputs": [
+        "lab/fixtures/sources-v2/scores.csv"
+      ],
+      "assertions": [
+        "行数",
+        "合计与均值"
+      ],
+      "failure": "对应测试包含应拒绝的坏输入",
+      "cleanup": "运行器清理自己的临时资源，结果保留",
+      "rollback": "精确恢复本轮配置或实现，使用新目录重跑",
+      "limits": "E1 离线结果不支持真实模型质量；产品配置按实际版本复核"
+    },
+    {
+      "page": "docs/labs/document.md",
+      "kind": "offline",
+      "environment": "docs/guide/prerequisites.md",
+      "command": "labs:source",
+      "inputs": [
+        "lab/fixtures/sources-v2/handbook-v2.html"
+      ],
+      "assertions": [
+        "版本",
+        "块引用"
+      ],
+      "failure": "对应测试包含应拒绝的坏输入",
+      "cleanup": "运行器清理自己的临时资源，结果保留",
+      "rollback": "精确恢复本轮配置或实现，使用新目录重跑",
+      "limits": "E1 离线结果不支持真实模型质量；产品配置按实际版本复核"
+    },
+    {
+      "page": "docs/labs/migration.md",
+      "kind": "offline",
+      "environment": "docs/guide/prerequisites.md",
+      "command": "labs:all",
+      "inputs": [
+        "lab/fixtures/migration/input.json"
+      ],
+      "assertions": [
+        "职责映射",
+        "边界负例"
+      ],
+      "failure": "对应测试包含应拒绝的坏输入",
+      "cleanup": "运行器清理自己的临时资源，结果保留",
+      "rollback": "精确恢复本轮配置或实现，使用新目录重跑",
+      "limits": "E1 离线结果不支持真实模型质量；产品配置按实际版本复核"
+    },
+    {
+      "page": "docs/implementation/minimal-harness-python.md",
+      "kind": "offline",
+      "environment": "docs/guide/prerequisites.md",
+      "command": "lab:smoke",
+      "inputs": [
+        "scripts/lab-smoke.py"
+      ],
+      "assertions": [
+        "steps=1",
+        "Result1.1"
+      ],
+      "failure": "对应测试包含应拒绝的坏输入",
+      "cleanup": "运行器清理自己的临时资源，结果保留",
+      "rollback": "精确恢复本轮配置或实现，使用新目录重跑",
+      "limits": "E1 离线结果不支持真实模型质量；产品配置按实际版本复核"
+    },
+    {
+      "page": "docs/models/openai.md",
+      "kind": "offline",
+      "environment": "docs/guide/prerequisites.md",
+      "command": "model:probe",
+      "inputs": [
+        "lab/fixtures/protocols/responses-v1.json"
+      ],
+      "assertions": [
+        "工具回传",
+        "未知用量"
+      ],
+      "failure": "对应测试包含应拒绝的坏输入",
+      "cleanup": "运行器清理自己的临时资源，结果保留",
+      "rollback": "精确恢复本轮配置或实现，使用新目录重跑",
+      "limits": "E1 离线结果不支持真实模型质量；产品配置按实际版本复核"
+    },
+    {
+      "page": "docs/practice/reliability-recovery.md",
+      "kind": "offline",
+      "environment": "docs/guide/prerequisites.md",
+      "command": "reliability:workshop",
+      "inputs": [
+        "scripts/reliability-workshop.py"
+      ],
+      "assertions": [
+        "回执对账",
+        "不重复副作用"
+      ],
+      "failure": "对应测试包含应拒绝的坏输入",
+      "cleanup": "运行器清理自己的临时资源，结果保留",
+      "rollback": "精确恢复本轮配置或实现，使用新目录重跑",
+      "limits": "E1 离线结果不支持真实模型质量；产品配置按实际版本复核"
+    },
+    {
+      "page": "docs/practice/debugging.md",
+      "kind": "offline",
+      "environment": "docs/guide/prerequisites.md",
+      "command": "debug:workshop",
+      "inputs": [
+        "scripts/debugging-workshop.py"
+      ],
+      "assertions": [
+        "首处分歧",
+        "错误分类"
+      ],
+      "failure": "对应测试包含应拒绝的坏输入",
+      "cleanup": "运行器清理自己的临时资源，结果保留",
+      "rollback": "精确恢复本轮配置或实现，使用新目录重跑",
+      "limits": "E1 离线结果不支持真实模型质量；产品配置按实际版本复核"
+    },
+    {
+      "page": "docs/frameworks/langgraph.md",
+      "kind": "offline",
+      "environment": "docs/guide/prerequisites.md",
+      "command": "frameworks:check",
+      "inputs": [
+        "examples/frameworks/langgraph/pyproject.toml",
+        "examples/frameworks/langgraph/uv.lock",
+        "examples/frameworks/langgraph/demo.py"
+      ],
+      "assertions": [
+        "实际运行时",
+        "错误产物非零退出"
+      ],
+      "failure": "--inject-failure 拒绝错误引用",
+      "cleanup": "运行器清理自己的临时资源，结果保留",
+      "rollback": "精确恢复本轮配置或实现，使用新目录重跑",
+      "limits": "E1 离线结果不支持真实模型质量；产品配置按实际版本复核"
+    },
+    {
+      "page": "docs/frameworks/openai-agents-sdk.md",
+      "kind": "offline",
+      "environment": "docs/guide/prerequisites.md",
+      "command": "frameworks:check",
+      "inputs": [
+        "examples/frameworks/openai-agents-sdk/pyproject.toml",
+        "examples/frameworks/openai-agents-sdk/uv.lock",
+        "examples/frameworks/openai-agents-sdk/demo.py"
+      ],
+      "assertions": [
+        "实际运行时",
+        "错误产物非零退出"
+      ],
+      "failure": "--inject-failure 拒绝错误引用",
+      "cleanup": "运行器清理自己的临时资源，结果保留",
+      "rollback": "精确恢复本轮配置或实现，使用新目录重跑",
+      "limits": "E1 离线结果不支持真实模型质量；产品配置按实际版本复核"
+    },
+    {
+      "page": "docs/frameworks/google-adk.md",
+      "kind": "offline",
+      "environment": "docs/guide/prerequisites.md",
+      "command": "frameworks:check",
+      "inputs": [
+        "examples/frameworks/google-adk/pyproject.toml",
+        "examples/frameworks/google-adk/uv.lock",
+        "examples/frameworks/google-adk/demo.py"
+      ],
+      "assertions": [
+        "实际运行时",
+        "错误产物非零退出"
+      ],
+      "failure": "--inject-failure 拒绝错误引用",
+      "cleanup": "运行器清理自己的临时资源，结果保留",
+      "rollback": "精确恢复本轮配置或实现，使用新目录重跑",
+      "limits": "E1 离线结果不支持真实模型质量；产品配置按实际版本复核"
+    },
+    {
+      "page": "docs/frameworks/autogen.md",
+      "kind": "offline",
+      "environment": "docs/guide/prerequisites.md",
+      "command": "frameworks:check",
+      "inputs": [
+        "examples/frameworks/autogen/pyproject.toml",
+        "examples/frameworks/autogen/uv.lock",
+        "examples/frameworks/autogen/demo.py"
+      ],
+      "assertions": [
+        "实际运行时",
+        "错误产物非零退出"
+      ],
+      "failure": "--inject-failure 拒绝错误引用",
+      "cleanup": "运行器清理自己的临时资源，结果保留",
+      "rollback": "精确恢复本轮配置或实现，使用新目录重跑",
+      "limits": "E1 离线结果不支持真实模型质量；产品配置按实际版本复核"
+    },
+    {
+      "page": "docs/harnesses/codex.md",
+      "kind": "live-opt-in",
+      "environment": "docs/guide/prerequisites.md",
+      "command": "examples:check",
+      "inputs": [
+        "examples/harnesses/codex/README.md",
+        "scripts/product-workspace.py"
+      ],
+      "assertions": [
+        "固定包帮助",
+        "配置与权限分开"
+      ],
+      "failure": "目标版本缺少选项时停止",
+      "cleanup": "运行器清理自己的临时资源，结果保留",
+      "rollback": "精确恢复本轮配置或实现，使用新目录重跑",
+      "limits": "E1 离线结果不支持真实模型质量；产品配置按实际版本复核"
+    },
+    {
+      "page": "docs/harnesses/pi.md",
+      "kind": "live-opt-in",
+      "environment": "docs/guide/prerequisites.md",
+      "command": "examples:check",
+      "inputs": [
+        "examples/harnesses/pi/README.md",
+        "scripts/product-workspace.py"
+      ],
+      "assertions": [
+        "固定包帮助",
+        "配置与权限分开"
+      ],
+      "failure": "目标版本缺少选项时停止",
+      "cleanup": "运行器清理自己的临时资源，结果保留",
+      "rollback": "精确恢复本轮配置或实现，使用新目录重跑",
+      "limits": "E1 离线结果不支持真实模型质量；产品配置按实际版本复核"
+    },
+    {
+      "page": "docs/harnesses/claude-code.md",
+      "kind": "live-opt-in",
+      "environment": "docs/guide/prerequisites.md",
+      "command": "examples:check",
+      "inputs": [
+        "examples/harnesses/claude-code/README.md",
+        "scripts/product-workspace.py"
+      ],
+      "assertions": [
+        "固定包帮助",
+        "配置与权限分开"
+      ],
+      "failure": "目标版本缺少选项时停止",
+      "cleanup": "运行器清理自己的临时资源，结果保留",
+      "rollback": "精确恢复本轮配置或实现，使用新目录重跑",
+      "limits": "E1 离线结果不支持真实模型质量；产品配置按实际版本复核"
+    },
+    {
+      "page": "docs/practice/harness-design.md",
+      "kind": "offline",
+      "environment": "docs/guide/prerequisites.md",
+      "command": "study:check",
+      "inputs": [
+        "lab/tests/test_study_demo.py"
+      ],
+      "assertions": [
+        "正文中的业务断言及负例均可从输入或测试定位"
+      ],
+      "failure": "坏输入或故意替换的断言应被拒绝",
+      "cleanup": "只清理本次临时资源，保留结果",
+      "rollback": "恢复自己的候选配置，使用新目录重跑",
+      "limits": "E1，不支持真实模型或生产采用结论"
+    },
+    {
+      "page": "docs/practice/framework-selection.md",
+      "kind": "offline",
+      "environment": "docs/guide/prerequisites.md",
+      "command": "frameworks:check",
+      "inputs": [
+        "examples/frameworks/materials.json"
+      ],
+      "assertions": [
+        "正文中的业务断言及负例均可从输入或测试定位"
+      ],
+      "failure": "坏输入或故意替换的断言应被拒绝",
+      "cleanup": "只清理本次临时资源，保留结果",
+      "rollback": "恢复自己的候选配置，使用新目录重跑",
+      "limits": "E1，不支持真实模型或生产采用结论"
+    },
+    {
+      "page": "docs/practice/model-playbook.md",
+      "kind": "offline",
+      "environment": "docs/guide/prerequisites.md",
+      "command": "model:probe",
+      "inputs": [
+        "lab/fixtures/protocols/responses-v1.json"
+      ],
+      "assertions": [
+        "正文中的业务断言及负例均可从输入或测试定位"
+      ],
+      "failure": "坏输入或故意替换的断言应被拒绝",
+      "cleanup": "只清理本次临时资源，保留结果",
+      "rollback": "恢复自己的候选配置，使用新目录重跑",
+      "limits": "E1，不支持真实模型或生产采用结论"
+    },
+    {
+      "page": "docs/practice/security-review.md",
+      "kind": "offline",
+      "environment": "docs/guide/prerequisites.md",
+      "command": "study:check",
+      "inputs": [
+        "lab/tests/test_study_demo.py"
+      ],
+      "assertions": [
+        "正文中的业务断言及负例均可从输入或测试定位"
+      ],
+      "failure": "坏输入或故意替换的断言应被拒绝",
+      "cleanup": "只清理本次临时资源，保留结果",
+      "rollback": "恢复自己的候选配置，使用新目录重跑",
+      "limits": "E1，不支持真实模型或生产采用结论"
+    }
+  ]
+}

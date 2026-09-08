@@ -14,6 +14,15 @@ task + policy
 
 页面看起来相似、模型说“已经完成”或工具返回 click success，都不足以证明业务结果成立。
 
+<span id="当前离线工作例"></span>
+<span id="命令"></span>
+<span id="预期输出与断言"></span>
+<span id="失败、停止、清理与回退"></span>
+<span id="失败停止清理与回退"></span>
+<span id="证据边界"></span>
+<span id="完成检查表"></span>
+<span id="检查题"></span>
+
 ## 四个信任域
 
 | 信任域 | 内容 | 默认处理 |
@@ -61,7 +70,7 @@ pending downloads/dialogs/navigation
 profile/auth class（不记录 credential）
 ```
 
-Action 必须引用产生它的 observation ID。若页面在观察后导航或关键元素变化，旧 action 失效，controller 重新观察；不能在 stale DOM 上继续执行。
+Action（动作提议） 必须引用产生它的 observation ID。若页面在观察后导航或关键元素变化，旧 action 失效，控制器 重新观察；不能在 stale DOM 上继续执行。
 
 ## URL 与导航门禁
 
@@ -94,6 +103,8 @@ URL 解析使用标准 parser，不用字符串 `startsWith` 判断域名。日�
 
 风险由真实副作用决定，不由按钮文案或工具名决定。一个写着 “Preview” 的按钮可能提交；一个普通链接也可能是带状态变化的 GET。需要从应用语义、网络/业务结果和历史验证共同判断。
 
+<span id="前置条件与固定输入"></span>
+
 ## 把输入与提交分开
 
 Form filling（表单填写）建议两阶段：
@@ -103,7 +114,7 @@ Form filling（表单填写）建议两阶段：
 
 Approval（审批）绑定：session、observation/action hash、目标 origin、字段值/脱敏摘要、有效期和审批人。页面变化、金额变化、接收方变化或重新登录后，旧批准失效。
 
-按 Enter、点击按钮、选择下拉项或失焦都可能触发提交，controller 需要知道哪些事件有副作用。不要只把 `click_submit` 列为危险工具，其余任意 click 全放开。
+按 Enter、点击按钮、选择下拉项或失焦都可能触发提交，控制器 需要知道哪些事件有副作用。不要只把 `click_submit` 列为危险工具，其余任意 click 全放开。
 
 ## Selector 与页面身份
 
@@ -132,6 +143,8 @@ Selector（定位器）优先使用稳定、面向用户/语义的信号：role/
 - Transient：加载、动画、延迟、弹窗。
 
 结构漂移可以更新 locator；语义漂移需要重新审计任务和副作用；Auth 漂移必须停止，不能自动切账号或扩大权限。
+
+<span id="observeact-状态机"></span>
 
 ## Observe–act 状态机
 
@@ -175,10 +188,12 @@ Timeout 后如果动作可能已发送，进入 `unknown_side_effect`，先按 t
 - 导航、上传、下载和发送使用独立 policy；
 - 页面请求访问新域、Secret 或扩大范围时拒绝；
 - 将 tool arguments 与页面文本视为不可信，执行前做 schema/policy；
-- 输出和 trace 扫描敏感字段；
-- 注入样本进入回归，断言未产生 handler/网络副作用。
+- 输出和 轨迹 扫描敏感字段；
+- 注入样本进入回归，断言未产生 工具处理函数/网络副作用。
 
-“模型没有遵从注入文字”只是一个行为信号；真正的安全不变量是危险能力不可达或在 handler 前被拒绝。
+“模型没有遵从注入文字”只是一个行为信号；真正的安全不变量是危险能力不可达或在 工具处理函数 前被拒绝。
+
+<span id="profile登录态与租户隔离"></span>
 
 ## Profile、登录态与租户隔离
 
@@ -186,7 +201,7 @@ Browser profile 可能包含 cookie、local storage、password manager、下载�
 
 - 每个任务/租户使用隔离临时 profile；
 - 不复用个人日常浏览器 profile；
-- Credential 由受控 broker 注入，不进入 prompt/trace；
+- Credential 由受控 broker 注入，不进入 prompt/轨迹；
 - 登录前后验证账号、tenant、region 和权限；
 - Session 到期或账号切换时停止并重新授权；
 - 下载、截图、storage、cache 和 crash dump 有清理/保留策略；
@@ -194,9 +209,11 @@ Browser profile 可能包含 cookie、local storage、password manager、下载�
 
 “已登录”不等于被授权操作当前 tenant。页面右上角名字不是唯一身份依据；高影响操作还要读取稳定账号/组织标识并由人确认。
 
+<span id="多-tabiframepopup-与-dialog"></span>
+
 ## 多 tab、iframe、popup 与 dialog
 
-每个 browser target 有稳定 ID。Action 明确引用 tab/window/frame，不用“当前页面”这种漂移指针。新 popup 默认暂停并过导航 policy；跨 origin iframe 需要独立授权与数据政策。
+每个 browser target 有稳定 ID。动作提议 明确引用 tab/window/frame，不用“当前页面”这种漂移指针。新 popup 默认暂停并过导航 policy；跨 origin iframe 需要独立授权与数据政策。
 
 原生 alert/confirm、beforeunload 和权限 prompt 可能阻塞自动化。Controller 记录 dialog type/text 安全摘要和处理决定；不能统一 accept。意外下载、打印或外部应用协议应拒绝。
 
@@ -208,6 +225,8 @@ Upload（上传）必须绑定精确本地 artifact、目标 origin、字段和�
 
 清理下载不能使用未验证路径。保留需审计 artifact，其他文件在明确任务目录内删除，并记录结果。
 
+<span id="截图dom-与可访问树各证明什么"></span>
+
 ## 截图、DOM 与可访问树各证明什么
 
 | Artifact | 擅长 | 不能单独证明 |
@@ -218,9 +237,9 @@ Upload（上传）必须绑定精确本地 artifact、目标 origin、字段和�
 | Network/receipt | 请求/响应或业务记录 | 页面向用户展示正确 |
 | Browser trace | 时间线、action/target、错误 | 业务结论一定正确 |
 
-高风险任务通常组合多种证据。例如提交成功需要 action trace + 业务 receipt；UI 回归需要 screenshot + DOM/accessible state，而不是只看其中一个。
+高风险任务通常组合多种证据。例如提交成功需要 action 轨迹 + 业务 receipt；UI 回归需要 screenshot + DOM/accessible state，而不是只看其中一个。
 
-Artifact 保存 URL/document ID、timestamp、viewport、locale、browser version 和 hash。公开前移除个人数据、cookie、token、地址栏参数和页面私密内容。
+Artifact（产物） 保存 URL/document ID、timestamp、viewport、locale、browser version 和 hash。公开前移除个人数据、cookie、token、地址栏参数和页面私密内容。
 
 ## 无限页面与预算
 
@@ -267,72 +286,7 @@ State fingerprint 可组合 origin/path、document hash、关键元素和分页�
 
 修复后建立新 browser/profile/page/config identity，重跑相邻回归。旧截图或 DOM snapshot 只能证明旧页面状态，不能覆盖成新证据。
 
-## 当前离线工作例
 
-仓库 v1.1 fixture 已把页面解析成 `task/observation/request` JSON。确定性函数固定 `http://lab.local/catalog`、字段 allowlist 与 record budget；request 必须引用当前 observation/document，每条 record 回链 source element。页面 capability request 由 fixture 预先标注，函数统一拒绝且没有动作 handler。
+## 实践入口
 
-### 前置条件与固定输入
-
-需要 Python 3.11+ 和 uv 0.11；依赖由 `uv.lock` 固定。从仓库根目录离线运行，不安装 Browser Use，不启动浏览器，不使用网络、登录态、credential 或真实页面。
-
-输入位于 `lab/fixtures/browser/`：
-
-- `manifest.json` 固定 project-synthetic 来源、CC BY 4.0 与三个文件 hash；
-- `input.json` 固定只读 task、observation/document、两条商品记录和一个页面 capability request；
-- `expected.json` 要求 identity/source 回链、两条记录、一次 policy rejection、零 action/side effect；
-- `negative.json` 包含外域、stale observation 与 field expansion，runner 必须全部拒绝。
-
-### 命令
-
-```powershell
-uv run --frozen --offline python scripts/run-labs.py browser
-```
-
-### 预期输出与断言
-
-命令退出 0，输出 `evidence=E1`、`offline=true`、`passed=true`、`negative_rejected=true`。Records 精确为 `A-1/Alpha/row-a` 与 `B-2/Beta/row-b`，都引用 `obs-catalog-01/doc-catalog-01`；`policy_rejections=1`、`executed_actions=0`、`side_effects=0`。
-
-人工复核没有 browser process、network、credential、download 或 profile；`integration=Browser Use` 只是职责映射，`mode=offline-contract-seam` 才是实际执行方式。
-
-### 失败、停止、清理与回退
-
-若外域/歧义 URL 被接受、stale identity 未拒绝、字段扩权、记录来源缺失、重复 SKU、页面 request 未计为拒绝、side effects 非零、manifest hash 不一致或命令需要网络，停止浏览器能力声明。先修 contract/fixture/validator 并保留失败输出；不要安装上游框架、扩大域名或修改 expected 迎合错误。
-
-命令只读固定 JSON，不创建 profile、截图或下载。误改时先运行：
-
-```powershell
-git diff -- lab/fixtures/browser lab/src/about_harness/integrations/browser_use.py lab/src/about_harness/labs.py docs/domains/browser.md
-```
-
-确认范围后只恢复自己的变化。失败时回到 manifest 锁定 fixture 与最近通过的离线实现，不覆盖工作树其他修改。
-
-### 证据边界
-
-实验提供 E1：当前仓库校验固定 fixture，验证 exact local URL、observation/document grounding、字段 allowlist、record budget 与唯一 identity；它投影预结构化 `sku/name` 并返回 element source，拒绝一个已标注页面 capability request 与三组 fixture 负例。
-
-它没有加载 HTML/DOM、启动浏览器、执行 selector/click/navigation、运行模型、自动识别真实 prompt injection、防止真实数据外传或接入 Browser Use。`injection_refused=true` 来自 fixture annotation 与确定性拒绝，不证明模型行为或检测器有效；`side_effects=0` 也来自没有动作能力的函数，不是对真实浏览器副作用的监控。
-
-## 完成检查表
-
-- Task 是否固定 start state、origin/path、profile/tenant、动作和验收？
-- 指令、页面内容、browser state 与外部副作用是否分层？
-- 每个 action 是否引用未过期 observation/document/target ID？
-- Redirect、新 tab、iframe、popup、自定义协议和下载是否过 policy？
-- Prepare 与 commit 是否分开，approval 是否绑定精确 action？
-- Selector 零/多匹配、遮挡、frame 和页面漂移是否有明确处理？
-- Timeout 后副作用未知是否先对账，而非重复 click？
-- 页面注入是否无法访问 Secret、扩大域名或触发发送能力？
-- Profile、cookie、storage、截图与下载是否隔离并有清理/保留策略？
-- Screenshot、DOM、a11y tree、trace 与 receipt 是否按证明能力组合？
-- Steps/navigation/tab/loop/download/token/费用是否共享预算？
-- 当前 E1 fixture 是否没有被误写成真实浏览器/注入防护证据？
-
-下一步：运行[浏览器离线案例](/labs/browser)，再学习[Prompt Injection](/security/prompt-injection)设计真实负例，并用[工具设计](/foundations/tools)收窄 action schema。
-
-## 检查题
-
-1. 为什么同域页面文字仍不能改变 tool allowlist？
-2. Browser driver 返回 click success 后，还需要什么才能证明任务完成？
-3. Submit timeout 为什么不能直接重复点击？
-4. Screenshot、DOM snapshot 和业务 receipt 分别能证明什么？
-5. 当前 fixture 的 `injection_refused=true` 为什么不是模型抵抗 prompt injection 的证据？
+[运行对应实验](/labs/browser)。实现范围、命令、预期断言和清理步骤在实验页维护。

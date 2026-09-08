@@ -59,7 +59,9 @@ for (const file of files) {
     text: match[2].trim(),
     slug: slugifyHeading(match[2])
   }))
-  pages.set(route, { file, rel, text, prose, headings })
+  const explicitAnchors = [...prose.matchAll(/\bid="([^"]+)"/g)].map(match => match[1])
+  const redirect = /^redirectTo:\s*(\/\S+)/m.test(text)
+  pages.set(route, { file, rel, text, prose, headings, explicitAnchors, redirect })
   words += prose.replace(/\s+/g, '').length
 
   const fences = (text.match(/^```/gm) || []).length
@@ -95,7 +97,7 @@ function validateRoute(href, source) {
   if (route !== source.route) inbound.set(route, (inbound.get(route) || 0) + 1)
   if (anchor) {
     const expected = slugifyHeading(anchor)
-    if (!page.headings.some((heading) => heading.slug === expected)) {
+    if (!page.headings.some((heading) => heading.slug === expected) && !page.explicitAnchors.includes(anchor)) {
       errors.push(`${source.rel}: missing anchor ${href}`)
     }
   }
@@ -133,7 +135,7 @@ for (const [route, count] of inbound) {
   if (route === '/') continue
   const page = pages.get(route)
   const relativeDoc = toPosix(path.relative(docsRoot, page.file))
-  if (count === 0 && isPublishedMarkdown(relativeDoc)) errors.push(`${page.rel}: orphan page (no internal or navigation link)`)
+  if (count === 0 && isPublishedMarkdown(relativeDoc) && !page.redirect) errors.push(`${page.rel}: orphan page (no internal or navigation link)`)
 }
 
 for (const required of ['package.json', 'package-lock.json', '.github/workflows/deploy.yml']) {

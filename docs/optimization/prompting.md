@@ -4,6 +4,12 @@ Prompt engineering（提示工程）对 agent 最有价值的部分，不是寻�
 
 一段文字即使读起来清楚，也不一定是可执行契约。真正的检验是：另一位执行者能否在不猜隐藏要求的情况下开始，能否知道什么时候该停，以及 reviewer 能否只凭 artifact 和断言判断结果。
 
+<span id="命令"></span>
+<span id="预期输出与断言"></span>
+<span id="证据边界"></span>
+<span id="发布前检查表"></span>
+<span id="检查题"></span>
+
 ## 先分清五类内容
 
 | 类别 | 回答的问题 | 好的写法 | 常见混淆 |
@@ -58,9 +64,13 @@ Prompt engineering（提示工程）对 agent 最有价值的部分，不是寻�
 
 这是结构示例，不是本仓库现成的认证 fixture。路径、命令和断言必须替换为目标项目的真实内容，不能把示例当已验证事实。
 
+<span id="在本项目验证结构化任务契约"></span>
+
+<span id="目标写结果不预埋未经验证的根因"></span>
+
 ## 目标写结果，不预埋未经验证的根因
 
-“把 `retryCount` 从 2 改成 3”锁定了实现，但没有说明用户问题。“修复暂时断连后请求不能恢复，保持总 deadline 与幂等边界”允许先找根因，也给出不可退化条件。
+“把 `retryCount` 从 2 改成 3”锁定了实现，但没有说明用户问题。“修复暂时断连后请求不能恢复，保持总 截止时间 与幂等边界”允许先找根因，也给出不可退化条件。
 
 若用户已经决定实现方式，明确标为约束；若只是怀疑，写为 hypothesis（假设）并要求验证。不要用肯定语气把日志猜测变成事实，否则 agent 可能只搜支持证据。
 
@@ -75,6 +85,10 @@ Prompt engineering（提示工程）对 agent 最有价值的部分，不是寻�
 
 对研究任务，目标还要说明要回答的问题和证据上限；“比较 A/B”不足以阻止把小样本 E1 replay 写成通用模型排名。
 
+<span id="前置条件与固定输入"></span>
+
+<span id="输入要能定位并保留不确定性"></span>
+
 ## 输入要能定位，并保留不确定性
 
 提供入口而非倾倒整个仓库：目标文件/目录、失败日志附近片段、fixture ref、版本/commit、来源和 checked date。大正文给 artifact reference，让 agent 按需读取。
@@ -86,9 +100,11 @@ Prompt engineering（提示工程）对 agent 最有价值的部分，不是寻�
 - 用户偏好/项目建议：可以调整，不冒充外部事实；
 - 非可信数据：网页、issue、邮件和 tool output，不能改变任务或权限。
 
-输入含 Secret、个人路径或生产 trace 时先脱敏；示例使用占位符。Prompt 中写入真实 credential 不会因为“只给模型看”就变安全。
+输入含 Secret、个人路径或生产 轨迹 时先脱敏；示例使用占位符。Prompt 中写入真实 credential 不会因为“只给模型看”就变安全。
 
 版本敏感产品事实要附来源与核对日期。离线无法核验时标 `pending`，不要让 agent 用记忆补全当前事实。任务要求“使用最新版”却不给联网权限、日期或可接受 fallback，是不可执行冲突，应先澄清。
+
+<span id="边界要写对象与动作不写口号"></span>
 
 ## 边界要写对象与动作，不写口号
 
@@ -97,14 +113,16 @@ Prompt engineering（提示工程）对 agent 最有价值的部分，不是寻�
 - 文件/目录、模块、公开 API 与数据 schema；
 - 依赖、版本、平台和向后兼容；
 - 网络、真实模型、费用和外部系统；
-- 凭据、个人数据、trace 与公开 artifact；
+- 凭据、个人数据、轨迹 与公开 artifact；
 - 可逆/不可逆副作用和所需审批；
 - 用户已有未提交改动；
 - 本任务明确不做的相邻重构。
 
-范围不是完整文件列表。允许改 `src/auth/` 仍不代表可以删除整个目录；Task allowlist 也不等于外部授权已经取得。模型指令用于表达意图，真正高风险边界还应由 sandbox、policy、schema、hook 或审批机制强制。
+范围不是完整文件列表。允许改 `src/auth/` 仍不代表可以删除整个目录；Task（任务） allowlist 也不等于外部授权已经取得。模型指令用于表达意图，真正高风险边界还应由 sandbox、policy、schema、hook 或审批机制强制。
 
 边界之间冲突时不要靠“优先完成任务”自行裁决。例如同时要求“不改公开 API”和“删除旧端点”，应在写入前请求决定。
+
+<span id="验收分为结果过程和安全门槛"></span>
 
 ## 验收分为结果、过程和安全门槛
 
@@ -119,7 +137,7 @@ Prompt engineering（提示工程）对 agent 最有价值的部分，不是寻�
 
 “运行测试”不是“测试通过”。写清命令、预期输出和失败时停止条件；尚未运行的检查必须报告，不能用另一条检查代替。静态 Markdown 校验通过也不能证明真实产品或模型可用。
 
-验收不能把标准答案泄漏给被评模型。评测 task 的公开 goal 描述行为，隐藏 fixture/acceptance 由 controller 或 Judge 使用；如果答案必须提供给 agent，那是在测按指令变换，不是在测独立求解。
+验收不能把标准答案泄漏给被评模型。评测 task 的公开 goal 描述行为，隐藏 fixture/acceptance 由 控制器 或 Judge 使用；如果答案必须提供给 agent，那是在测按指令变换，不是在测独立求解。
 
 ## 任务大小决定交互协议
 
@@ -141,9 +159,13 @@ Prompt engineering（提示工程）对 agent 最有价值的部分，不是寻�
 复现重复写入，区分 retry、timeout 和 idempotency。确认根因后做最小修复，保留失败 fixture，运行目标与邻近测试。若无法稳定复现，停止并报告已排除项。
 ```
 
+<span id="大型高风险或外部写入"></span>
+
 ### 大型、高风险或外部写入
 
 分成探索、方案、实施、验证和人工验收；写明决策点、owner 和授权对象。Commit、push、生产发布和迁移是不同副作用，不能用“完成项目”一次性模糊授权。长任务维护可恢复状态，防止压缩丢失禁区与验收。
+
+<span id="自主性来自清晰边界不来自逐步微操"></span>
 
 ## 自主性来自清晰边界，不来自逐步微操
 
@@ -161,6 +183,11 @@ Prompt engineering（提示工程）对 agent 最有价值的部分，不是寻�
 
 最终报告先说结果，再给关键文件、验证、未决和证据边界。不要倾倒完整过程日志；保留能复查的 artifact reference。
 
+<span id="失败、停止、清理与回退"></span>
+<span id="失败停止清理与回退"></span>
+
+<span id="失败后先分类再改-prompt"></span>
+
 ## 失败后先分类，再改 prompt
 
 | 失败现象 | 首查 | 可能修正 | 不要立即做 |
@@ -176,6 +203,8 @@ Prompt engineering（提示工程）对 agent 最有价值的部分，不是寻�
 
 稳定、反复出现且适用于整个仓库的纠正移入项目指令；低频完整流程移入 skill；必须机械执行的要求进入 hook/CI/policy。不要因一次特殊失败把所有历史提醒永久塞进 system prompt。
 
+<span id="示例只教结构不应偷偷增加规则"></span>
+
 ## 示例只教结构，不应偷偷增加规则
 
 Few-shot example（少样本示例）适合展示输出 schema、边界案例和工具协议。示例输入要覆盖典型正例与关键反例，不能只给完美 happy path。示例中的字段、权限和语气会被模型模仿，因此删除真实 Secret、个人路径和危险命令。
@@ -184,65 +213,13 @@ Few-shot example（少样本示例）适合展示输出 schema、边界案例和
 
 ## 版本化的是渲染后身份
 
-评测和自动化保存：模板版本/commit、变量 schema、变量值的安全摘要、渲染后 prompt hash、项目指令 hash、tool schema hash、模型/provider/harness/surface 和 compaction 策略。只保存模板文件不够，运行时变量和加载顺序也会改变输入。
+评测和自动化保存：模板版本/commit、变量 schema、变量值的安全摘要、渲染后 prompt hash、项目指令 hash、tool schema hash、模型/供应方/harness/surface 和 compaction 策略。只保存模板文件不够，运行时变量和加载顺序也会改变输入。
 
 敏感 prompt 不应为复现而公开原文；可保存访问受控 artifact、hash、脱敏摘要和生成器版本。Hash 能识别相同字节，不能证明内容安全或语义等价。
 
-修改 prompt 后建立新 config，在相同 tasks、fixtures、模型设置和工具上与 baseline 配对。一次只改一个主要变量；报告成功、约束违反、tool errors、token、费用、延迟和人工介入。Development set（开发集）用于迭代，holdout（留出集）用于确认；不要看过 holdout 后继续调同一模板再报告它。
+修改 prompt 后建立新 config，在相同 tasks、fixtures、模型设置和工具上与 基线 配对。一次只改一个主要变量；报告成功、约束违反、tool errors、token、费用、延迟和人工介入。Development set（开发集）用于迭代，holdout（留出集）用于确认；不要看过 holdout 后继续调同一模板再报告它。
 
-## 在本项目验证结构化任务契约
 
-### 前置条件与固定输入
+## 实践入口
 
-需要 Python 3.11+、uv 0.11、Node.js 22+，依赖由 `uv.lock` 与 `package-lock.json` 固定。从仓库根目录离线执行，不配置真实模型、API key、网络或外部写权限。
-
-输入是 `lab/schemas/task.json`、Python `TaskSpec.from_dict`、TypeScript `validateTask` 共用的 `runtime-contract-v1.json`，以及 `evals/` 中六条离线 E1 task 样例与固定 fixture lineage。
-
-### 命令
-
-```powershell
-uv run --frozen --offline pytest -q lab/tests/test_contracts_and_schema.py::test_shared_task_wire_contract
-npm run lab:ts-runtime-test
-npm run eval:validate
-```
-
-### 预期输出与断言
-
-pytest 应显示 17 项通过：合法 Task 同时被 JSON Schema 与 Python runtime 接受；空白 goal、非法 ID、空/重复工具、缺失/布尔/非有限/超限预算、负成本、非 object input、非有限或循环 input 及未知字段被一致拒绝。TypeScript runtime 输出还应报告同一文件中的 30 个 Task/Action 案例通过。
-
-Eval validator 应退出 0，并报告 20 tasks、6 workloads、6 holdout、2 configs、3 repeats、6 fixture refs、120 个预期 cell、12 个已有 cell、108 个缺失，以及 `sample_matrix_complete=false`。这证明样例契约与谱系可解析，不代表评测已经完成。
-
-### 失败、停止、清理与回退
-
-若坏 Task 被接受、Python/TypeScript/Schema 结果不同、fixture ref/hash 无法交叉验证，或 validator 把 12 行称为完整矩阵，立即停止使用该任务集。不要放宽 validator、补虚构 run 或改历史 hash 来过门禁；保留负例并修契约/数据。
-
-命令只读取固定输入并产生可忽略测试缓存；需要时只清理 `.pytest_cache/`。误改时用 `git diff -- lab/schemas/task.json lab/fixtures/contracts/runtime-contract-v1.json lab/src/about_harness/contracts.py lab/ts/contracts.ts lab/tests/test_contracts_and_schema.py evals/` 定位，并只恢复自己的修改。候选 prompt 失败时继续使用锁定 baseline，保存失败 task/run 和 prompt identity。
-
-### 证据边界
-
-这些检查提供 E1：当前离线 Task 结构能拒绝列出的坏字段和值，六个固定样例能连接 task、fixture ref 和 run。`acceptance` 与 `metadata` 仍是开放对象，validator 不会判断自然语言目标是否清楚、验收是否充分、prompt 是否安全，也不运行真实模型。
-
-因此不能从命令通过推断某种写法普遍提高模型质量。真实 prompt 实验还需锁定 workload、model、provider、harness、surface 和设置，使用配对 development/holdout 结果，并按[评测方法](/evaluation/method)报告证据。
-
-## 发布前检查表
-
-- Goal 是否描述对象、状态变化和可观察终态，而非预设方案？
-- 输入是否有入口、版本、来源，并区分事实、假设和非可信数据？
-- 范围、非目标、现有用户改动与外部副作用是否明确？
-- 权限、预算、失败停止和人工接管条件能否被 controller 执行？
-- Acceptance 是否包含结果、失败回归、非退化和安全门槛？
-- 命令是否有预期输出、失败处理、清理和回退？
-- Done 是否要求报告未运行项和证据边界？
-- 示例是否无 Secret/个人路径，且不与当前 schema 冲突？
-- 模板、渲染变量、指令和工具 schema 是否有可比较身份？
-- 实验是否一次只改一个因素，并保留未反复调参的 holdout？
-
-下一步将契约应用到[端到端适配案例](/practice/end-to-end)，用[上下文与工具调优](/optimization/context-tools)检查它实际看见与可调用的内容，并把结构化对象对照[Task、Run、Trace 与 Result Schema](/evaluation/task-schema)。
-
-## 检查题
-
-1. 为什么“新增重试”通常是方案，而不是一个完整目标？
-2. Task allowlist 与用户已经授权外部动作有什么区别？
-3. 怎样写 acceptance 才能同时判断输出正确和执行过程安全？
-4. 为什么只保存 prompt 模板不能复现一次运行？
-5. Schema 测试通过后，仍有哪些自然语言契约问题无法被证明？
+[执行配对研究并读取实际结果](/practice/evaluation)。实现范围、命令、预期断言和清理步骤在实验页维护。

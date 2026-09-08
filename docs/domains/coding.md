@@ -16,6 +16,14 @@ freeze task/repository
 
 构建通过、测试通过、diff 很小和模型声称完成，分别只是证据的一部分。
 
+<span id="当前离线工作例"></span>
+<span id="前置条件与固定输入"></span>
+<span id="命令"></span>
+<span id="预期输出与断言"></span>
+<span id="证据边界"></span>
+<span id="完成检查表"></span>
+<span id="检查题"></span>
+
 ## 先把任务写成契约
 
 Coding task contract（编码任务契约）至少包含：
@@ -94,14 +102,19 @@ Baseline（基线）回答三个问题：环境是否能运行、问题是否真
 
 不能复现时不要立即改代码。先核对输入版本、feature flag、平台、时区、seed、并发和测试数据；必要时缩小结论为诊断结果。
 
+<span id="失败、停止、清理与回退"></span>
+<span id="失败停止清理与回退"></span>
+
 ### 失败测试也要审阅
 
-测试可能过时、断言错误或依赖偶然实现。Baseline 需要证明失败与用户期望一致，而不是见红就改生产代码。对于 bugfix，最好有：
+测试可能过时、断言错误或依赖偶然实现。基线 需要证明失败与用户期望一致，而不是见红就改生产代码。对于 bugfix，最好有：
 
 - 一个修改前稳定失败的行为断言；
 - 至少一个相邻不变行为；
 - 一个能区分错误修复与硬编码的反例；
 - 明确输入和预期，不依赖网络/时间漂移。
+
+<span id="定位代码先建最小因果图"></span>
 
 ## 定位代码：先建最小因果图
 
@@ -115,6 +128,8 @@ entrypoint → input parsing → domain logic → state/storage
 使用快速文本/符号搜索定位调用点、类型、测试、配置和生成来源；读取足够上下文后形成候选假设。每个假设写“若为真，应看到什么证据；若为假，哪个检查会推翻”。
 
 优先找到 source of truth（事实源）：生成代码应改 schema/template/generator，不直接修生成物；派生配置应改上游定义；测试 fixture 变化要确认是否代表产品需求变化。
+
+<span id="先定范围再修改"></span>
 
 ## 先定范围，再修改
 
@@ -132,6 +147,8 @@ Change brief（变更简报）包含：
 
 ## 编辑策略
 
+<span id="结构化可审阅的-patch"></span>
+
 ### 结构化、可审阅的 patch
 
 - 每轮围绕一个假设，避免机械重写整文件；
@@ -140,7 +157,7 @@ Change brief（变更简报）包含：
 - 删除或重命名先搜索引用和动态加载；
 - 生成物由固定生成命令更新，并审阅 source 与 generated diff；
 - 不用 broad replace 跨越不相关文件；
-- 不把真实 Secret、个人路径、trace 或生产数据写入示例。
+- 不把真实 Secret、个人路径、轨迹 或生产数据写入示例。
 
 Patch 应能解释每个 changed hunk 与验收的关系。无法解释的改动先撤出本任务，而不是等 reviewer 猜。
 
@@ -222,7 +239,7 @@ exit code / signal / artifacts
 - 是否修改测试来隐藏行为；
 - 删除/重命名是否留下引用；
 - Generated files 是否来自正确 source 和固定命令；
-- Error/trace 是否泄漏敏感数据；
+- Error/轨迹 是否泄漏敏感数据；
 - Rollback 是否只影响本轮改动。
 
 检查 staged diff，而不只看 working-tree diff。最终提交应只包含声明范围；不相关改动保留原样。
@@ -243,7 +260,7 @@ Cherry-pick/merge 成功只证明文本可合并，不证明组合行为正确�
 
 ## Checkpoint 与恢复
 
-长任务 checkpoint（检查点）至少保存：
+长任务 检查点（检查点）至少保存：
 
 ```text
 task/config/base commit/current HEAD
@@ -257,6 +274,8 @@ unknown side effects / cleanup needed
 ```
 
 Resume 先重新检查 repository status、HEAD、dependencies 和运行中的进程，再继续。若 base 或目标文件已变化，旧 patch 需要重放/复核；不能盲目从“下一步”继续。
+
+<span id="提交发布与回退"></span>
 
 ## 提交、发布与回退
 
@@ -278,7 +297,7 @@ Rollback（回退）按精确 commit/patch/feature flag/schema migration 设计�
 | Resource | P50/P90、token、费用、CPU/存储、CI 时间 |
 | Maintainability | 复杂度、重复、文档、诊断与回退成本 |
 
-代码行数少、一次测试绿或模型 token 多都不是质量本身。比较模型/harness/config 时使用相同 task、base、工具、权限、预算和 validator，按 task 配对并阅读失败 trace。
+代码行数少、一次测试绿或模型 token 多都不是质量本身。比较模型/harness/config 时使用相同 task、base、工具、权限、预算和 验证器，按 task 配对并阅读失败 轨迹。
 
 回归集覆盖：空/单/多边界、错误输入、并发、timeout/cancel、权限拒绝、生成物、依赖、平台差异和恢复。高风险任务还要包含未知副作用与 rollback 演练。
 
@@ -295,75 +314,9 @@ Rollback（回退）按精确 commit/patch/feature flag/schema migration 设计�
 | 命令超时 | 子进程、deadlock、资源、外部服务 | Runtime | 无限提高 timeout |
 | 重启后重复副作用 | Checkpoint、幂等、外部对账 | Controller | 归因模型 |
 
-最后才评估模型推理能力。环境、协议、工具或 validator 不正常时，换更贵模型只会污染归因。
+最后才评估模型推理能力。环境、协议、工具或 验证器 不正常时，换更贵模型只会污染归因。
 
-## 当前离线工作例
 
-仓库 v1.1 fixture 固定一个 `collect(items)` 边界错误和单文件内存 workspace。候选是带 base hash 的 unified diff；runner 先验证 allowed path、hash 与 hunk context/行数，再把 diff 应用到快照。结果源码只有通过预审 AST 边界后，才在移除其他 builtins 的命名空间中运行 empty/single/multiple 三个用例。
+## 实践入口
 
-### 前置条件与固定输入
-
-需要 Python 3.11+ 和 uv 0.11；依赖由 `uv.lock` 固定。从仓库根目录离线运行，不安装 package、不使用网络/credential，也不修改真实 Git 工作树。
-
-输入位于 `lab/fixtures/coding/`：
-
-- `manifest.json` 固定 project-synthetic 来源、CC BY 4.0 与三个文件 hash；
-- `input.json` 固定 Task scope、workspace snapshot、base hash、unified diff 和三个 test ID；
-- `expected.json` 固定 workspace/patch identity、changed file、逐例结果与通过数；
-- `negative.json` 包含路径穿越、陈旧 base 和 import 扩权，必须全部拒绝。
-
-### 命令
-
-```powershell
-uv run --frozen --offline python scripts/run-labs.py coding
-```
-
-### 预期输出与断言
-
-命令退出 0，输出 `evidence=E1`、`offline=true`、`passed=true` 和 `negative_rejected=true`。Fixture hash 为 `18f8153a…`；base/result hash 分别为 `4c0d1877…` 与 `2652c76a…`，`patch.changed_files=[src/collect.py]`、added/deleted 各一行。`baseline_failures=[single,multiple]`，候选三例全过。
-
-人工复核：changed file 与 result hash 来自内存 diff 应用，不是 expected 硬编码计数；没有文件系统写入、项目测试发现、Git 操作、模型或外部动作。历史 Eval 仍通过固定 commit/path/hash 读取 v1.0，不被当前 v1.1 覆盖。
-
-### 失败、停止、清理与回退
-
-若 base hash 漂移、hunk context/行数不符、范围外 path 被接受、baseline 没有失败、候选少于三个用例通过、AST 外候选能执行、fixture hash 不一致、负例未拒绝或命令需要网络，停止 Coding 能力声明。先修 evaluator/fixture/validator 并保留失败输出；不要启用 fuzzy apply、修改 expected 迎合错误、扩大 AST allowlist 或安装依赖绕过失败。
-
-命令只读固定 JSON，在进程内执行白名单函数，不写工作树。误改时先运行：
-
-```powershell
-git diff -- lab/fixtures/coding lab/src/about_harness/labs.py lab/tests/test_m5_labs.py docs/domains/coding.md
-```
-
-确认范围后只恢复自己的变化。失败时回到 manifest 锁定 fixture 与最近通过的 runner commit，不覆盖工作树其他修改。
-
-### 证据边界
-
-实验提供 E1：当前 runner 校验固定 fixture hash、Task scope、workspace base hash 与单文件 unified diff，真实推导 changed file/result hash；它白名单化预审 AST，执行三个小输入，并拒绝路径穿越、陈旧 base、hunk 漂移与 import 扩权。
-
-它没有真实 repository checkout、文件系统写入、Git index、项目测试发现、shell、依赖、模型或 code review。Diff parser 只支持当前单文件文本子集，固定 AST allowlist 也不是通用 Python sandbox；内存 patch 证据不能证明真实 Coding Agent 会定位、生成或安全提交修复。
-
-## 完成检查表
-
-- Task 是否固定 goal、repo/base、scope、acceptance、权限、预算和 rollback？
-- 是否列出并保护已有 changed/untracked files？
-- 根/子目录 instructions 是否按 changed paths 正确生效？
-- 修改前是否在精确环境复现，并记录 pre-existing/flaky failure？
-- 是否找到 source of truth，而非直接改 generated/derived file？
-- 每个 changed hunk 是否能连接 root cause 或 acceptance？
-- Test 修改是否属于回归/contract change，而非削弱断言？
-- Shell 是否固定 cwd、timeout、network、output 与进程清理？
-- 依赖变化是否有单独理由、锁定、许可与回退？
-- 验证是否覆盖最小复现、负例、静态、集成、构建和 diff？
-- Staged diff 是否只含本任务，且没有 Secret/个人路径/生成垃圾？
-- Checkpoint/resume、并行 checkout 与未知副作用是否可恢复？
-- 当前 E1 fixture 是否没有被误写成真实仓库/模型能力？
-
-下一步：运行[Coding 离线案例](/labs/coding)，再用[优化诊断](/optimization/debugging)练习分层归因，并按[评测实验室](/practice/evaluation)建立真实 task-level 回归。
-
-## 检查题
-
-1. 为什么测试通过后仍要独立审阅 staged diff？
-2. “最小 patch”为什么不总是“最少字符”？
-3. 修改测试何时是合理 contract change，何时是在迎合错误实现？
-4. 多个 Coding Agent 为什么不应同时写同一个 checkout？
-5. 当前固定 AST 实验通过后，为什么仍不能声称会修真实仓库？
+[运行对应实验](/labs/coding)。实现范围、命令、预期断言和清理步骤在实验页维护。

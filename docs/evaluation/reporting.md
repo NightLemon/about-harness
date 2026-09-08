@@ -2,16 +2,14 @@
 
 评测报告的任务不是把候选包装成赢家，而是让一个没有参与实验的人回答：比较了什么、漏了什么、证据支持哪一句话、是否值得采用、出错后怎样撤回。好的报告可以从结论反查到指标，从指标反查到 run（运行记录），再从 run 反查到锁定的 task（任务）、fixture（固定输入）和 config（配置）。
 
-## 学习目标
+<span id="学习目标"></span>
+<span id="在本项目生成和核对报告"></span>
+<span id="前置条件与输入"></span>
+<span id="命令"></span>
+<span id="预期输出与人工断言"></span>
+<span id="检查题"></span>
 
-完成本页后，你应该能够：
-
-- 区分运行事实、派生指标、叙述结论、采用决定和发布记录；
-- 为每个关键 claim（主张）绑定来源、范围、证据等级和反证条件；
-- 报告矩阵流失、偏离、失败、安全事件和未知项，而不是只展示成功均值；
-- 设计可复算的报告 manifest、公开结果包和完整性校验；
-- 在隐私限制下说明哪些证据可公开、哪些结论因此无法独立复核；
-- 通过 supersede（取代）或 retract（撤回）更正报告，不覆盖历史版本。
+<span id="当前样例应该怎样开头"></span>
 
 ## 先分离五个层次
 
@@ -25,11 +23,13 @@
 | Decision record（决策记录） | 谁基于什么选择采用/否决 | report + 风险/预算/责任人 | 决策可改变，但保留理由和时间 |
 | Publication result（发布记录） | 哪一版被公开到哪里 | report/decision hash + 发布回执 | 新发布追加记录，不改历史候选 |
 
-模型或 runner 返回 `completed` 属于运行事实的一部分，不等于 validator 通过；summary 的 `promotion_eligible=true` 也不等于负责人已经采用。把层次分开，才能在聚合器修复后重算指标，却不伪造“当时就是这样决定的”。
+模型或 runner 返回 `completed` 属于运行事实的一部分，不等于 验证器 通过；summary 的 `promotion_eligible=true` 也不等于负责人已经采用。把层次分开，才能在聚合器修复后重算指标，却不伪造“当时就是这样决定的”。
+
+<span id="先写结论再限定边界"></span>
 
 ## 先写结论，再限定边界
 
-首段用一条可证伪的决策句说明采用、否决或证据不足。至少包含 workload（工作负载）、精确配置、样本、主要指标、安全/成本门槛和证据等级：
+首段用一条可证伪的决策句说明采用、否决或证据不足。至少包含 工作负载（工作负载）、精确配置、样本、主要指标、安全/成本门槛和证据等级：
 
 > 在 20 个锁定任务、每任务 3 次、预算相同的测试中，候选相对基线的任务级通过率差异为……；安全违规为……，p90 成本变化为……。在这些任务和配置范围内，候选满足/不满足预注册门槛。证据为 E3，不外推到其他模型、工具或任务分布。
 
@@ -58,11 +58,11 @@
 
 “检查器未在本次扫描范围内匹配已知 Secret 模式”比“仓库绝对没有秘密”准确；“六个固定离线样例全部通过”也比“集成已可用于生产”准确。报告不是把语气写弱，而是让句子与证据强度相等。
 
-### 当前样例应该怎样开头
+### 历史合成样例应该怎样开头
 
 对本仓库现有数据，一段合格摘要可以是：
 
-> **结论：不能晋级，当前结果仅供 E1 管道教学。** Study 设计要求 20 tasks × 2 configs × 3 repeats，共 120 个 cell；当前只有 12/120（10%）个 development cell，holdout 为 0，且 run 证据 E1 低于目标 E3。观察到 `offline-engineering` 为 6/6、`offline-default` 为 1/6，配对为 5 win、0 loss、1 tie；这些是作者构造的离线样例，不是 task-level 正式比较或真实模型成绩。样例未发生 `safety_violation=true`，但没有真实 provider、费用、外部副作用或完整安全机会覆盖。
+> **历史反例结论：不能晋级，仅供 E1 汇总教学。** 这份 Study 1.1 设计要求 20 tasks × 2 configs × 3 repeats，共 120 个 cell；当前只有 12/120（10%）个 development cell，holdout 为 0，且 run 证据 E1 低于目标 E3。观察到 `offline-engineering` 为 6/6、`offline-default` 为 1/6，配对为 5 win、0 loss、1 tie；这些是作者构造的离线样例，不是 task-level 正式比较或真实模型成绩。样例未发生 `safety_violation=true`，但没有真实 供应方、费用、外部副作用或完整安全机会覆盖。
 
 这段话把有利数字保留下来，也把覆盖、split、证据等级和未测范围放在同一屏。不能把前两句删掉，只在附录注明“样本略少”。
 
@@ -99,10 +99,10 @@ Claim ledger（主张账本）让 reviewer 不必从 prose（叙述文字）猜�
 
 | claim | 证据 | 可写结论 | 不可写结论 |
 | --- | --- | --- | --- |
-| `COV-01` | matrix 12 observed / 120 expected | 当前样例覆盖率 10% | 其余 108 个 cell 失败 |
+| `COV-01` | matrix 12 observed / 120 expected | 历史合成样例覆盖率 10% | 其余 108 个 cell 失败 |
 | `PAIR-01` | 6 个 development pairs | 固定样例中 5/0/1 | 候选对真实任务普遍更强 |
 | `SAFE-01` | 12 行均 `safety_violation=false` | 这些行未记录实际违规 | 系统已证明安全 |
-| `RED-01` | 当前 redactor + 两个公开 JSON | 已知模式扫描通过 | 任意自由文本都无法重识别 |
+| `RED-01` | 当前 redactor + 公开 JSON 样例 | 已知模式扫描通过 | 任意自由文本都无法重识别 |
 
 正文可以更流畅，但关键句引用 `claim_id` 或能解析的表格行。若同一主张既有支持又有冲突，状态为 `conflicted` 并并列证据，不要只保留较新的有利结果。
 
@@ -136,27 +136,35 @@ Manifest（清单）负责身份和谱系，Markdown 负责解释。一个概念
 
 同一事实可按受众分层呈现，但各层不能给出不同结论：第一页是 decision summary（决策摘要），正文解释方法、结果与风险，附录或结果包提供逐项证据。高层摘要中的 `adopt` 不能在正文变成“区间跨越门槛”；附录里的安全违规也不能因为管理层页面空间有限而省略。
 
+<span id="1-研究问题与决策规则"></span>
+
 ### 1. 研究问题与决策规则
 
-写清 baseline（基线）、candidate（候选）、唯一主要指标、最小有意义差异、硬护栏和采用规则。说明规则在何时冻结；若是探索性分析，应明确标为探索性，不能事后伪装成预注册结果。
+写清 基线（基线）、candidate（候选）、唯一主要指标、最小有意义差异、硬护栏和采用规则。说明规则在何时冻结；若是探索性分析，应明确标为探索性，不能事后伪装成预注册结果。
+
+<span id="2-任务与抽样"></span>
 
 ### 2. 任务与抽样
 
-按 workload 列出任务数量、来源、时间范围、难度或风险分层、development/holdout/incident split，以及纳入和排除规则。公开任务 ID 清单或可校验 hash。合成数据、脱敏生产样本和人工编写题要分开计数。
+按 工作负载 列出任务数量、来源、时间范围、难度或风险分层、development/holdout/incident split，以及纳入和排除规则。公开任务 ID 清单或可校验 hash。合成数据、脱敏生产样本和人工编写题要分开计数。
 
 抽样说明回答“这些任务代表谁”：目标用户、真实频率、长尾风险和未覆盖区域。方便收集的任务不自动代表生产分布。
+
+<span id="3-系统身份与运行条件"></span>
 
 ### 3. 系统身份与运行条件
 
 至少记录：
 
-- model/provider/adapter/harness 的精确版本或 commit；
+- model/供应方/适配器/harness 的精确版本或 commit；
 - API surface（接口形态）、region、采样参数、推理设置和并发；
 - system instruction、工具 schema、policy、config 与 fixture hash；
 - 操作系统、运行镜像或依赖锁、runner/Judge 版本；
 - 每任务预算、超时、最大步骤、重试和停止规则。
 
 如果供应方只提供可漂移 alias，写明 alias、实际返回的模型身份、核验日期和不可固定的风险。同名 alias 不足以证明两轮可比较。
+
+<span id="4-矩阵覆盖与数据质量"></span>
 
 ### 4. 矩阵覆盖与数据质量
 
@@ -180,23 +188,34 @@ coverage = observed unique cells / expected cells
 
 同时列出 protocol deviations（协议偏离）：实际顺序、重试、预算、并发、数据源或 Judge 与预注册方案有何不同，何时发现、影响哪些 cell、是否改变主分析。没有偏离时写“未观察到已知偏离”，并说明检查范围；不要用空白表示已确认没有。
 
+<span id="5-主指标区间与配对"></span>
+
 ### 5. 主指标、区间与配对
 
-每个比例同时给分子/分母、点估计和区间，例如 `17/20 = 85%，95% Wilson interval […]`。比较同一任务上的两个配置时，以 task 为分析单位，报告 win/loss/tie、配对差异和每个 workload 的方向；不要把同一任务的重复运行当成互相独立的任务扩大样本量。
+每个比例同时给分子/分母、点估计和区间，例如 `17/20 = 85%，95% Wilson interval […]`。比较同一任务上的两个配置时，以 task 为分析单位，报告 win/loss/tie、配对差异和每个 工作负载 的方向；不要把同一任务的重复运行当成互相独立的任务扩大样本量。
 
 主指标放在最前。次要指标、切片和事后发现分开标记，避免从很多指标里只挑好看的一个。区间跨过预注册的无差异或不劣界限时写“证据不足”，不要把 `p > 0.05` 写成“两者相同”。具体计算见[指标、区间与效应量](/evaluation/metrics)。
 
+<span id="失败、停止、清理与回退"></span>
+<span id="失败停止清理与回退"></span>
+
+<span id="6-失败安全与人工介入"></span>
+
 ### 6. 失败、安全与人工介入
 
-总通过率会掩盖失败机制。按 `contract/context/planning/tool/execution/verification/safety/budget/infrastructure` 报告数量、任务 ID 和典型脱敏样例；展示 baseline 与 candidate 是否把失败从一种类型转移到另一种。
+总通过率会掩盖失败机制。按 `contract/context/planning/tool/execution/verification/safety/budget/infrastructure` 报告数量、任务 ID 和典型脱敏样例；展示 基线 与 candidate 是否把失败从一种类型转移到另一种。
 
 安全是硬门槛，不与平均质量互相抵消。单列未授权工具调用、越权写入、提示注入服从、敏感数据暴露和停止失败。人工介入要报告触发次数、所处步骤与结局；“人工接管后成功”不等于自治完成。
+
+<span id="7-延迟token-与费用"></span>
 
 ### 7. 延迟、token 与费用
 
 至少报告 p50/p90、总量和 task 级分布，并说明是否包含失败、重试、缓存、Judge、工具和人工成本。零费用需要解释是离线 replay、免费额度还是确实未计费，不能让读者误以为真实调用免费。
 
 质量与资源一起决策：如果候选只在高预算路由上有收益，应报告适用路由，而不是把高成本配置设为全局默认。均值相同也可能隐藏尾延迟恶化，因此不能只报平均值。
+
+<span id="8-决策回退与未解决项"></span>
 
 ### 8. 决策、回退与未解决项
 
@@ -258,7 +277,7 @@ README 给出从空目录开始的最短复算路径：运行时/容器版本、
 
 ## 脱敏不是字符串替换
 
-`lab/results/public/` 只放聚合结果与精选合成/脱敏 trace（轨迹）。禁止提交原始 prompt、`raw_trace`、credential、authorization、secret、cookie、个人路径、真实账号、内部域名、未授权源代码或可反推出个人身份的组合字段。
+`lab/results/public/` 只放聚合结果与精选合成/脱敏 轨迹（轨迹）。禁止提交原始 prompt、`raw_trace`、credential、authorization、secret、cookie、个人路径、真实账号、内部域名、未授权源代码或可反推出个人身份的组合字段。
 
 自动扫描只能发现已知键名和模式，还需人工检查：自由文本中是否含客户内容；时间、稀有任务与错误堆栈能否重识别；引用和 URL 是否暴露内部资源；截图、二进制和压缩包是否绕过扫描。无法确认许可时停止公开，先保留在访问受控位置。
 
@@ -266,11 +285,13 @@ README 给出从空目录开始的最短复算路径：运行时/容器版本、
 
 ### 内部证据与公开证据分层
 
-内部 reviewer 可能有权读取原始 trace，公开读者只能看到脱敏记录。报告应列一张 disclosure matrix（披露矩阵）：每类字段的权威存储、访问角色、公开变换、保留期和无法公开的原因。公开 summary 中的每个聚合仍需能由某个受控 reviewer 核对到原始事实。
+内部 reviewer 可能有权读取原始 轨迹，公开读者只能看到脱敏记录。报告应列一张 disclosure matrix（披露矩阵）：每类字段的权威存储、访问角色、公开变换、保留期和无法公开的原因。公开 summary 中的每个聚合仍需能由某个受控 reviewer 核对到原始事实。
 
 脱敏可能改变可复算性。例如删除自由文本后，外部读者无法复核 Judge 的 quote 是否存在；这时可公开候选内容的受许可合成替代、受控审计证明或明确的不可复核声明。不能一边删除必要证据，一边声称任何人都能独立验证全部结论。
 
 Small-cell suppression（小单元格抑制）用于防止稀有组合重识别时，要说明哪些 cell 被合并/隐藏、阈值和对总数的影响。被抑制数据仍进入受控主分析还是仅从公开表隐藏，必须区分；公开表的合计不能因隐藏而悄悄变化。
+
+<span id="更正取代与撤回"></span>
 
 ## 更正、取代与撤回
 
@@ -301,41 +322,13 @@ Small-cell suppression（小单元格抑制）用于防止稀有组合重识别�
 
 Reviewer 不是重新写报告，而是寻找能改变决定的第一处分歧。无法访问必要证据时，结论应标为“未独立复核”并说明原因，不能把批准按钮当成验证证据。
 
-## 在本项目生成和核对报告
-
-### 前置条件与输入
-
-要求 Node.js 22+、依赖已按 `package-lock.json` 安装，并从仓库根目录执行。输入为 `evals/study.example.json`、`tasks.example.jsonl`、`fixture-refs.example.json`、`runs.example.jsonl`，公开样例位于 `lab/results/public/`。这些是 E1 离线数据，不需要凭据、网络或真实模型。
-
-### 命令
-
-```powershell
-npm run eval:validate
-npm run eval:summary
-npm run results:redact
-```
-
-### 预期输出与人工断言
-
-`eval:validate` 应报告 Study 1.1、task-level 2/3 成功规则、20 tasks、6 workloads、2 configs、3 repeats、120 个预期 cell、12 个已观察 cell 和 108 个缺失 cell。`eval:summary` 应报告 `matrix.complete=false`、`promotion_eligible=false`、没有 holdout run，并列出 `incomplete_matrix`、`evidence_below_target` 两个阻断项；六个 development task 都因只出现 1/3 次而归入 `incomplete_tasks`，不能进入 task-level 分母。`results:redact` 应确认三个 JSON 文件通过当前键名、路径和凭据模式扫描。
-
-然后用 `Get-ChildItem lab/results/public/*.json` 枚举并人工打开一个汇总与两份轨迹样例，断言它们标记 `evidence=E1`、`offline=true`，没有声称真实 framework 或模型质量。Browser trace 不含真实页面内容；Coding trace 的 workspace/base/result hash、changed file、测试数和负例名称必须与当前 v1.1 fixture 输出一致，且两份 trace 序号都连续。
-
-### 失败、停止、清理与回退
-
-若 validator 报告 identity/hash/split 错误，停止生成结论并修复数据生产路径；若 redactor 报告敏感内容，先隔离结果和撤销可能的凭据，不要为了过门禁只改字段名。机器扫描通过但人工发现可重识别信息时同样停止公开。
-
-命令只读评测输入与公开 JSON，并向终端输出，不创建需要清理的实验结果。若本轮误改公开样例，用 `git diff -- lab/results/public/` 精确确认，只恢复自己改动的文件；不要覆盖他人的未提交工作。正式报告更新应保留旧版本，新版本验证失败时继续引用上一份已验证报告和默认配置。
-
 ## 当前证据边界
 
-本项目样例只有 12 行 development E1 数据；它展示 schema、fixture lineage、run/task 聚合、失败分类和脱敏门禁，但没有完整重复、holdout、真实 provider、真实费用或可执行的 task-level 晋级判断。即使 `offline-engineering` 在这 6 个单次配对样例里是 5 win、0 loss、1 tie，也不能据此宣称模型更强或配置应上线。
+历史样例保留 12 行 development 合成数据。新的完整学习研究从临时工作区执行生成 12 个真实单元和产物关联，见[端到端案例](/practice/end-to-end)。两者均为 E1，没有真实模型和费用测量。即使 `offline-engineering` 在这 6 个单次配对样例里是 5 win、0 loss、1 tie，也不能据此宣称模型更强或配置应上线。
 
 继续阅读[回归与晋级](/evaluation/regression)，或进入[评测实验室](/practice/evaluation)运行样例。隐私处理见[Secret 与隐私](/security/secrets-privacy)。
 
-## 检查题
 
-1. 为什么只报告“准确率 85%”不足以复核结论？
-2. 一个 holdout cell 缺失时，能否从分母删除后继续晋级？
-3. 自动脱敏脚本通过后，仍需要检查哪些重识别风险？
-4. `promotion_eligible=true` 为什么仍不能代替完整的采用决定？
+## 实践入口
+
+[运行完整学习研究和不完整研究反例](/practice/evaluation)。实现范围、命令、预期断言和清理步骤在实验页维护。

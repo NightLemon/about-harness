@@ -1,5 +1,6 @@
 import fs from 'node:fs'
 import path from 'node:path'
+import { pathToFileURL } from 'node:url'
 import { excludedSiteRoutes, isPublishedMarkdown } from '../docs/.vitepress/site-scope.mjs'
 
 const root = process.cwd()
@@ -69,6 +70,33 @@ for (const route of excludedSiteRoutes) {
   if (fs.existsSync(flat) || fs.existsSync(directory)) errors.push(`non-public governance route was rendered: /${route}`)
 }
 
+const baseline = JSON.parse(fs.readFileSync(path.join(root, 'maintenance/content-baseline.json'), 'utf8'))
+const migrations = JSON.parse(fs.readFileSync(path.join(docsRoot, '.vitepress/legacy-links.json'), 'utf8'))
+let oldAnchors = 0
+for (const page of baseline.pages) {
+  const file = path.join(dist, page.path.replace(/^docs\//, '').replace(/\.md$/, '.html'))
+  const html = fs.readFileSync(file, 'utf8')
+  for (const anchor of new Set([page.rendered_title_anchor, ...page.headings.flatMap(item => [item.anchor, item.rendered_anchor])].filter(Boolean))) {
+    if (!html.includes(`id="${anchor}"`)) errors.push(`${page.path}: missing old anchor #${anchor}`)
+    oldAnchors += 1
+  }
+}
+for (const [route, mapping] of Object.entries(migrations)) {
+  const destination = fs.readFileSync(path.join(dist, `${mapping.target.slice(1)}.html`), 'utf8')
+  for (const anchor of Object.values(mapping.anchors)) {
+    if (!destination.includes(`id="${anchor}"`)) errors.push(`${route}: missing migration target #${anchor}`)
+  }
+}
+const indexes = walk(path.join(dist, 'assets'), file => path.basename(file).startsWith('@localSearchIndex'))
+if (!indexes.length) errors.push('missing actual local search index')
+for (const file of indexes) {
+  const index = JSON.parse((await import(pathToFileURL(file).href)).default)
+  for (const id of Object.values(index.documentIds)) {
+    const route = id.split('#')[0].replace(new RegExp(`^${base}`), '/')
+    if (migrations[route]) errors.push(`migration page leaked into search: ${id}`)
+  }
+}
+
 const index = fs.readFileSync(path.join(dist, 'index.html'), 'utf8')
 for (const expected of [`${base}logo.svg`, `${base}guide/start`, `${base}guide/portfolio`]) {
   if (!index.includes(expected)) errors.push(`index.html: missing expected base-aware reference ${expected}`)
@@ -80,4 +108,4 @@ if (errors.length) {
   process.exit(1)
 }
 
-console.log(`Build verification passed: ${renderedPages.length} pages, ${htmlFiles.length} HTML files, base ${base}.`)
+console.log(`Build verification passed: ${renderedPages.length} pages, ${oldAnchors} old anchors, search exclusion, base ${base}.`)

@@ -4,16 +4,12 @@ Judge（模型裁判，也常称 LLM-as-a-judge）是让模型按固定规程评
 
 把 Judge 看成 measurement instrument（测量工具）更准确：候选质量是待测对象，rubric 是量尺，Judge 是读数器，人工标注和确定性 oracle 是校准参照。读数格式稳定，不表示量尺测到了目标；多个 Judge 给出相同答案，也不表示答案正确。
 
-## 学习目标
+<span id="学习目标"></span>
+<span id="当前项目的证据边界"></span>
+<span id="用本页做一次-e0-桌面演练"></span>
+<span id="检查题与下一步"></span>
 
-完成本页后，你应该能够：
-
-- 判断一个维度该交给确定性 validator、人工还是 Judge；
-- 把抽象偏好拆成有证据锚点、硬上限和弃权路径的 rubric；
-- 设计匿名、换序、可重放的 Pointwise 或 Pairwise 评分；
-- 用人工 validation set 计算 false accept（错误放行）、false reject（错误拒绝）、覆盖率和分层误差；
-- 为自动判定设置风险门槛和人工升级，而不是只追求总体一致率；
-- 说明当前仓库的 E0 边界，以及建立 E1/E2/E3 还缺什么证据。
+<span id="先分清三种有效"></span>
 
 ## 先分清三种“有效”
 
@@ -99,7 +95,7 @@ Rubric（评分规程）把抽象质量拆成互不混淆的维度。每个维�
 
 ## 给 Judge 什么输入
 
-最小输入包包括：原始任务、验收标准、匿名候选、允许使用的来源/参考答案、rubric 版本和输出 schema。若候选依赖运行结果，还要给经过脱敏的测试、trace 或 artifact，而不是只给最终文本。
+最小输入包包括：原始任务、验收标准、匿名候选、允许使用的来源/参考答案、rubric 版本和输出 schema。若候选依赖运行结果，还要给经过脱敏的测试、轨迹 或 artifact，而不是只给最终文本。
 
 Reference answer（参考答案）也是可能不完整的输入。Judge 应判断候选是否满足任务，而不是机械复述参考答案；参考答案与权威来源冲突时必须允许标记 `reference_issue`。
 
@@ -158,7 +154,7 @@ Judge 输出至少要支持重放和人工复核：
 
 分数必须能从维度和权重重新计算，不能只相信模型给出的总分。引用位置或 quote 不存在、schema 无效、分数越界、硬失败与 verdict 冲突时，整条评分无效，而不是自动修补成想要的结果。
 
-Judge model/provider/snapshot、sampling 参数、system prompt hash、parser version、来源 bundle、运行时间和重试关系可以放在独立的 `judge-config`/run envelope 中，但必须能由 `judge_config_id` 解析。`cost_usd=null` 表示未知；离线样例的 0 必须由 `offline=true` 解释，不能把未知费用填成 0。
+Judge model/供应方/snapshot、sampling 参数、system prompt hash、parser version、来源 bundle、运行时间和重试关系可以放在独立的 `judge-config`/run envelope 中，但必须能由 `judge_config_id` 解析。`cost_usd=null` 表示未知；离线样例的 0 必须由 `offline=true` 解释，不能把未知费用填成 0。
 
 模型输出之后先执行确定性验证：
 
@@ -174,24 +170,26 @@ parse JSON
 
 解析失败重试要产生新 attempt，并保留第一次原始响应的受控引用。不要把无效输出交给同一模型“修成合法 JSON”后只保存修复版，否则无法区分评分错误与格式错误。
 
+<span id="盲化顺序与身份泄漏"></span>
+
 ## 盲化、顺序与身份泄漏
 
 候选用随机 ID，移除模型名、配置名、价格、熟悉的固定前缀和无关元数据。对 Pairwise 评分随机或平衡 A/B 顺序，并对一部分样本交换顺序复评。若交换后赢家改变，记录 position flip（位置翻转），不能只保留较有利的一次。
 
 盲化不是删除任务所需上下文。版本、工具结果或来源若直接影响正确性，应以中性字段提供；只移除会让评分器识别候选身份、却不属于验收标准的信息。
 
-同一模型家族评价自己的输出可能有相关偏差；更换 Judge 也不自动独立，因为模型可能共享训练数据、参考答案和提示结构。报告 Judge 的 model/provider/version、设置、prompt/rubric hash，以及它与被测候选的关系。
+同一模型家族评价自己的输出可能有相关偏差；更换 Judge 也不自动独立，因为模型可能共享训练数据、参考答案和提示结构。报告 Judge 的 model/供应方/version、设置、prompt/rubric hash，以及它与被测候选的关系。
 
 ## 校准集与人工基准
 
-Calibration set（校准集）由人工先按同一 rubric 独立标注，覆盖不同 workload、质量档位、边界案例、长短答案、正确拒绝与对抗文本。人工评分也会分歧，因此先保存各自判断，再由 adjudicator（裁决者）按证据解决争议；不要先讨论后只保存共识。
+Calibration set（校准集）由人工先按同一 rubric 独立标注，覆盖不同 工作负载、质量档位、边界案例、长短答案、正确拒绝与对抗文本。人工评分也会分歧，因此先保存各自判断，再由 adjudicator（裁决者）按证据解决争议；不要先讨论后只保存共识。
 
 校准至少报告：
 
 - 分类的 confusion matrix、false accept 与 false reject；
 - Judge 与人工的完全一致率、允许误差内一致率；
 - Pairwise 的一致、tie 和位置翻转；
-- 各 rubric 维度、workload 与答案长度分层结果；
+- 各 rubric 维度、工作负载 与答案长度分层结果；
 - `insufficient_evidence`/人工升级率；
 - 引用有效率与 schema 无效率。
 
@@ -199,7 +197,7 @@ Calibration set（校准集）由人工先按同一 rubric 独立标注，覆盖
 
 ### 校准集不是随手抽二十个答案
 
-先从目标 workload 的 sampling frame（抽样框）取样，再刻意补充会暴露测量缺陷的切片：
+先从目标 工作负载 的 sampling frame（抽样框）取样，再刻意补充会暴露测量缺陷的切片：
 
 | 切片 | 为什么需要 |
 | --- | --- |
@@ -250,7 +248,7 @@ accept recall      = 11 / 12      = 91.7%
 
 85% 一致率看似不错，但若“自动接受坏答案”代价高，`2/8` 的 false accept 足以否决自动发布。若 Judge 与人工的接受比例分别为 `13/20`、`12/20`，按边际比例计算的 chance agreement（随机一致率）为 53%，Cohen's kappa（科恩 κ）约为 `(0.85-0.53)/(1-0.53)=0.68`。κ 可以补充描述一致性，却仍不告诉你两个 false accept 是否触及关键风险，也会受类别比例影响。
 
-不要从这 20 条推断生产错误率已经精确。报告每个比例的分子/分母和区间，并按 workload、风险、长度和语言分层。某层只有两条时应写“证据不足”，不能用总体数字替它背书。
+不要从这 20 条推断生产错误率已经精确。报告每个比例的分子/分母和区间，并按 工作负载、风险、长度和语言分层。某层只有两条时应写“证据不足”，不能用总体数字替它背书。
 
 ### 弃权会改变覆盖率与风险
 
@@ -273,7 +271,7 @@ invalid rate    = schema/引用/身份无效的 Judge run / 全部 Judge run
 
 多数票只能减少某些随机波动，不能消除共同偏差。三个共享同一错误参考答案的 Judge，会更一致地给出错误结论。发现不一致时先检查 rubric、输入和引用，再考虑增加评分次数。
 
-重复评分要保留每次原始记录和聚合规则。若策略是“最多三次，前两次一致则停止”，就预先写清 adaptive stopping（自适应停止）如何计费、怎样处理一次无效 schema、是否允许同一 provider 重试。只对争议样本多跑几次后把所有投票混在一起，会让不同样本拥有不同权重。
+重复评分要保留每次原始记录和聚合规则。若策略是“最多三次，前两次一致则停止”，就预先写清 adaptive stopping（自适应停止）如何计费、怎样处理一次无效 schema、是否允许同一 供应方 重试。只对争议样本多跑几次后把所有投票混在一起，会让不同样本拥有不同权重。
 
 对 Pairwise 结果至少建立四类诊断：
 
@@ -310,7 +308,9 @@ invalid rate    = schema/引用/身份无效的 Judge run / 全部 Judge run
 
 “自动接受到下一步”不等于允许发布、付款或改变生产资源。业务动作仍由原有 policy 和负责人授权。高风险维度即使校准集中没有观察到错误，也可能因为样本太少而始终要求人工。
 
-人工升级队列也要监控等待时间、积压、分层分布和 reviewer 一致性。若某 workload 大量升级，可能是 rubric/输入不清或 Judge 不适用，不能只增加 reviewer 吞吐量掩盖测量失败。
+人工升级队列也要监控等待时间、积压、分层分布和 reviewer 一致性。若某 工作负载 大量升级，可能是 rubric/输入不清或 Judge 不适用，不能只增加 reviewer 吞吐量掩盖测量失败。
+
+<span id="工作例匿名配对评分"></span>
 
 ## 工作例：匿名配对评分
 
@@ -339,42 +339,29 @@ invalid rate    = schema/引用/身份无效的 Judge run / 全部 Judge run
 
 根因分析沿 `task/rubric → input bundle → Judge raw response → parser → deterministic validator → aggregator → decision router` 找第一处分歧。正确候选被错判时，先用冻结输入重放 Judge；如果 raw response 正确但聚合分错，是 evaluator bug，不应调候选模型。
 
+<span id="版本漂移与停用"></span>
+
 ## 版本、漂移与停用
 
-Judge 是版本化评测组件。以下任一变化都建立新 `judge_config_id`，并按影响范围重跑校准：model snapshot/alias、provider/region/API surface、system prompt、rubric、参考来源、输入选择、parser、schema、temperature、最大输出或重试/聚合规则。
+Judge 是版本化评测组件。以下任一变化都建立新 `judge_config_id`，并按影响范围重跑校准：model snapshot/alias、供应方/region/API surface、system prompt、rubric、参考来源、输入选择、parser、schema、temperature、最大输出或重试/聚合规则。
 
-线上或持续评测定期抽取自动接受、自动拒绝和人工升级三类样本做盲审，按 workload 比较错误与覆盖率。Population drift（总体漂移）可能来自任务变长、新语言、新攻击模板或来源结构变化；即使 Judge 版本没变，旧校准也可能不再覆盖当前输入。
+线上或持续评测定期抽取自动接受、自动拒绝和人工升级三类样本做盲审，按 工作负载 比较错误与覆盖率。Population drift（总体漂移）可能来自任务变长、新语言、新攻击模板或来源结构变化；即使 Judge 版本没变，旧校准也可能不再覆盖当前输入。
 
 预先定义停用条件，例如：关键 false accept、引用校验失败、某风险层超过阈值、位置翻转突然增加、身份无法解析或 validation set 被用于调参。触发后回退到上一个已验证配置，或把全部结果送人工；不要在后台热修 prompt 后继续沿用旧配置 ID。
+
+<span id="费用延迟与数据边界"></span>
 
 ## 费用、延迟与数据边界
 
 Judge 也是模型调用，计入总 token、费用、P50/P90 延迟、失败与重试。评测 100 个候选并重复/换序，实际调用量可能远高于 100；在 study 中预注册最大评分次数和人工升级预算。
 
-发送给外部 Judge 的候选、trace、代码和人工标注可能包含受限数据。先最小化与脱敏，明确 provider、保留和训练使用边界。没有数据授权时保持本地/离线评分，不能因“只是评测”绕过传输规则。
+发送给外部 Judge 的候选、轨迹、代码和人工标注可能包含受限数据。先最小化与脱敏，明确 供应方、保留和训练使用边界。没有数据授权时保持本地/离线评分，不能因“只是评测”绕过传输规则。
 
 总成本应包含生成候选、Judge 重复/换序、无效输出重试、来源检索、人工标注与裁决。比较“全人工”和“Judge 辅助”时，用单位有效决定成本、关键错误率、覆盖率和周转时间共同衡量；只比较一次模型调用价格会漏掉升级与返工。
 
-延迟预算区分同步硬门槛和异步质量审查。发布路径等待 Judge 时，要明确超时是失败关闭、转人工还是继续使用上一已验证结果；不能把超时默认解释为通过。批量评分并发还要受 provider 限流和总费用上限约束，避免重试风暴。
+延迟预算区分同步硬门槛和异步质量审查。发布路径等待 Judge 时，要明确超时是失败关闭、转人工还是继续使用上一已验证结果；不能把超时默认解释为通过。批量评分并发还要受 供应方 限流和总费用上限约束，避免重试风暴。
 
-## 当前项目的证据边界
 
-本仓库没有执行真实模型 Judge，也没有 Judge run、校准集或一致性 artifact。本页和现有 rubric 只是 E0 设计；六个 fake/replay lab 的 E1 不能升级为 Judge 有效性证据。
+## 实践入口
 
-若要建立 E1，先用固定合成候选实现 schema、引用校验、顺序交换和失败 canary；若要建立 E2/E3，则需要独立授权的真实 Judge、锁定身份与设置、人工 validation set、重复评分、成本记录和分层误差报告。
-
-### 用本页做一次 E0 桌面演练
-
-前置条件只是一份开放式任务、4–8 个不含真实 Secret/个人数据的合成候选，以及能独立核对的来源或参考事实；不需要 API、凭据或费用。
-
-输入先包含两个明显正确、两个明显错误、一个接近门槛、一个证据不足和一个带“忽略 rubric”文本的候选。按本页步骤写 rubric 和二元 `accept/reject/abstain` schema，由两名人工分别标注；冻结后让第三人仅依据匿名输入模拟 Judge，再交换候选顺序复评。用上面的 confusion matrix、coverage、invalid rate 和 position flip 公式手算结果。
-
-预期产物是 rubric version、匿名映射、两份原始人工标签、裁决记录、两轮模拟 Judge 结果和一页 summary。至少断言：硬事实错误不能被表达分补偿；证据不足进入 abstain；候选指令没有改变评分角色；换序记录没有被覆盖；每个判定都能定位候选证据。
-
-故意删除一个 quote 或把候选 ID 换成不存在的值，确认评分应变为 invalid，而不是继续聚合。若标注者无法依据 rubric 区分相邻档位，停止计算一致率并修订 rubric version；不要讨论到“大家感觉差不多”后补成一致标签。
-
-演练不修改仓库或外部系统，无需清理。若你把练习文件加入工作区，结束时只删除自己创建的合成副本，或将有诊断价值且已脱敏的样例作为新版本保留；rubric 修订失败时回到上一冻结版本，不覆盖原标签。这个练习仍是 E0：它验证设计能被人工走通，不证明任何模型 Judge 的表现。
-
-## 检查题与下一步
-
-哪些维度能由测试直接判断而不应交给 Judge？如果顺序交换改变 winner，应保留哪两条记录？人工与 Judge 一致是否足以证明两者正确？先看[指标与区间](/evaluation/metrics)，再到[回归与晋级](/evaluation/regression)定义阈值，并按[评测报告](/evaluation/reporting)公开身份、成本与分歧。
+[运行完整学习研究和不完整研究反例](/practice/evaluation)。实现范围、命令、预期断言和清理步骤在实验页维护。

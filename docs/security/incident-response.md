@@ -2,6 +2,16 @@
 
 Incident response（事件响应）的目标不是让模型“自行修复”，而是在证据仍可信时停止扩散、恢复人的控制，确认真实世界发生了什么，并建立可验证的防回归措施。Agent 的最终摘要、一个 `cancelled` 状态或一条失败响应都不能单独证明副作用已经停止。
 
+<span id="在本项目做一次无副作用演练"></span>
+<span id="前置条件与输入"></span>
+<span id="命令"></span>
+<span id="预期输出与断言"></span>
+<span id="失败、停止、清理与回退"></span>
+<span id="失败停止清理与回退"></span>
+<span id="检查题"></span>
+
+<span id="eventnear-miss-与-incident"></span>
+
 ## Event、Near Miss 与 Incident
 
 - **Event（安全事件记录）**：值得观察的动作或异常，例如 policy 拒绝一次外域请求；
@@ -27,9 +37,11 @@ Incident response（事件响应）的目标不是让模型“自行修复”，
 | 联络路径 | 安全、隐私、运维、法务/合规、用户沟通由谁决定 |
 | 练习案例 | 上次 tabletop（桌面演练）与恢复测试何时通过 |
 
-停止开关需要独立于被怀疑的模型和工具。例如 MCP server 可能被攻陷时，不能依靠它自己的“已停止”响应；从 controller、网络、身份或队列侧切断并在外部核对。
+停止开关需要独立于被怀疑的模型和工具。例如 MCP server 可能被攻陷时，不能依靠它自己的“已停止”响应；从 控制器、网络、身份或队列侧切断并在外部核对。
 
 Break-glass access（应急高权限）只用于已定义事故操作，使用短期身份、双人或等价审计、最小范围和自动到期。它不能成为 agent 在普通失败后自动扩权的后门。
+
+<span id="角色可以兼任责任不能消失"></span>
 
 ## 角色可以兼任，责任不能消失
 
@@ -67,6 +79,8 @@ Prepared → Detected → Triaged → Contained → Eradicated → Recovered →
 
 状态转换要有可观察准入条件。`Contained` 不是“点了停止”，而是确认新执行停止、出口受限、凭据失效且影响不再扩大；`Recovered` 不是“测试绿了”，而是业务状态、权限和监控都回到已知安全边界。
 
+<span id="第一阶段检测与初始分诊"></span>
+
 ## 第一阶段：检测与初始分诊
 
 收到告警后立即生成 incident ID，记录首次观察时间、报告者、系统、run/task、初始证据和当前 owner。将内容分为：
@@ -78,7 +92,9 @@ Prepared → Detected → Triaged → Contained → Eradicated → Recovered →
 
 初始问题：动作仍在继续吗？哪个身份和环境？可能触及哪些数据/资源？是否存在其他使用同一凭据、config、fixture、memory 或扩展的 run？最近一次已知良好状态是什么？
 
-优先查询外部系统真实状态：Git ref、消息记录、数据库 audit、云资源、网络出口和 provider usage。Agent trace 说明 controller 看见了什么，不一定证明远端提交成功或失败；timeout 也可能发生在远端已经完成之后。
+优先查询外部系统真实状态：Git ref、消息记录、数据库 audit、云资源、网络出口和 供应方 usage。Agent 轨迹 说明 控制器 看见了什么，不一定证明远端提交成功或失败；timeout 也可能发生在远端已经完成之后。
+
+<span id="第二阶段停止传播"></span>
 
 ## 第二阶段：停止传播
 
@@ -91,9 +107,11 @@ Prepared → Detected → Triaged → Contained → Eradicated → Recovered →
 5. 暂停部署、发布、同步和自动恢复；
 6. 对每一层读取状态或审计，确认它真的停止。
 
-Cancellation（取消）通常是协作式信号：组件必须再次检查才能退出。为模型请求、工具进程和子任务分别定义超时与强制终止；阻塞调用如果不能中断，就先在外层撤销凭据/网络并持续监视。不要因 controller 返回 `cancelled` 就关闭事件。
+Cancellation（取消）通常是协作式信号：组件必须再次检查才能退出。为模型请求、工具进程和子任务分别定义超时与强制终止；阻塞调用如果不能中断，就先在外层撤销凭据/网络并持续监视。不要因 控制器 返回 `cancelled` 就关闭事件。
 
 自动重试是常见放大器。先关重试再处置原失败；否则撤销凭据或断网会触发更多请求，幂等性不足时还可能复制副作用。
+
+<span id="第三阶段隔离与身份处置"></span>
 
 ## 第三阶段：隔离与身份处置
 
@@ -101,7 +119,9 @@ Containment（遏制）保留必要状态但切断传播：将 artifact、机器
 
 Secret 可能暴露时先撤销/轮换，再调查是否被使用。分别处理 access token、refresh token、browser session、SSH key、cloud role、webhook 和 derived credential；撤销父凭据后验证已签发子会话是否也失效。
 
-跨租户或个人数据事件暂停相关索引、缓存和导出，保存 subject/tenant 范围，不扩大读取“看看还有什么”。供应链事件固定可疑包、镜像、Action、MCP 或 skill 的精确 hash，并在干净环境中禁用，不从可疑环境生成新的可信构建。
+跨租户或个人数据事件暂停相关索引、缓存和导出，保存 subject/tenant 范围，不扩大读取“看看还有什么”。供应链事件固定可疑包、镜像、Action（动作提议）、MCP 或 skill 的精确 hash，并在干净环境中禁用，不从可疑环境生成新的可信构建。
+
+<span id="第四阶段证据保全但不复制秘密"></span>
 
 ## 第四阶段：证据保全但不复制秘密
 
@@ -123,6 +143,8 @@ known impact / unknowns / containment evidence
 
 过早删除会破坏取证，但继续公开又扩大泄漏。先限制访问、吊销加密/分享能力、保存最小必要证据，再按数据与法律流程删除。证据保留和隐私删除发生冲突时由授权负责人决定，不能交给 agent 猜。
 
+<span id="第五阶段确认实际影响"></span>
+
 ## 第五阶段：确认实际影响
 
 按资源逐项核对，而不是使用一句“没有发现异常”：
@@ -137,13 +159,13 @@ known impact / unknowns / containment evidence
 | 谁可能访问 | ACL、下载/查看日志、token scope |
 | 是否持久化 | memory/index/cache/artifact/Git/backup 查询 |
 
-`HTTP timeout`、进程异常和模型声称“我没有发送”都不能排除远端成功。反过来，模型提出了坏 action 但 policy 在 handler 前拒绝，且网络/目标系统没有记录，可以归类为 near miss，仍需修软控制和回归。
+`HTTP timeout`、进程异常和模型声称“我没有发送”都不能排除远端成功。反过来，模型提出了坏 action 但 policy 在 工具处理函数 前拒绝，且网络/目标系统没有记录，可以归类为 near miss，仍需修软控制和回归。
 
 ## 按事件类型执行 Runbook
 
 ### Secret 或数据外发
 
-停止外发与重试；撤销相关身份；隔离 prompt/trace/result；从网络和接收方确认目标、时间和字段；检查日志、memory、cache、Git、artifact 和备份副本；由隐私/安全 owner 决定通知和删除。回归使用相同字段形状的合成 canary，不复制真实值。
+停止外发与重试；撤销相关身份；隔离 prompt/轨迹/result；从网络和接收方确认目标、时间和字段；检查日志、memory、cache、Git、artifact 和备份副本；由隐私/安全 owner 决定通知和删除。回归使用相同字段形状的合成 canary，不复制真实值。
 
 ### 未授权写入或破坏性动作
 
@@ -151,11 +173,11 @@ known impact / unknowns / containment evidence
 
 ### 费用或资源失控
 
-关闭新调度、递归委派和自动重试；降低并发/额度，必要时撤销计费身份；从 provider usage 与本地 run 对账。保留造成循环的最小 trace，修复 steps/model calls/cost/timeout/cancellation 上限，再用 fake adapter 注入无限循环验证。
+关闭新调度、递归委派和自动重试；降低并发/额度，必要时撤销计费身份；从 供应方 usage 与本地 run 对账。保留造成循环的最小 轨迹，修复 steps/model calls/cost/timeout/cancellation 上限，再用 fake 适配器 注入无限循环验证。
 
 ### Prompt Injection 或 Memory 污染
 
-隔离攻击来源和受影响 session；禁用可外发工具；清除/封锁关联 memory、索引和 checkpoint，并检查后续 run 是否读取过。修复来源/权限/数据流边界，新增直接、间接和跨 run 负例；不能只把攻击句加入关键词黑名单。
+隔离攻击来源和受影响 session；禁用可外发工具；清除/封锁关联 memory、索引和 检查点，并检查后续 run 是否读取过。修复来源/权限/数据流边界，新增直接、间接和跨 run 负例；不能只把攻击句加入关键词黑名单。
 
 ### 供应链异常
 
@@ -164,6 +186,8 @@ known impact / unknowns / containment evidence
 ### 公开结果或 Git 污染
 
 先下线/限制访问和撤销其中的 Secret，再判断 clone、cache、CI log、release、Pages 和镜像是否含副本。历史重写可能影响协作者与签名，需要专门计划和授权；覆盖同名文件不能让旧对象消失。发布新版本和更正说明，并验证从公开入口下载的最终字节。
+
+<span id="第六阶段根除原因不只修表象"></span>
 
 ## 第六阶段：根除原因，不只修表象
 
@@ -178,9 +202,11 @@ source → context → model proposal → parser/schema → policy/approval
 
 修复优先顺序是减少能力、在执行前增加确定性边界、缩小身份/数据、改善检测与恢复，最后才是提示词优化。每项修复绑定 owner、目标日期、验收命令和能复现旧失败的合成负例。
 
+<span id="第七阶段从已知良好状态恢复"></span>
+
 ## 第七阶段：从已知良好状态恢复
 
-Recovery（恢复）从干净环境和明确基线开始，不直接复用受影响 session、memory、checkpoint、browser profile 或构建 cache。恢复前确认：
+Recovery（恢复）从干净环境和明确基线开始，不直接复用受影响 session、memory、检查点、browser profile 或构建 cache。恢复前确认：
 
 - 根因控制和负例已通过，旧危险路径默认拒绝；
 - 新凭据最小权限可用，旧凭据与派生会话失效；
@@ -191,13 +217,15 @@ Recovery（恢复）从干净环境和明确基线开始，不直接复用受影
 
 采用分阶段恢复：先离线 replay，再隔离测试环境，再小范围真实探针，最后恢复自动化；每阶段定义停止阈值。对高影响动作保持只读或人工批准，直到观察窗口结束。
 
-Checkpoint 只有在绑定的 task/config/policy/fixture 未受污染、计数器和副作用可对账时才能恢复。否则从已知良好起点重建比“继续上次进度”更安全。
+Checkpoint（检查点） 只有在绑定的 task/config/policy/fixture 未受污染、计数器和副作用可对账时才能恢复。否则从已知良好起点重建比“继续上次进度”更安全。
+
+<span id="沟通要分开事实影响和行动"></span>
 
 ## 沟通要分开事实、影响和行动
 
 状态更新包含：发生/可能发生什么、受影响范围、已采取的遏制、用户当前应做什么、哪些仍未知、下一次更新时间。不要转发原始 Secret、攻击载荷或未经确认的归因；也不要用“问题已解决”代替恢复证据。
 
-向用户、客户、provider、监管或开源协作者的通知由相应 owner 按政策决定。Agent 可以生成草稿，但发送对象、内容和时间需要人工确认。事故编号和公开更正应能关联内部证据，又不暴露敏感细节。
+向用户、客户、供应方、监管或开源协作者的通知由相应 owner 按政策决定。Agent 可以生成草稿，但发送对象、内容和时间需要人工确认。事故编号和公开更正应能关联内部证据，又不暴露敏感细节。
 
 ## 关闭与复盘
 
@@ -221,43 +249,11 @@ Postmortem（复盘）至少包含：
 
 Tabletop 让参与者按假设时间线说出动作和所需证据；technical drill（技术演练）在隔离环境实际触发停止、撤销、回退和验证。演练不使用真实客户数据、production Secret 或不可逆外部动作。
 
-推荐场景：外域发送被 policy 拒绝；token 出现在合成 trace；递归 agent 消耗预算；MCP schema 意外扩大；公开结果含个人路径；timeout 后远端资源可能已创建。每次至少验证 owner 可联系、停止开关可用、外部状态能核对、证据可脱敏、恢复不会重复写入。
+推荐场景：外域发送被 policy 拒绝；token 出现在合成 轨迹；递归 agent 消耗预算；MCP schema 意外扩大；公开结果含个人路径；timeout 后远端资源可能已创建。每次至少验证 owner 可联系、停止开关可用、外部状态能核对、证据可脱敏、恢复不会重复写入。
 
 衡量 detection time（检测时间）、containment time（遏制时间）、recovery time（恢复时间）、影响范围、重复事故和 action item 完成率；不要用“事件数量越少”奖励不报告 near miss。
 
-## 在本项目做一次无副作用演练
 
-### 前置条件与输入
+## 实践入口
 
-要求 Python 3.11+ 与 uv 0.11，依赖已按 `uv.lock` 安装，并从仓库根目录执行。测试使用 fake adapter、内存工具和合成 token/path；不会启动真实模型、网络、浏览器、子进程树或外部写入。
-
-### 命令
-
-```powershell
-uv run --frozen --offline pytest -q lab/tests/test_loop.py::test_permission_denial_stops_before_tool_execution lab/tests/test_loop.py::test_concurrent_cancellation_propagates_after_adapter_returns lab/tests/test_memory_context_trace.py::test_trace_redacts_secret_values_paths_and_tool_results
-uv run --frozen --offline python scripts/run-labs.py browser
-```
-
-### 预期输出与断言
-
-Pytest 应有 3 项通过，并证明：未授权 handler 没有执行；adapter 返回控制后取消被观察为 `cancelled`；合成 token、Authorization 和个人路径未进入序列化结果。浏览器案例应为 `E1/offline`，外域负例被拒绝、`side_effects=0`。
-
-把结果按事件响应解释：permission test 是 near miss 控制证据；cancellation test 只证明协作式检查点，不证明能强制中断阻塞 adapter 或进程树；redaction test 只证明固定模式，不证明数据从未外发。浏览器案例也没有真实模型或浏览器。
-
-### 失败、停止、清理与回退
-
-若危险 handler 执行、取消后仍被标为完成、合成值出现在 Result、外域负例通过，停止后续自动化；保留脱敏测试输出，修 controller/policy/redaction，不删除负例或扩大允许范围。
-
-命令只创建内存状态和可忽略测试缓存；需要时只清理 `.pytest_cache/`。误改实现时用 `git diff -- lab/` 精确定位并只恢复自己修改。修复未验证前继续使用上一已知良好 policy/config，不把当前 lab 当成 production 恢复证明。
-
-当前项目没有进程级 kill、远端凭据撤销、真实网络审计、队列/子 agent 停止、备份恢复或通知演练，因此不能宣称完整事件响应已实现。这里的 E1 证据只是最小 controller 控制与脱敏路径。
-
-下一步回到[威胁模型](/security/threat-model)更新场景与残余风险，用[Secret 与隐私](/security/secrets-privacy)补删除映射，并在[供应链安全](/security/supply-chain)修复受影响版本。
-
-## 检查题
-
-1. Runner 返回 `cancelled` 后，为什么还要核对网络、子任务和外部资源？
-2. Secret 可能泄漏时，为什么通常先撤销再完成取证？
-3. Timeout 后远端可能已经成功写入，应查哪些独立证据？
-4. 为什么删除触发攻击的网页文本不等于根除漏洞？
-5. 哪些条件满足后，才能把事件从 `Recovered` 转为 `Closed`？
+[用安全工作表关联威胁与证据](/practice/security-review)。实现范围、命令、预期断言和清理步骤在实验页维护。

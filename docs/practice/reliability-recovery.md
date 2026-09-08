@@ -1,24 +1,17 @@
 # 可靠性恢复工作坊：响应丢失后先对账
 
+<span id="学习目标"></span>
+<span id="停止、清理与回滚"></span>
+<span id="停止清理与回滚"></span>
+<span id="检查题"></span>
+
 ## 这页解决什么问题
 
 外部写入最危险的失败，不是明确返回错误，而是动作可能已经成功、响应却没有到达 Harness。此时本地只知道 outcome unknown（结果未知）：把它当成失败并换一个 idempotency key（幂等键）重试，可能创建两个订单、发两封邮件或重复扣款。
 
 本工作坊用固定内存服务复现这个窗口：服务先提交写入，再丢失第一次响应。安全路径保存 intent（动作意图），按原幂等键查询 receipt（回执），核对参数指纹后复用真实结果；反例改用新 key 重试，确定性地产生两次副作用。
 
-当前证据为 E1：它证明仓库里的固定恢复算法和负例按断言运行，不证明生产数据库、队列、Provider 或跨区域系统已经具备相同保证。
-
-## 学习目标
-
-完成后你应该能够：
-
-- 区分 attempt、external effect 与 response 三个不同事实；
-- 解释 timeout 为什么不能证明远端动作没有发生；
-- 在执行前固定 intent、业务身份、参数指纹和幂等键；
-- 把 unknown outcome 保留为独立状态，而不是改写成普通失败；
-- 先查询目标系统 receipt，再决定复用、重试、补偿或人工处理；
-- 用副作用次数而不只用最终状态验证恢复安全性；
-- 指出内存 fake 与持久化、多 worker、真实外部 API 之间还缺什么。
+当前证据为 E1：它证明仓库里的固定恢复算法和负例按断言运行，不证明生产数据库、队列、Provider（供应方） 或跨区域系统已经具备相同保证。
 
 ## 一次写入其实有三个结果
 
@@ -45,6 +38,8 @@ Unknown 不是“系统还没想好报什么错”，而是一项业务事实：
 
 ## 安全恢复需要哪四样东西
 
+<span id="1-write-intent"></span>
+
 ### 1. Write intent
 
 在外部调用前记录逻辑操作，而不是等成功后才补日志。最小 intent 包含：
@@ -61,9 +56,13 @@ absolute deadline / approval reference
 
 本工作坊的 `WriteIntent` 使用 `ToolCall`，并对 tool name 与 canonical JSON arguments 计算 SHA-256。`call_id` 表示一次尝试；`idempotency_key` 表示跨尝试不变的逻辑动作，两者不能互换。
 
+<span id="2-目标系统幂等"></span>
+
 ### 2. 目标系统幂等
 
 幂等不能只存在 Harness 进程的成功结果 cache 中。目标系统或持久代理需要按 key 记住已经接受的操作，并把 key 绑定参数指纹。相同 key、相同语义可以返回已有 receipt；相同 key、不同语义必须冲突。
+
+<span id="3-可查询-receipt"></span>
 
 ### 3. 可查询 receipt
 
@@ -77,6 +76,8 @@ committed status and version
 ```
 
 如果目标系统既不支持稳定 key，也不能查询操作结果，Harness 无法靠重试制造“恰好一次”。高影响动作应停在 unknown，转人工对账。
+
+<span id="4-独立-reconciliation"></span>
 
 ### 4. 独立 reconciliation
 
@@ -127,10 +128,10 @@ intent checkpointed
 ### 前置条件与固定输入
 
 - Node.js 22+，仅用于 npm 入口；
-- Python 3.11+，项目 CI 使用 Python 3.12；
+- Python 3.12，与项目 CI 一致；
 - `uv 0.11.16`，依赖由 `uv.lock` 固定并已进入本地 cache；
 - 从仓库根目录运行，当前输入固定在脚本的合成 `report.write` 调用；
-- 不使用真实模型、Provider、网络、凭据、个人路径、费用或外部资源。
+- 不使用真实模型、供应方、网络、凭据、个人路径、费用或外部资源。
 
 开始前记录 `git rev-parse HEAD` 与 `git status --short`。工作树有自己的实验改动时保留路径，不用 stash 或删除来“清场”。
 
@@ -212,7 +213,7 @@ uv run --frozen --offline pytest -vv lab/tests/test_recovery.py
 
 ## 怎样把模式接回 Harness
 
-当前 `HarnessRunner → ToolRegistry` 的顺序是：handler 正常返回后才把结果写入内存 cache，再记录 ToolResult 和 checkpoint。它能处理“副作用发生前的暂时错误”和“成功返回后的同 key 重复调用”，不能覆盖：
+当前 `HarnessRunner → ToolRegistry` 的顺序是：工具处理函数 正常返回后才把结果写入内存 cache，再记录 ToolResult（工具结果） 和 检查点。它能处理“副作用发生前的暂时错误”和“成功返回后的同 key 重复调用”，不能覆盖：
 
 ```text
 external commit succeeded
@@ -223,14 +224,14 @@ external commit succeeded
 
 生产接缝至少要增加：
 
-1. controller 在调用前持久保存 intent 与参数指纹；
+1. 控制器 在调用前持久保存 intent 与参数指纹；
 2. key 作用域绑定 subject、环境、operation version 与业务对象；
 3. Tool/目标系统按同一 key 去重并支持 receipt lookup；
-4. Adapter/Tool timeout 返回 `unknown`，不能自动映射成未执行；
+4. Adapter（适配器）/Tool timeout 返回 `unknown`，不能自动映射成未执行；
 5. 恢复 worker 先取得 run 所有权，再逐项对账 pending intents；
-6. matching receipt 补写本地 ToolResult/checkpoint，conflict 失败关闭；
+6. matching receipt 补写本地 工具结果/检查点，conflict 失败关闭；
 7. 没有权威未执行证据时不重试高影响动作；
-8. Validator 检查最终业务对象，而不只检查函数返回值。
+8. Validator（验证器） 检查最终业务对象，而不只检查函数返回值。
 
 这个顺序与 transactional outbox/inbox、任务队列至少一次投递并不冲突。它们仍需处理旧 worker、并发、乱序、过期和补偿失败。
 
@@ -276,25 +277,11 @@ external commit succeeded
 
 先保存原始 intent、key、fingerprint、attempt 时间线和目标 receipt，再修改 retry。扩大次数或缩短 timeout 只会改变故障概率，不能修复身份和对账语义。
 
-## 停止、清理与回滚
-
-出现以下任一情况立即停止扩大实验：真实凭据进入输入、目标从合成服务变成外部系统、无法确认 key 作用域、lookup 不具权威性、反例没有非零退出、第二个副作用无法清理，或当前工作树包含来源不明的重叠修改。
-
-默认工作坊只修改进程内对象并向 stdout 输出 JSON；进程结束后状态释放，没有外部资源、账单或个人数据需要清理。pytest 可能产生已忽略的 cache，可以保留复用，不应递归清理仓库。
-
-若为练习修改实现，先审查：
-
-```bash
-git diff -- lab/src/about_harness/recovery.py scripts/reliability-workshop.py lab/tests/test_recovery.py docs/practice/reliability-recovery.md
-```
-
-只回滚自己的候选 commit。Git 回滚不能撤销真实外部写入；一旦接入外部系统，先按 receipt 对账和补偿，再处理代码版本。
-
 ## 当前证据边界
 
 当前 E1 能证明：
 
-- 固定 ToolCall 在调用前形成可观察 intent 与参数指纹；
+- 固定 ToolCall（工具调用） 在调用前形成可观察 intent 与参数指纹；
 - 合成服务提交后可以丢失响应；
 - matching receipt 能把 unknown 安全转为 reconciled，副作用仍为 1；
 - 同 key 改参数会失败关闭；
@@ -306,16 +293,4 @@ git diff -- lab/src/about_harness/recovery.py scripts/reliability-workshop.py la
 - 目标系统的真实幂等、查询一致性或回执保留期；
 - 多 worker 的原子 reservation、CAS、lease 或 fencing；
 - 网络分区、队列重复、时钟漂移和跨区域恢复；
-- 补偿一定成功，或任何真实模型/Provider 的行为与质量。
-
-## 检查题
-
-1. 为什么客户端 timeout 后不能立即使用新 key 重试？
-2. `call_id` 与 `idempotency_key` 分别标识什么，哪个跨 attempt 复用？
-3. 为什么 receipt 必须包含参数 fingerprint？
-4. 第二个安全案例只有一次 attempt，为什么仍能从 unknown 变成 completed？
-5. 查询不到 receipt 时，还需要什么证据才能安全重试？
-6. 当前内存服务提供了哪种 E1 证据，离生产还缺哪些持久和并发能力？
-7. 如果 cancel 后收到迟到成功 receipt，Result 和业务状态应怎样处理？
-
-下一步回到[状态与可靠执行](/foundations/state-reliability)画完整崩溃窗口，在[可观测性](/foundations/observability)定义 intent/receipt 事件，再把一条恢复负例纳入[测试策略](/implementation/testing)和自己的 [Capstone](/guide/capstone)。
+- 补偿一定成功，或任何真实模型/供应方 的行为与质量。

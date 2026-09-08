@@ -11,6 +11,16 @@ query → identity/access/version filter → retrieve → rerank
 
 任一中间产物都必须能回到精确源文档与处理版本。答案文字正确但引用了错误版本、错误表格行或无权访问的文档，仍然失败。
 
+<span id="当前离线工作例"></span>
+<span id="前置条件与固定输入"></span>
+<span id="命令"></span>
+<span id="预期输出与断言"></span>
+<span id="失败、停止、清理与回退"></span>
+<span id="失败停止清理与回退"></span>
+<span id="证据边界"></span>
+<span id="完成检查表"></span>
+<span id="检查题"></span>
+
 ## 文档不是一个字符串
 
 至少区分五类对象：
@@ -40,6 +50,8 @@ query → identity/access/version filter → retrieve → rerank
 
 “使用最新文档”不是完整规则。Version `2` 可能只是草稿，较晚发布日期也不一定废止旧政策；需要由业务元数据决定 eligible version（合格版本）。
 
+<span id="摄取阶段先冻结原件与权限"></span>
+
 ## 摄取阶段：先冻结原件与权限
 
 Acquisition（摄取）记录：
@@ -64,6 +76,8 @@ acquired_at / connector version / ingestion run ID
 - HTML 登录页或错误页被当作 PDF 正文。
 
 这些情况应在解析前失败。不要让模型从标题猜正文或版权状态。
+
+<span id="解析阶段保留结构与损失说明"></span>
 
 ## 解析阶段：保留结构与损失说明
 
@@ -92,6 +106,8 @@ OCR（光学字符识别）可能把 `0/O`、小数点、负号、日期和表�
 
 重复页眉可能污染检索；双栏页面按错误顺序拼接会制造不存在的句子。清理规则应保存原 block 和 transformation version，避免“去噪”后无法解释缺字。
 
+<span id="chunking检索单位不等于引用单位"></span>
+
 ## Chunking：检索单位不等于引用单位
 
 Chunking（切片）把结构块组合成检索单元。Chunk 应满足：
@@ -108,6 +124,8 @@ Embedding chunk 可以比引用范围更宽；最终 citation span（引用范�
 ### Chunk 边界实验
 
 用含跨页段落、标题+列表、表格+脚注的固定小文档比较候选策略。主要结果不是“切得更碎”，而是 retrieval recall、citation precision、重复率、上下文 token 和错误版本率。每次只改变一个主要策略。
+
+<span id="index身份权限与失效"></span>
 
 ## Index：身份、权限与失效
 
@@ -126,6 +144,8 @@ superseded_by / deletion watermark
 
 访问控制最好在检索前作用于 index namespace/filter，并在返回结果后再防御性复核。先跨租户检索再让模型“忽略无权内容”已经造成泄漏。
 
+<span id="query先做资格过滤再排序相关性"></span>
+
 ## Query：先做资格过滤，再排序相关性
 
 查询流程建议固定为：
@@ -137,10 +157,12 @@ superseded_by / deletion watermark
 5. Rerank（重排）但不允许把不合格版本重新带回；
 6. 组装 context，记录 selected/dropped 与原因；
 7. 生成答案或 `insufficient/conflict/access_denied/parse_failed`；
-8. Citation validator 独立核对每条主张和引用；
+8. Citation 验证器 独立核对每条主张和引用；
 9. 保存结果、索引/config identity、latency 和 failure class。
 
 版本和 ACL 是资格条件，不是一个可被 relevance score 抵消的软分数。旧政策与当前问题文字更相似，也不能因此排在生效版本前。
+
+<span id="回答引用与拒答"></span>
 
 ## 回答、引用与拒答
 
@@ -215,7 +237,7 @@ source object
 - 恶意压缩包、超大页、递归对象和 parser 资源耗尽；
 - OCR/解析器漏洞与危险外部链接；
 - 模型在答案中复述敏感原文；
-- Public trace/fixture 携带未脱敏文档片段。
+- Public 轨迹/fixture 携带未脱敏文档片段。
 
 解析放入隔离环境，限制文件大小、页数、时间和内存；模型只能使用检索到的内容回答，文档文字不能提升为 system 指令或工具授权。高敏内容先做字段级 redaction，再决定是否送给模型。
 
@@ -251,72 +273,7 @@ source object
 
 每次修复建立新 parser/chunk/index/config identity，重跑相邻回归。旧结果保留为历史故障，不混入新配置指标。
 
-## 当前离线工作例
 
-仓库的 `document` fixture 有三条合成文档记录：`handbook@v1` 的 retention block 写 30 天，`handbook@v2` 写 45 天并另有 review block，第三条是无关 support block。确定性函数拒绝重复版本身份，按 `doc_id` 选择最大正整数版本，先检查 `access/parse_status`，再要求全部 query tokens 在同一 block 命中。
+## 实践入口
 
-### 前置条件与固定输入
-
-需要 Python 3.11+ 和 uv 0.11；依赖由 `uv.lock` 固定。从仓库根目录离线执行，不安装 LlamaIndex、parser、OCR、embedding model 或向量数据库，不设置 provider credential。
-
-输入与期望位于 `lab/fixtures/document/`：
-
-- `manifest.json` 固定 synthetic 来源、CC BY 4.0 许可和三个文件 hash；
-- `input.json` 固定 query 与三个带 access/parse/blocks 的版本化文档；
-- `expected.json` 要求回答 45 天、返回 v2 retention block 的结构化 citation、忽略一个旧版本；
-- `negative.json` 提交 v1 的 30 天 answer 与 citation，runner 必须拒绝。
-
-### 命令
-
-```powershell
-uv run --frozen --offline python scripts/run-labs.py document
-```
-
-### 预期输出与断言
-
-命令退出 0，并输出 `evidence=E1`、`offline=true`、`passed=true`、`negative_rejected=true`。Result 的 `status=answered`，答案包含 45 天，citation 锁定 `handbook` v2 的 `retention` block 与 quote；`stale_versions_ignored=1`，权限/解析失败计数为 0，fixture hash 与 manifest bundle 一致。
-
-人工复核还要确认：没有网络、credential、真实文档或上游 framework import；机器字段 `integration=LlamaIndex` 只是教学职责映射，`mode=offline-contract-seam` 才是实际执行方式。
-
-### 失败、停止、清理与回退
-
-若引用 v1、混用 30/45 天、无出处回答、manifest hash 不一致、负例未拒绝或命令需要网络，停止文档能力声明。先修 fixture/validator/版本规则，并保留失败输出；不要安装真实依赖、修改 expected 迎合错误结果或让模型凭记忆补答案。
-
-命令只读固定 JSON 并打印结果，不构建索引；无需清理文档数据，可能产生的 Python cache 不属于证据。误改时先运行：
-
-```powershell
-git diff -- lab/fixtures/document lab/src/about_harness/integrations/llama_index.py lab/src/about_harness/labs.py docs/domains/document.md
-```
-
-确认范围后只恢复自己的变化。候选失败时回到 manifest 锁定的 fixture 与已通过的确定性实现，不覆盖其他工作树改动。
-
-### 证据边界
-
-该实验提供 E1：当前仓库能读取固定 JSON、校验 bundle hash、拒绝版本身份冲突、按教学规则排除旧整数版本、在 parsed blocks 做 AND-style token 匹配、返回块级引用，并区分普通无命中、权限拒绝与解析失败。
-
-它没有 PDF/DOCX/HTML 解析、OCR、表格、图片、embedding、vector search、reranker、真实 user/tenant ACL、删除传播或真实 LlamaIndex；也没有模型生成。`access/parse_status` 是 fixture 输入，不是外部系统实测。因此不能证明真实文档问答正确、真实框架已接入或生产数据安全。
-
-## 完成检查表
-
-- 原件、document version、parsed block、chunk 和 index 是否有独立身份？
-- License、owner、tenant、ACL、保留与删除是否在摄取前明确？
-- Parser/OCR 是否保留结构、坐标、版本、置信和损失 warning？
-- Chunk 是否不跨版本/权限边界，并能回链最小 citation span？
-- “当前版本”是否有业务政策，而不是简单取最大数字？
-- ACL 和版本是否在 retrieval 前作为资格过滤？
-- Answer 是否逐主张引用，并由独立 validator 检查支持关系？
-- `insufficient/conflict/access_denied/parse_failed` 是否不泄漏、不由模型记忆补值？
-- 更新、撤销、权限变化和删除是否传播到 index/cache/session/export？
-- 指标是否覆盖摄取、解析、检索、引用、安全与运行，而非只看答案？
-- 每个结果能否回链 source/parser/chunk/index/config identity？
-- 当前 E1 fixture 是否没有被误写成真实 parser/RAG/LlamaIndex 证据？
-
-下一步：运行[文档离线案例](/labs/document)，再读[记忆生命周期](/foundations/memory)设计删除传播，并用[评测报告](/evaluation/reporting)表达引用和证据边界。
-
-## 检查题
-
-1. 为什么文档 content hash 不足以复现一个检索结果？
-2. “最新发布日期”与“当前生效版本”为什么不是同一概念？
-3. Retrieval chunk 与 citation span 为什么可以不同？
-4. 已删除原件仍能从向量索引召回时，故障属于哪一层？
-5. 当前 document fixture 通过后，为什么仍不能声称具备 PDF RAG 能力？
+[运行对应实验](/labs/document)。实现范围、命令、预期断言和清理步骤在实验页维护。

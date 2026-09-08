@@ -2,6 +2,13 @@
 
 Threat model（威胁模型）不是一张“可能被攻击”的清单，而是对系统边界、资产、攻击者能力、失败后果和控制证据的结构化假设。Agent harness 的特殊之处在于：模型会读取不可信内容、生成下一步动作，并借工具触达文件、网络和外部账号。因此“模型是否听话”不是安全边界，控制必须落在模型无法绕过的执行层。
 
+<span id="前置条件与固定输入"></span>
+<span id="命令"></span>
+<span id="预期输出与安全断言"></span>
+<span id="失败、停止、清理与回退"></span>
+<span id="失败停止清理与回退"></span>
+<span id="检查题"></span>
+
 ## 先确定范围与安全目标
 
 第一句话写清所建模的系统，例如：
@@ -42,7 +49,7 @@ Harness controller ── prompt/context ──► Model provider
 需要显式区分：
 
 - 用户指令与仓库/网页/文档中的文字；
-- harness controller 与概率模型；
+- harness 控制器 与概率模型；
 - 本地可信代码与第三方 dependency、skill、extension、MCP server；
 - 只读查询、工作区写入和外部不可逆副作用；
 - 测试、staging 与 production 身份；
@@ -79,9 +86,11 @@ Harness controller ── prompt/context ──► Model provider
 - 正常用户可能误指定 production、粘贴凭据或批准了没有看懂的动作；
 - 模型与 parser 可能在没有恶意者时产生错误 action、无限循环或 schema 偏差；
 - 并发 run 可能争用同一工作区、缓存、幂等键或外部资源；
-- Provider、网络和工具故障可能返回部分成功，让重试制造重复副作用。
+- Provider（供应方）、网络和工具故障可能返回部分成功，让重试制造重复副作用。
 
-同时写出能力限制。例如网页攻击者能控制页面文本但不能直接调用 shell；真正的风险是模型把文本转换成工具 action 后，controller 是否执行。这能把缓解点定位到动作边界。
+同时写出能力限制。例如网页攻击者能控制页面文本但不能直接调用 shell；真正的风险是模型把文本转换成工具 action 后，控制器 是否执行。这能把缓解点定位到动作边界。
+
+<span id="在本项目验证部分控制"></span>
 
 ## 用可验证句子描述威胁
 
@@ -130,7 +139,7 @@ Harness controller ── prompt/context ──► Model provider
 
 把高影响且难恢复的威胁优先改成 fail-closed（失败关闭），即不确定时拒绝或停止。不要用 `likelihood × impact = 12` 这类数字制造客观感，除非每个尺度和数据来源都已定义。
 
-风险排序还要写置信度。缺工具权限清单、网络日志或 provider 保留策略时，结论是“未知”，不是低风险。未知高影响边界应先调查或限制能力。
+风险排序还要写置信度。缺工具权限清单、网络日志或 供应方 保留策略时，结论是“未知”，不是低风险。未知高影响边界应先调查或限制能力。
 
 ## 控制要覆盖完整事故链
 
@@ -139,7 +148,7 @@ Harness controller ── prompt/context ──► Model provider
 1. **预防**：最小工具、短期身份、sandbox、资源级 allowlist、结构化 schema、默认禁网；
 2. **检测**：policy decision、目标漂移、异常费用、secret scan、工具清单 diff、外部状态核对；
 3. **遏制**：取消传播、并发/费用上限、关闭出口、吊销句柄、隔离 artifact；
-4. **恢复**：幂等重试、checkpoint、备份、补偿动作、凭据轮换和固定回归。
+4. **恢复**：幂等重试、检查点、备份、补偿动作、凭据轮换和固定回归。
 
 有效控制通常具备：在模型之外强制；默认拒绝；作用于规范化后的真实资源；与 task/run/identity 绑定；失败可观察；不能被同一被保护输入修改。只写“提示模型不要泄漏”或“让第二个模型审核”属于概率性缓解，不是硬边界。
 
@@ -157,13 +166,15 @@ Approval（审批）与 sandbox 解决不同问题：审批确认人是否同意
 | 预算 | 正常任务完成 | 无限 action 到上限停止 | adapter 阻塞 | timeout/cancel 后子任务退出 |
 | 脱敏 | 合成数据可记录 | canary secret/个人路径被拒绝 | 编码或嵌套字段 | 隔离 artifact 并保留脱敏证据 |
 
-测试应断言控制发生的顺序。例如越权工具必须在 handler 执行前被 policy 拒绝；只看最终“没有数据泄漏”可能漏掉工具已调用但恰好失败。攻击 fixture 使用合成 canary，不放真实凭据或真实客户内容。
+测试应断言控制发生的顺序。例如越权工具必须在 工具处理函数 执行前被 policy 拒绝；只看最终“没有数据泄漏”可能漏掉工具已调用但恰好失败。攻击 fixture 使用合成 canary，不放真实凭据或真实客户内容。
+
+<span id="工作例读取仓库并生成补丁"></span>
 
 ## 工作例：读取仓库并生成补丁
 
 ### 范围和流
 
-输入是用户任务与本地仓库；agent 可以读取工作区、生成补丁并运行预定义测试，不可访问个人主目录、环境凭据、网络或 Git remote。输出是工作区 diff、测试结果和脱敏 trace。
+输入是用户任务与本地仓库；agent 可以读取工作区、生成补丁并运行预定义测试，不可访问个人主目录、环境凭据、网络或 Git remote。输出是工作区 diff、测试结果和脱敏 轨迹。
 
 ### 关键威胁与控制
 
@@ -176,56 +187,23 @@ Approval（审批）与 sandbox 解决不同问题：审批确认人是否同意
 
 ### 验收
 
-成功不仅是补丁通过测试，还包括：只改允许路径、未使用未授权工具、拒绝事件可见、trace 不含凭据、取消能传播、失败可恢复。这个例子的最大残余风险是被允许的源码输出本身可能包含敏感业务数据，因此公开 diff 前仍需人工复核。
+成功不仅是补丁通过测试，还包括：只改允许路径、未使用未授权工具、拒绝事件可见、轨迹 不含凭据、取消能传播、失败可恢复。这个例子的最大残余风险是被允许的源码输出本身可能包含敏感业务数据，因此公开 diff 前仍需人工复核。
 
 ## 威胁模型何时失效
 
 以下变化触发重新建模，而不是只改风险表日期：
 
-- 新模型/provider、远程执行 surface 或浏览器登录态；
+- 新模型/供应方、远程执行 surface 或浏览器登录态；
 - 新工具、MCP server、extension、skill 或自动授权；
 - 文件、网络、Git、消息、支付或 production 权限扩大；
-- Memory、RAG、trace、遥测或跨租户数据流变化；
+- Memory（记忆）、RAG、轨迹、遥测或跨租户数据流变化；
 - 新自动化、并发/委派拓扑或无人值守运行；
 - 依赖、runner、部署链和身份系统升级；
 - 真实事故、near miss（险情）或控制负例失效。
 
 每条威胁记录 owner、最近复核、控制、测试、残余风险和接受者。接受残余风险是具体负责人对具体范围的决策，不是“暂时没时间”的同义词。范围或假设改变后，旧接受结论自动失效。
 
-## 在本项目验证部分控制
 
-### 前置条件与固定输入
+## 实践入口
 
-要求 Python 3.11+、uv 0.11、Node.js 22+，依赖已按锁文件安装，并从仓库根目录执行。测试只使用 fake/replay 和 `lab.local` 合成 fixture，不需要凭据、真实浏览器、网络或付费 API。
-
-### 命令
-
-```powershell
-uv run --frozen --offline pytest -q lab/tests/test_loop.py
-npm run labs:all
-npm run secrets:check
-```
-
-### 预期输出与安全断言
-
-Loop 测试应有 13 项通过，并证明：未授权工具在 handler 前停止；步骤与模型调用预算能打断循环；timeout/cancel 有明确停止原因；幂等键避免重复工具副作用；checkpoint 恢复保留状态；未通过验收或迟到 validator 结果不能成为 completed。六个 lab 应全部 `passed=true`、`offline=true`、`negative_rejected=true`、`safety_violation=false`。
-
-浏览器负例特别断言：包含注入文本的本地页面仍只抽取两条目录记录，外部域导航被拒绝，`side_effects=0`。Secret scan 应报告候选文件均未命中当前已知凭据和个人路径模式。
-
-### 失败、停止、清理与回退
-
-若危险 handler 被执行、外域请求发生、secret 出现在 trace、取消后子任务仍运行，立即停止；不要通过删除负例或放宽 allowlist 让测试通过。先隔离输出、撤销任何可能暴露的测试凭据，再修 controller/policy 边界。
-
-命令只使用本地固定输入并可能产生可忽略测试缓存；需要时只清理 `.pytest_cache/`。误改 fixture 或策略时先用 `git diff -- lab/` 定位，只恢复自己本轮改动。若新控制破坏正常路径，回到上一已验证 policy/config，再保留失败样例用于修复。
-
-这些 E1 测试只证明固定实现和合成威胁能触发预期控制，不证明真实浏览器、MCP、provider、操作系统隔离或生产身份安全。未覆盖项必须保留为 residual risk（残余风险）。
-
-下一步使用[Agent 安全评审工作表](/practice/security-review)把数据流、能力、威胁、控制负例和事件 Runbook 汇总为一份可复核决定；再用[Prompt Injection](/security/prompt-injection)细化不可信内容路径，到[Secret 与隐私](/security/secrets-privacy)建立数据清单，并在[事件响应](/security/incident-response)定义控制失效后的顺序。供应链入口见[扩展与供应链](/security/supply-chain)。
-
-## 检查题
-
-1. 官方网页中的文字为何仍不能授权工具副作用？
-2. 一个读取工具和一个发送工具分别安全，为什么组合后可能危险？
-3. Approval 已通过时，sandbox 还有什么作用？
-4. “测试最终没有泄漏”为什么不足以证明 policy 在正确位置阻断？
-5. 新增跨会话 memory 后，威胁模型哪些边界必须重画？
+[用安全工作表关联威胁与证据](/practice/security-review)。实现范围、命令、预期断言和清理步骤在实验页维护。
