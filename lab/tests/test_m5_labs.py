@@ -407,8 +407,8 @@ def test_research_fixture_preserves_conflict_and_claim_citations() -> None:
         },
     ]
     assert result["unsupported_claims"] == 1
-    assert result["integration"] == "LangGraph"
-    assert result["mode"] == "offline-contract-seam"
+    assert result["example"] == "local-claim-ledger"
+    assert result["mode"] == "offline-domain-v2"
 
 
 def test_research_rejects_duplicate_source_identity() -> None:
@@ -498,8 +498,8 @@ def test_document_fixture_filters_stale_version_and_cites_latest() -> None:
     assert result["stale_versions_ignored"] == 1
     assert result["access_denied_documents"] == 0
     assert result["parse_failed_documents"] == 0
-    assert result["integration"] == "LlamaIndex"
-    assert result["mode"] == "offline-contract-seam"
+    assert result["example"] == "local-document-query"
+    assert result["mode"] == "offline-domain-v2"
 
 
 def test_document_returns_auditable_insufficient_result_without_match() -> None:
@@ -514,8 +514,8 @@ def test_document_returns_auditable_insufficient_result_without_match() -> None:
         "stale_versions_ignored": 1,
         "access_denied_documents": 0,
         "parse_failed_documents": 0,
-        "integration": "LlamaIndex",
-        "mode": "offline-contract-seam",
+        "example": "local-document-query",
+        "mode": "offline-domain-v2",
     }
 
 
@@ -677,8 +677,8 @@ def test_data_fixture_preserves_identity_missing_null_and_redacts_email() -> Non
     }
     assert result["redacted_fields"] == 2
     assert result["sensitive_values_exposed"] == 0
-    assert result["integration"] == "PydanticAI"
-    assert result["mode"] == "offline-contract-seam"
+    assert result["example"] == "local-row-normalizer"
+    assert result["mode"] == "offline-domain-v2"
 
 
 @pytest.mark.parametrize(
@@ -738,7 +738,7 @@ def test_configs_and_eval_examples_match_formal_schemas() -> None:
         Draft202012Validator(config_schema).validate(json.loads(path.read_text(encoding="utf-8")))
 
     eval_schema: dict[str, Any] = json.loads(
-        (SCHEMAS / "eval-run.json").read_text(encoding="utf-8")
+        (SCHEMAS / "eval-run-v1.0.json").read_text(encoding="utf-8")
     )
     eval_file = ROOT.parent / "evals" / "runs.example.jsonl"
     rows = [json.loads(line) for line in eval_file.read_text(encoding="utf-8").splitlines()]

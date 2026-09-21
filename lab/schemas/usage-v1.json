@@ -1,0 +1,116 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Usage observation v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "token_status",
+    "input_tokens",
+    "output_tokens",
+    "cost_status",
+    "cost_usd",
+    "source"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "token_status": {
+      "enum": [
+        "known",
+        "unknown"
+      ]
+    },
+    "input_tokens": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "output_tokens": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "cost_status": {
+      "enum": [
+        "known",
+        "unknown"
+      ]
+    },
+    "cost_usd": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "source": {
+      "enum": [
+        "fixture",
+        "provider",
+        "price-estimate"
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "token_status": {
+            "const": "unknown"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "input_tokens": {
+            "type": "null"
+          },
+          "output_tokens": {
+            "type": "null"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "input_tokens": {
+            "type": "integer"
+          },
+          "output_tokens": {
+            "type": "integer"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "cost_status": {
+            "const": "unknown"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "cost_usd": {
+            "type": "null"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "cost_usd": {
+            "type": "number"
+          }
+        }
+      }
+    }
+  ]
+}

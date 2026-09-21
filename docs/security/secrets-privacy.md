@@ -2,7 +2,22 @@
 
 Secret 是能授予访问能力的凭据秘密，例如 API key、token、cookie、private key；个人数据是能直接或间接关联自然人的信息；业务机密则包括私有源码、内部文档和未公开决策。三者处理方式不同：Secret 暴露后通常要立即撤销或轮换，个人数据要按目的、权限和删除承诺管理，业务机密要控制接收方与再分发。
 
-它们一旦进入 prompt、tool result、trace、memory、Git 或构建 artifact，往往会被复制到多个系统。正确顺序是：先判断任务是否需要该数据，再限制数据流和权限，最后用扫描与人工复核发现遗漏。Redaction（脱敏）是纵深防御，不是允许过量采集的理由。
+它们一旦进入 prompt、tool result、轨迹、memory、Git 或构建 artifact，往往会被复制到多个系统。正确顺序是：先判断任务是否需要该数据，再限制数据流和权限，最后用扫描与人工复核发现遗漏。Redaction（脱敏）是纵深防御，不是允许过量采集的理由。
+
+<span id="当前两道扫描器实际做什么"></span>
+<span id="npm-run-secrets-check"></span>
+<span id="npm-run-secretscheck"></span>
+<span id="npm-run-results-redact"></span>
+<span id="npm-run-resultsredact"></span>
+<span id="在本项目验证脱敏边界"></span>
+<span id="前置条件与输入"></span>
+<span id="命令"></span>
+<span id="预期输出与断言"></span>
+<span id="失败、停止、清理与回退"></span>
+<span id="失败停止清理与回退"></span>
+<span id="检查题"></span>
+
+<span id="先分类再决定能否进入-agent"></span>
 
 ## 先分类，再决定能否进入 Agent
 
@@ -45,7 +60,7 @@ source
   └─ result ──► Git/artifact/Pages/share link
 ```
 
-每条箭头回答：谁发给谁、哪种身份、哪个区域、为何必要、保存多久、能否用于训练、管理员是否可见、如何删除。模型 provider 的政策与工具 server 的政策分别核对；一个合规的模型端点不代表第三方 MCP 可以接收同样数据。
+每条箭头回答：谁发给谁、哪种身份、哪个区域、为何必要、保存多久、能否用于训练、管理员是否可见、如何删除。模型 供应方 的政策与工具 server 的政策分别核对；一个合规的模型端点不代表第三方 MCP 可以接收同样数据。
 
 Owner（数据负责人）决定允许目的，operator（系统运维者）执行控制，data subject（数据主体）可能拥有访问或删除权。不要把“仓库维护者能读取”误作“可以上传给任意服务”。
 
@@ -53,7 +68,7 @@ Owner（数据负责人）决定允许目的，operator（系统运维者）执�
 
 优先依次使用：无数据方案、合成数据、聚合值、字段子集、局部片段、假名化值，最后才是原始数据。只问 schema 问题时不发送数据行；调试 parser 时保留结构而替换内容；总结长文档时先在可信环境做章节选择。
 
-Context builder（上下文构造器）应基于 task purpose 和数据分类选择内容：
+Context（上下文） builder（上下文构造器）应基于 task purpose 和数据分类选择内容：
 
 - 只加载当前 task、路径和租户需要的片段；
 - 去除无关历史、评论、附件、隐藏列和文件元数据；
@@ -62,7 +77,7 @@ Context builder（上下文构造器）应基于 task purpose 和数据分类选
 - 压缩/摘要后继承最高适用分类；
 - 拒绝模型提出的“为了方便请给我全部环境变量/数据库”。
 
-Data minimization（数据最小化）也降低 Prompt Injection 和成本风险：模型没看到的 Secret 不能被网页诱导外发，无关客户记录也不会进入 trace。
+Data minimization（数据最小化）也降低 Prompt Injection 和成本风险：模型没看到的 Secret 不能被网页诱导外发，无关客户记录也不会进入 轨迹。
 
 ## Secret 的完整生命周期
 
@@ -74,11 +89,11 @@ Data minimization（数据最小化）也降低 Prompt Injection 和成本风险
 
 ### 注入与使用
 
-首选 credential handle（凭据句柄）：模型和通用 controller 只看见引用，受信工具在执行边界解析真实值，并且不把值返回。句柄绑定工具、资源、动作、task/run、有效期与次数，不能被拿去调用另一服务。
+首选 credential handle（凭据句柄）：模型和通用 控制器 只看见引用，受信工具在执行边界解析真实值，并且不把值返回。句柄绑定工具、资源、动作、task/run、有效期与次数，不能被拿去调用另一服务。
 
 环境变量虽方便，却会被子进程继承，也可能出现在崩溃报告和调试输出；不要把整个父进程环境交给 shell。命令行参数可能出现在进程列表和历史；URL query、错误消息、HTTP debug log、Git remote、文件名和剪贴板同样不是 secret store。
 
-工具调用前检查：请求者、目标资源、所需 scope、task purpose 和参数来源。工具执行后对 stdout/stderr、exception、response headers、trace 和模型可见摘要做结构化脱敏。不要让模型先读取真实 Secret，再依赖它“记得不输出”。
+工具调用前检查：请求者、目标资源、所需 scope、task purpose 和参数来源。工具执行后对 stdout/stderr、exception、response headers、轨迹 和模型可见摘要做结构化脱敏。不要让模型先读取真实 Secret，再依赖它“记得不输出”。
 
 ### 轮换与撤销
 
@@ -94,17 +109,21 @@ Tenant（租户）边界必须在检索、缓存、memory、tool 和日志层同
 
 Pseudonymization（假名化）用可替代标识降低直接识别，但只要映射表或外部数据能关联，就仍不是匿名。Anonymization（匿名化）要求合理手段下不能重新识别；稀有时间戳、职位、错误堆栈、路径和多字段组合都可能破坏它。公开前用“攻击者还知道什么”做重识别审查，不只搜索姓名和邮箱。
 
+<span id="tracememory-与-cache-是新的数据副本"></span>
+
 ## Trace、Memory 与 Cache 是新的数据副本
 
 可观测性默认记录最少结构字段：事件类型、工具名、状态、耗时、计数、来源 ID 和脱敏错误类别。工具参数和响应使用字段 allowlist，不是“先全部记下来再删”。高风险数据只保存 hash、长度或受控引用。
 
-Memory 写入需要单独目的、scope、TTL 和删除入口；模型总结继承源分类，不能把私密对话总结成“通用经验”跨用户检索。Checkpoint 可能包含 adapter 状态和上下文，也按原数据最高分类管理。
+Memory（记忆） 写入需要单独目的、scope、TTL 和删除入口；模型总结继承源分类，不能把私密对话总结成“通用经验”跨用户检索。Checkpoint（检查点） 可能包含 适配器 状态和上下文，也按原数据最高分类管理。
 
-Cache 要能回答 key 如何隔离、值何时过期、删除如何传播、是否写入磁盘、谁可读取。关闭 UI 中的聊天记录不一定删除 provider log、本地 session、embedding index 或构建 artifact，必须逐系统核实。
+Cache 要能回答 key 如何隔离、值何时过期、删除如何传播、是否写入磁盘、谁可读取。关闭 UI 中的聊天记录不一定删除 供应方 log、本地 session、embedding index 或构建 artifact，必须逐系统核实。
+
+<span id="脱敏管线应先结构化再扫描"></span>
 
 ## 脱敏管线应先结构化、再扫描
 
-优先使用 allowlist projection（允许字段投影）：从结果对象只选择允许公开的字段，再对值脱敏。相比在任意原始 trace 上做正则替换，它更容易证明没有多余字段。
+优先使用 allowlist projection（允许字段投影）：从结果对象只选择允许公开的字段，再对值脱敏。相比在任意原始 轨迹 上做正则替换，它更容易证明没有多余字段。
 
 一个公开管线可按以下顺序：
 
@@ -119,19 +138,11 @@ Cache 要能回答 key 如何隔离、值何时过期、删除如何传播、是
 
 Redaction token 应明确不可逆还是可在受控 vault 中映射。可逆 tokenization（令牌化）仍需保护映射表；相同 hash 跨记录复用会泄露相等关系，低熵字段还可能被字典枚举。
 
-## 当前两道扫描器实际做什么
+## 当前扫描器的边界
 
-### `npm run secrets:check`
+`npm run secrets:check` 检查已跟踪及未被忽略的候选文件中的已知凭据和个人路径模式，并拒绝非 example 的 `.env` 文件；值扫描跳过超过 2 MB 或含 NUL 字节的文件，因此不是全格式内容审查。`npm run results:redact` 检查 `lab/results/public/` 中的公开产物。两者都是扫描与拒绝门禁，不会替用户删除敏感字段或重写文件，命令名称中的 `redact` 不代表自动完成脱敏。
 
-默认扫描 Git 已跟踪和未忽略的候选文件，拒绝非示例 `.env`，并查找几类已知 provider token、private key 和 Windows/Unix 用户路径。它跳过 `.git`、依赖/虚拟环境、构建目录、cache、大于 2 MB 的文件和包含 NUL 的二进制。
-
-所以通过只表示“扫描到的文本没有命中这些模式”。它不检查 Git 历史、被忽略文件、构建目录、超大/二进制/压缩文件、运行中网络请求、剪贴板、浏览器 profile，也不保证发现自定义 token、编码、分片或语义机密。
-
-### `npm run results:redact`
-
-当前对 `lab/results/public/` 递归检查：目录不能是符号链接，内部符号链接和非普通文件被拒绝；只允许 `.json/.jsonl`；每个对象必须可解析；规范化后的 `rawTrace/rawPrompt/credential/authorization/apiKey/password/secret/cookie/privateKey` 等键被拒绝；文本再匹配凭据赋值和个人路径模式。
-
-通过不表示内容已匿名，也不表示来源有再分发许可。扫描器不会理解专有代码片段、间接身份、内部业务事实、base64/加密载荷或多个字段组合的含义。机器检查后仍要人工看 tool arguments、stdout/stderr、页面内容、模型输出、文件名和引用。
+当前公开结果扫描允许 JSON、JSONL、Markdown 与补丁文本，拒绝符号链接及不支持的文件格式。JSON/JSONL 还会解析结构，按规范化键名拒绝 `rawPrompt`、`authorization` 等字段；全部允许格式都检查已知敏感值模式。Markdown 和补丁仅做文本模式扫描，仍需人工审查内容和许可。文件数量随结果集变化，不应把固定数量当成验收断言；扫描通过只能证明未命中已实现规则。
 
 ## 删除必须覆盖所有副本
 
@@ -163,41 +174,7 @@ Tombstone（删除标记）用于告诉异步系统和备份恢复流程“此�
 
 两类事件都要用合成 canary 建立回归：保留字段形状和失败路径，不把真实泄漏值复制进测试。完整固定顺序见[Agent 事件响应](/security/incident-response)。
 
-## 在本项目验证脱敏边界
 
-### 前置条件与输入
+## 实践入口
 
-要求 Python 3.11+、uv 0.11、Node.js 22+，依赖已按锁文件安装，并从仓库根目录执行。测试使用合成 token/个人路径和临时目录，不需要真实凭据、网络或模型 API。
-
-### 命令
-
-```powershell
-uv run --frozen --offline pytest -q lab/tests/test_memory_context_trace.py::test_trace_redacts_secret_values_paths_and_tool_results
-npm run secrets:check
-npm run results:redact
-npm run eval:self-test
-```
-
-### 预期输出与断言
-
-相关测试应全部通过，并证明嵌套 tool result 中的合成 token、Authorization 值和 Windows 个人路径不会进入序列化 Result。仓库扫描应通过已跟踪和候选文件；公开结果扫描应覆盖当前目录全部 JSON/JSONL 文件并通过，文件数随结果集变化。
-
-`eval:self-test` 应证明负例真的有效：公开目录中的合成 secret、规范化后的 `rawPrompt` 键和未知 `.log` 格式都会被拒绝，安全 JSONL 会被接受。正例门禁通过而负例也通过，说明 checker 没有证据价值。
-
-### 失败、停止、清理与回退
-
-若合成值出现在 Result、扫描器接受危险键/未知格式，或发现疑似真实凭据，立即停止提交和发布。真实凭据先撤销，不能只把测试字符串加进 ignore；个人数据先隔离并评估接收方。
-
-这些命令只读仓库输入，self-test 在系统临时目录创建并自动删除合成文件；Python 可能留下可忽略缓存。需要时只清理 `.pytest_cache/`。误改公开结果或脱敏代码时先用 `git diff -- lab/results/public/ lab/src/about_harness/trace.py scripts/` 定位，只恢复自己本轮变更；新规则误报时回到上一已验证版本，并保留失败 canary 再调整。
-
-当前 E1 证据只覆盖若干已知文本模式、敏感键和一个嵌套 trace 路径，不证明真实 provider 保留、网络出口、跨租户隔离、删除传播或匿名化已经验证。上线前还需要 provider 数据政策、访问审计、出口日志、删除演练和组织许可。
-
-下一步结合[威胁模型](/security/threat-model)检查接收方与数据流，用[Prompt Injection](/security/prompt-injection)限制不可信内容借工具外发，并在[事件响应](/security/incident-response)演练撤销和隔离。
-
-## 检查题
-
-1. 为什么模型生成的摘要仍可能继承原文的机密分类？
-2. 环境变量比硬编码方便，为什么仍不应把完整进程环境交给 agent shell？
-3. 假名化 ID 为什么不自动等于匿名数据？
-4. `secrets:check` 通过后，哪些位置和泄漏方式仍未检查？
-5. 删除 API 成功返回后，还要用什么证据确认数据没有从 cache 或备份恢复？
+[用安全工作表关联威胁与证据](/practice/security-review)。实现范围、命令、预期断言和清理步骤在实验页维护。

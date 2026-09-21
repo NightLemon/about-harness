@@ -2,6 +2,8 @@
 
 本页于 2026-09-21 读取 DeepAgents、PydanticAI、CrewAI 官方资料。[FACT:deepagents-overview] [FACT:pydantic-ai-overview] [FACT:crewai-overview] 以下是 E0 机制说明；本仓库没有安装或运行它们。MCP、A2A、Skills、Agents API 是协议、能力包或服务 API 层，不是可互换的 runtime，生态入口见[/ecosystem/overview](/ecosystem/overview)。
 
+这里的“未运行”仅指本页三个上游包。仓库另有四个[固定框架包离线示例](/frameworks/comparison)，而内部 PydanticAI integration 仍是职责接缝，不是 PydanticAI 包的执行证据。
+
 ## 先选要控制的复杂度
 
 | 候选 | 主要机制 | 合适的瓶颈 | 首先警惕 |

@@ -4,7 +4,8 @@ const env = { ...process.env, DOCS_BASE: '/about-harness/' }
 const commands = [
   ['scripts/check-docs.mjs'],
   ['node_modules/vitepress/bin/vitepress.js', 'build', 'docs'],
-  ['scripts/check-built-site.mjs']
+  ['scripts/check-built-site.mjs'],
+  ['scripts/check-legacy-routes.mjs']
 ]
 
 for (const args of commands) {

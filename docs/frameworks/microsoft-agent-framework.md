@@ -30,6 +30,8 @@ MAF 文档涉及 multi-provider 与 A2A/MCP 互操作时，至少冻结对端 id
 
 迁移完成条件是相同 Task、fixture、工具 handler、权限和预算下，业务 validator 通过；cancel/retry/resume 不重置预算或重复副作用；旧 AutoGen baseline 可重建。没有对应 probe 的能力保留 `untested`。
 
+本仓库已有 [AutoGen 0.7.5 的固定包离线示例](/frameworks/autogen)，可帮助观察参与者调度、工具与终止的 E1 路径；它没有运行 MAF，不能充当迁移后基线或兼容证明。
+
 ### 迁移盘点例
 
 | 原资产 | 迁移时的问题 | 合格证据 |

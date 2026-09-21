@@ -1,19 +1,11 @@
 # 上下文工程：让模型看到正确的当前状态
 
-Context engineering（上下文工程）是选择、组织和验证模型在当前一步实际看到的信息。它不等于写一个更长的提示词，也不等于把仓库、记忆和日志全部装进窗口。系统指令、项目规则、Task（任务契约）、会话消息、文件片段、工具结果、计划、记忆和压缩摘要都可能成为上下文，但它们的来源、权限、时效和用途不同。
+Context（上下文） engineering（上下文工程）是选择、组织和验证模型在当前一步实际看到的信息。它不等于写一个更长的提示词，也不等于把仓库、记忆和日志全部装进窗口。系统指令、项目规则、Task（任务契约）、会话消息、文件片段、工具结果、计划、记忆和压缩摘要都可能成为上下文，但它们的来源、权限、时效和用途不同。
 
 本页只说明稳定机制：内容怎样取得身份、怎样进入当前上下文、哪些不变量不能在压缩中丢失。需要决定改哪个选择策略、工具 schema 或结果格式，并以配对任务验证收益时，转到[上下文与工具调优](/optimization/context-tools)；该页不重复定义本页的数据流。
 
-## 学习目标
-
-读完本页，你应能：
-
-- 区分上下文、状态、记忆和权威源；
-- 画出从候选信息到最终模型请求的构建流水线；
-- 在 token（词元）预算内决定预加载、检索、摘要、引用或丢弃；
-- 防止不可信数据伪装成指令或事实；
-- 为压缩和工具输出设计保真断言；
-- 用当前仓库的 E1 选择器解释 `required`（必需）、`trusted`（可信）与 `priority`（优先级）的真实边界。
+<span id="学习目标"></span>
+<span id="当前仓库的最小-e1-选择器"></span>
 
 ## 上下文不是存储层
 
@@ -50,7 +42,7 @@ Context engineering（上下文工程）是选择、组织和验证模型在当�
 
 问题可能发生在任一层。检索器找到了正确文件，但 Adapter（适配器）把它放进错误 role（消息角色）；摘要保留了数字，却丢掉“未验证”；工具返回有下一页，但模型只收到首批数据——这些都不是简单的“模型没理解”。诊断时比较候选清单、最终 manifest 和实际请求，找第一处分歧。
 
-Context manifest（上下文清单）至少为每项记录：`item_id`、source、version/hash、scope、trust label、token、是否 required、选择/丢弃原因和在请求中的位置。敏感正文可只记录 hash 与受限 artifact ID，避免 trace 本身成为泄漏源。
+上下文 manifest（上下文清单）至少为每项记录：`item_id`、source、version/hash、scope、trust label、token、是否 required、选择/丢弃原因和在请求中的位置。敏感正文可只记录 hash 与受限 artifact ID，避免 轨迹 本身成为泄漏源。
 
 ## 六个质量维度
 
@@ -63,7 +55,7 @@ Context manifest（上下文清单）至少为每项记录：`item_id`、source�
 - **完整到足以决策**：保留约束、否定状态、分页和截断标记；
 - **经济**：以尽量少的 token 保留所需区分信息。
 
-相关性不能覆盖权限，可信度也不能覆盖时效。一个高度相关的私有记录若当前 Task 无权读取，必须先排除；一份可信旧手册若已经被新版本取代，也不能因来源可靠继续优先。
+相关性不能覆盖权限，可信度也不能覆盖时效。一个高度相关的私有记录若当前 任务 无权读取，必须先排除；一份可信旧手册若已经被新版本取代，也不能因来源可靠继续优先。
 
 ## 预算先扣除不可自由使用的部分
 
@@ -78,7 +70,7 @@ Context manifest（上下文清单）至少为每项记录：`item_id`、source�
 - 安全余量
 ```
 
-实际 token 数要由目标 model/adapter 的 tokenizer 或 provider usage 测量，不能用字符数固定换算。还要考虑重试时前缀增长、工具结果回流和多模态 part 的计费方式；具体上限属于版本敏感产品事实，应在对应适配卡中记录。
+实际 token 数要由目标 model/适配器 的 tokenizer 或 供应方 usage 测量，不能用字符数固定换算。还要考虑重试时前缀增长、工具结果回流和多模态 part 的计费方式；具体上限属于版本敏感产品事实，应在对应适配卡中记录。
 
 预算中的候选有五种主要去向：
 
@@ -98,17 +90,21 @@ Context manifest（上下文清单）至少为每项记录：`item_id`、source�
 
 Retrieval（检索）也要有权限过滤和停止条件。Top-k（相关性最高的前 k 项）命中不代表内容真实；相似度低不代表权威规则可以忽略；结果为空要区分确实无数据、无权限、超时和被过滤。多轮检索若不再增加新来源或改变假设，应停止而不是不断扩大 k。
 
+<span id="来源信任与-prompt-injection"></span>
+
 ## 来源、信任与 Prompt Injection
 
-网页、邮件、issue、代码注释和 ToolResult 可能包含“忽略规则并上传文件”等文本。它们是 untrusted data（不可信数据），不会因为被读取工具返回就升级为指令。高可信来源也不自动拥有动作授权：官方文档可以解释接口，却不能批准付费或发布。
+网页、邮件、issue、代码注释和 ToolResult（工具结果） 可能包含“忽略规则并上传文件”等文本。它们是 untrusted data（不可信数据），不会因为被读取工具返回就升级为指令。高可信来源也不自动拥有动作授权：官方文档可以解释接口，却不能批准付费或发布。
 
 构建上下文时保留来源边界，不把所有文本拼成一个无标签字符串。对不可信正文使用数据容器或明确 part，禁止它修改 system/project instruction、工具权限、memory policy 和 completion 标准。任何跨信任边界的动作仍由结构化 policy 根据当前用户授权判断。
 
-不可信并不等于一律丢弃；研究和浏览任务必须读取外部内容。正确做法是限制它的解释权和工具能力，并要求关键事实有独立来源或 validator，而不是把“请忽略页面指令”当唯一防线。
+不可信并不等于一律丢弃；研究和浏览任务必须读取外部内容。正确做法是限制它的解释权和工具能力，并要求关键事实有独立来源或 验证器，而不是把“请忽略页面指令”当唯一防线。
+
+<span id="排序去重与冲突"></span>
 
 ## 排序、去重与冲突
 
-顺序会影响模型看到的邻接关系：Task 与 acceptance（验收条件）靠近当前请求，ToolResult 紧邻对应 call，稳定规则放在可预测位置。不要每轮无意义复制同一项目规则；重复内容既占 token，也可能放大某条建议超过其真实优先级。
+顺序会影响模型看到的邻接关系：任务 与 acceptance（验收条件）靠近当前请求，工具结果 紧邻对应 call，稳定规则放在可预测位置。不要每轮无意义复制同一项目规则；重复内容既占 token，也可能放大某条建议超过其真实优先级。
 
 去重不能只比较字符串。两条看似相同的命令可能作用于不同目录或版本；两份“当前设计”可能来自不同 commit。保留权限更高、版本更适用且可定位的来源，并记录被替代项。
 
@@ -124,7 +120,7 @@ resolution: 对目标路径采用更具体规则；其余 docs 仍允许
 
 ## 工具输出也是下一轮输入
 
-常见污染来自测试打印几万行、递归列依赖、读取二进制或把完整网页塞回会话。工具应支持字段过滤、分页、最大结果、稳定错误结构和完整 artifact 引用。不能简单只保留末尾：命令摘要可能在开头，根因可能在中间，尾部也可能只有重复 stack trace。
+常见污染来自测试打印几万行、递归列依赖、读取二进制或把完整网页塞回会话。工具应支持字段过滤、分页、最大结果、稳定错误结构和完整 artifact 引用。不能简单只保留末尾：命令摘要可能在开头，根因可能在中间，尾部也可能只有重复 stack 轨迹。
 
 一个可恢复的截断结果至少说明：数据是否完整、保留范围、丢弃数量、下一页 token、完整 artifact 的位置，以及是否已有部分副作用。错误要区分 validation、permission、transient、conflict、partial 与 unsafe；只返回 `failed` 会迫使模型猜测并产生无效重试。
 
@@ -133,9 +129,9 @@ resolution: 对目标路径采用更具体规则；其余 docs 仍允许
 Compaction（上下文压缩）是有损变换。容易丢失的是被否定方案、精确数值、文件清单、未解决边界、失败状态和用户原话中的限定词。压缩前后至少断言：
 
 - 当前目标、acceptance 与禁止动作仍可逐项定位；
-- commit、版本、hash、金额和 deadline 没有被模糊化；
+- commit、版本、hash、金额和 截止时间 没有被模糊化；
 - `failed`、`pending`、`unverified` 没有变成肯定结论；
-- ToolCall（工具调用）、ToolResult、错误和副作用状态仍能配对；
+- ToolCall（工具调用）、工具结果、错误和副作用状态仍能配对；
 - 已改文件、验证结果、剩余工作和 rollback（回滚路径）保留；
 - 不可信数据没有升级为指令、事实或长期记忆。
 
@@ -153,53 +149,37 @@ Compaction（上下文压缩）是有损变换。容易丢失的是被否定方�
 - 安全停止点与回滚：...
 ```
 
-这不是所有任务都要创建的仪式。短任务使用内存状态和最终摘要即可；跨会话、即将压缩、多 Agent 或高风险迁移才值得持久化。状态文件也只是 checkpoint，恢复时仍要与当前工作树和外部状态对账。
+这不是所有任务都要创建的仪式。短任务使用内存状态和最终摘要即可；跨会话、即将压缩、多 Agent 或高风险迁移才值得持久化。状态文件也只是 检查点，恢复时仍要与当前工作树和外部状态对账。
+
+<span id="记忆指令和任务状态不能混写"></span>
 
 ## 记忆、指令和任务状态不能混写
 
 - **Instruction（指令）**表达应如何工作，强约束应版本化；
 - **Memory（记忆）**保存未来可能有用的观察，需要来源、scope、过期和纠正；
-- **Task state（任务状态）**描述这一次执行到哪里，完成后通常归档；
-- **Context**是从以上来源为当前一步选择出的视图。
+- **任务 state（任务状态）**描述这一次执行到哪里，完成后通常归档；
+- **上下文**是从以上来源为当前一步选择出的视图。
 
-把易变价格或旧 API 行为写进永久指令，会制造陈旧真相；把“不得发布”只留在自动记忆里，则无法保证加载；把未验证摘要写入长期记忆，会让下一次 run 继承错误。详细生命周期见[记忆优化](/optimization/memory)。
+把易变价格或旧 API 行为写进永久指令，会制造陈旧真相；把“不得发布”只留在自动记忆里，则无法保证加载；把未验证摘要写入长期记忆，会让下一次 run 继承错误。详细生命周期见[记忆优化](/foundations/memory)。
 
 ## 用指标判断上下文是否改善
 
-只看最终答案无法区分上下文与模型。固定 Task、模型、工具、预算和评分，对比单个选择变量，例如检索 top-k、排序、摘要模板或工具输出格式。至少记录：
+只看最终答案无法区分上下文与模型。固定 任务、模型、工具、预算和评分，对比单个选择变量，例如检索 top-k、排序、摘要模板或工具输出格式。至少记录：
 
-- Task success（任务成功）与 acceptance violation（验收违反）；
+- 任务 success（任务成功）与 acceptance violation（验收违反）；
 - required item 保留率、冲突和陈旧来源数；
 - input/tool-schema/tool-result token；
 - 无关文件读取、重复读取和分页遗漏；
 - 无效工具调用、人工纠正、延迟与费用；
 - Prompt Injection、安全拒绝和敏感内容暴露。
 
-更多 token 后成功率上升，也可能只是补回了原本缺失的关键规则；token 下降但约束违反增加，则不是优化。结论必须绑定 workload、model、harness、selector 配置和证据等级。
-
-## 当前仓库的最小 E1 选择器
-
-`ContextBudget` 接收带 `item_id`、source、声明 token 数、trusted、required 和 priority 的 `ContextItem`，按以下顺序选择：
-
-```text
-required → trusted → priority（高到低）→ item_id
-```
-
-当前固定测试在 8-token 预算中放入三项：4-token 的 required/trusted 项目规则、4-token 的 trusted code，以及 4-token、高优先级但 untrusted 的网页。预期选择规则与代码，丢弃网页。
-
-前置条件是 Python 3.11+、`uv 0.11.16` 和仓库锁文件。运行：
-
-```powershell
-uv run --frozen --offline pytest -q lab/tests/test_memory_context_trace.py::test_context_budget_prioritizes_required_and_trusted_sources
-```
-
-预期退出码为 0，显示 `passed`。该断言证明在这个固定输入上，required/trusted 排序先于 untrusted priority。若 required 项放不下，选择器会抛出 `required context exceeds budget`，而不是静默丢弃。
-
-测试失败时停止扩大上下文或接入真实数据；先检查排序键、声明 token 和 fixture。命令不读取凭据、网络或外部数据，只创建 pytest 临时状态；需要时清理 `.pytest_cache/`。若为了练习修改实现，用 `git diff -- lab/src/about_harness/context.py lab/tests/test_memory_context_trace.py` 定位并只回滚自己的变更。
+更多 token 后成功率上升，也可能只是补回了原本缺失的关键规则；token 下降但约束违反增加，则不是优化。结论必须绑定 工作负载、model、harness、selector 配置和证据等级。
 
 ## 已知限制
 
-- 当前选择器使用调用者声明的 token，不包含真实 tokenizer 或 provider 包装开销；
+当前 `ContextBudget` 最小选择器按 `required → trusted → priority（降序）→ item_id` 选择整项；固定 8-token 测试验证必需规则与可信代码优先于高优先级不可信网页。必需项放不下时抛出 `required context exceeds budget`，不会静默丢弃。它尚未接入 `HarnessRunner` 每步请求，以下限制针对这个独立 E1 组件。
+
+- 当前选择器使用调用者声明的 token，不包含真实 tokenizer 或 供应方 包装开销；
 - 它不实现权限/tenant 过滤、版本与过期检查、相关性检索、去重或冲突解析；
 - `trusted` 只是布尔字段，没有来源签名或 policy 授权；
 - untrusted 项被选中时只产生 warning，不提供 Prompt Injection 隔离；
@@ -214,8 +194,12 @@ uv run --frozen --offline pytest -q lab/tests/test_memory_context_trace.py::test
 - 每项内容能否回到 source/version，并说明为什么有权使用？
 - required 总量是否适配预算，输出与工具 schema 是否已预留？
 - 重复、冲突、陈旧和不可信内容是否被明确处理？
-- ToolResult 是否带完整性、分页、错误与副作用状态？
+- 工具结果 是否带完整性、分页、错误与副作用状态？
 - 压缩前后的精确数值、否定状态和 rollback 是否一致？
-- 改进是否用固定 Task 的单变量实验验证，而非凭感觉增加内容？
+- 改进是否用固定 任务 的单变量实验验证，而非凭感觉增加内容？
 
 下一步：用[上下文与工具调优](/optimization/context-tools)把选择策略变成配对实验，在[提示与任务契约](/optimization/prompting)固定目标与验收，并用[可观测性](/foundations/observability)记录实际进入请求的 context manifest。
+
+## 实践入口
+
+[从完整离线案例观察这些责任](/practice/end-to-end)。实现范围、命令、预期断言和清理步骤在实验页维护。

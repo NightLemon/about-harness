@@ -11,7 +11,8 @@ function run() {
   return spawnSync(process.execPath, [checker, temp], { encoding: 'utf8' })
 }
 try {
-  fs.cpSync(path.join(sourceRoot, 'examples'), path.join(temp, 'examples'), { recursive: true })
+  fs.mkdirSync(path.join(temp, 'examples'))
+  fs.cpSync(path.join(sourceRoot, 'examples', 'harnesses'), path.join(temp, 'examples', 'harnesses'), { recursive: true })
 
   const codexReadme = path.join(temp, 'examples', 'harnesses', 'codex', 'README.md')
   fs.writeFileSync(codexReadme, fs.readFileSync(codexReadme, 'utf8').replace('## 回滚', '## 撤销说明'))
@@ -20,8 +21,8 @@ try {
     throw new Error('examples checker accepted a tutorial without rollback')
   }
 
-  fs.rmSync(path.join(temp, 'examples'), { recursive: true, force: true })
-  fs.cpSync(path.join(sourceRoot, 'examples'), path.join(temp, 'examples'), { recursive: true })
+  fs.rmSync(path.join(temp, 'examples', 'harnesses'), { recursive: true, force: true })
+  fs.cpSync(path.join(sourceRoot, 'examples', 'harnesses'), path.join(temp, 'examples', 'harnesses'), { recursive: true })
   const piSettings = path.join(temp, 'examples', 'harnesses', 'pi', '.pi', 'settings.json')
   const parsed = JSON.parse(fs.readFileSync(piSettings, 'utf8'))
   parsed.apiKey = 'synthetic-canary-not-a-real-key'
@@ -31,8 +32,8 @@ try {
     throw new Error('examples checker accepted a credential-shaped setting')
   }
 
-  fs.rmSync(path.join(temp, 'examples'), { recursive: true, force: true })
-  fs.cpSync(path.join(sourceRoot, 'examples'), path.join(temp, 'examples'), { recursive: true })
+  fs.rmSync(path.join(temp, 'examples', 'harnesses'), { recursive: true, force: true })
+  fs.cpSync(path.join(sourceRoot, 'examples', 'harnesses'), path.join(temp, 'examples', 'harnesses'), { recursive: true })
   const claudeSettings = path.join(temp, 'examples', 'harnesses', 'claude-code', '.claude', 'settings.json')
   const claude = JSON.parse(fs.readFileSync(claudeSettings, 'utf8'))
   claude.permissions.allow.push('Bash(*)')
@@ -44,5 +45,7 @@ try {
 
   console.log('Harness examples negative tests passed: missing rollback, credential keys, and unrestricted shell permissions were rejected.')
 } finally {
-  fs.rmSync(temp, { recursive: true, force: true })
+  const target = fs.realpathSync(temp)
+  if (!target.startsWith(fs.realpathSync(os.tmpdir()) + path.sep) || !path.basename(target).startsWith('about-harness-examples-negative-')) throw new Error('Unsafe temporary example cleanup path')
+  fs.rmSync(target, { recursive: true, force: true })
 }

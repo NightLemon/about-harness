@@ -1,0 +1,99 @@
+{
+  "artifacts": {
+    "config": {
+      "path": "demo-collection-baseline/config.json",
+      "sha256": "be6e08b6f724592e419763b0f421b6ed513ccbfcef51a176c720cc55d4cc875a"
+    },
+    "fixture": {
+      "path": "demo-collection-baseline/fixture.json",
+      "sha256": "a8ea87ad0fa93d5337e6a843cb6f06934cab50d93ff274a80850ac838cdac38d"
+    },
+    "result": {
+      "path": "demo-collection-baseline/result.json",
+      "sha256": "3ab7dde76ea329fc51cb9510468555651f81af45c65db74306948f4de6a7952b"
+    },
+    "task": {
+      "path": "demo-collection-baseline/task.json",
+      "sha256": "7038cfacefe6871ded902c6ac859f22bcd3d50cb5a3d5d21a33017f4f73d94c2"
+    },
+    "trace": {
+      "path": "demo-collection-baseline/trace.json",
+      "sha256": "7d080645e0794c6fc735f6b1a38861eab7318902045e4bf677f430f37e0c86ae"
+    }
+  },
+  "cleanup": {
+    "temporary_repository_removed": true
+  },
+  "config": {
+    "config_id": "baseline",
+    "max_model_calls": 5,
+    "variant": "baseline"
+  },
+  "environment": {
+    "offline": true,
+    "platform": "win32",
+    "python": "3.12.13",
+    "runtime_source_hashes": {
+      "lab/src/about_harness/__init__.py": "9680114a05d37bd201e5affd861e0b4a843160d027dba133ba0edc3d57a66238",
+      "lab/src/about_harness/acceptance.py": "029cd4888850c9cf9afe492a3332cb74986da39d496b7fe2f4ddfc0b67f7ef98",
+      "lab/src/about_harness/adapters/__init__.py": "07b2b2ce4362631b571bff5c0d9bd660cb770c0eefdf805fd099193ed3144624",
+      "lab/src/about_harness/adapters/base.py": "2c8f7c740349799232272ce9a8321b684a6efcd589d4039635410dd0e43fd403",
+      "lab/src/about_harness/adapters/fake.py": "42e205ddf44f15f2f07a17f8f0cc8334ab8c313aebdfc0f1c1ac6ed7101c8cfc",
+      "lab/src/about_harness/adapters/live.py": "fddc301f41afa54ecd197672856eccb74e8f199cbf28245a19efeddb48332a92",
+      "lab/src/about_harness/adapters/replay.py": "bfeb7e54f88fe35196521f7040cfeab36e32a711bd514e87eae13c7d7eeea6ec",
+      "lab/src/about_harness/adapters/responses.py": "f0db200be08cc0704f278a7d1e841ac59857d2b050d112c66d73484dea8aadc9",
+      "lab/src/about_harness/context.py": "d32aa4c831e859a485e0e3b102784c29cfead35138abf1679e003eaacc8b3a50",
+      "lab/src/about_harness/contracts.py": "d9a29658874f26c89a25f5caa2cdfc9421b1334adb541dd5eab32279f74ab15b",
+      "lab/src/about_harness/integrations/__init__.py": "56905f16482e6e4af3cb23b8b2d5323e0791a3be026b808e921809f1b2ba4837",
+      "lab/src/about_harness/integrations/base.py": "66d5702de59bd2199512118a8ac04662e878005ee3eb0039e1c69e129a092df4",
+      "lab/src/about_harness/integrations/browser_use.py": "8807667cf418dfba5eaa62881b7b793689b8504aecaa348792bbde53243f14eb",
+      "lab/src/about_harness/integrations/langgraph.py": "fb0cadef8ebbb0fe6250d079d227be56cb1d531b7418b7702f4c4c2d94d209ac",
+      "lab/src/about_harness/integrations/llama_index.py": "162df727f7109d1529c8598722e174d202548c105652338d6a8bb964cd8b8235",
+      "lab/src/about_harness/integrations/pydantic_ai.py": "5edca5b4accf5a5c0e1f35a7269fa2e6b507cfb01ccf178a5dbb29a5371f514e",
+      "lab/src/about_harness/labs.py": "ba766b8127be6f6cb23c9ca2bf548df922248f142b9df55f91d97040b8e3b106",
+      "lab/src/about_harness/loop.py": "a0cdb6d21a7a509d9b5299232d5212910ec414c612644860702a9efeefc307e3",
+      "lab/src/about_harness/memory.py": "107e0428528fd5d710ce89155eae82acddd0c0f9a639a353286d678808a0b3d8",
+      "lab/src/about_harness/policies.py": "4f8550ce991bc2a34c9bde9f1e8284501051b571269cc7a0a868e41ab5ec1250",
+      "lab/src/about_harness/recovery.py": "7c77cf65ebde43317841b278a71d6bd90f4d39f22c0eeec745adc1dd505d220d",
+      "lab/src/about_harness/retry.py": "a3c3679a9efe7cdb6e715c4ba31ce3d33339ad30df7b5e3c991793fb50998c15",
+      "lab/src/about_harness/source_labs.py": "2e39b46087e1743f3d1f58a864539f17e0c86e9088adb48093a890dd520bec7a",
+      "lab/src/about_harness/streaming.py": "3a0acf3e6bbc38202b4215eba907b27da6804a8b0c0540d1cb022dc70c5f04ac",
+      "lab/src/about_harness/study_demo.py": "974ba20efc2c418913c4d732963eb751ab6b450fd6a02f9a9f33581e52a1f7dc",
+      "lab/src/about_harness/tools.py": "78b0a2a68b62eed41db60270f1e3ddbf850a2c4724068a4985728c2fb10034fa",
+      "lab/src/about_harness/trace.py": "747e7c3c22e9843991dcf7db61bb4d6fbe2ec0dfe50ff19d2afcfc9a5de434e5",
+      "lab/src/about_harness/usage.py": "9797bf292bf1f6700abed591e955a9b1133ea1c0644aedee92bd00661ca7a25e"
+    },
+    "source_commit": "bd5ed23f8b1904c8f276cecff4fb6ae490dcbdd0"
+  },
+  "execution_artifacts": {
+    "baseline-test.json": {
+      "path": "demo-collection-baseline/baseline-test.json",
+      "sha256": "3053431738ae81862d62295077c033dc3efb103a5fbf3ab9c32f98561406128f"
+    },
+    "candidate.patch": {
+      "path": "demo-collection-baseline/candidate.patch",
+      "sha256": "540ae78f1d6dffcc04c47c44274f635853f0660285d6027ae4a12d5f1d78f658"
+    },
+    "test-1.json": {
+      "path": "demo-collection-baseline/test-1.json",
+      "sha256": "426f2f558064d309557d3d37f2b52c57dc4823e8842b23fc3d05da3bc977c217"
+    },
+    "test-2.json": {
+      "path": "demo-collection-baseline/test-2.json",
+      "sha256": "62cde42f4eeb802dea29a1fca9663562a73a5ef0270db705aa254470ef94d809"
+    },
+    "test-3.json": {
+      "path": "demo-collection-baseline/test-3.json",
+      "sha256": "5effa2c11af111172b5817f5e2f49c01fdff8c89541ad591db28dbfb98e163d0"
+    },
+    "workspace.json": {
+      "path": "demo-collection-baseline/workspace.json",
+      "sha256": "3af5c641be0658dade0bbd419a5efd78ff6687ee3f2bbd49eed7cbcd01c4ca0a"
+    }
+  },
+  "fixture_hash": "1970df3dd73e124f08f6762c00a0959eea57489d5ec1f7d5a4755e1c6760e69f",
+  "run_id": "demo-collection-baseline",
+  "schema_version": "1.1",
+  "started_at": "2026-09-08T14:54:21.130675+00:00",
+  "task_id": "demo-collection"
+}

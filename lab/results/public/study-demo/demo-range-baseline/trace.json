@@ -1,0 +1,293 @@
+{
+  "events": [
+    {
+      "data": {
+        "adapter": "replay",
+        "offline": true,
+        "resumed": false,
+        "task_id": "demo-range"
+      },
+      "kind": "run_started",
+      "sequence": 0,
+      "timestamp_ms": 0.0
+    },
+    {
+      "data": {
+        "cost_usd": 0.0,
+        "kind": "tool",
+        "model_calls": 1
+      },
+      "kind": "model_action",
+      "sequence": 1,
+      "timestamp_ms": 0.0
+    },
+    {
+      "data": {
+        "attempts": 1,
+        "call_id": "call-0",
+        "reused": false,
+        "tool": "workspace.read",
+        "value": {
+          "content": "def solve(value):\n    return min(value, 9)\n",
+          "path": "solution.py"
+        }
+      },
+      "kind": "tool_result",
+      "sequence": 2,
+      "timestamp_ms": 0.0
+    },
+    {
+      "data": {
+        "adapter_state": {
+          "index": 1
+        },
+        "cost_usd": 0.0,
+        "model_calls": 1,
+        "reused_tool_calls": 0,
+        "step": 1,
+        "tool_calls": 1
+      },
+      "kind": "checkpoint",
+      "sequence": 3,
+      "timestamp_ms": 0.0
+    },
+    {
+      "data": {
+        "cost_usd": 0.0,
+        "kind": "tool",
+        "model_calls": 2
+      },
+      "kind": "model_action",
+      "sequence": 4,
+      "timestamp_ms": 0.0
+    },
+    {
+      "data": {
+        "attempts": 1,
+        "call_id": "call-1",
+        "reused": false,
+        "tool": "workspace.patch",
+        "value": {
+          "changed_paths": [
+            "solution.py"
+          ],
+          "source_hash": "85787b88567018c92c3b3a2d656de54d4affc787fe94c71b8a0e3956b306ae5f"
+        }
+      },
+      "kind": "tool_result",
+      "sequence": 5,
+      "timestamp_ms": 125.0
+    },
+    {
+      "data": {
+        "adapter_state": {
+          "index": 2
+        },
+        "cost_usd": 0.0,
+        "model_calls": 2,
+        "reused_tool_calls": 0,
+        "step": 2,
+        "tool_calls": 2
+      },
+      "kind": "checkpoint",
+      "sequence": 6,
+      "timestamp_ms": 125.0
+    },
+    {
+      "data": {
+        "cost_usd": 0.0,
+        "kind": "tool",
+        "model_calls": 3
+      },
+      "kind": "model_action",
+      "sequence": 7,
+      "timestamp_ms": 125.0
+    },
+    {
+      "data": {
+        "attempts": 1,
+        "call_id": "call-2",
+        "reused": false,
+        "tool": "test.run",
+        "value": {
+          "assertions": [
+            {
+              "id": "case-0",
+              "passed": false
+            },
+            {
+              "id": "case-1",
+              "passed": false
+            },
+            {
+              "id": "case-2",
+              "passed": true
+            }
+          ],
+          "command": [
+            "python",
+            "-I",
+            "-B",
+            "verify.py"
+          ],
+          "execution": 1,
+          "exit_code": 1,
+          "source_hash": "85787b88567018c92c3b3a2d656de54d4affc787fe94c71b8a0e3956b306ae5f",
+          "verifier_hash": "c87e41c71f96d1f64d2baeeb664caee73a123ed680d6754249533400e512a49c"
+        }
+      },
+      "kind": "tool_result",
+      "sequence": 8,
+      "timestamp_ms": 265.9999999741558
+    },
+    {
+      "data": {
+        "adapter_state": {
+          "index": 3
+        },
+        "cost_usd": 0.0,
+        "model_calls": 3,
+        "reused_tool_calls": 0,
+        "step": 3,
+        "tool_calls": 3
+      },
+      "kind": "checkpoint",
+      "sequence": 9,
+      "timestamp_ms": 265.9999999741558
+    },
+    {
+      "data": {
+        "cost_usd": 0.0,
+        "kind": "complete",
+        "model_calls": 4
+      },
+      "kind": "model_action",
+      "sequence": 10,
+      "timestamp_ms": 265.9999999741558
+    },
+    {
+      "data": {
+        "accepted": false,
+        "evidence": {
+          "assertions": [
+            {
+              "id": "case-0",
+              "passed": false
+            },
+            {
+              "id": "case-1",
+              "passed": false
+            },
+            {
+              "id": "case-2",
+              "passed": true
+            }
+          ],
+          "command": [
+            "python",
+            "-I",
+            "-B",
+            "verify.py"
+          ],
+          "execution": 2,
+          "exit_code": 1,
+          "source_hash": "85787b88567018c92c3b3a2d656de54d4affc787fe94c71b8a0e3956b306ae5f",
+          "verifier_hash": "c87e41c71f96d1f64d2baeeb664caee73a123ed680d6754249533400e512a49c"
+        },
+        "feedback": "workspace tests failed; completion rejected",
+        "validator": "workspace-tests-v1"
+      },
+      "kind": "acceptance_result",
+      "sequence": 11,
+      "timestamp_ms": 405.99999998812564
+    },
+    {
+      "data": {
+        "adapter_state": {
+          "index": 4
+        },
+        "cost_usd": 0.0,
+        "model_calls": 4,
+        "reused_tool_calls": 0,
+        "step": 3,
+        "tool_calls": 3
+      },
+      "kind": "checkpoint",
+      "sequence": 12,
+      "timestamp_ms": 405.99999998812564
+    },
+    {
+      "data": {
+        "cost_usd": 0.0,
+        "kind": "complete",
+        "model_calls": 5
+      },
+      "kind": "model_action",
+      "sequence": 13,
+      "timestamp_ms": 405.99999998812564
+    },
+    {
+      "data": {
+        "accepted": false,
+        "evidence": {
+          "assertions": [
+            {
+              "id": "case-0",
+              "passed": false
+            },
+            {
+              "id": "case-1",
+              "passed": false
+            },
+            {
+              "id": "case-2",
+              "passed": true
+            }
+          ],
+          "command": [
+            "python",
+            "-I",
+            "-B",
+            "verify.py"
+          ],
+          "execution": 3,
+          "exit_code": 1,
+          "source_hash": "85787b88567018c92c3b3a2d656de54d4affc787fe94c71b8a0e3956b306ae5f",
+          "verifier_hash": "c87e41c71f96d1f64d2baeeb664caee73a123ed680d6754249533400e512a49c"
+        },
+        "feedback": "workspace tests failed; completion rejected",
+        "validator": "workspace-tests-v1"
+      },
+      "kind": "acceptance_result",
+      "sequence": 14,
+      "timestamp_ms": 562.9999999946449
+    },
+    {
+      "data": {
+        "adapter_state": {
+          "index": 5
+        },
+        "cost_usd": 0.0,
+        "model_calls": 5,
+        "reused_tool_calls": 0,
+        "step": 3,
+        "tool_calls": 3
+      },
+      "kind": "checkpoint",
+      "sequence": 15,
+      "timestamp_ms": 562.9999999946449
+    },
+    {
+      "data": {
+        "error": null,
+        "reason": "model_budget",
+        "status": "stopped"
+      },
+      "kind": "run_stopped",
+      "sequence": 16,
+      "timestamp_ms": 562.9999999946449
+    }
+  ],
+  "run_id": "demo-range-baseline",
+  "schema_version": "1.1"
+}

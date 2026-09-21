@@ -1,0 +1,196 @@
+{
+  "schema_version": 1,
+  "completed_at": "2026-09-21T08:48:25.985070+00:00",
+  "parents": [
+    "ed0d0c35fd1f1cb5230642694ac3231bab95f3d1",
+    "f945c6c9eecdb65b001deb37cce2f97d92051a6b"
+  ],
+  "source_identity": {
+    "algorithm": "SHA256 of git ls-files -s output for source_pathspecs",
+    "source_pathspecs": [
+      "docs",
+      "lab",
+      "scripts",
+      "examples",
+      "evals",
+      "schemas",
+      "package.json",
+      "package-lock.json",
+      "pyproject.toml",
+      "uv.lock",
+      ".github",
+      ".gitattributes",
+      "README.md",
+      "CONTRIBUTING.md",
+      "Dockerfile",
+      "compose.yaml",
+      "AGENTS.md"
+    ],
+    "sha256": "7000e3bdc388db7914960715c8c28c1a204f02f15d20666acb3fd718a7efc60a"
+  },
+  "environment": {
+    "os": "Windows",
+    "node": "24.14.0",
+    "root_python": "3.11.15",
+    "framework_python": "3.12.10",
+    "uv": "0.11.16"
+  },
+  "checks": [
+    {
+      "command": "npm run check",
+      "status": "pass",
+      "exit_code": 0,
+      "execution": "child command of successful npm run verify; earlier attempts are recorded below"
+    },
+    {
+      "command": "npm run facts:check",
+      "status": "pass",
+      "exit_code": 0,
+      "claims": 66,
+      "verified": 65,
+      "pending": 1,
+      "experiment_levels": {
+        "E0": 66
+      }
+    },
+    {
+      "command": "npm run pages:check",
+      "status": "pass",
+      "exit_code": 0,
+      "site_pages": 99,
+      "legacy_anchors": 2570,
+      "redirects_per_base": 81,
+      "viewports": [
+        1440,
+        390,
+        320
+      ],
+      "screenshots": 24
+    },
+    {
+      "command": "npm run verify",
+      "status": "pass",
+      "exit_code": 0,
+      "pytest_passed": 208,
+      "ruff": "pass",
+      "pyright_errors": 0,
+      "pyright_warnings": 0,
+      "typescript": "pass",
+      "study_units": 12,
+      "framework_positive_cases": 4,
+      "framework_negative_cases": 4,
+      "framework_external_attempts": 0
+    },
+    {
+      "command": "node scripts/check-external-links.mjs --network",
+      "status": "fail",
+      "exit_code": 1,
+      "unique_urls": 60,
+      "failures": [
+        {
+          "url": "https://example.invalid/learning/schema-check",
+          "reason": "fetch failed; intentional invalid example domain"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/",
+          "reason": "fetch failed; source remains pending"
+        },
+        {
+          "url": "https://docs.vllm.ai/en/stable/",
+          "reason": "HTTP 429; no repeated requests or date refresh"
+        }
+      ]
+    },
+    {
+      "command": "git diff --cached --check with cr-at-eol enabled",
+      "status": "pass",
+      "exit_code": 0,
+      "reason": "Preserve deliberately frozen CRLF bytes rather than normalizing historical artifacts"
+    }
+  ],
+  "independent_review": {
+    "status": "pass",
+    "record": "merge-review.json",
+    "closed_findings": 6
+  },
+  "visual_review": {
+    "automated_record": "merge-visual-metrics.json",
+    "human_inspected": [
+      "desktop-1440-home.png",
+      "narrow-320-migration.png",
+      "mobile-390-ecosystem-overview.png"
+    ],
+    "observation": "No obstruction or page-level horizontal overflow observed in these screenshots; wide tables/code use local scrolling",
+    "scope": "Screenshots from successful pages:check; manual review does not claim inspection of all 24 images",
+    "screenshots_location": "local temporary artifact directory; not committed"
+  },
+  "historical_integrity": {
+    "frozen_initial_report_and_reviews": 5,
+    "initial_hashes_match": true,
+    "existing_audit_files_changed": false,
+    "remote_frozen_artifacts_changed": false,
+    "framework_archive_hashes_matched": 16
+  },
+  "earlier_attempts": [
+    {
+      "command": "npm run check",
+      "status": "fail",
+      "reason": "Two missing old context-tools anchors; aliases restored and final checks passed"
+    },
+    {
+      "command": "npm run check (retry)",
+      "status": "blocked",
+      "reason": "Legacy example self-test copied new framework virtual environments; stopped only that task process, narrowed copy scope and passed final verification"
+    },
+    {
+      "command": "npm run frameworks:check (first attempt)",
+      "status": "blocked",
+      "reason": "Locked packages absent from offline cache"
+    },
+    {
+      "command": "npm run frameworks:prepare (direct download)",
+      "status": "blocked",
+      "reason": "files.pythonhosted.org TLS HandshakeFailure, including system certificate retry"
+    },
+    {
+      "command": "locked dependency preparation via existing public mirror",
+      "status": "pass",
+      "reason": "uv export --frozen and uv pip install --require-hashes using packagefeedproxy.microsoft.io; original versions and lock files unchanged; subsequent frozen offline checks passed"
+    },
+    {
+      "command": "stop obsolete test and clean temporary copy (combined command)",
+      "status": "blocked",
+      "reason": "Automatic approval review returned blocked by policy; temporary copy retained. A separate command stopped only the verified obsolete task process, without deleting files."
+    }
+  ],
+  "not_run": [
+    "Node 22 on this host",
+    "actual Docker isolation",
+    "POSIX shell tutorial execution",
+    "real model/API tasks",
+    "E2/E3 quality evaluation",
+    "post-push CI or deployment validation"
+  ],
+  "logs": {
+    "facts": {
+      "local_log_basename": "about-harness-merge-facts.log",
+      "sha256": "93769c73cfee8c06b98f82b18a9a3900b5d1db3ce5b27b1718992f404f1616eb"
+    },
+    "pages": {
+      "local_log_basename": "about-harness-merge-pages.log",
+      "sha256": "56b152fe90781ef702111539de03de2488f4d2ffab3ccc4ba9e12a955fdc25ff"
+    },
+    "frameworks": {
+      "local_log_basename": "about-harness-merge-frameworks.log",
+      "sha256": "e3b323daef2acdfe0973823df0f4ab5b04d9d25dfe1c833e7deef458a1010d03"
+    },
+    "verify": {
+      "local_log_basename": "about-harness-merge-verify.log",
+      "sha256": "f695fd09c71c6bb61d3a373e625469f52a200b4d20e76c331a98f39d5dfb9953"
+    },
+    "network": {
+      "local_log_basename": "about-harness-merge-network.log",
+      "sha256": "c14f22a8ef4ae07084469ae6521a82f7d6353f8d91d724a0b5831fc14a1e48ba"
+    }
+  }
+}

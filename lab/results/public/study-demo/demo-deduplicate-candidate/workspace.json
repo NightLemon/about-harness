@@ -1,0 +1,9 @@
+{
+  "base_commit": "5d6095ceeb1f88b5a5e874f5fabae0c934aa7314",
+  "changed_paths": [
+    "solution.py"
+  ],
+  "diff": "diff --git a/solution.py b/solution.py\nindex cf9e2a3..0e74c96 100644\n--- a/solution.py\n+++ b/solution.py\n@@ -1,2 +1,2 @@\n def solve(value):\n-    return sorted(set(value))\n+    return list(dict.fromkeys(value))\n",
+  "source": "def solve(value):\n    return list(dict.fromkeys(value))\n",
+  "source_hash": "fc7ccd0cf8b71403738989ae6ad0eb1cb67233af5c4de3c57231491a306e96b0"
+}

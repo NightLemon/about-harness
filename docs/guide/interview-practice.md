@@ -4,7 +4,7 @@
 
 ## 共同前置、记录、停止与清理
 
-从仓库根目录执行，需要 Python 3.11+、Node.js 22+、`uv 0.11.16` 和已进入本机 cache 的锁定依赖。
+从仓库根目录执行，按[统一环境](/guide/prerequisites)准备 Python 3.12、Node.js 22+、`uv 0.11.16` 和已进入本机 cache 的锁定依赖。
 
 ```powershell
 node --version
@@ -23,7 +23,7 @@ git status --short --branch
 uv run --frozen --offline python scripts/run-labs.py coding
 ```
 
-预期退出 0，顶层有 `evidence=E1`、`offline=true`、`passed=true`。断言 `baseline_failures` 包含 `single` 与 `multiple`、`tests_passed=3`、`negative_rejected=true`，且 `changed_files` 只有 `src/collect.py`。再读 `docs/labs/coding.md` 的 input/negative，解释合法 patch、路径越界和 schema/scope 不合法的 patch 为何不能执行。
+预期退出 0，顶层有 `evidence=E1`、`offline=true`、`passed=true`。断言 `baseline_failures` 包含 `single` 与 `multiple`、`tests_passed=3`、`negative_rejected=true`，且 `changed_files` 只有 `src/collect.py`。本卡固定使用历史内存实验，输入与负例分别在 `lab/fixtures/coding/input.json` 和 `negative.json`；[编码实验](/labs/coding)已以真实临时工作区为主线，两套产物不要混用。对照历史 fixture，解释合法 patch、路径越界和 schema/scope 不合法的 patch 为何不能执行。
 
 **面试官：模型已经输出符合 schema 的 JSON，为什么还要检查？**
 
@@ -37,7 +37,7 @@ uv run --frozen --offline python scripts/run-labs.py coding
 uv run --frozen --offline python scripts/run-labs.py research
 ```
 
-预期退出 0，输出保留 `evidence=E1`、`offline=true`、`passed=true` 与 `negative_rejected=true`。对照 `docs/labs/research.md`，找一个 `conflict`、一个 `supported` 和一个 `insufficient`，解释为何不能汇总为“模型已经研究正确”。
+预期退出 0，输出保留 `evidence=E1`、`offline=true`、`passed=true` 与 `negative_rejected=true`。对照 `lab/fixtures/research/input.json` 与 `expected.json`，找一个 `conflict`、一个 `supported` 和一个 `insufficient`（[研究实验](/labs/research)另有原始文件解析主线），解释为何不能汇总为“模型已经研究正确”。
 
 **面试官：提高 reasoning 档位会自动给任务更多时间吗？**
 
@@ -57,7 +57,7 @@ npm run reliability:workshop -- --unsafe-retry-demo
 uv run --frozen --offline pytest -q lab/tests/test_recovery.py
 ```
 
-正例与测试应退出 0；不安全反例应展示“换 idempotency key 会重复副作用”，不能当作成功。断言正例有 write intent、稳定 key、receipt/reconciliation；反例必须标出 duplicate effect。
+正例与测试应退出 0；不安全反例应退出 1 并展示“换 idempotency key 会重复副作用”，不能当作成功。断言正例有 write intent、稳定 key、receipt/reconciliation；反例必须标出 duplicate effect。
 
 **面试官：所有失败都能指数退避后重试吗？**
 
@@ -99,4 +99,4 @@ uv run --frozen --offline pytest -q lab/tests/test_m5_labs.py::test_migration_re
 
 ## 可选的外部项目映射
 
-已有公开且获授权的项目时，可把每张卡映射到其 tool allowlist、budget trace、reconciliation、independent evaluator 和迁移责任表。先记录该项目的 commit、许可、输入 hash、运行命令和可撤销范围；缺失任一身份或授权时不运行。外部运行是独立证据，不能覆盖本页固定 E1 结论。
+可把 Travel 作为可选的外部迁移对象；它是学习者另行选定的独立仓库，不是本仓库子目录或默认存在的相邻项目。没有外部项目仍可完成全部五张卡。已有公开且获授权的项目时，由学习者填写仓库位置和实际命令，再映射到其 tool allowlist、budget trace、reconciliation、independent evaluator 和迁移责任表。先记录该项目的 commit、许可、输入 hash、运行命令和可撤销范围；缺失任一身份或授权时不运行。外部运行是独立证据，不能覆盖本页固定 E1 结论。

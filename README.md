@@ -1,57 +1,51 @@
 # About Harness
 
-面向中文读者的 AI agent harness（承载和约束智能体循环的工作环境）实用手册。项目把稳定原理、产品事实、配置示例和离线实验分开，帮助你针对明确任务选择模型与工作环境，并用可复现证据验证调优是否真的有效。
+面向中文工程师的 Agent Harness（智能体运行与控制系统）实用手册。主线连接任务、模型、工具、权限、状态、独立验收和评测；产品事实与实验结果分开记录。
 
-## 项目价值
+## 开始学习
 
-读完并完成实验后，你应能回答四个问题：任务真正需要模型做什么；Codex、Pi、Claude Code 等 harness 分别在哪里注入指令、工具与权限；一次配置变化改善了哪项指标；失败时怎样停止、定位和回滚。站点不提供脱离工作负载的“最佳模型”排行榜，也不把离线脚本成功当作真实模型质量。
+阅读[学习路径](docs/guide/start.md)，或直接运行[端到端案例](docs/practice/end-to-end.md)。用[Agent 生态全景](docs/ecosystem/overview.md)定位模型服务、Harness、框架、协议、知识、部署、应用与评测的职责；准备面试时完成[五张迁移卡](docs/guide/interview-practice.md)。已合并页面保留旧地址迁移入口。
 
-## 快速开始
-
-需要 Node.js 22+；运行 Python 实验还需要 Python 3.11+ 与 `uv 0.11.16`。
+前置：Node.js 22+、Python 3.12、uv 0.11.16 和 Git。依赖准备可能联网：
 
 ```bash
 npm ci
+uv sync --frozen --python 3.12
+npx playwright install chromium
 npm run docs:dev
 ```
 
-完整本地验证：
+开发服务器仅用于本机预览。停止时使用 Ctrl+C。
+
+## 运行完整实践
 
 ```bash
+npm run study:demo
+npm run labs:source
+npm run model:probe
+npm run ecosystem:workshop
+```
+
+第一条在临时 Git 仓库执行六任务、两配置、一次运行，生成完整 12 单元报告。第二条读取 Markdown/HTML/CSV 并启动本地 Playwright。第三条使用模拟 Responses 传输。第四条用合成记录验证能力与授权、程序化汇总、候选选择与弃权阈值。默认没有真实模型调用或费用；生态工作坊也不执行真实协议握手或供应商环境。
+
+框架示例独立安装，实际使用 LangGraph、Agents SDK、Google ADK 和 AutoGen 的运行时：
+
+```bash
+npm run frameworks:prepare
+npm run frameworks:check
+```
+
+框架真实、模型为替身，证据仍是 E1。原六个固定 JSON 实验和不完整评测样例保留为历史教材。
+
+## 验证与维护
+
+```bash
+npm run check
+npm run facts:check
+npm run pages:check
 npm run verify
 ```
 
-`npm run check` 覆盖文档、内容契约、示例、构建和离线实验；`npm run pages:check` 以 `/about-harness/` 项目路径完成独立构建与三视口视觉检查。开发服务器只用于可信本机，不要以 `--host 0.0.0.0` 暴露到公网。
+共享站点输出的命令顺序执行。verify 在核心验证之外运行四个独立框架；所有产物先检查来源、许可和敏感数据。检查失败时保留首个错误，不用删除负例恢复绿色。
 
-## 学习路线
-
-- 用[Agent 生态全景](docs/ecosystem/overview.md)定位模型服务、Harness、框架、协议、知识、部署、应用与评测的职责；
-- 从[学习路径](docs/guide/start.md)和[知识地图](docs/guide/roadmap.md)建立全局心智模型；
-- 用[指定模型适配](docs/models/adaptation.md)和[模型—Harness 匹配](docs/optimization/model-fit.md)设计对照实验；
-- 在[Codex](docs/harnesses/codex.md)、[Pi](docs/harnesses/pi.md)、[Claude Code](docs/harnesses/claude-code.md)中映射指令、配置、权限和回滚；
-- 通过[实验环境](docs/labs/setup.md)运行六个离线案例，再用[评测方法](docs/evaluation/method.md)解释结果边界。
-
-站点正文入口是 [docs/index.md](docs/index.md)，产品事实及核对日期集中在 [fact-registry.md](docs/references/fact-registry.md)。
-
-## 实验与证据
-
-离线 fake/replay fixture 是默认路径，live adapter 默认关闭。六个案例覆盖 coding、浏览器、研究、数据、文档与跨 harness 迁移，只证明项目职责接缝在固定 fixture 上可执行（E1）；它们没有调用真实模型、不能证明上游 framework 已运行，也不能外推模型质量。运行结果记录 task、trace、fixture hash、配置、退出码和失败分类。
-
-```bash
-uv run --frozen --offline python scripts/run-labs.py all
-npm run ecosystem:workshop
-npm run eval:validate
-npm run eval:summary
-```
-
-新增生态工作坊用三类合成案例检查能力与授权、程序化汇总、候选选择与弃权阈值；它同样只有 E1，不运行真实协议、服务或模型。全站内容初审、逐页覆盖和复审记录位于 `reports/audits/2026-09-21/`。
-
-## 贡献与维护
-
-提交内容前阅读 [CONTRIBUTING.md](CONTRIBUTING.md)。易变产品事实需引用官方来源并写核对日期；教程需有前置条件、固定版本、输入、命令、预期、断言、失败案例、清理、回滚与限制。依赖使用锁文件；GitHub Actions 固定完整 SHA；公开结果必须通过 secret、隐私和许可检查。
-
-GitHub Pages 由 `.github/workflows/deploy.yml` 构建静态站点。远程、push、PR、Pages 设置和发布都需要单独授权；本地实现与验证不会隐含获得这些权限。
-
-## 许可
-
-代码使用 [MIT](LICENSE)，原创文档使用 [CC BY 4.0](LICENSE-DOCS)。第三方 fixture、图像和引用仍受各自许可约束。
+[贡献指南](CONTRIBUTING.md)、[维护说明](maintenance/development.md)和[逐页修订对照](maintenance/content-review.md)说明范围与验证。全站初审、逐页覆盖和复审历史记录位于 `reports/audits/2026-09-21/`；它们描述当时版本，合并后结果以本轮实际检查为准。源代码使用 MIT，原创文档使用 CC BY 4.0。真实 API、费用、远端写入和发布需单独授权。

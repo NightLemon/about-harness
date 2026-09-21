@@ -1,0 +1,194 @@
+[
+  {
+    "task_id": "demo-collection",
+    "goal": "集合边界：保留最后一个元素",
+    "split": "development",
+    "initial": "def solve(value):\n    return value[:-1]\n",
+    "baseline": "# Reviewed baseline attempt.\ndef solve(value):\n    return value[:-1]\n",
+    "candidate": "def solve(value):\n    return list(value)\n",
+    "tests": [
+      {
+        "id": "case-0",
+        "input": [],
+        "expected": []
+      },
+      {
+        "id": "case-1",
+        "input": [
+          1
+        ],
+        "expected": [
+          1
+        ]
+      },
+      {
+        "id": "case-2",
+        "input": [
+          1,
+          2,
+          3
+        ],
+        "expected": [
+          1,
+          2,
+          3
+        ]
+      }
+    ]
+  },
+  {
+    "task_id": "demo-normalize",
+    "goal": "字符串规范化：去除首尾空白并转小写",
+    "split": "development",
+    "initial": "def solve(value):\n    return value.lower()\n",
+    "baseline": "# Reviewed baseline attempt.\ndef solve(value):\n    return value.lower()\n",
+    "candidate": "def solve(value):\n    return value.strip().lower()\n",
+    "tests": [
+      {
+        "id": "case-0",
+        "input": " A ",
+        "expected": "a"
+      },
+      {
+        "id": "case-1",
+        "input": "B",
+        "expected": "b"
+      },
+      {
+        "id": "case-2",
+        "input": "",
+        "expected": ""
+      }
+    ]
+  },
+  {
+    "task_id": "demo-range",
+    "goal": "数值范围：将数值夹在闭区间 0 到 10",
+    "split": "development",
+    "initial": "def solve(value):\n    return min(value, 9)\n",
+    "baseline": "# Reviewed baseline attempt.\ndef solve(value):\n    return min(value, 9)\n",
+    "candidate": "def solve(value):\n    return min(10, max(0, value))\n",
+    "tests": [
+      {
+        "id": "case-0",
+        "input": -1,
+        "expected": 0
+      },
+      {
+        "id": "case-1",
+        "input": 10,
+        "expected": 10
+      },
+      {
+        "id": "case-2",
+        "input": 5,
+        "expected": 5
+      }
+    ]
+  },
+  {
+    "task_id": "demo-missing",
+    "goal": "缺失值：仅缺少键时使用默认值",
+    "split": "holdout",
+    "initial": "def solve(value):\n    return value.get(\"count\") or 7\n",
+    "baseline": "# Reviewed baseline attempt.\ndef solve(value):\n    return value.get(\"count\") or 7\n",
+    "candidate": "def solve(value):\n    return value.get(\"count\", 7)\n",
+    "tests": [
+      {
+        "id": "case-0",
+        "input": {},
+        "expected": 7
+      },
+      {
+        "id": "case-1",
+        "input": {
+          "count": 0
+        },
+        "expected": 0
+      },
+      {
+        "id": "case-2",
+        "input": {
+          "count": 3
+        },
+        "expected": 3
+      }
+    ]
+  },
+  {
+    "task_id": "demo-sorting",
+    "goal": "稳定排序：按 score 排序并保留同分顺序",
+    "split": "holdout",
+    "initial": "def solve(value):\n    return sorted(value, key=lambda row: (row[\"score\"], row[\"id\"]))\n",
+    "baseline": "# Reviewed baseline attempt.\ndef solve(value):\n    return sorted(value, key=lambda row: (row[\"score\"], row[\"id\"]))\n",
+    "candidate": "def solve(value):\n    return sorted(value, key=lambda row: row[\"score\"])\n",
+    "tests": [
+      {
+        "id": "case-0",
+        "input": [
+          {
+            "id": "b",
+            "score": 1
+          },
+          {
+            "id": "a",
+            "score": 1
+          }
+        ],
+        "expected": [
+          {
+            "id": "b",
+            "score": 1
+          },
+          {
+            "id": "a",
+            "score": 1
+          }
+        ]
+      },
+      {
+        "id": "case-1",
+        "input": [],
+        "expected": []
+      }
+    ]
+  },
+  {
+    "task_id": "demo-deduplicate",
+    "goal": "去重：保持首次出现的顺序",
+    "split": "holdout",
+    "initial": "def solve(value):\n    return sorted(set(value))\n",
+    "baseline": "# Reviewed baseline attempt.\ndef solve(value):\n    return sorted(set(value))\n",
+    "candidate": "def solve(value):\n    return list(dict.fromkeys(value))\n",
+    "tests": [
+      {
+        "id": "case-0",
+        "input": [
+          3,
+          1,
+          3,
+          2
+        ],
+        "expected": [
+          3,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "case-1",
+        "input": [],
+        "expected": []
+      },
+      {
+        "id": "case-2",
+        "input": [
+          1
+        ],
+        "expected": [
+          1
+        ]
+      }
+    ]
+  }
+]

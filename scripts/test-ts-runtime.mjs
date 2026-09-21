@@ -38,6 +38,13 @@ try {
     pathToFileURL(path.join(temp, 'contracts.js')).href
   )
   const validator = new JsonSubsetAcceptanceValidator()
+  const { validateUsage } = await import(pathToFileURL(path.join(temp, 'usage.js')).href)
+  const usageCases = JSON.parse(fs.readFileSync(path.join(root, 'lab/fixtures/contracts/usage-v1.json'), 'utf8'))
+  for (const item of usageCases) {
+    if (item.valid) assert.deepEqual(validateUsage(item.value), item.value, item.name)
+    else assert.throws(() => validateUsage(item.value), undefined, item.name)
+  }
+  console.log(`Shared usage fixture passed in TypeScript: ${usageCases.length} cases.`)
   const caseIds = new Set()
   for (const fixtureCase of fixture.cases) {
     assert.ok(isRecord(fixtureCase), 'shared acceptance case must be an object')

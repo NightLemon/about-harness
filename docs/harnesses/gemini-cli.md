@@ -54,6 +54,8 @@
 
 前置条件是隔离练习仓库、固定 commit、无个人数据或 credential、一个失败测试与本地 validator。输入为允许路径、禁止网络/依赖/remote 的 Task，以及合成 allow/deny canary。运行目标版本时按下面顺序记录，而不是在本仓库执行：
 
+Git worktree 只隔离工作树，不提供进程、文件读取或网络沙箱；资格卡中的技术隔离必须由实际执行环境提供并独立测试。
+
 ```text
 1. 记录 CLI/version/account tier/surface、有效 configuration 与 GEMINI.md；
 2. 只读读取固定文件，校验引用和 hash；

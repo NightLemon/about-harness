@@ -24,18 +24,21 @@
 
 ```bash
 npm ci
+uv sync --frozen --python 3.12
+npx playwright install chromium
 npm run check
 npm run facts:check
 npm run pages:check
+npm run frameworks:prepare
 npm run verify
 ```
 
-`docs:check` 只检查断链、重复锚点、孤立页面、未闭合代码块和损坏字符等确定性结构问题；`examples:check` 静态验证三套 harness 示例；`repo:self-test` 用负例确认隐私、许可、workflow 与事实时效门禁会真实失败。篇幅、措辞、章节模板和是否“足够深入”由人工内容审阅判断，不用关键词或字数正则阻断贡献。真实 API、费用或账号不是这些命令的一部分。
+`docs:check` 只检查断链、重复锚点、孤立页面、未闭合代码块和损坏字符等确定性结构问题；`examples:check` 静态验证三套 harness 示例；`repo:self-test` 用负例确认隐私、许可、workflow 与事实时效门禁会真实失败。篇幅、措辞、章节模板和是否“足够深入”由人工内容审阅判断，不用关键词或字数正则阻断贡献。教程注册表和命令契约只核验可定位的页面、命令、输入、脚本与测试引用，不评价文字深度。真实 API、费用或账号不是这些命令的一部分。首次准备的工具版本及浏览器依赖见 [前置环境](docs/guide/prerequisites.md)。
 
 ## 依赖、构建与 Pages
 
 Node 与 Python 依赖保留锁文件；新增包需核对来源、许可、传递依赖、安装脚本、权限和卸载。开发服务器只绑定可信本机，生产只部署 VitePress 静态产物。Pages 工作流先运行 `npm run pages:check`，构建 job 只有 `contents: read`，仅 deploy job 获得 `pages: write` 与 `id-token: write`。
 
-修改易变主张时及每次发布前，维护者实际阅读相应官方来源并复核版本；高易变的 verified 事实不得超过 30 天。季度全量外链探针是补充，不替代语义核验。HTTP 200 也不表示页面仍支持原主张。
+每周 workflow 检查事实时效和外链。修改易变主张时及每次发布前，维护者实际阅读相应官方来源并复核版本；高易变的 verified 事实不得超过 30 天。季度全量外链探针是补充，不替代语义核验；HTTP 200 也不表示页面仍支持原主张，不得自动刷新核对日期。
 
-发布前从干净安装执行 `npm run verify`，人工抽查移动端导航、搜索、深色模式、内部链接与公开结果。教程命令契约清单只核验可定位的页面/命令/脚本/测试引用，不评价文字深度。创建 remote、push、PR、修改 Pages 设置或发布均需单独授权；失败时保留上一个可用版本，不 force push 或移动既有 tag。
+发布前从干净安装执行 `npm run verify`，人工抽查移动端导航、搜索、深色模式、内部链接与公开结果。创建 remote、push、PR、修改 Pages 设置或发布均需单独授权；失败时保留上一个可用版本，不 force push 或移动既有 tag。

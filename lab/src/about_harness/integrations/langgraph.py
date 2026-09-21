@@ -5,18 +5,10 @@ from collections import defaultdict
 
 from about_harness.contracts import JsonValue
 from about_harness.integrations.base import (
-    IntegrationBoundary,
     IntegrationContractError,
     require_list,
     require_object,
     require_string,
-)
-
-BOUNDARY = IntegrationBoundary(
-    name="LangGraph",
-    distribution="langgraph",
-    import_name="langgraph",
-    representative_domain="research",
 )
 
 
@@ -115,6 +107,6 @@ def resolve_versioned_claims(payload: dict[str, JsonValue]) -> dict[str, JsonVal
             for claim in resolved
             if isinstance(claim, dict) and claim.get("status") == "insufficient"
         ),
-        "integration": BOUNDARY.name,
-        "mode": BOUNDARY.execution_mode,
+        "example": "local-claim-ledger",
+        "mode": "offline-domain-v2",
     }

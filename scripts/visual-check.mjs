@@ -245,7 +245,14 @@ try {
 
 const screenshotCount = fs.readdirSync(outputRoot).filter((name) => name.endsWith('.png')).length
 fs.writeFileSync(path.join(outputRoot, 'metrics.json'), `${JSON.stringify({ base, records, errors }, null, 2)}\n`)
-if (!preserveArtifacts) fs.rmSync(outputRoot, { recursive: true, force: true })
+if (preserveArtifacts || errors.length || process.env.KEEP_VISUAL_ARTIFACTS === '1') {
+  console.log(`Visual artifacts retained: ${outputRoot}`)
+} else {
+  const parent = fs.realpathSync(os.tmpdir())
+  const target = fs.realpathSync(outputRoot)
+  if (!target.startsWith(parent + path.sep) || !path.basename(target).startsWith('about-harness-visual-')) throw new Error('Unsafe visual cleanup path')
+  fs.rmSync(target, { recursive: true, force: true })
+}
 
 if (errors.length) {
   console.error(`Visual check failed with ${errors.length} error(s):`)

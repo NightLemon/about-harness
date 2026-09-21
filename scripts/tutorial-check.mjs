@@ -1,147 +1,70 @@
 import fs from 'node:fs'
 import path from 'node:path'
-
 const root = path.resolve(process.argv[2] || '.')
 const errors = []
-
-function read(rel) {
-  const file = path.join(root, rel)
-  if (!fs.existsSync(file)) {
-    errors.push(`missing ${rel}`)
-    return ''
-  }
-  return fs.readFileSync(file, 'utf8')
+function exists(relative) {
+  if (typeof relative !== 'string' || path.isAbsolute(relative)) return false
+  const resolved = path.resolve(root, relative)
+  return !path.relative(root, resolved).startsWith('..') && fs.existsSync(resolved)
 }
-
-const setup = read('docs/labs/setup.md')
-const runner = read('docs/labs/runner.md')
-const dockerfile = read('Dockerfile')
-const compose = read('compose.yaml')
-const cli = read('scripts/run-labs.py')
-const migration = read('docs/labs/migration.md')
-const readme = read('README.md')
-const prerequisites = read('docs/guide/prerequisites.md')
-const packageText = read('package.json')
-const packageLockText = read('package-lock.json')
-const workflows = ['ci', 'deploy', 'facts'].map((name) => [name, read(`.github/workflows/${name}.yml`)])
-const cases = ['coding', 'browser', 'research', 'data', 'document', 'migration']
-
-function validateTutorialContracts() {
-  const manifestText = read('scripts/tutorial-contracts.json')
-  let manifest
-  try {
-    manifest = JSON.parse(manifestText)
-  } catch {
-    errors.push('tutorial command contracts: manifest is not valid JSON')
-    return
+try {
+  const manifest = JSON.parse(fs.readFileSync(path.join(root, 'examples/tutorials.json'), 'utf8'))
+  const pkg = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'))
+  if (manifest.schema_version !== '1.0' || !Array.isArray(manifest.tutorials) || !manifest.tutorials.length) throw new Error('invalid tutorial registry')
+  const pages = new Set()
+  for (const item of manifest.tutorials) {
+    if (pages.has(item.page) || !exists(item.page)) errors.push(`invalid or duplicate tutorial page: ${item.page}`)
+    pages.add(item.page)
+    if (!exists(item.environment)) errors.push(`${item.page}: missing environment reference`)
+    if (!pkg.scripts?.[item.command]) errors.push(`${item.page}: unknown npm command ${item.command}`)
+    if (!['offline', 'live-opt-in'].includes(item.kind)) errors.push(`${item.page}: invalid execution kind`)
+    if (!Array.isArray(item.inputs) || !item.inputs.length || item.inputs.some(input => !exists(input))) errors.push(`${item.page}: missing input reference`)
+    if (!Array.isArray(item.assertions) || !item.assertions.length || item.assertions.some(value => typeof value !== 'string' || !value.trim())) errors.push(`${item.page}: missing assertion contract`)
+    for (const field of ['failure', 'cleanup', 'rollback', 'limits']) {
+      if (typeof item[field] !== 'string' || !item[field].trim()) errors.push(`${item.page}: missing ${field} contract`)
+    }
   }
-  if (manifest.schema_version !== 1 || !Array.isArray(manifest.contracts)) {
-    errors.push('tutorial command contracts: unsupported manifest schema')
-    return
-  }
-  let packageScripts = {}
-  try {
-    packageScripts = JSON.parse(read('package.json')).scripts || {}
-  } catch {
-    errors.push('tutorial command contracts: package.json is not valid JSON')
-  }
-  for (const contract of manifest.contracts) {
-    if (!contract || typeof contract.page !== 'string' || typeof contract.command !== 'string' || !Array.isArray(contract.references)) {
+  const contracts = JSON.parse(fs.readFileSync(path.join(root, 'scripts/tutorial-contracts.json'), 'utf8'))
+  if (contracts.schema_version !== 1 || !Array.isArray(contracts.contracts) || !contracts.contracts.length) throw new Error('invalid tutorial command contracts')
+  for (const contract of contracts.contracts) {
+    if (!exists(contract.page) || typeof contract.command !== 'string' || !contract.command.trim() || !Array.isArray(contract.references) || !contract.references.length) {
       errors.push('tutorial command contracts: malformed contract')
       continue
     }
-    const page = read(contract.page)
+    const page = fs.readFileSync(path.join(root, contract.page), 'utf8')
     if (!page.includes(contract.command)) errors.push(`tutorial command contracts: ${contract.page} is missing exact command ${contract.command}`)
     for (const match of contract.command.matchAll(/\bnpm run ([\w:-]+)/g)) {
-      if (typeof packageScripts[match[1]] !== 'string') {
-        errors.push(`tutorial command contracts: ${contract.page} invokes unknown npm script ${match[1]}`)
-      }
+      if (!pkg.scripts?.[match[1]]) errors.push(`tutorial command contracts: unknown npm command ${match[1]}`)
     }
     for (const reference of contract.references) {
-      if (typeof reference !== 'string' || !fs.existsSync(path.join(root, reference))) {
-        errors.push(`tutorial command contracts: ${contract.page} references missing ${reference}`)
-      }
+      if (!exists(reference)) errors.push(`tutorial command contracts: missing reference ${reference}`)
     }
   }
-}
-
-validateTutorialContracts()
-
-for (const marker of [
-  'docker compose run --rm labs-all',
-  'Windows（PowerShell）',
-  'macOS / Linux（POSIX shell）',
-  'network_mode: none',
-  'image digest'
-]) {
-  if (!setup.includes(marker)) errors.push(`setup missing container/cross-platform contract: ${marker}`)
-}
-
-for (const marker of ['--fixtures-root', 'hash mismatch', 'Windows PowerShell', 'macOS / Linux']) {
-  if (!runner.includes(marker)) errors.push(`runner tutorial missing executable failure drill: ${marker}`)
-}
-
-for (const name of cases) {
-  const page = read(`docs/labs/${name}.md`)
-  if (!page.includes('/labs/setup')) errors.push(`${name}: missing shared environment fallback`)
-  if (!page.includes(`scripts/run-labs.py ${name}`)) errors.push(`${name}: missing exact case command`)
-  for (const marker of ['预期', '失败', '清理', '回滚', '已知限制']) {
-    if (!page.includes(marker)) errors.push(`${name}: missing tutorial requirement ${marker}`)
+  if (pkg.engines?.node !== '>=22') errors.push('Node runtime baseline must remain >=22')
+  const lock = JSON.parse(fs.readFileSync(path.join(root, 'package-lock.json'), 'utf8'))
+  if (lock.packages?.['']?.engines?.node !== pkg.engines?.node) errors.push('Node runtime baseline: package-lock disagrees with package.json')
+  for (const name of ['ci', 'deploy', 'facts']) {
+    const workflow = fs.readFileSync(path.join(root, `.github/workflows/${name}.yml`), 'utf8')
+    const versions = [...workflow.matchAll(/^\s*node-version:\s*['"]?([^'"\s#]+)['"]?\s*(?:#.*)?$/gm)].map(match => match[1])
+    if (!versions.length || versions.some(version => version !== '22')) errors.push(`Node runtime baseline: ${name} workflow must use Node 22`)
   }
-}
-
-for (const marker of ['lab/fixtures/', 'scripts/run-labs.py']) {
-  if (!dockerfile.includes(marker)) errors.push(`Dockerfile cannot run six fixtures: ${marker}`)
-}
-for (const marker of ['labs-all:', 'network_mode: none', 'read_only: true', 'cap_drop:', 'no-new-privileges:true']) {
-  if (!compose.includes(marker)) errors.push(`Compose six-lab service missing hardening: ${marker}`)
-}
-if (!cli.includes('"--fixtures-root"')) errors.push('runner CLI does not expose isolated fixture root')
-
-let packageJson = {}
-let packageLock = {}
-try {
-  packageJson = JSON.parse(packageText)
-} catch {
-  errors.push('Node runtime baseline: package.json is invalid JSON')
-}
-try {
-  packageLock = JSON.parse(packageLockText)
-} catch {
-  errors.push('Node runtime baseline: package-lock.json is invalid JSON')
-}
-if (packageJson.engines?.node !== '>=22') errors.push('Node runtime baseline: package.json engines.node must be >=22')
-if (packageLock.packages?.['']?.engines?.node !== '>=22') errors.push('Node runtime baseline: package-lock root engines.node must be >=22')
-for (const [label, body] of [['README', readme], ['prerequisites', prerequisites], ['lab setup', setup]]) {
-  if (!body.includes('Node.js 22+')) errors.push(`Node runtime baseline: ${label} must state Node.js 22+`)
-}
-if (!setup.includes('Node.js 22 为最低发布基线') || /Node(?:\.js)? 24/.test(setup)) {
-  errors.push('Node runtime baseline: lab setup must distinguish Node.js 22 CI baseline from the recorded local runtime')
-}
-for (const [name, body] of workflows) {
-  if (!/node-version:\s*22(?:\s|$)/m.test(body)) errors.push(`Node runtime baseline: ${name} workflow must use Node 22`)
-}
-
-for (const marker of [
-  'Codex 分别映射到 Pi 和 Claude Code',
-  'source_semantics',
-  'compensating_control',
-  'preserves_boundary',
-  'mapped_responsibilities=12',
-  'domains_checked=5',
-  'uncompensated_gaps',
-  '浏览器',
-  '研究',
-  '数据',
-  '文档'
-]) {
-  if (!migration.includes(marker)) errors.push(`migration tutorial missing responsibility contract: ${marker}`)
-}
-
+  // Validate the repository's explicit shared Compose template; do not infer
+  // isolation from prose or accept service-level overrides of these controls.
+  const compose = fs.readFileSync(path.join(root, 'compose.yaml'), 'utf8').replace(/\s+#.*$/gm, '')
+  const base = compose.match(/^x-lab-base: &lab-base\s*\r?\n([\s\S]*?)(?=^services:)/m)?.[1] || ''
+  for (const [label, pattern] of [
+    ['network_mode', /^  network_mode: none\s*$/m],
+    ['read_only', /^  read_only: true\s*$/m],
+    ['cap_drop', /^  cap_drop:\s*\r?\n    - ALL\s*$/m],
+    ['no-new-privileges', /^  security_opt:\s*\r?\n    - no-new-privileges:true\s*$/m]
+  ]) if (!pattern.test(base)) errors.push(`Compose shared isolation contract: ${label}`)
+  for (const name of ['lab-smoke', 'labs-all']) {
+    const service = compose.match(new RegExp(`^  ${name}:\\s*\\r?\\n([\\s\\S]*?)(?=^  [\\w-]+:|$(?![\\s\\S]))`, 'm'))?.[1] || ''
+    if (!/^    <<: \*lab-base\s*$/m.test(service) || /^    (?:network_mode|read_only|cap_drop|security_opt|privileged|cap_add):/m.test(service)) errors.push(`Compose service isolation contract: ${name}`)
+  }
+} catch (error) { errors.push(error.message) }
 if (errors.length) {
-  console.error(`Tutorial check failed with ${errors.length} error(s):`)
-  for (const error of errors) console.error(`- ${error}`)
+  console.error('Tutorial reference check failed:\n' + errors.map(error => '- ' + error).join('\n'))
   process.exit(1)
 }
-
-console.log('Tutorial check passed: six cases have executable failure, container, Windows/POSIX paths, and a Node.js 22+ baseline.')
+console.log('Tutorial reference check passed: pages, commands, inputs, environment and declared verification contracts resolve. Prose quality still requires review.')

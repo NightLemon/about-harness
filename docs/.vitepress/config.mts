@@ -47,7 +47,7 @@ const sidebars = {
   '/models/': [{
     text: '模型与协议',
     items: [
-      { text: '指定模型适配', link: '/models/adaptation' },
+      { text: '模型适配与选择', link: '/models/adaptation' },
       { text: '协议兼容性', link: '/models/protocol-compatibility' },
       { text: '模型参数与推理预算', link: '/models/reasoning-budget' },
       { text: 'OpenAI', link: '/models/openai' },
@@ -61,12 +61,12 @@ const sidebars = {
   '/optimization/': [{
     text: '优化方法',
     items: [
-      { text: '模型—Harness 匹配', link: '/optimization/model-fit' },
+
       { text: '提示与任务契约', link: '/optimization/prompting' },
       { text: '上下文与工具调优', link: '/optimization/context-tools' },
-      { text: '记忆优化', link: '/optimization/memory' },
+
       { text: '推理与路由实验', link: '/optimization/reasoning-routing' },
-      { text: '问题诊断方法', link: '/optimization/debugging' },
+
       { text: '实验方法', link: '/optimization/experiment' }
     ]
   }],
@@ -188,7 +188,7 @@ export default defineConfig({
       { text: '学习路径', link: '/guide/start' },
       { text: '知识地图', link: '/guide/roadmap' },
       { text: '生态全景', link: '/ecosystem/overview' },
-      { text: '模型优化', link: '/optimization/model-fit' },
+      { text: '模型优化', link: '/models/adaptation' },
       { text: 'Harness 指南', link: '/harnesses/comparison' },
       { text: '实验与评测', link: '/labs/setup' }
     ],

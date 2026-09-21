@@ -1,19 +1,163 @@
 {
   "schema_version": 1,
   "contracts": [
-    {"page":"docs/implementation/adapter-contract.md","command":"uv run --frozen --offline pytest -q lab/tests/test_replay_and_live.py","references":["lab/tests/test_replay_and_live.py"]},
-    {"page":"docs/implementation/extensions.md","command":"npm run check","references":["scripts/check-docs.mjs"]},
-    {"page":"docs/implementation/minimal-harness-python.md","command":"uv run --frozen --offline python scripts/lab-smoke.py","references":["scripts/lab-smoke.py"]},
-    {"page":"docs/implementation/testing.md","command":"npm run eval:self-test","references":["scripts/test-eval-checks.mjs"]},
-    {"page":"docs/implementation/typescript-mapping.md","command":"npm run lab:ts-runtime-test","references":["lab/ts/runtime-test.ts"]},
-    {"page":"docs/practice/debugging.md","command":"npm run debug:workshop","references":["scripts/debugging-workshop.py"]},
-    {"page":"docs/practice/end-to-end.md","command":"npm run eval:validate","references":["scripts/eval-validate.mjs"]},
-    {"page":"docs/practice/evaluation.md","command":"npm run results:redact","references":["scripts/redact-results.mjs"]},
-    {"page":"docs/practice/framework-selection.md","command":"uv run --frozen --offline python scripts/run-labs.py migration","references":["scripts/run-labs.py","lab/tests/test_m5_labs.py"]},
-    {"page":"docs/practice/harness-design.md","command":"uv run --frozen --offline python scripts/lab-smoke.py","references":["scripts/lab-smoke.py","lab/tests/test_loop.py"]},
-    {"page":"docs/practice/model-playbook.md","command":"uv run --frozen --offline pytest -q lab/tests/test_replay_and_live.py lab/tests/test_loop.py","references":["lab/tests/test_replay_and_live.py","lab/tests/test_loop.py"]},
-    {"page":"docs/practice/reliability-recovery.md","command":"npm run reliability:workshop","references":["scripts/reliability-workshop.py","lab/tests/test_recovery.py"]},
-    {"page":"docs/practice/security-review.md","command":"uv run --frozen --offline python scripts/run-labs.py browser","references":["scripts/run-labs.py","lab/tests/test_loop.py","lab/tests/test_memory_context_trace.py"]},
-    {"page":"docs/practice/ecosystem-workshop.md","command":"uv run --frozen --offline python scripts/ecosystem-workshop.py all","references":["scripts/ecosystem-workshop.py"]}
+    {
+      "page": "docs/implementation/adapter-contract.md",
+      "command": "uv run --frozen --offline pytest -q lab/tests/test_replay_and_live.py",
+      "references": [
+        "lab/tests/test_replay_and_live.py"
+      ]
+    },
+    {
+      "page": "docs/implementation/extensions.md",
+      "command": "npm run check",
+      "references": [
+        "scripts/check-docs.mjs"
+      ]
+    },
+    {
+      "page": "docs/implementation/minimal-harness-python.md",
+      "command": "npm run lab:smoke",
+      "references": [
+        "scripts/lab-smoke.py"
+      ]
+    },
+    {
+      "page": "docs/implementation/testing.md",
+      "command": "npm run eval:self-test",
+      "references": [
+        "scripts/test-eval-checks.mjs"
+      ]
+    },
+    {
+      "page": "docs/implementation/typescript-mapping.md",
+      "command": "npm run lab:ts-runtime-test",
+      "references": [
+        "lab/ts/runtime-test.ts"
+      ]
+    },
+    {
+      "page": "docs/practice/debugging.md",
+      "command": "npm run debug:workshop",
+      "references": [
+        "scripts/debugging-workshop.py"
+      ]
+    },
+    {
+      "page": "docs/practice/end-to-end.md",
+      "command": "npm run study:demo",
+      "references": [
+        "scripts/study-demo.py",
+        "lab/src/about_harness/study_demo.py"
+      ]
+    },
+    {
+      "page": "docs/practice/evaluation.md",
+      "command": "npm run results:redact",
+      "references": [
+        "scripts/redact-results.mjs"
+      ]
+    },
+    {
+      "page": "docs/practice/framework-selection.md",
+      "command": "npm run frameworks:check",
+      "references": [
+        "scripts/check-frameworks.mjs"
+      ]
+    },
+    {
+      "page": "docs/practice/harness-design.md",
+      "command": "npm run study:check",
+      "references": [
+        "scripts/check-study.mjs",
+        "lab/tests/test_study_demo.py"
+      ]
+    },
+    {
+      "page": "docs/practice/model-playbook.md",
+      "command": "npm run model:probe",
+      "references": [
+        "scripts/model-probe.py",
+        "lab/tests/test_responses.py"
+      ]
+    },
+    {
+      "page": "docs/practice/reliability-recovery.md",
+      "command": "npm run reliability:workshop",
+      "references": [
+        "scripts/reliability-workshop.py",
+        "lab/tests/test_recovery.py"
+      ]
+    },
+    {
+      "page": "docs/practice/security-review.md",
+      "command": "npm run study:check",
+      "references": [
+        "scripts/check-study.mjs",
+        "lab/tests/test_study_demo.py"
+      ]
+    },
+    {
+      "page": "docs/practice/ecosystem-workshop.md",
+      "command": "uv run --frozen --offline python scripts/ecosystem-workshop.py all",
+      "references": [
+        "scripts/ecosystem-workshop.py"
+      ]
+    },
+    {
+      "page": "docs/labs/coding.md",
+      "command": "npm run study:demo",
+      "references": [
+        "scripts/study-demo.py",
+        "lab/fixtures/study-coding/tasks.json"
+      ]
+    },
+    {
+      "page": "docs/labs/browser.md",
+      "command": "node scripts/browser-lab.mjs",
+      "references": [
+        "scripts/browser-lab.mjs",
+        "lab/fixtures/sources-v2/catalog.html"
+      ]
+    },
+    {
+      "page": "docs/labs/research.md",
+      "command": "uv run --frozen --offline python scripts/source-labs.py",
+      "references": [
+        "scripts/source-labs.py",
+        "lab/fixtures/sources-v2/policy-a.md"
+      ]
+    },
+    {
+      "page": "docs/labs/data.md",
+      "command": "uv run --frozen --offline python scripts/source-labs.py",
+      "references": [
+        "scripts/source-labs.py",
+        "lab/fixtures/sources-v2/scores.csv"
+      ]
+    },
+    {
+      "page": "docs/labs/document.md",
+      "command": "uv run --frozen --offline python scripts/source-labs.py",
+      "references": [
+        "scripts/source-labs.py",
+        "lab/fixtures/sources-v2/handbook-v2.html"
+      ]
+    },
+    {
+      "page": "docs/labs/migration.md",
+      "command": "uv run --frozen --offline python scripts/run-labs.py migration",
+      "references": [
+        "scripts/run-labs.py",
+        "lab/fixtures/migration/input.json"
+      ]
+    },
+    {
+      "page": "docs/labs/runner.md",
+      "command": "uv run --frozen --offline python scripts/run-labs.py all",
+      "references": [
+        "scripts/run-labs.py"
+      ]
+    }
   ]
 }

@@ -1,255 +1,95 @@
-# 兼容性与责任矩阵：把“支持”拆成可验证证据
+# 兼容性与实际验证范围
 
-## 为什么不能只写“支持”
+本表回答“当前仓库实际运行了哪一层”。产品声明、配置文件、框架运行、模型调用和任务质量分别需要证据。
 
-“支持某模型/框架/Harness”可能只意味着：官方文档提到、配置能解析、离线接口长得像、一次真实请求成功，或者代表性任务达到门槛。这些证据强度完全不同。
+<span id="为什么不能只写-支持"></span>
+<span id="为什么不能只写支持"></span>
+<span id="五条证据轴"></span>
+<span id="状态词怎样使用"></span>
+<span id="coding-harness-当前状态"></span>
+<span id="harness-责任映射"></span>
+<span id="模型页面当前状态"></span>
+<span id="framework-与领域职责接缝"></span>
+<span id="组合兼容-不能由单项拼出来"></span>
+<span id="组合兼容不能由单项拼出来"></span>
+<span id="protocol-兼容至少拆哪些行"></span>
+<span id="一条兼容记录的主键"></span>
+<span id="怎样写合法结论"></span>
+<span id="证据怎样升级"></span>
+<span id="drift-与复核"></span>
+<span id="失败、清理与回滚"></span>
+<span id="失败清理与回滚"></span>
+<span id="已知限制与使用方法"></span>
 
-本项目把兼容性定义为**具体组合在明确责任和证据边界下的状态**：
+<span id="兼容性与责任矩阵-把-支持-拆成可验证证据"></span>
 
-```text
-object/version
-  × surface/provider/adapter
-  × responsibility/protocol feature
-  × workload/config
-  × evidence axis/date
-```
+## 当前状态
 
-只写产品名称而没有版本、surface、责任和证据，不能形成兼容结论。
-
-## 五条证据轴
-
-| 证据轴 | 回答的问题 | 合法表述 | 不能证明 |
+| 对象 | 已完成 | 证据 | 未验证 |
 | --- | --- | --- | --- |
-| Source fact | 官方文档或维护仓库声明什么？ | `verified/conflict/pending` + 版本/日期 | 本机、账号或组合可用 |
-| Local static | 配置、schema 或文档是否符合项目规则？ | E0 静态检查通过 | 产品已读取或执行配置 |
-| Offline seam | 项目是否用 fake/replay 验证责任？ | E1 / `not-implemented` + fixture | 上游 package/API 行为 |
-| Live evidence | 目标版本和 surface 是否真实可用？ | E2 / `untested` + run | 代表性质量优胜 |
-| Workload study | 目标任务是否重复达到门槛？ | E3 + study/split/区间 | 跨任务/版本通用排名 |
+| Python / TypeScript | 运行契约、循环、验收与用量状态 | E1，共享正负例 | 生产分布式执行 |
+| 完整编码研究 | 临时 Git、实际补丁与测试、12 单元报告 | E1，实际产物关联 | 模型生成补丁 |
+| 本地领域实验 | Markdown/HTML/CSV 解析与 Playwright 操作 | E1，原始文件和断言 | 开放网页、生产数据 |
+| LangGraph 1.2.11 | 实际图、聚合、暂停与恢复 | E1，假模型/固定材料 | 持久部署和真实模型 |
+| Agents SDK 0.22.1 | 实际 Runner、工具循环与回传 | E1，模型替身 | 真实供应方协议 |
+| ADK 2.8.0 | 实际运行器、会话与事件 | E1，模型替身 | Gemini/Vertex 与部署 |
+| AutoGen 0.7.5 | 实际参与者、回放客户端与终止 | E1，固定回复 | 多智能体质量收益 |
+| Responses 适配器 | 模拟响应、串行工具、错误与用量 | E1，模拟传输 | 真实 API、流式与跨进程恢复 |
+| Codex / Pi / Claude Code | 固定包的 --help 及静态配置 | E1 入口、E0 配置 | 模型任务和权限实效 |
+| 六个模型家族 | 官方资料与适配差异 | E0；DeepSeek 部分 pending | 模型质量与成本比较 |
 
-Source status 与 experiment level 是两套坐标。官方来源 verified 不会自动产生 E2；离线 E1 也不会改变来源状态。
+来源见[事实注册表](/references/fact-registry)。固定包帮助的历史执行证据与 2026-09-21 滚动文档核对分开：例如 Claude Code 2.1.263 的入口探针不支持 2.1.277+ 才出现的 AGENTS.md 加载结论。后者仅为目标新版本的 E0 来源事实。[FACT:claude-cli-entry] [FACT:claude-agents-md]
 
-## 状态词怎样使用
+## 新增生态对象
 
-| 状态 | 含义 | 写作要求 |
-| --- | --- | --- |
-| `verified` | 目标来源/版本在日期上实际核对 | 引用精确 source、version、checked |
-| `pending` | 无法充分核对 | 相关字段保持 unknown，不抄旧值 |
-| `conflict` | 来源或目标版本互相矛盾 | 保留冲突并限制结论 |
-| `retired` | 不再用于当前正文 | 保留历史/兼容审计 |
-| `untested` | 没有该组合的真实 run | 不写“可用”或“不可用” |
-| `not-implemented` | 项目没有该离线 seam | 不用文件名/计划冒充实现 |
-
-`pending` 不等于 false，`untested` 不等于不支持；它们都表示当前证据不足。
-
-## Coding Harness 当前状态
-
-| 对象 | Source fact | Local static | Offline seam | Live evidence | 阅读边界 |
-| --- | --- | --- | --- | --- | --- |
-| Codex | 官方滚动文档，2026-09-21 [FACT:codex-agents-md] [FACT:codex-config] [FACT:codex-sandbox-approval] | `examples/harnesses/codex`，E0 | Migration E1 | untested | AGENTS、config、sandbox、approval、network 分开 |
-| Pi | 固定 commit `496185f`，2026-09-21 [FACT:pi-readme] | `examples/harnesses/pi`，E0 | Migration E1 | untested | Tool、session、context、trust、extension 与外部隔离 |
-| Claude Code | Memory/settings/permissions 2026-09-21 [FACT:claude-memory] [FACT:claude-settings] | `examples/harnesses/claude-code`，E0 | Migration E1 | untested | CLAUDE.md/memory、permissions、hooks、sandbox 分开 |
-
-新增 Gemini CLI 来源及资格设计为 E0 [FACT:gemini-cli-overview]；部分用户层的当前迁移公告见[Gemini CLI](/harnesses/gemini-cli)。它没有本地配置样例、迁移 fixture 或真实运行。
-
-三套既有示例通过仓库静态检查，但没有启动产品。Migration fixture 只验证责任字段、gap、补偿和负例；不能把其 E1 写成三者真实兼容。
-
-详细阅读：[Codex](/harnesses/codex)、[Pi](/harnesses/pi)、[Claude Code](/harnesses/claude-code)与[横向比较](/harnesses/comparison)。
-
-## Harness 责任映射
-
-| 责任 | Codex | Pi | Claude Code | 验证问题 |
-| --- | --- | --- | --- | --- |
-| 持久指令 | AGENTS chain | context/project files | CLAUDE.md / rules / memory | 目标 cwd 实际加载哪些内容？ |
-| Model/Provider | config/profile/surface | models adapter/settings | model/settings/surface | Requested alias 解析成什么？ |
-| 工具 | runtime tools / MCP / plugins | read/write/edit/bash / extensions | tools / MCP / plugins / hooks | Schema、error、timeout 是否等价？ |
-| 技术隔离 | sandbox / permission profile | 外部 runtime/container 补偿 | sandbox，按目标版本核验 | 进程技术上能触达什么？ |
-| 询问与授权 | approval policy | project trust + 自建 policy | permission rules / hooks | Gate 是否在 handler 前？ |
-| 网络 | 独立策略 | runtime/extension egress | settings/sandbox/runtime | 实际出口和 destination 是什么？ |
-| 状态 | task/session/worktree，因 surface 而异 | session tree/fork/import/compaction | conversation/context/session | 未决副作用能否恢复？ |
-| 扩展 | skills/MCP/plugins | skills/templates/extensions | skills/hooks/plugins/subagents | 来源、权限、数据、卸载？ |
-| 验证 | Tool/CI/人工组合 | 命令/extension/外部 CI | Tool/hook/外部 CI | 谁决定 Task acceptance？ |
-| 回滚 | Git/worktree + 外部对账 | Session/Git + 外部对账 | Session/Git + 外部对账 | 能否恢复业务而非只恢复文本？ |
-
-Codex 中 sandbox 限制技术可达范围，approval 决定何时询问，network 仍是独立控制。[FACT:codex-sandbox-approval] 迁移时要找目标语义与补偿，而不是复制字段名。
-
-## 模型页面当前状态
-
-| 页面 | Source 边界 | 项目证据 | Live/Workload |
+| 对象 | 来源范围 | 当前项目证据 | 仍待验证 |
 | --- | --- | --- | --- |
-| OpenAI | Function calling、reasoning 与 effort 的官方入口已登记 | 协议设计与共享 E1 runtime tests | 没有真实 API/model 结果 |
-| Anthropic Claude | 官方模型/Claude Code 配置入口 | E0 适配方法 + 共享离线控制 | 没有 Anthropic/转售 API run |
-| Google Gemini | 官方 models/ADK 入口 | E0 适配方法 + 共享离线控制 | 没有 Gemini/Vertex run |
-| Qwen | 官方站 + 目标 model card/revision 要求 | E0 checkpoint/runtime/协议方法 | 没有 API/权重加载结果 |
-| Llama | 维护仓库的模型卡与许可入口 [FACT:llama-catalog] | E0 权重/运行时适配方法 | 没有权重加载或真实推理结果 |
-| DeepSeek | API surface 的价格、alias、context、availability 为 pending [FACT:deepseek-api-surface] | E0 方法，pending 阻止费用结论 | 没有官方/第三方/本地 run |
+| Gemini CLI | CLI 定位、用户层迁移公告 [FACT:gemini-cli-overview] [FACT:gemini-cli-lifecycle] | E0；无本地产品运行 | 目标账号、版本与任务 |
+| MAF、Deep Agents、PydanticAI、CrewAI | 架构和生命周期，见[现代运行时](/frameworks/modern-runtimes) | E0；未安装这些上游包 | 真实目标组合 |
+| LlamaIndex、Browser Use | 数据与浏览器路径，见[知识与记忆](/ecosystem/knowledge-and-memory)、[多模态](/ecosystem/multimodal) | E0；本地领域实验不调用这些上游包 | 上游接口与部署 |
+| MCP 2026-07-28、Tasks、Apps、A2A、Agent Skills | [协议与技能](/ecosystem/protocols-and-skills) | E0；工作坊集合判断是内部教学 E1 | 协议、授权与身份互操作 |
+| Agents API | [托管责任](/ecosystem/long-running) | E0；未创建托管会话或沙箱 | 服务运行与恢复 |
+| vLLM、SGLang、Ollama | [服务定位](/ecosystem/models-and-services) | E0；未加载权重或启动服务 | 模型/服务协议组合 |
+| OTel GenAI 与基准族 | [测量对象和边界](/ecosystem/evaluation-observability) | E0；未运行上游基准 | 遥测兼容和模型质量 |
 
-“共享 TypeScript runtime test 通过”只证明公共 Task/Action/Result 拒绝坏值；Python 合成 stream 测试也只证明项目内 assembler 对固定事件的状态转换。两者都不是任一 Provider 的 tool/stream/error 兼容测试。
+[生态工作坊](/practice/ecosystem-workshop)的三个 E1 练习验证集合映射、固定数据编排与候选选择阈值。它们不执行 MCP handler、上游协议或模型生成；不得给上表对象继承实验等级。
 
-模型适配必须同时固定 model、Provider、Adapter、Harness、surface、Task 和 budget。详见[模型适配方法](/models/adaptation)与[协议兼容性](/models/protocol-compatibility)。
+## 产品责任分开验收
 
-## Framework 与领域职责接缝
+| 责任 | 应观察的行为 |
+| --- | --- |
+| 指令 | 目标 cwd、版本和例外下实际加载的文件及覆盖关系 |
+| 权限 | 技术可达范围、审批询问、网络出口分别测试；allow 规则不等于封闭白名单 |
+| 状态 | 未决副作用、检查点身份和恢复；worktree 只隔离版本状态 |
+| 工具与扩展 | schema、发现、执行、来源、数据流与卸载 |
+| 验证与回滚 | 谁验收业务结果；代码恢复之外的外部副作用怎样对账 |
 
-| 名称 | Source fact | 本项目实际执行 | Offline seam | Live evidence |
-| --- | --- | --- | --- | --- |
-| LangGraph | 低层有状态 orchestration/runtime 已核对 [FACT:langgraph-overview] | Research 的确定性状态转换 | E1 离线职责接缝 | untested；未安装上游包 |
-| Browser Use | 仅当前Cloud quickstart来源核验 [FACT:browser-use-cloud] | Browser 的本地合成页面与注入拒绝 | E1 离线职责接缝 | untested；未安装上游包 |
-| PydanticAI | 官方类型化应用概览 [FACT:pydantic-ai-overview] | Data 的 schema 漂移与敏感字段 | E1 离线职责接缝 | untested；未安装上游包 |
-| LlamaIndex | 官方数据/Agent/workflow概览 [FACT:llamaindex-overview] | Document 的版本化问答 | E1 离线职责接缝 | untested；未安装上游包 |
-| OpenAI Agents SDK | 官方架构入口已核对 [FACT:openai-agents-sdk] | 只有职责说明 | not-implemented / E0 | untested；未安装上游包 |
-| Google ADK | 官方架构入口已核对 [FACT:google-adk] | 只有职责说明 | not-implemented / E0 | untested；未安装上游包 |
-| AutoGen | 历史分层及当前维护态 [FACT:autogen-overview] [FACT:autogen-maintenance] | 只有职责说明 | not-implemented / E0 | untested；未安装上游包 |
+Codex 的 permission profile 与 approval policy 是不同控制；workspace-write 不代表拒绝工作区外所有读取。[FACT:codex-permission-profiles] [FACT:codex-sandbox-approval] Claude Code 还需分别核对权限规则与 sandbox。[FACT:claude-permissions]
 
-新增生态对象的证据单独列出，不能继承同名教学模块的实验等级：
+四个框架装在各自示例环境；根 Python 环境继续保持最小依赖，不能用根环境导入失败判断示例没有运行。
 
-| 对象 | 本次来源范围 | 本项目证据 | 真实目标环境 |
-| --- | --- | --- | --- |
-| MAF、Deep Agents、CrewAI | 架构定位与生命周期，见[现代运行时](/frameworks/modern-runtimes) | E0；未安装 | untested |
-| MCP 2026-07-28、Tasks、Apps、A2A、Agent Skills | 规范与扩展，见[协议与技能](/ecosystem/protocols-and-skills) | E0；工作坊的集合判断仅为内部教学E1 | 协议与认证互操作 untested |
-| Agents API | 官方托管责任，见[长任务与部署](/ecosystem/long-running) | E0；未创建会话/沙箱 | untested |
-| vLLM、SGLang、Ollama | 服务定位，见[模型与服务](/ecosystem/models-and-services) | E0；未下载权重或启动服务 | untested |
-| OTel GenAI与基准族 | 约定、测量对象与版本，见[评测与观测](/ecosystem/evaluation-observability) | E0；未运行上游基准 | 兼容性及模型质量 untested |
+## 怎样读取旧记录
 
-`lab/src/about_harness/integrations/` 的同名文件不会 import 上游 Framework。它们只把领域责任标为 `offline-contract-seam`。文件存在、case 通过或名称相同都不能证明 API 兼容。
+原有六个 JSON 实验及其公开样例继续按历史输入读取。旧 `integration` 是当时的职责映射名称，不能解释为框架执行；当前领域函数使用通用 example 名称，历史输出只由兼容层恢复。
 
-## “组合兼容”不能由单项拼出来
+Study 1.0 保留 run-level 语义，1.1 保留原任务规模与聚合规则，1.2 支持学习研究与正式比较。EvalRun 1.1 额外关联实际运行产物；新格式不反向改变旧样例。
 
-以下四项分别 verified，也不自动证明组合可用：
+## 怎样判断目标组合
 
-```text
-Harness 能配置某 model
-Provider 文档声明 tool calling
-Framework 提供 Agent runtime
-项目离线 Tool loop 通过
-```
+固定产品/框架版本、模型、供应方、适配器、工具与配置，再逐项标记 supported、emulated、rejected 或 untested。模型名称相同不能保证工具、状态与权限语义相同。
 
-真实组合还需验证：
+离线合格后，另行授权的真实探针可形成 E2；代表性任务研究才可能形成 E3。真实框架加假模型仍为 E1，不把安装或命令成功升级成模型质量结论。
 
-- Harness 如何把消息映射给 Provider；
-- Model snapshot 是否支持目标参数；
-- Framework/Adapter 如何映射 ToolCall/Result 和 streaming；
-- Permission/sandbox/network 是否覆盖新增工具；
-- Context、state、retry 和 cancel 是否连续；
-- Validator 与 Task 是否适用于该 workload；
-- 版本组合、身份和 budget 是否可追溯。
+<span id="在当前仓库验证矩阵"></span>
 
-兼容性是组合属性，不是三个“支持”标签的逻辑与。
+## 验证与维护
 
-## Protocol 兼容至少拆哪些行
-
-| Feature | 正例 | 负例 | 兼容条件 |
-| --- | --- | --- | --- |
-| Messages | 单/多轮、system | 空/未知 role | 顺序/内容无静默变化 |
-| Tool schema | 合法单工具 | 未知字段/坏类型 | 错误可定位，handler 前拒绝 |
-| Tool result | 单/连续调用 | 丢/重复 call ID | 结果关联稳定 |
-| Streaming | 文本/arguments 增量 | 断流/重复/UTF-8 边界 | 不重不漏、终态唯一 |
-| Stop/error | complete/tool/length | reject/rate-limit/cancel | 分类不混写 |
-| Usage | 正常字段 | 缺失/负数/NaN | 单位和缺失语义明确 |
-| Retry/cancel | 暂时失败/取消 | late completion | 预算、幂等、终态正确 |
-| State | Checkpoint/resume | config drift/坏 state | 身份与副作用可恢复 |
-
-HTTP 200、SDK 能发请求或一次 tool call 成功，只覆盖其中很小一部分。
-
-## 一条兼容记录的主键
-
-```text
-object + version/revision
-surface + provider/endpoint + region
-adapter/SDK/runtime versions
-feature/responsibility
-Task/workload + fixture hash
-config/tool/context hashes
-evidence axis + run/ref + checked_at
-status + limitations + owner
-```
-
-任一主键字段变化，都不应无条件复用旧结论。Alias、滚动文档和第三方 endpoint 尤其需要观察时间。
-
-## 怎样写合法结论
-
-不合格：
-
-> 本项目支持 LangGraph、Claude 和 Pi。
-
-合格：
-
-> 在 commit X，Research 合成 fixture 通过项目内确定性状态转换，作为 LangGraph 责任映射的 E1 seam；上游包未安装，真实 LangGraph/model 组合保持 untested。
-
-不合格：
-
-> DeepSeek 成本更低。
-
-合格：
-
-> 当前 DeepSeek price source 为 pending，项目没有 live usage/billing；不能形成成本比较。[FACT:deepseek-api-surface]
-
-不合格：
-
-> 三个 Harness 都支持 sandbox。
-
-合格：
-
-> 源 Codex sandbox 责任在 Pi 迁移 fixture 中由外部无网络/只读 runtime 补偿；这只是 E1 mapping，目标 Pi 运行仍 untested。
-
-## 证据怎样升级
-
-```text
-E0 source/design/static
-  → 固定目标版本与配置
-  → E1 offline seam + negative
-  → 获授权 E2 live protocol probe
-  → 真实 Task + validator + repeated holdout
-  → E3 workload result
-```
-
-升级时保留原层级，不覆盖历史：E2 失败可能说明目标组合不合格，但不会让官方 source fact 变 false；新 E3 也不能证明旧/其他版本。
-
-E2 至少保存 model/provider/Harness/Adapter、原始协议引用、Task、config、budget、trace、result 和失败分类。E3 再增加代表性任务、重复、holdout、区间和预注册晋级门槛。
-
-## Drift 与复核
-
-触发重新资格测试的变化：
-
-- Product/CLI/SDK/Adapter/Framework 版本；
-- Model alias、resolved snapshot、Provider 或 region；
-- Tool schema、MCP/extension、permission 或 network；
-- Context template、compaction、memory 或 Task；
-- Validator、budget、retry 或 deployment environment；
-- 官方滚动文档与来源状态。
-
-高易变事实由 `facts:freshness` 检查日期，但日期新鲜不证明 live 行为仍一致。Version change 与 incident 触发的回归比固定日历更重要。
-
-## 在当前仓库验证矩阵
-
-前置条件是 Node.js 22+、Python 3.11+、`uv 0.11.16`，锁定依赖已准备：
-
-```powershell
+```bash
 npm run facts:check
-npm run examples:check
-uv run --frozen --offline python scripts/run-labs.py all
+npm run study:check
+npm run frameworks:check
+npm run model:probe
+npm run ecosystem:workshop
 ```
 
-预期：事实注册表结构/引用通过；三套静态示例通过；六个离线 case 为 `E1`、`offline=true`、`negative_rejected=true`。然后人工逐行核对本页五层证据：对象/版本、Source fact、Offline seam、Live evidence、控制层；任何空白或 `untested` 都必须原样保留，不能因为产品名或命令退出 0 而升级。
-
-这些命令不访问产品、Provider 或第三方 Framework。若它们请求网络/凭据、同名 integration 开始导入未锁定上游包，或 E1 被显示为 live/E2/E3，立即停止。
-
-## 失败、清理与回滚
-
-矩阵与产品页面冲突时，先回到事实注册表、目标版本和实际 run，不为保持表格绿色删除冲突。无法核对的 source 改为 pending；没有 run 的组合写 untested。
-
-命令只产生终端输出和可再生 cache；发送 `Ctrl+C` 停止，用 `git status --short` 确认范围后只清理本轮生成物。矩阵修改使用独立 commit，失败时只回退自己的候选，不覆盖事实注册表或历史 run。
-
-## 已知限制与使用方法
-
-当前矩阵不是自动兼容数据库：它没有枚举所有 model/provider/version 组合，也没有实时查询账号、套餐和区域。它的价值是防止不同强度的证据被混写。
-
-使用时：
-
-1. 选一个具体 object/version/surface；
-2. 拆成需要验证的 responsibility/feature；
-3. 查 Source fact 与状态；
-4. 查项目是否有 Local static/Offline seam；
-5. 没有 Live evidence 就保持 untested；
-6. 运行目标组合 probe，保存新 run；
-7. 只有代表性 study 才写 workload 结论。
-
-可执行负例见[跨 Harness 迁移](/labs/migration)，完整评测设计见[评测方法](/evaluation/method)。
+按[统一环境](/guide/prerequisites)准备锁定依赖。检查失败时停止更新状态，核对对应产物和来源；临时运行资源自行清理，本地报告保留。回退恢复对应代码与锁文件，并保留历史记录。

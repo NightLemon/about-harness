@@ -79,6 +79,14 @@
 
 | gemini-cli-lifecycle | Gemini CLI官方公告称未付费层和Google One用户于2026-06-18迁移到Antigravity CLI，不能外推其他用户层 | product | https://geminicli.com/docs/ | notice displayed 2026-09-21 | 2026-09-21 | high | verified | E0 | - | /harnesses/gemini-cli |
 
+| codex-cli-entry | Codex 0.153.4 包入口具有 model、sandbox 和 ask-for-approval 选项 | product | https://learn.chatgpt.com/docs/config-file/config-basic | 0.153.4 | 2026-09-08 | high | verified | E0 | - | /harnesses/codex |
+| claude-cli-entry | Claude Code 2.1.263 帮助提供 model、tools 与 permission-mode 选项 | product | https://code.claude.com/docs/en/cli-reference | 2.1.263 | 2026-09-08 | high | verified | E0 | - | /harnesses/claude-code |
+| pi-cli-entry | Pi 固定源码包名为 @earendil-works/pi-coding-agent，0.84.2 帮助提供 provider、model 与 tools | product | https://github.com/earendil-works/pi/tree/496185f6e4267b979e3663c45f7eb70b0c6a97b4/packages/coding-agent | 0.84.2 | 2026-09-08 | high | verified | E0 | - | /harnesses/pi |
+| anthropic-tools | Anthropic 工具使用通过结构化调用与对应结果继续消息循环 | product | https://docs.anthropic.com/en/docs/build-with-claude/tool-use/overview | rolling | 2026-09-08 | high | verified | E0 | - | /models/anthropic |
+| gemini-function-calling | Gemini 函数调用由应用执行并回传结构化结果 | product | https://ai.google.dev/gemini-api/docs/function-calling | rolling | 2026-09-08 | high | verified | E0 | - | /models/google |
+| qwen-source | Qwen 官方站提供目标模型发布与模型卡的发现入口 | product | https://qwenlm.github.io/ | rolling | 2026-09-08 | high | verified | E0 | - | /models/qwen |
+| llama-source | Meta Developer 提供 AI 模型与开发资料入口，权重许可需按目标版本核对 | product | https://developer.meta.com/ai/docs/overview/ | rolling | 2026-09-08 | high | verified | E0 | - | /models/llama |
+
 ## 冲突处理
 
 若官方网页、目标安装版本的 `--help` 与实际探针不一致，保留全部证据，把状态改为 `conflict`，正文只描述已锁定版本。不得为了让检查通过而删除冲突记录。

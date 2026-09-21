@@ -4,18 +4,10 @@ import re
 
 from about_harness.contracts import JsonValue
 from about_harness.integrations.base import (
-    IntegrationBoundary,
     IntegrationContractError,
     require_list,
     require_object,
     require_string,
-)
-
-BOUNDARY = IntegrationBoundary(
-    name="LlamaIndex",
-    distribution="llama-index",
-    import_name="llama_index",
-    representative_domain="document",
 )
 
 
@@ -148,8 +140,8 @@ def answer_from_latest(payload: dict[str, JsonValue]) -> dict[str, JsonValue]:
             "stale_versions_ignored": stale_versions_ignored,
             "access_denied_documents": access_denied_documents,
             "parse_failed_documents": parse_failed_documents,
-            "integration": BOUNDARY.name,
-            "mode": BOUNDARY.execution_mode,
+            "example": "local-document-query",
+            "mode": "offline-domain-v2",
         }
     doc_id, version, block_id, text = candidates[0]
     return {
@@ -166,6 +158,6 @@ def answer_from_latest(payload: dict[str, JsonValue]) -> dict[str, JsonValue]:
         "stale_versions_ignored": stale_versions_ignored,
         "access_denied_documents": access_denied_documents,
         "parse_failed_documents": parse_failed_documents,
-        "integration": BOUNDARY.name,
-        "mode": BOUNDARY.execution_mode,
+        "example": "local-document-query",
+        "mode": "offline-domain-v2",
     }

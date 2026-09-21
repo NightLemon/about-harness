@@ -1,0 +1,27 @@
+{
+  "acceptance": {
+    "tests": "all"
+  },
+  "allowed_tools": [
+    "workspace.read",
+    "workspace.patch",
+    "test.run"
+  ],
+  "budgets": {
+    "max_cost_usd": 0.0,
+    "max_model_calls": 5,
+    "max_steps": 5,
+    "timeout_ms": 30000
+  },
+  "goal": "稳定排序：按 score 排序并保留同分顺序",
+  "input": {
+    "fixture_hash": "1970df3dd73e124f08f6762c00a0959eea57489d5ec1f7d5a4755e1c6760e69f",
+    "fixture_ref": "study-coding-v1"
+  },
+  "metadata": {
+    "evidence": "E1",
+    "fixture_hash": "1970df3dd73e124f08f6762c00a0959eea57489d5ec1f7d5a4755e1c6760e69f"
+  },
+  "schema_version": "1.0",
+  "task_id": "demo-sorting"
+}

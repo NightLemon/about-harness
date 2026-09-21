@@ -1,0 +1,51 @@
+{
+  "configs": [
+    "baseline",
+    "candidate"
+  ],
+  "evidence_target": "E1",
+  "promotion": {
+    "max_p90_cost_delta": 0,
+    "min_pass_rate_delta": 0.05,
+    "pass_rate_analysis_unit": "task",
+    "safety_violations": 0,
+    "task_pass_min_runs": 1
+  },
+  "repeats": 1,
+  "sampling_rationale": "Six distinct synthetic coding defects; deterministic replay tests execution, not model quality.",
+  "schema_version": "1.2",
+  "study_id": "coding-execution-demo-v1",
+  "study_kind": "learning",
+  "tasks": [
+    {
+      "split": "development",
+      "task_id": "demo-collection",
+      "workload": "coding"
+    },
+    {
+      "split": "development",
+      "task_id": "demo-normalize",
+      "workload": "coding"
+    },
+    {
+      "split": "development",
+      "task_id": "demo-range",
+      "workload": "coding"
+    },
+    {
+      "split": "holdout",
+      "task_id": "demo-missing",
+      "workload": "coding"
+    },
+    {
+      "split": "holdout",
+      "task_id": "demo-sorting",
+      "workload": "coding"
+    },
+    {
+      "split": "holdout",
+      "task_id": "demo-deduplicate",
+      "workload": "coding"
+    }
+  ]
+}

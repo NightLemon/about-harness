@@ -1,0 +1,11 @@
+{
+  "retention_days": [
+    30,
+    45
+  ],
+  "status": "conflict",
+  "sources": [
+    "policy-a",
+    "policy-b"
+  ]
+}

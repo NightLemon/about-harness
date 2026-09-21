@@ -1,0 +1,6 @@
+--- a/solution.py
++++ b/solution.py
+@@ -1,2 +1,2 @@
+ def solve(value):
+-    return min(value, 9)
++    return min(10, max(0, value))

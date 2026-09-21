@@ -6,7 +6,7 @@
 
 ## 前置条件、版本和输入
 
-先完成[实验环境](/labs/setup)。需要 Node.js 22+、Python 3.11+、uv 0.11.16；依赖固定在 `package-lock.json`、`uv.lock`。在仓库根目录执行命令，不配置账号或凭据。
+先完成[实验环境](/labs/setup)。需要 Node.js 22+、Python 3.12、uv 0.11.16；依赖固定在 `package-lock.json`、`uv.lock`。在仓库根目录执行命令，不配置账号或凭据。
 
 输入是 `lab/fixtures/ecosystem.json`，格式为 `ecosystem-fixture-v1`，包含自编能力清单、三条库存记录和四个候选。实现位于 `lab/src/about_harness/ecosystem.py`，命令入口是 `scripts/ecosystem-workshop.py`。先记录 `git rev-parse HEAD`、`git status --short`；输出还会绑定 fixture、配置及实现的 SHA-256。未提交改动存在时，不能只用 HEAD 描述实际执行版本。
 

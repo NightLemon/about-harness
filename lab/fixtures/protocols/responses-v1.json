@@ -1,0 +1,4 @@
+[
+  {"id":"response-1","model":"offline-model","status":"completed","usage":{"input_tokens":20,"output_tokens":5},"output":[{"type":"function_call","call_id":"sum-1","name":"sum","arguments":"{\"values\":[30,45]}"}]},
+  {"id":"response-2","model":"offline-model","status":"completed","usage":{"input_tokens":30,"output_tokens":5},"output":[{"type":"message","content":[{"type":"output_text","text":"{\"answer\":75}"}]}]}
+]

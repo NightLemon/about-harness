@@ -1,8 +1,19 @@
-# 资料来源与核对方法
+# 来源与核对记录
+
+<span id="产品与模型"></span>
+<span id="openai-与-codex"></span>
+<span id="anthropic-与-claude-code"></span>
+<span id="pi"></span>
+<span id="其他模型家族"></span>
+<span id="framework-与协议"></span>
+<span id="如何判断一条主张"></span>
+<span id="时效、许可与刷新"></span>
+<span id="时效许可与刷新"></span>
+<span id="资料来源与核对方法"></span>
 
 本项目优先引用官方文档、标准规范、维护仓库与原作者论文。核对日期表示当天实际阅读了支持主张的内容，不保证之后页面不变，也不证明特定账号、区域或版本能够使用该功能。
 
-本次全面复核日期为 **2026-09-21**。逐条来源、版本、状态、实验等级和正文入口以[事实注册表](/references/fact-registry)为准；下表帮助选择材料，不重复维护全部事实。来源已核验仍可只有 E0，真实实验必须另有记录。
+生态与原有核心事实于 **2026-09-21** 复核；远端合入的固定 CLI 与补充协议事实仍保留各自的检查日期。逐条来源、版本、状态、实验等级和正文入口以[事实注册表](/references/fact-registry)为准；下表帮助选择材料，不重复维护全部事实。来源已核验仍可只有 E0，真实实验必须另有记录。
 
 ## 按问题选择一手资料
 
@@ -39,7 +50,7 @@ GAIA 原始数据卡的 raw 请求返回 HTTP 401；本次仅通过作者论文�
 | 稳定机制 | 因果解释、反例、适用条件 | 某产品当前实现完全相同 |
 | 产品/规范事实 | 精确来源、目标版本、核对日期、FACT ID | 账号可用、部署成功、模型质量 |
 | 项目建议 | 工作负载、约束、理由、验证与回退 | 对所有团队都最优 |
-| 示例与离线练习 | 固定输入、命令、断言、失败分类与输出身份 | 已运行真实协议或上游框架 |
+| 示例与离线练习 | 固定输入、命令、断言、失败分类与输出身份 | 真实模型质量；实际框架执行须另有运行记录 |
 | 性能与质量比较 | 任务、全部预算、重复、holdout及不确定性 | 跨环境、跨任务的通用排名 |
 
 同一页可以包含多类内容，但措辞与标记应使读者能分辨。用官方概览支持精确默认值、把研究摘要中的增益搬进产品推荐、用一份固定fixture推导真实模型质量，都是证据跨界。
@@ -51,3 +62,7 @@ GAIA 原始数据卡的 raw 请求返回 HTTP 401；本次仅通过作者论文�
 因此，编辑易变事实和发布前都要实际阅读相应来源。发生重定向、生命周期改变或能力迁移时，同步更新正文、来源状态与兼容矩阵；季度全量外链检查只是补充。保留来源冲突，不能通过删记录或批量刷新日期获得绿色。
 
 引用只保留必要短摘录和原链接。代码、原创文档和第三方资料分别遵守各自许可；不把完整上游网页、原始私有轨迹、凭据或个人路径提交到仓库。公开的审核报告记录证据摘要，HTTP响应身份与语义判断分开保存。
+
+## 固定版本执行的补充来源
+
+远端已记录的执行入口包括 [Claude CLI](https://code.claude.com/docs/en/cli-reference)、[ADK 模型接口](https://google.github.io/adk-docs/agents/models/)、[AutoGen Replay client](https://microsoft.github.io/autogen/stable/reference/python/autogen_ext.models.replay.html)、[Anthropic 工具使用](https://docs.anthropic.com/en/docs/build-with-claude/tool-use/overview)和 [Gemini 函数调用](https://ai.google.dev/gemini-api/docs/function-calling)。包身份由示例锁文件固定；历史执行源码与哈希保存在仓库 `maintenance/execution-sources/`。这些记录与滚动文档的后续核对分开维护。

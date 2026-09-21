@@ -1,0 +1,18 @@
+[
+  {
+    "doc_id": "handbook",
+    "version": 1,
+    "published": true,
+    "effective": "2026-01-01",
+    "allowed": true,
+    "file": "handbook-v1.md"
+  },
+  {
+    "doc_id": "handbook",
+    "version": 2,
+    "published": true,
+    "effective": "2026-09-01",
+    "allowed": true,
+    "file": "handbook-v2.html"
+  }
+]

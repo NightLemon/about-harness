@@ -292,9 +292,19 @@ try {
   fs.mkdirSync(jsonlDir)
   fs.writeFileSync(path.join(jsonlDir, 'safe.jsonl'), `${JSON.stringify({ run_id: 'safe-run', status: 'passed' })}\n`)
   const safeJsonlResult = spawnSync(process.execPath, ['scripts/redact-results.mjs', jsonlDir], { encoding: 'utf8' })
-  if (safeJsonlResult.status !== 0 || !safeJsonlResult.stdout.includes('1 JSON/JSONL file')) {
+  if (safeJsonlResult.status !== 0 || !safeJsonlResult.stdout.includes('Public result redaction passed')) {
     throw new Error(`redaction checker did not accept safe JSONL: ${safeJsonlResult.stderr}`)
   }
+
+  const textDir = path.join(temp, 'public-text')
+  fs.mkdirSync(textDir)
+  fs.writeFileSync(path.join(textDir, 'report.md'), '# Safe offline report\n')
+  fs.writeFileSync(path.join(textDir, 'candidate.patch'), '- return value[:-1]\n+ return list(value)\n')
+  const textPass = spawnSync(process.execPath, ['scripts/redact-results.mjs', textDir], { encoding: 'utf8' })
+  if (textPass.status !== 0) throw new Error('reviewed text artifacts rejected')
+  fs.appendFileSync(path.join(textDir, 'report.md'), 'sk-canary-secret\n')
+  const textLeak = spawnSync(process.execPath, ['scripts/redact-results.mjs', textDir], { encoding: 'utf8' })
+  if (textLeak.status === 0 || !textLeak.stderr.includes('OpenAI-style key')) throw new Error('text artifact leak accepted')
 
   fs.writeFileSync(path.join(jsonlDir, 'leak.jsonl'), `${JSON.stringify({ rawPrompt: 'private source material' })}\n`)
   const jsonlLeakResult = spawnSync(process.execPath, ['scripts/redact-results.mjs', jsonlDir], { encoding: 'utf8' })

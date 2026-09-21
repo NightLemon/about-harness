@@ -2,16 +2,22 @@
 
 Agent 环境通常同时提供项目指令、Skill、Hook、工具策略和 CI。它们并不是同一种“更强提示词”：指令影响模型判断，自动化执行确定性步骤，门禁则有权阻止状态变化。选错层会产生两个相反问题——只写文字却以为规则已被强制，或把每个低风险动作都变成昂贵审批。
 
-## 学习目标
-
-读完本页，你应能把一条要求放到最小合适层，判断它是否值得成为硬门禁，并设计一个同时包含正例、负例和回滚的验证方法。核心原则是：用指令表达意图和项目知识，用代码约束必须机械成立的不变量，把人工确认留给真正跨越权限或信任边界的动作。
-
-完成本页后，你还应该能回答四个更具体的问题：
-
-- 一条规则究竟只影响模型选择，还是能阻止文件、网络或发布动作？
-- 一个 checker（检查器）退出 0，覆盖了哪个精确谓词，又遗漏了什么？
-- 某项检查应阻断每个 PR、只在发布前运行，还是定期提醒即可？
-- 当门禁的维护成本高于它避免的损失时，如何安全降级或删除？
+<span id="学习目标"></span>
+<span id="当前仓库的门禁怎样分层"></span>
+<span id="动手审查当前项目的门禁"></span>
+<span id="前置条件、版本与输入"></span>
+<span id="前置条件版本与输入"></span>
+<span id="第一步-确认入口怎样接线"></span>
+<span id="第一步确认入口怎样接线"></span>
+<span id="第二步-运行一个正例"></span>
+<span id="第二步运行一个正例"></span>
+<span id="第三步-验证门禁不是恒真"></span>
+<span id="第三步验证门禁不是恒真"></span>
+<span id="第四步-按影响范围跑完整验证"></span>
+<span id="第四步按影响范围跑完整验证"></span>
+<span id="证据与已知限制"></span>
+<span id="审查清单"></span>
+<span id="检查题"></span>
 
 ## 先按控制强度排队
 
@@ -60,7 +66,7 @@ Subagent（子智能体）或独立会话用于隔离上下文、并行调查或
 
 这些层互相补充，不能互相冒充。Secret checker 没命中不证明进程从未读取 Secret；sandbox 拒绝敏感目录也不证明模型不会把提示中已有的隐私写入结果；人工说“看起来没问题”也不能替代可重复扫描。
 
-同理，“修改后必须通过测试”至少包含三件不同的事：指令告诉 Agent 运行哪条命令，执行器实际运行它，validator 再决定这组测试是否足以支持完成。日志里只有一句“tests passed”而没有命令、退出码和环境身份，不能证明其中任何一项。
+同理，“修改后必须通过测试”至少包含三件不同的事：指令告诉 Agent 运行哪条命令，执行器实际运行它，验证器 再决定这组测试是否足以支持完成。日志里只有一句“tests passed”而没有命令、退出码和环境身份，不能证明其中任何一项。
 
 ## 什么值得写进项目指令
 
@@ -106,7 +112,7 @@ evidence   怎样观察规则确实生效
 
 ### 记录 effective instructions
 
-effective instructions（实际生效指令）是当前 Task 最终看到的有序规则集合，不等于仓库根目录某一个文件。一次可复现实验至少记录：
+effective instructions（实际生效指令）是当前 Task（任务） 最终看到的有序规则集合，不等于仓库根目录某一个文件。一次可复现实验至少记录：
 
 ```text
 task prompt identity
@@ -148,6 +154,8 @@ harness and surface version
 | Lifecycle（生命周期） | 谁维护，何时复审、降级或删除？ | 历史临时约束永久累积 |
 
 门禁的测试不应只验证错误字符串存在。负例测试应同时断言非零退出和预期诊断；正例应覆盖合法边界值。若 checker 具有自动修复能力，还要验证第二次运行不再改动，即满足幂等。
+
+<span id="硬门禁软告警与定期监测"></span>
 
 ### 硬门禁、软告警与定期监测
 
@@ -195,31 +203,6 @@ net value     = avoided loss - gate cost
 
 删除门禁前先把它曾保护的坏样例保存下来，确认替代控制能拒绝；如果问题已经不存在，记录原因和删除 commit。不要仅注释掉 CI 行而保留一套无人运行、仍被文档声称有效的脚本。
 
-## 当前仓库的门禁怎样分层
-
-本项目的 `package.json` 将检查组合成三个主要入口。它们不是同义词：
-
-| 入口 | 当前主要职责 | 典型使用位置 | 不覆盖什么 |
-| --- | --- | --- | --- |
-| `npm run check` | 文档结构/build、Harness 示例、六个离线 Lab、TypeScript runtime、Eval lineage/汇总、公开结果扫描 | 日常内容与核心样例验证 | 完整 Python 测试、ruff、pyright、TypeScript 全量 typecheck、发布 base 视觉检查 |
-| `npm run pages:check` | `/about-harness/` base build、教程约束、事实新鲜度、链接结构、许可、Secret、workflow 与视觉检查 | Pages build job | Python Harness 全量回归和 Eval 全量流程 |
-| `npm run verify` | 组合 `check`、教程正负例、Python/TS 静态与运行测试、发布和仓库 checker 自测 | PR 与 `main` CI | GitHub 仓库设置、真实网络/Provider、内容语义正确性的全部方面 |
-
-更细的 checker 保护不同对象：
-
-- `docs:check` 检查 H1、代码围栏、站内 route/anchor、孤立页面和必要项目文件，不再用页面字数判断质量；
-- `facts:check` 检查事实注册表结构、来源状态、实验等级、引用和 experiment ref，默认不联网验证来源正文；
-- `examples:self-test`、`tutorial:self-test`、`repo:self-test` 用临时合成 canary 证明关键坏样例会被拒绝；
-- `labs:all`、`lab:ts-runtime-test`、pytest 和 typecheck 负责可执行契约，不证明真实模型质量；
-- `eval:validate` 与 `eval:self-test` 保护 Task/fixture/Run lineage、矩阵身份和公开 artifact；
-- `docs:visual:run` 检查三个 viewport 的当前构建，不替代人工阅读和可访问性专项测试。
-
-`.github/workflows/ci.yml` 在 PR 和 `main` push 上运行 `npm run verify`；`deploy.yml` 使用范围更窄的 `pages:check` 构建发布产物；`facts.yml` 定期检查高波动事实新鲜度和在线链接。工作流文件能证明 CI 被这样声明，不能证明 GitHub branch protection 一定把某个 check 设为必需；仓库设置需要另行读取。
-
-本地运行时要顺序执行 `check` 与 `pages:check`。两者都会重建 `docs/.vitepress/dist`，并行运行可能发生文件删除竞争，或让默认 base 与 `/about-harness/` base 的产物混在一起。这个限制来自共享输出目录，不代表所有检查都不能并行。
-
-当前分层体现一个重要取舍：部署 job 只验证公开站点所需内容，不重复安装 Python 环境执行完整 Harness 回归；PR CI 才承担全仓验证。若未来某个发布产物开始依赖 Python 生成步骤，就应重新评估这个边界，而不是机械维持现状。
-
 ## 授权点不要铺满工作流
 
 授权保护的是副作用边界，不是每一步思考。对于用户已经要求的、限定在工作区内、可由 diff 回看且容易恢复的编辑，通常可以连续完成调查、修改和本地验证；逐文件、逐命令确认只会制造 approval fatigue（审批疲劳）。
@@ -232,11 +215,13 @@ net value     = avoided loss - gate cost
 
 验证时不要只确认文件存在。启动一个最小任务，让 agent 报告实际加载的指令来源和冲突，再观察行为是否采用目标命令、遵守禁区并给出所需证据。若产品不支持显示加载来源，就设计一个无副作用探针，例如在临时目录放置不同的格式约定，检查输出而不触碰主工作树。
 
-冲突处理要区分“更具体”和“更高优先级”。子目录规则可能只对目标路径更具体，但不应覆盖系统级安全边界；用户在当前 Task 中改变目标，也不自动授权新的外部副作用。无法同时满足的规则应显式报冲突，不能悄悄选择最方便的一条。
+冲突处理要区分“更具体”和“更高优先级”。子目录规则可能只对目标路径更具体，但不应覆盖系统级安全边界；用户在当前 任务 中改变目标，也不自动授权新的外部副作用。无法同时满足的规则应显式报冲突，不能悄悄选择最方便的一条。
 
-网页、issue、代码注释、测试 fixture 和 ToolResult 都可能出现命令式文字。除非 Harness 明确把它们装载为可信指令来源，它们只是 data（数据）。把不可信正文和项目指令拼成同一段无来源文本，会让优先级在上下文中丢失。更多来源标记、选择和注入边界见[上下文工程](/foundations/context)。
+网页、issue、代码注释、测试 fixture 和 ToolResult（工具结果） 都可能出现命令式文字。除非 Harness 明确把它们装载为可信指令来源，它们只是 data（数据）。把不可信正文和项目指令拼成同一段无来源文本，会让优先级在上下文中丢失。更多来源标记、选择和注入边界见[上下文工程](/foundations/context)。
 
-调试指令未生效时，保存实际 Task、cwd、目标路径和已加载来源，不要只反复改措辞。模型没有采用某条规则，可能是未加载、被更高层覆盖、上下文截断、规则冲突或执行能力不足；“模型不听话”只是最后的现象，不是根因分类。
+调试指令未生效时，保存实际 任务、cwd、目标路径和已加载来源，不要只反复改措辞。模型没有采用某条规则，可能是未加载、被更高层覆盖、上下文截断、规则冲突或执行能力不足；“模型不听话”只是最后的现象，不是根因分类。
+
+<span id="skillhook-和插件的责任边界"></span>
 
 ## Skill、Hook 和插件的责任边界
 
@@ -245,6 +230,11 @@ Skill 适合封装触发条件、输入、步骤、产物与验证。它可以�
 Hook 适合快速格式化、阻止明确禁区写入、运行小检查或记录审计事件。Hook 可能执行任意代码，因此要版本控制、固定依赖、限制超时、避免读取 Secret，并定义失败是阻断还是告警。自动修复 Hook 必须保证幂等，避免“agent 修改—Hook 改回—agent 再修改”的循环。
 
 插件和 MCP server 会改变可发现能力与信任边界。安装前审查来源、版本、更新渠道、工具 schema、网络与数据去向；升级后比较 capability snapshot（能力快照）。详细方法见[扩展点](/implementation/extensions)。
+
+<span id="失败、停止、清理与回滚"></span>
+<span id="失败停止清理与回滚"></span>
+
+<span id="维护失败与回滚"></span>
 
 ## 维护、失败与回滚
 
@@ -268,87 +258,6 @@ review date / retirement condition
 
 新增时先观察；判定稳定后再从 warning 升为阻断。规则发生错误拒绝时先修诊断或缩小范围，不能让作者通过添加无意义文本绕过。删除后继续观察原坏样例是否由替代控制覆盖；如果没有替代且风险仍存在，应明确接受 residual risk（剩余风险），而不是假装问题消失。
 
-## 动手审查当前项目的门禁
-
-这个练习不修改 checker，只验证“门禁是否真的接线、是否有负例、覆盖边界是什么”。
-
-### 前置条件、版本与输入
-
-- Node.js 22+；依赖按当前 `package-lock.json` 安装。
-- 从仓库根目录运行，不需要 API key 或真实模型。
-- 输入是 `package.json`、`.github/workflows/*.yml`、`scripts/*.mjs` 和仓库内合成 fixture。
-- 开始前运行 `git status --short`，记录已有改动。
-
-以下三个检查不会请求真实 Provider。self-test（自测）在操作系统临时目录创建合成坏样例，并在 `finally` 中删除；它不会把 canary 写入项目目录。
-
-### 第一步：确认入口怎样接线
-
-Windows PowerShell：
-
-```powershell
-rg -n '"(check|pages:check|verify)"|npm run (verify|pages:check)' `
-  package.json .github/workflows
-```
-
-macOS / Linux：
-
-```bash
-rg -n '"(check|pages:check|verify)"|npm run (verify|pages:check)' \
-  package.json .github/workflows
-```
-
-预期至少看到 `package.json` 的三个组合脚本、CI 的 `npm run verify` 和 deploy 的 `npm run pages:check`。断言重点不是行号，而是“定义”和“消费者”同时存在；只有 script 没有调用方，它就不是当前 CI 门禁。
-
-### 第二步：运行一个正例
-
-```powershell
-npm run docs:check
-```
-
-预期退出码为 0，并输出 `Documentation check passed`。这个结果证明当前 Markdown 的结构、站内引用和 route 集合满足该脚本的谓词，不证明页面观点正确、内容足够深入或外链正文真实。
-
-### 第三步：验证门禁不是恒真
-
-```powershell
-npm run examples:self-test
-npm run repo:self-test
-```
-
-预期两条命令都退出 0。第一条应报告缺少回滚、凭据形状字段和 unrestricted shell（不受限 shell）三类合成负例已被拒绝；第二条应报告 Secret、许可、workflow 权限/action pin、容器镜像和事实记录等 canary 已被拒绝。
-
-self-test 自己退出 0 的含义是“内部构造的坏样例按预期失败”，不是坏样例被 checker 接受。阅读自测源码时要确认它检查了子进程非零状态和具体 stderr；若只是运行 checker 却不断言结果，这个自测仍可能恒真。
-
-### 第四步：按影响范围跑完整验证
-
-仅修改本页 Markdown 时，遵循仓库约定并顺序运行：
-
-```powershell
-npm run check
-npm run facts:check
-npm run pages:check
-```
-
-不要在同一工作树并行运行 `check` 和 `pages:check`，因为它们共享 `docs/.vitepress/dist`。如果修改了 checker、runtime、schema、fixture 或 workflow，再运行 `npm run verify`，覆盖 Python/TypeScript 与 checker 自测。
-
-### 失败、停止、清理与回滚
-
-| 现象 | 先检查 | 停止条件 |
-| --- | --- | --- |
-| 找到脚本但 workflow 没调用 | 这是开发命令、发布命令还是废弃代码 | 未确认消费者前不称为 CI 门禁 |
-| 正例失败 | 第一条具体诊断、目标文件与最近 diff | 不跳过失败直接提交 |
-| 负例自测失败 | checker 是否接受坏样例，或错误信息是否漂移 | 不降低断言只为恢复绿色 |
-| 大量无关页面被拦 | scope、匹配规则和错误拒绝样本 | 不要求作者填充关键词绕过 |
-| 构建出现 `EPERM`/目录删除竞争 | 是否并行写同一个 dist/cache | 停止并发进程，串行重跑同一检查 |
-| 检查尝试网络或真实 credential | 命令是否偏离本练习范围 | 立即终止并保留日志 |
-
-正常练习只读仓库，self-test 的临时目录自动删除，无需手工清理。结束后再次运行 `git status --short`，应与开始前一致。若你为了实验修改了 checker，先用 `git diff -- scripts package.json .github/workflows` 精确审核，只回滚自己的实验 commit，不覆盖其他工作。
-
-### 证据与已知限制
-
-上述命令提供 E1：可以证明当前 checker 在固定仓库和合成 canary 上表现符合断言。它不能证明 GitHub branch protection 的实时设置、外部 action 没有供应链风险、Secret 模式覆盖所有泄漏、文章具有高质量，或 CI 在所有操作系统都稳定。
-
-`docs:check` 的绿色结果也不是内容评审。它刻意不以字数、关键词或标题模板代理质量；概念是否准确、例子是否有教学价值、证据是否被过度外推，仍要通过实现核对和人工 review 判断。
-
 ## 从症状定位责任层
 
 | 症状 | 首查层 | 常见根因 | 不要先做什么 |
@@ -363,30 +272,7 @@ npm run pages:check
 
 定位时保存第一处失败，不要让后续连锁错误掩盖根因。先复现最小输入，再判断应该修规则、修实现、调整触发频率还是删除门禁。
 
-## 审查清单
 
-- 这条要求是知识、工作流、能力、授权还是机械不变量？
-- 它是否放在能真正执行责任的最小层？
-- Scope、trigger、action 和 evidence 是否都明确？
-- 绿色结果支持哪个精确结论，哪些结论仍需人工或 live 证据？
-- 用户已授权的可逆本地步骤是否被无意义地拆成审批点？
-- 硬门禁是否有正例、负例、清晰诊断和维护者？
-- 错误拒绝、运行时长和维护成本是否与避免的损失相称？
-- 这个检查应在本地、PR、发布还是定时任务运行？
-- 多个检查是否重复，或会争用同一 build/cache 输出？
-- 指令是否注明作用域，并与嵌套规则保持可满足？
-- 外部正文和 ToolResult 是否仍被标记为数据，而非高优先级指令？
-- 回滚能否恢复上一版行为，而不覆盖用户其他工作？
-- 删除条件、复审日期或替代控制是否有记录？
+## 实践入口
 
-## 检查题
-
-1. 为什么“写进 `AGENTS.md`”不能证明文件访问已经被技术限制？
-2. Schema、sandbox、approval 和 validator 分别在什么时间点拒绝什么？
-3. 一个负例测试为什么要同时断言退出码和错误原因？
-4. 哪些特征说明内容门禁只是用关键词代理语义质量？
-5. 为什么 `npm run check` 与 `npm run pages:check` 不适合在同一工作树并行？
-6. 如何证明一个 npm script 已成为 CI 门禁，而不只是仓库里的可选命令？
-7. 删除低价值门禁前，为什么仍要保留它曾保护的最小坏样例？
-
-下一步：到[提示与任务契约](/optimization/prompting)把当前任务写成可执行契约，再用[测试策略](/implementation/testing)判断哪些规则值得固化为回归。
+[从完整离线案例观察这些责任](/practice/end-to-end)。实现范围、命令、预期断言和清理步骤在实验页维护。

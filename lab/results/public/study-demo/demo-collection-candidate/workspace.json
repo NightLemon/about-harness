@@ -1,0 +1,9 @@
+{
+  "base_commit": "f8b912fb2a63f384235f77c2abe20eeedd2438c1",
+  "changed_paths": [
+    "solution.py"
+  ],
+  "diff": "diff --git a/solution.py b/solution.py\nindex 62e144a..1542910 100644\n--- a/solution.py\n+++ b/solution.py\n@@ -1,2 +1,2 @@\n def solve(value):\n-    return value[:-1]\n+    return list(value)\n",
+  "source": "def solve(value):\n    return list(value)\n",
+  "source_hash": "16ffd321a09a9215aeb42a07433b4992b46fe06c99fa9e49cc36e7b82f045aca"
+}

@@ -1,15 +1,15 @@
 # TypeScript 关键接口映射：从静态类型到运行时边界
 
-## 学习目标与证据边界
-
-本页把 Python 主线中的 task、action、adapter、acceptance、loop 与 result 映射到 TypeScript，并解释哪些语义能够共用、哪些能力仍然只是最小子集。完成后你应能回答四个问题：
-
-1. 为什么 `TaskSpec` interface 编译通过，仍不能信任网络、文件或 adapter 返回的数据；
-2. 为什么 Action 要用 Discriminated union（判别联合）表达互斥分支；
-3. 为什么预算计费、trace 和工具执行都必须排在运行时校验之后；
-4. 为什么 `complete` 只是完成提议，结构化验收失败后仍要受同一模型预算约束。
-
-预计 45–55 分钟。当前练习固定 Node.js 22+ 与 TypeScript 5.9.3，版本来自 `package.json` 和 lockfile；输入只使用仓库内置对象，不联网、不读取凭据、不调用真实模型。证据等级为 E1：命令能证明当前离线实现满足固定断言，不能证明 Python 与 TypeScript 完全等价，也不能证明生产环境可靠性或模型质量。
+<span id="学习目标与证据边界"></span>
+<span id="动手验证"></span>
+<span id="第一步-只验证静态类型"></span>
+<span id="第一步只验证静态类型"></span>
+<span id="第二步-执行运行时正反例"></span>
+<span id="第二步执行运行时正反例"></span>
+<span id="第三步-核对-python-公共边界"></span>
+<span id="第三步核对-python-公共边界"></span>
+<span id="清理、回滚与已知限制"></span>
+<span id="清理回滚与已知限制"></span>
 
 ## 先区分三层契约
 
@@ -59,7 +59,9 @@ validateRunResult(JSON.parse(JSON.stringify(result)))
 | `lab/src/about_harness/contracts.py` | Python dataclass 及运行时约束 | 对照共有字段与语言差异 |
 | `lab/src/about_harness/loop.py` | Python 完整教学主线 | checkpoint、retry 等能力以此为准 |
 
-TS 目录不是 Python 实现的逐行移植。它当前重点验证 Task/Action/Result 线协议和最小状态机；字段可交换不表示 checkpoint、retry 或工具能力相同。
+TS 目录不是 Python 实现的逐行移植。它当前重点验证 Task（任务）/Action（动作提议）/Result（结果） 线协议和最小状态机；字段可交换不表示 检查点、retry 或工具能力相同。
+
+<span id="taskwire-schema-与内部对象"></span>
 
 ## Task：wire schema 与内部对象
 
@@ -78,7 +80,7 @@ export interface TaskSpec {
 }
 ```
 
-公共 schema 允许省略 `input`、`acceptance`、`metadata` 和 `max_cost_usd`；`validateTask` 会把这些可选 wire 字段归一化为 `{}` 或 `0`，所以内部 `TaskSpec` 可以把它们设为必有字段。这是“外部输入宽、内部状态窄”的边界，不是 schema 与 interface 冲突。Task schema 的 `goal` 同时要求包含至少一个非空白字符，避免 schema 接受而两种运行时拒绝只含空格的目标。
+公共 schema 允许省略 `input`、`acceptance`、`metadata` 和 `max_cost_usd`；`validateTask` 会把这些可选 wire 字段归一化为 `{}` 或 `0`，所以内部 `TaskSpec` 可以把它们设为必有字段。这是“外部输入宽、内部状态窄”的边界，不是 schema 与 interface 冲突。任务 schema 的 `goal` 同时要求包含至少一个非空白字符，避免 schema 接受而两种运行时拒绝只含空格的目标。
 
 `validateTask` 目前维护以下不变量：
 
@@ -103,9 +105,14 @@ export type JsonValue =
   | { [key: string]: JsonValue }
 ```
 
-静态类型仍允许调用者通过断言绕过它，所以 `requireJsonValue` 会递归拒绝 `undefined`、function、`bigint`、symbol 以及 `NaN` / `Infinity`。这样进入 trace 与 result 的数据不会在 `JSON.stringify` 时丢字段或改变语义。
+静态类型仍允许调用者通过断言绕过它，所以 `requireJsonValue` 会递归拒绝 `undefined`、function、`bigint`、symbol 以及 `NaN` / `Infinity`。这样进入 轨迹 与 result 的数据不会在 `JSON.stringify` 时丢字段或改变语义。
 
 当前校验器假定输入来自合法 JSON 树；循环引用的 JavaScript object 不是受支持输入。真实服务还应限制对象深度与总字节数，防止极深对象消耗堆栈或内存。
+
+<span id="前置、版本与输入"></span>
+<span id="前置版本与输入"></span>
+
+<span id="action用判别联合表达状态机输入"></span>
 
 ## Action：用判别联合表达状态机输入
 
@@ -122,7 +129,7 @@ export type Action =
 - `kind === 'tool'` 后，编译器知道 `tool_call` 一定存在；
 - 新增 action 分支时，可以用 `never` 检查 switch 是否穷尽。
 
-但 adapter 是一个外部信任边界，所以它的返回类型故意是 `unknown`：
+但 适配器 是一个外部信任边界，所以它的返回类型故意是 `unknown`：
 
 ```ts
 export interface Adapter {
@@ -131,7 +138,7 @@ export interface Adapter {
 }
 ```
 
-如果把它声明为 `Action`，只代表 adapter 作者做出了承诺，不能阻止第三方 SDK、反序列化数据或错误 JavaScript 在运行时返回坏值。`action-v1` 用 `oneOf` 固定 tool/complete 两个互斥形状；Python `Action.from_dict` 与 TypeScript `validateAction` 再负责验证精确字段集合、`kind`、tool call 标识、参数 JSON 以及有限非负的 `cost_usd`。
+如果把它声明为 `Action`，只代表 适配器 作者做出了承诺，不能阻止第三方 SDK、反序列化数据或错误 JavaScript 在运行时返回坏值。`action-v1` 用 `oneOf` 固定 tool/complete 两个互斥形状；Python `Action.from_dict` 与 TypeScript `validateAction` 再负责验证精确字段集合、`kind`、tool call 标识、参数 JSON 以及有限非负的 `cost_usd`。
 
 ### 为什么 `NaN` 是预算绕过案例
 
@@ -144,27 +151,29 @@ Number.NaN <= 0 // false
 
 如果先做 `cost += action.cost_usd`，再检查 `cost > max_cost_usd`，一个 `NaN` 会污染累计值并绕过上限。当前顺序是：
 
-1. adapter 返回 `unknown`；
+1. 适配器 返回 `unknown`；
 2. `validateAction` 拒绝非有限成本；
 3. 只有验证成功才增加 `modelCalls` 和 `cost`；
-4. 然后写入 `model_action` trace；
+4. 然后写入 `model_action` 轨迹；
 5. 最后比较预算并决定是否继续。
 
-因此非法 action 的结果必须是 `failed / invalid_action`，并且 `model_calls`、`cost_usd` 和 `model_action` trace 都保持未污染状态。Python `HarnessRunner` 执行同一顺序：把 Adapter 返回的 dataclass 深拷贝成 wire 形态并用 `Action.from_dict` 重建，再允许记账或执行。这里验证的不只是“会报错”，而是错误发生在副作用之前。
+因此非法 action 的结果必须是 `failed / invalid_action`，并且 `model_calls`、`cost_usd` 和 `model_action` 轨迹 都保持未污染状态。Python `HarnessRunner` 执行同一顺序：把 Adapter（适配器） 返回的 dataclass 深拷贝成 wire 形态并用 `Action.from_dict` 重建，再允许记账或执行。这里验证的不只是“会报错”，而是错误发生在副作用之前。
+
+<span id="loop控制权属于-harness"></span>
 
 ## Loop：控制权属于 harness
 
 `MinimalLoop` 的主循环按以下优先级做决定：
 
 1. 检查取消、总 timeout 与 model-call budget；
-2. 请求 adapter 产生下一 action；
+2. 请求 适配器 产生下一 action；
 3. 验证 action 并累计模型调用与费用；
-4. `complete` 分支调用 acceptance validator，并记录结构化决定；
+4. `complete` 分支调用 acceptance 验证器，并记录结构化决定；
 5. `tool` 分支检查 allowlist 与敏感参数名；
-6. 先查询幂等缓存，再查找并执行 handler；
+6. 先查询幂等缓存，再查找并执行 工具处理函数；
 7. 达到 tool step 上限时返回 `stopped / max_steps`。
 
-Adapter 只能提出动作，不能直接执行工具或写入 `completed`。工具 handler 也只能返回值，不能修改 run 状态。这与[状态与可靠执行](/foundations/state-reliability)中的 controller 所有权一致。
+适配器 只能提出动作，不能直接执行工具或写入 `completed`。工具处理函数 也只能返回值，不能修改 run 状态。这与[状态与可靠执行](/foundations/state-reliability)中的 控制器 所有权一致。
 
 ### Completion proposal 怎样变成终态
 
@@ -181,110 +190,58 @@ complete(output)
 
 Object 允许完成输出含额外字段；array 要求长度和逐项值一致；布尔值不会与数字 `1/0` 混淆；失败位置使用 JSON Pointer（JSON 指针），其中 `/` 和 `~` 会转义。验收拒绝不消耗 tool step，但已经发生的 model call 与 cost 不会退款，因此反复声称完成最终以 `model_budget` 停止，而不是获得无限修正。
 
-Validator 是外部信任边界。`validateAcceptanceResult` 要求决定为 boolean、反馈为非空字符串、evidence 为有限且无循环的 JSON object；validator 名称、返回值或执行异常都不能变成 completed。Validator 返回后，loop 再检查取消和总 timeout，迟到的通过结果会被丢弃。
+Validator（验证器） 是外部信任边界。`validateAcceptanceResult` 要求决定为 boolean、反馈为非空字符串、evidence 为有限且无循环的 JSON object；验证器 名称、返回值或执行异常都不能变成 completed。验证器 返回后，loop 再检查取消和总 timeout，迟到的通过结果会被丢弃。
 
-这只是结构语义对齐，不是实现完全相同：30 个 Task/Action 案例同时经过 schema、Python 与 TS，九个验收案例由两种语言核对同一完整预期；Python 拒绝后保存 Adapter snapshot/checkpoint，TS 没有 snapshot 接口，只保留内存 Adapter 状态和 trace。
+这只是结构语义对齐，不是实现完全相同：共享任务/动作正负例同时经过 schema、Python 与 TS，共享验收案例由两种语言核对同一完整预期；Python 拒绝后保存 适配器 snapshot/检查点，TS 没有 snapshot 接口，只保留内存 适配器 状态和 轨迹。
+
+<span id="runresult相同线协议不同恢复能力"></span>
 
 ## RunResult：相同线协议，不同恢复能力
 
-两种实现现在都输出 `result-v1.1` 的十个显式字段。TypeScript 用 `crypto.randomUUID()` 生成 run ID，返回 status/reason/output、固定 metrics、内嵌 trace、`checkpoint: null` 和 error；Python 可以携带最近的 checkpoint。外部 JSON 必须经过 `validateRunResult` 或 `RunResult.from_dict`，不能因它来自本项目 runner 就跳过读取边界。
+两种实现现在都输出 `result-v1.1` 的十个显式字段。TypeScript 用 `crypto.randomUUID()` 生成 run ID，返回 status/reason/output、固定 metrics、内嵌 轨迹、`checkpoint: null` 和 error；Python 可以携带最近的 检查点。外部 JSON 必须经过 `validateRunResult` 或 `RunResult.from_dict`，不能因它来自本项目 runner 就跳过读取边界。
 
 终态有三组固定关系：completed 只能配 completed 且 error 为 null；stopped 配预算/取消/拒权且 output 为 null；failed 配 tool/invalid action、output 为 null 并要求非空 error。`steps` 只计算成功工具状态转移，满足 `tool_calls + reused_tool_calls`；completion proposal 和 acceptance repair 只增加 model call。这修正了此前 Python 完成结果比 TypeScript 多算一步的歧义。
 
-公共 schema 能检查字段、类型、enum 与大部分终态组合。14 个 Result fixture 还让两个运行时检查 schema 难以表达的关系：trace 序号连续、首尾事件正确、最终事件与终态一致、steps 求和、checkpoint 计数/cost 不得超前。Fixture 因而分别保存 `schema_valid` 和 `runtime_valid`，不是假设二者永远相等。
+公共 schema 能检查字段、类型、enum 与大部分终态组合。14 个 结果 fixture 还让两个运行时检查 schema 难以表达的关系：轨迹 序号连续、首尾事件正确、最终事件与终态一致、steps 求和、检查点 计数/cost 不得超前。Fixture 因而分别保存 `schema_valid` 和 `runtime_valid`，不是假设二者永远相等。
 
 ### `ReadonlyMap` 的真实含义
 
-工具表接收 `ReadonlyMap<string, ToolHandler>`，表示 loop 不通过该引用增删 handler。它是 TypeScript 的浅层只读视图，不会把原始 `Map` 冻结；若调用方保留可写引用并在运行中修改它，loop 仍能观察到变化。生产实现应在构造时复制注册表、冻结注册过程，或使用拥有明确生命周期的 registry。
+工具表接收 `ReadonlyMap<string, ToolHandler>`，表示 loop 不通过该引用增删 工具处理函数。它是 TypeScript 的浅层只读视图，不会把原始 `Map` 冻结；若调用方保留可写引用并在运行中修改它，loop 仍能观察到变化。生产实现应在构造时复制注册表、冻结注册过程，或使用拥有明确生命周期的 registry。
 
 ### 取消与 timeout 的真实含义
 
-`CancellationToken` 是进程内 boolean，loop 只在每次迭代开始时检查。`timeout_ms` 也只在调用边界检查。它们都不能抢占一个永久阻塞的同步 adapter 或 tool handler。因此当前实现证明的是 cooperative cancellation（协作式取消）和软 deadline，不是硬超时。
+`CancellationToken` 是进程内 boolean，loop 在迭代开始、模型返回后和验收返回后检查。`timeout_ms` 也只在调用边界检查。它们都不能抢占一个永久阻塞的同步 适配器 或 tool 工具处理函数。因此当前实现证明的是 cooperative cancellation（协作式取消）和软 截止时间，不是硬超时。
 
 ## Python 与 TypeScript 对照
 
 | 概念 | Python 主线 | TypeScript 最小实现 | 当前结论 |
 | --- | --- | --- | --- |
 | Task 线协议 | `TaskSpec.from_dict` | `validateTask` | 共有字段和主要约束对齐 |
-| Action 线协议 | `Action.from_dict` + `action-v1` | union + `validateAction` | 13 个共享案例保持接受边界一致 |
+| Action 线协议 | `Action.from_dict` + `action-v1` | union + `validateAction` | 共享动作正负例保持接受边界一致 |
 | Adapter | Protocol，可保存/恢复状态 | `nextAction` interface | TS 没有 snapshot / restore |
 | Tool registry | policy、retry、幂等 | `ReadonlyMap` + 内存 cache | TS 只覆盖最小 allowlist 与复用 |
 | Acceptance | JSON 子集 validator、失败后修正、checkpoint | JSON 子集 validator、失败后修正、无 checkpoint | 固定结构语义对齐，恢复能力不同 |
 | Run result | 完整 `result-v1.1`，可携带 checkpoint | 完整 `result-v1.1`，checkpoint 固定 null | 线协议与 reader 对齐，恢复能力不同 |
-| Deadline | 调用边界检查，可配合 sleeper/retry | 同步调用前检查 | 都不提供任意 callable 的硬抢占 |
+| Deadline | 调用边界检查，可配合 sleeper/retry | 迭代开始、模型及验收返回后检查 | 都不提供任意 callable 的硬抢占 |
 | Memory / context | 有独立实现与污染测试 | 未实现 | 不应宣称能力对等 |
 
-跨语言真正共用的是公开 Task/Action/Result schema、30 个输入/动作案例、14 个结果案例、JSON 子集验收 fixture 和若干控制不变量，不是所有 class 或运行能力。`result-v1.1` 可以跨语言读取，但 checkpoint 的 adapter state 仍属于产生它的实现；没有版本/adapter 身份和迁移器时，TS 不应尝试恢复 Python checkpoint。旧 `result-v1.0.json` 只用于解释历史宽松格式，当前 writer 不再生成 1.0。
+跨语言真正共用的是公开 任务/动作提议/结果 schema、输入、动作与结果正负例、JSON 子集验收 fixture 和若干控制不变量，不是所有 class 或运行能力。`result-v1.1` 可以跨语言读取，但 检查点 的 适配器 state 仍属于产生它的实现；没有版本/适配器 身份和迁移器时，TS 不应尝试恢复 Python 检查点。旧 `result-v1.0.json` 只用于解释历史宽松格式，当前 writer 不再生成 1.0。
 
-## 动手验证
+<span id="失败练习证明类型断言会破坏防线"></span>
 
-### 前置、版本与输入
+## 验证当前映射
 
-前置条件：已在仓库根目录安装 lockfile 固定的 Node 依赖；Node.js 为 22 或更高版本。验证版本：
-
-```bash
-node --version
-node node_modules/typescript/bin/tsc --version
-```
-
-预期第一条输出 `v22` 或更高主版本，第二条输出 `Version 5.9.3`。如果版本或依赖不符，先停止，不要让 `npx` 临时下载另一个 TypeScript 版本来掩盖环境差异。
-
-本练习的输入是 `lab/ts/runtime-test.ts` 中的非 JSON 语言边界和 controller 样例；`runtime-contract-v1.json` 提供 30 个 Task/Action 案例，`run-result-v1.json` 提供 14 个 Result 案例，`acceptance-v1.json` 提供九个跨语言验收案例。它们只读取版本库内 fixture 和构造内存对象，不读取环境变量、用户文件或网络。
-
-### 第一步：只验证静态类型
+按[统一环境](/guide/prerequisites)准备 Node.js 22+、Python 3.12、uv 0.11.16；依赖使用根目录 `package-lock.json` 与 `uv.lock`。输入是上面的共享契约 fixture 和 TS/Python 实现，从仓库根执行：
 
 ```bash
 npm run lab:typecheck
-```
-
-预期 `tsc --noEmit` 退出码为 0，不生成 JavaScript。当前 `tsconfig.json` 开启：
-
-- `strict`：启用严格类型检查；
-- `noUncheckedIndexedAccess`：索引读取包含 `undefined` 风险；
-- `exactOptionalPropertyTypes`：区分“字段不存在”和“字段值为 undefined”；
-- `noEmit`：教学 typecheck 不写编译产物。
-
-这个结果只证明受检查源码满足静态类型，不证明运行时输入安全。
-
-### 第二步：执行运行时正反例
-
-```bash
 npm run lab:ts-runtime-test
-```
-
-预期退出码为 0，并输出：
-
-```text
-TypeScript runtime test passed: Task/Action values fail closed and completion proposals require acceptance.
-Shared acceptance fixture passed in TypeScript: 9 cases.
-Shared runtime contract fixture passed in TypeScript: 30 cases.
-Shared RunResult fixture passed in TypeScript: 14 cases.
-```
-
-脚本会临时编译到操作系统临时目录、执行生成的 JavaScript，并在 `finally` 中删除目录。它至少断言：
-
-- 合法 Task 能被归一化；
-- 重复/空工具名与未知字段被拒绝；
-- Task budget 和 Action cost 的 `NaN` / `Infinity` 被拒绝；
-- 空 action tool name 被拒绝；
-- unsafe adapter 使 run 返回 `failed / invalid_action`；
-- 非法 action 不增加 model call，不污染 cost，也不产生 `model_action` trace。
-- nested object 的失败路径按 JSON Pointer 记录，修正后才能 completed；
-- boolean/number 不混淆，array 长度不一致会失败；
-- 反复拒绝在第三次模型调用前以 `model_budget` 停止；
-- validator 抛错、返回坏结果、超时或取消都不会释放 completion output。
-- 九个共享案例的 accepted、feedback 和 evidence 与 Python 使用同一预期。
-- 17 个 Task 与 13 个 Action 案例和 Python/schema 使用同一接受边界。
-- 14 个 Result 案例与 Python 运行时一致，并保留 schema/runtime 两层差异。
-- 生成的 completed/stopped/failed 结果都能由 `validateRunResult` 重新读取。
-
-### 第三步：核对 Python 公共边界
-
-```bash
 uv run --frozen --offline pytest -q lab/tests/test_acceptance.py lab/tests/test_contracts_and_schema.py
 ```
 
-预期相关测试全部通过。这里的 assertion（断言）证明 Python 重放九个验收案例、30 个 Task/Action 和 14 个 Result 案例；TypeScript 在上一步读取同一批 fixture。Result 的 schema/runtime 预期分开记录，避免把单对象 schema 冒充跨字段关系校验；两边 checkpoint 能力差异仍是显式边界。
+预期相关测试全部通过。分别检查静态编译、共享 Task/Action/Result 与验收语义、非法输入在预算和副作用之前拒绝；以业务断言为准，不固定 pytest 收集数量。版本化 usage 观察还由 `lab/ts/usage.ts` 与 `lab/fixtures/contracts/usage-v1.json` 单独验证，不能把缺失用量写成已知零。
+
+以下失败练习只在自己的可撤销修改中执行；先保留原始 diff，已有不明改动时停止。测试只产生已忽略缓存，回退后重新执行上述命令。证据为 E1，静态类型与共享 wire 契约通过不证明跨进程恢复或真实 provider 可用。
 
 ## 失败练习：证明类型断言会破坏防线
 
@@ -333,21 +290,7 @@ npm run lab:ts-runtime-test
 | 重复 action 重复写外部系统 | cache 是否仅在进程内 | 稳定幂等键、持久台账与目标系统对账 |
 | TS 与 Python 输出不能互读 | 是否误把内部 interface 当 wire schema | 先定义共同 result schema 和版本迁移 |
 
-## 清理、回滚与已知限制
 
-正常验证无需清理：typecheck 使用 `noEmit`，runtime test 自动删除临时输出。如果命令中断，可在确认路径确实属于该测试的临时目录后再删除，不要递归清理仓库或用户目录。
+## 实践入口
 
-若学习练习修改了源码，使用编辑器 undo 或精确反向修改恢复该行；先看限定路径的 `git diff`，不要 `reset --hard`，也不要覆盖未知改动。恢复后以 runtime test 重新证明防线有效。
-
-当前 TS 最小实现还有明确限制：
-
-- `run` 接收的是已验证 `TaskSpec`，调用方必须在外部入口执行 `validateTask`；
-- 没有 checkpoint、adapter restore、retry、持久幂等台账或 memory；
-- tool handler 是同步函数，没有 per-call timeout、AbortSignal 或隔离；
-- acceptance validator 是同步接口，默认实现只比较内存 JSON，不读取文件、测试退出码或目标系统回执；
-- allowlist 只比较名称，参数策略只是敏感键示例，不是通用授权系统；
-- cache 没有把参数 hash 与幂等键绑定，不能防止同键异参；
-- 共享 fixture 覆盖 Task/Action/Result 与 JSON 子集验收，但没有自动生成的随机/变形差分或跨实现 checkpoint 恢复；
-- E1 负例覆盖已知边界，不证明所有 JavaScript object、并发和资源耗尽攻击均安全。
-
-这些限制不是让类型变得更复杂就能自动解决。下一步先阅读[Adapter 契约](/implementation/adapter-contract)和[测试策略](/implementation/testing)，再对照[Python 最小 Harness](/implementation/minimal-harness-python)决定哪些能力需要进入共同 wire contract，哪些只属于某个实现。
+[从最小实现进入完整工作区实验](/implementation/minimal-harness-python)。实现范围、命令、预期断言和清理步骤在实验页维护。

@@ -1,256 +1,110 @@
-# 在 Codex 中适配指定模型
+# Codex：从安装到受控本地任务
 
-## 来源与证据边界
+本页固定包 `@openai/codex@0.153.4`。2026-09-08 已检查包身份并实际运行 --help；以下模型任务仍需用户自己的账号、明确型号与单独调用授权。[FACT:codex-cli-entry]
 
-本页把 Codex 视为 coding Harness，而不是某个模型的同义词。产品事实来自官方 OpenAI documentation：
+<span id="控制面心智模型"></span>
+<span id="agents-md-项目知识-不是权限边界"></span>
+<span id="agentsmd项目知识不是权限边界"></span>
+<span id="sandbox、approval-与-network-分开验证"></span>
+<span id="sandboxapproval-与-network-分开验证"></span>
+<span id="sandbox"></span>
+<span id="approval"></span>
+<span id="network"></span>
+<span id="静态示例的文件职责"></span>
+<span id="输入与安全基线"></span>
+<span id="运行静态验证"></span>
+<span id="真实资格测试的最小顺序"></span>
+<span id="_1-config-discovery"></span>
+<span id="1-config-discovery"></span>
+<span id="_2-read-only-smoke"></span>
+<span id="2-read-only-smoke"></span>
+<span id="_3-policy-probes"></span>
+<span id="3-policy-probes"></span>
+<span id="_4-local-reversible-edit"></span>
+<span id="4-local-reversible-edit"></span>
+<span id="_5-resume-cancel"></span>
+<span id="5-resumecancel"></span>
+<span id="_6-model-comparison"></span>
+<span id="6-model-comparison"></span>
+<span id="模型适配卡"></span>
+<span id="工具、mcp、skill-与-subagent"></span>
+<span id="工具mcpskill-与-subagent"></span>
+<span id="状态、恢复与-git"></span>
+<span id="状态恢复与-git"></span>
 
-- [AGENTS.md](https://learn.chatgpt.com/docs/agent-configuration/agents-md)
-- [Config basics](https://learn.chatgpt.com/docs/config-file/config-basic)
-- [Agent approvals & security](https://learn.chatgpt.com/docs/agent-approvals-security)
+<span id="在-codex-中适配指定模型"></span>
 
-本页于 **2026-09-21** 复读官方配置、安全和 AGENTS 文档。[FACT:codex-agents-md] [FACT:codex-config] [FACT:codex-sandbox-approval] [FACT:codex-permission-profiles] [FACT:codex-retired-approval] 滚动文档、账号可用模型、价格、默认值和不同 surface（使用界面/执行表面）仍可能变化，真实运行前必须按目标版本重新确认。
+## 前置与安装
 
-当前仓库只有 E0 静态配置和 E1 迁移职责 fixture；没有启动 Codex、调用模型或证明任何模型配置更好。
+需要[统一工具链](/guide/prerequisites)中的 Node.js 22、Python 3.12、uv 0.11.16 和 Git。首次执行下载指定包；不会修改全局默认版本：
 
-## 控制面心智模型
-
-```text
-Task prompt
-  + effective AGENTS.md chain
-  + model/profile/config
-  + current cwd/worktree/context
-        ↓
-      Codex loop
-        ↓
-sandbox: 技术可达范围
-permission profile: 文件系统与网络策略组合
-approval policy: 何时暂停询问
-network: 是否及向哪里出站
-tools: 实际执行能力
-validator: 任务是否真正完成
+```bash
+npm exec --yes --package=@openai/codex@0.153.4 -- codex --help
 ```
 
-Task prompt 描述本次目标；`AGENTS.md` 提供项目知识；配置决定模型和运行策略；sandbox 限制技术可达范围；permission profile 组合文件系统与网络策略，approval policy 独立决定何时询问；network 独立控制出口。它们不能互相替代。
+预期帮助中包含本页使用的 model、工具或权限选项。选项不存在时停止并核对包版本，不替换为绕过权限的启动方式。
 
-例如在 `AGENTS.md` 写“不要联网”只是 instruction（指令）；只有执行环境的网络控制才能构成强制边界。把 approval 设得更频繁，也不会自动缩小进程可读取的文件。
+<span id="先冻结一次运行身份"></span>
+<span id="配置层-显式记录最终有效值"></span>
+<span id="配置层显式记录最终有效值"></span>
 
-## 先冻结一次运行身份
+## 配置与身份
 
-仅写“用 Codex 跑了”无法复现。运行卡至少记录：
+先在 About Harness 仓库根目录准备本地输入；此步骤不启动产品或模型：
 
-```text
-Codex surface / exact version / OS
-model request / provider / resolved model identity
-cwd / repository root / commit / dirty paths
-effective AGENTS.md files + ordered hash
-user/project config sources + profile + CLI overrides
-sandbox mode / effective permission profile / network policy
-approval_policy / applicable managed restrictions
-tool and MCP inventory + schema/version hash
-skills/plugins/subagents enabled state
-Task / acceptance / validator / budget
-session or task identity / checkpoint / compaction state
+```bash
+npm run product:prepare -- --product codex --output lab/results/local/codex-demo
+cd lab/results/local/codex-demo
+python -I -B verify.py
+git status --short
 ```
 
-同一个 model 名在不同 provider、surface 或账号上不一定指向相同执行组合。CLI override、profile、cwd 或指令链变化也会建立新 config ID。
+预期准备命令退出 0，最后的测试命令退出 1，工作树干净。目录内包含 README.md、带末项缺陷的 solution.py、固定 verify.py 及产品指令/配置。已存在的目录不会被覆盖。后续产品命令都在这个练习目录执行。
 
-## AGENTS.md：项目知识，不是权限边界
 
-官方文档描述了 `AGENTS.md` 的发现、作用域和覆盖行为。[FACT:codex-agents-md] 适配时应把信息按稳定性与作用域放置：
+官方配置、安全与 AGENTS 文档于 2026-09-21 复核；这是 E0 来源核验，与 2026-09-08 固定包帮助入口的 E1 记录分开。[FACT:codex-agents-md] [FACT:codex-config] [FACT:codex-sandbox-approval]
 
-| 内容 | 推荐位置 | 原因 |
-| --- | --- | --- |
-| 仓库安装、验证、生成文件禁区 | 项目 root 指令 | 整个仓库共同适用 |
-| 子目录测试、风格和架构入口 | 靠近目标目录的指令 | 避免污染无关任务 |
-| 本次目标、允许范围与完成条件 | Task prompt / 结构化 Task | 每次任务独立 |
-| 长篇背景、设计文档 | 给出路径，由需要时读取 | 节省上下文并减少过期复制 |
-| Secret、账号、私人路径 | 不进入指令 | 防止上下文与 trace 泄漏 |
+准备命令生成本例所需的指令和权限；仓库中的通用参考另见 `examples/harnesses/codex/` 中的 AGENTS.md 与 .codex/config.toml。先记录 cwd、起始 commit、实际加载的指令和配置来源；把 MODEL_ID 替换为可核验型号。通过产品官方认证流程准备账号，凭据不写入示例或日志。
 
-高质量指令写模型无法从代码可靠推断的事实：构建入口、必跑测试、生成文件、危险目录、报告要求。不要堆积“认真思考”“写好代码”等不可验证口号。
+sandbox_mode 控制执行范围，approval_policy 控制询问。workspace-write 不是“只能读取工作区”；它通常限制可写范围，不默认禁止读取工作区外文件。按有效配置分别验证允许读取、受保护路径写入拒绝和网络；只有额外配置读取隔离时，才把范围外读取失败作为断言。探针使用合成文件，不读取真实私人数据。
 
-运行时需要确认**实际加载**的指令链，而不是只检查某个文件存在。Cwd、repository root 或嵌套目录错误，可能让正确文件完全不生效。
+当前官方文档还提供 permission profile（权限配置档），由 `default_permissions` 与 `permissions.<name>` 选择文件系统和网络策略；它不替代独立的 `approval_policy`。旧 `untrusted` approval 模式已退役，也不同于项目 trust。[FACT:codex-permission-profiles] [FACT:codex-retired-approval] 本页固定包命令保留已经核对的选项；不要假定滚动文档中的新配置都适用于该版本。记录目标 surface 的有效 profile、approval 和 managed restrictions，冲突时先停止核对。
 
-## 配置层：显式记录最终有效值
+`AGENTS.md` 是项目指令，不是强制权限。工具授权在 handler 前核对，操作系统沙箱的拒绝可能发生在进程执行时，应分别记录拦截层。Git worktree 只隔离工作树；文件读取、进程与网络仍需实际执行环境控制。
 
-Permission profile 是可复用的文件系统与网络策略，由 `default_permissions` 和 `permissions.<name>` 等配置选择；它不替代独立的 `approval_policy`。旧称为 `untrusted` 的 approval 模式已退役，不能把它与项目 trust 或任意“只读”语义混用。[FACT:codex-permission-profiles] [FACT:codex-retired-approval] 运行卡必须记录实际 surface 显示的 permission profile 与 approval_policy 的各自有效值，而不是凭旧教程推断。
+## 第一个只读任务
 
-`.codex/config.toml` 示例：
+**以下命令启动真实模型，另行授权后再执行。** 在合成练习仓库中运行：
 
-```toml
-# Static teaching example; verify fields against the target Codex version.
-approval_policy = "on-request"
-sandbox_mode = "workspace-write"
-
-[sandbox_workspace_write]
-network_access = false
+```bash
+npm exec --yes --package=@openai/codex@0.153.4 -- codex --model MODEL_ID --sandbox read-only --ask-for-approval on-request "只读取 README.md 和 solution.py，报告路径与内容依据，不修改文件。"
 ```
 
-这个示例表达三项独立选择：
+预期返回可核对的文件引用；用 `git status --short` 确认未修改文件。权限不足、指令来源未知或实际模型无法定位时停止。
 
-1. 工作区写入由 sandbox 模式约束；
-2. 需要时由 approval 流程暂停；
-3. workspace-write 环境中的 network 明确关闭。
+## 再做一次本地修改
 
-它没有指定 model、provider、profile、MCP 或凭据。这样静态示例不会暗示账号可用性，也方便读者在真实实验中把模型作为独立变量。
+初始失败已复现。记录 `git rev-parse HEAD` 与初始 diff，然后运行：
 
-配置可能来自不同层和启动参数。真实 run 保存所有有效来源、覆盖关系和最终值；只附项目文件不能证明用户级配置或 CLI override 没有改变结果。
-
-## Sandbox、Approval 与 Network 分开验证
-
-### Sandbox
-
-验证技术边界，而不是询问模型“能否访问”。设计安全 canary（探针）：按有效 profile 分别测试读、写：`workspace-write` 通常限制可写范围，并不默认禁止读取工作区外文件。允许路径读取应成功，受保护路径写入应失败；只有额外配置了读取隔离时，才把范围外读取失败作为验收。不要用真实私人文件做 canary。
-
-### Approval
-
-选择一个可逆、无外部影响的合成动作，确认它在 handler 前进入 ask；拒绝后终态应是 stopped/denied，而不是循环改写参数绕过。Approval 事件保存动作、参数摘要、决策人与时间。
-
-### Network
-
-网络关闭时，用受控目标验证出站失败，并从执行环境观察实际出口。模型声称“没有联网”不是证据。启用网络也不等于允许任意域名；destination allowlist、proxy 和目标身份仍要独立限制。
-
-三项探针分别报告，不能用一次“任务没出错”同时证明它们。
-
-## 静态示例的文件职责
-
-仓库路径 `examples/harnesses/codex/` 包含：
-
-```text
-AGENTS.md            项目工作流、范围、验证与报告要求
-.codex/config.toml   approval、sandbox、network 基线
-README.md            前置、验证、失败、清理、回滚与证据说明
+```bash
+npm exec --yes --package=@openai/codex@0.153.4 -- codex --model MODEL_ID --sandbox workspace-write --ask-for-approval on-request "运行 python -I -B verify.py 复现失败，只修改 solution.py，再运行同一测试；不改依赖、不联网、不做远端操作。完成时报告实际命令和剩余问题。"
 ```
 
-`AGENTS.md` 要求先读任务和相关文件、只在示例项目内工作、不使用网络/凭据/remote/destructive command，并报告退出码、改动、未决与回滚。它是行为指导；真正强制限制来自配置与运行环境。
+完成后手动运行 `python -I -B verify.py`、`git diff -- solution.py` 与 `git status --short`。预期测试退出 0、所有集合边界案例通过，diff 仅含 solution.py。这里的自然语言范围是任务要求；高风险能力还需前述执行层控制。最终验收由你或独立测试读取实际文件，不能只接受模型总结。
 
-## 输入与安全基线
+<span id="失败归因"></span>
 
-静态教程的输入只有上述三份示例文件，不包含账号、模型请求、Secret 或真实仓库 trace。真实资格测试则使用一次性练习仓库、固定 commit、合成 canary 和可由本地测试判定的小改动；不得把私人仓库、生产凭据或外部写操作作为首次试用输入。
-
-## 运行静态验证
-
-前置条件是 Node.js 22+、锁定依赖已安装，并从仓库根目录执行：
-
-```powershell
-npm run examples:check
-npm run examples:self-test
-```
-
-预期：
-
-```text
-Harness examples check passed ...
-Harness examples negative tests passed ...
-```
-
-第一条确认三套示例结构完整；Codex 配置必须含 `approval_policy = "on-request"`、`sandbox_mode = "workspace-write"`、`network_access = false`，并扫描 credential、个人路径和危险命令。第二条在临时副本中删除回滚章节，确认 checker 会真实失败。
-
-这是 E0 静态验证：只证明文件和项目规则满足 checker，不证明 Codex 已安装、字段在目标版本可用或 runtime 边界实际生效。
-
-## 真实资格测试的最小顺序
-
-真实试用需要另行选择无私人数据的隔离仓库，并冻结目标 Codex/version/model/provider。按以下顺序晋级：
-
-### 1. Config discovery
-
-确认 repository root、cwd、trust、有效 `AGENTS.md`、config/profile/CLI override。任一来源未知时不进入能力比较。
-
-### 2. Read-only smoke
-
-只开放 read/search/list，要求返回固定文件 hash 与引用。检查 context 是否来自目标 worktree，而不是其他 checkout。
-
-### 3. Policy probes
-
-分别执行允许读取、受保护范围写入拒绝、可逆 ask、网络拒绝；读取隔离仅在有效环境明确提供时增加对应探针。工具授权在 handler 前核对，OS sandbox 的访问拒绝可能发生在进程执行时；分别记录拦截层和副作用，不能把二者当作同一 gate。
-
-### 4. Local reversible edit
-
-在隔离 worktree 修复一个有失败测试的小问题。验证实际 diff、允许路径、目标与回归测试；不允许 dependency、remote 或网络。
-
-### 5. Resume/cancel
-
-在工具完成后 checkpoint，取消下一步，再恢复。确认未决副作用、Task 与 config 身份没有丢失，迟到结果不能覆盖取消终态。
-
-### 6. Model comparison
-
-只有前五步合格后，才能在相同 Codex/Harness/Task/工具/预算下替换 model。协议或权限失败不计为模型能力失败。
-
-## 模型适配卡
-
-为每个候选记录：
-
-```text
-requested + resolved model / provider
-Codex version + surface
-reasoning/effort + sampling/output limits
-AGENTS/config/profile/tool hashes
-context construction + compaction state
-sandbox/approval/network
-Task set + split + repeats
-acceptance + safety + duration + token/cost
-failure types + human interventions
-```
-
-不要从聊天流畅度或一次完成得出“更适合 Codex”。结论必须限定 workload，例如“小修保持低预算，多文件调试使用更高档位”，并附版本和回退配置。
-
-## 工具、MCP、Skill 与 Subagent
-
-新增能力会改变上下文、权限和供应链：
-
-- 工具/MCP：保存 server、transport、schema、身份、timeout 和数据目的地；
-- Skill/plugin：保存来源、版本、触发、脚本、依赖和卸载；
-- Subagent：保存子任务契约、工具范围、上下文、预算和父级验收；
-- 自动上下文：保存选择/压缩规则，避免任务间污染。
-
-先在只读合成任务中验证，再逐步开放写入。插件或 MCP 能被发现不等于已授权执行；子 Agent 返回完成不替代父级 validator。
-
-## 状态、恢复与 Git
-
-Codex task/session、Git worktree、模型上下文和外部系统状态是不同层。恢复时至少核对：
-
-```text
-Task/config/model identity
-repository commit + current diff
-last confirmed ToolResult
-pending/unknown side effects
-checkpoint/compaction lineage
-remaining acceptance + budgets
-```
-
-Git 能恢复文件版本，但不能撤回已发送消息或远端写操作。Timeout 后先查询目标系统；不要因为切换分支或重新打开任务就自动重试。
-
-## 失败归因
-
-| 症状 | 首查 | 不要先归因给 |
-| --- | --- | --- |
-| 指令未生效 | cwd、root、加载链、文件作用域 | 模型不服从 |
-| 配置值异常 | user/project/profile/CLI precedence | 随机行为 |
-| 文件不可写 | sandbox、路径、worktree、handler error | 模型不会编辑 |
-| 未询问就执行 | approval 有效值、工具分级 | 指令不够强 |
-| 网络意外可用 | network policy、proxy、执行环境 | 模型主动绕过 |
-| 工具反复调用 | ToolResult、call ID、error/retry | 推理能力差 |
-| Resume 重复操作 | checkpoint、幂等、外部对账 | 模型忘记了 |
-| 测试绿但需求错 | Task acceptance 与 validator | Codex 已完成正确 |
-| 换模型后整体变化 | provider、config、context、effort | model 唯一变量 |
-
-修复后重跑原失败、相邻正例和安全负例。一次只改变一个主要变量。
+<span id="失败清理与回滚"></span>
 
 ## 失败、清理与回滚
 
-静态验证不启动 Codex、模型或网络，只产生临时进程；负例自测使用系统临时目录并自动清理。若静态 checker 意外接受 `approval_policy="never"`、开放网络、credential 或缺失回滚，停止并修 checker/负例，不放宽示例。
+拒绝操作后确认文件 hash 不变；工具超时后核对进程与实际状态，不立即重复写入。结束会话，检查未跟踪文件和本轮生成物；只撤销自己的练习补丁或配置提交，个人会话与设置不随 Git 自动恢复。
 
-真实试用发生以下情况立即停止：版本/字段不匹配、加载来源未知、范围外写入、网络越界、trace 泄密、模型身份不明或 validator 不可复现。
+停止产品会话后，在这个由本轮准备的新练习仓库中复核 diff，再用 `git restore -- solution.py` 撤销自己的候选；测试应重新退出 1。返回 About Harness 仓库根目录后，共享示例可用 `npm run examples:check` 静态检查，但静态通过不证明产品权限生效。运行时再分别测试允许、拒绝与询问，保留结果。
 
-共享配置放在独立 commit，使用隔离 worktree。回退前审阅 diff，再用可追溯的 revert 恢复共享配置；个人 config、task/session 和外部副作用按各自记录处理，不假定 Git revert 能覆盖。
+<span id="来源与证据边界"></span>
+<span id="已知限制与检查题"></span>
 
-## 已知限制与检查题
+## 已知限制与来源
 
-示例不包含真实 model、skills、MCP、subagents、用户级配置或不同 surface 行为；官方来源是产品事实，静态配置为 E0，迁移 fixture 为 E1。二者都不证明账号可用性、Codex 运行质量或模型优胜。
-
-1. `AGENTS.md`、sandbox、approval 和 network 分别承担什么？
-2. 为什么项目配置正确仍不能证明最终有效配置相同？
-3. Sandbox 探针为什么不能用模型自报作为证据？
-4. Resume 时 Git 状态之外还要核对哪些副作用？
-5. 换模型比较时为什么必须固定 Codex surface 和配置？
-
-下一步运行[Harness 职责对照](/harnesses/comparison)与[迁移案例](/labs/migration)，再用[模型—Harness 匹配](/optimization/model-fit)定义自己的任务矩阵。
+当前只有包与帮助入口的 E1 检查，没有真实模型运行、跨平台权限证明或产品质量结论。接口事实来源：[官方资料](https://learn.chatgpt.com/docs/config-file/config-basic)；与本地版本不符时记录冲突，暂停相应步骤。
