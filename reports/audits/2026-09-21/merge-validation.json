@@ -192,5 +192,17 @@
       "local_log_basename": "about-harness-merge-network.log",
       "sha256": "c14f22a8ef4ae07084469ae6521a82f7d6353f8d91d724a0b5831fc14a1e48ba"
     }
+  },
+  "delivery": {
+    "local_integration_commit": "05ce74b615c650edd82935d89b3cac09e461b780",
+    "direct_push": "rejected",
+    "server_code": "GH006",
+    "requirements": [
+      "pull request",
+      "required verify status",
+      "no merge commits on main"
+    ],
+    "delivery_method": "PR from codex/content-audit-20260921 followed by squash merge",
+    "branch_protection_changed": false
   }
 }
