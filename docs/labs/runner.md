@@ -17,7 +17,7 @@
 
 | 输入 | 算法 | 格式变化的影响 |
 | --- | --- | --- |
-| 原 `lab/fixtures/<case>/` JSON | 解析后排序键、紧凑序列化，再计算 SHA-256；三个文件 hash 组成 bundle | 缩进变化不改变 hash |
+| 原 `lab/fixtures/<case>/` JSON | 解析后排序键、紧凑序列化，再计算 SHA-256；三个文件 hash 组成 bundle | 缩进、换行与对象键顺序变化不改变 hash |
 | `sources-v2` 与 `study-coding` 文件 | 原始 UTF-8 字节 SHA-256 | 空白、编码和正文变化都改变 hash |
 
 Hash 固定输入身份，不证明输入真实或测试充分。历史 Eval 继续引用不可变 commit/path，不跟随当前文件变化。

@@ -45,7 +45,7 @@ npm run frameworks:check -- google-adk
 
 LlmAgent 与 Runner 使用 BaseLlm 替身。工具通过 ToolContext 更新会话 reads，工具响应回到下一轮，结束后重新读取会话状态。
 
-直接入口是 `demo.py`，可逐行对应框架调用与输出。共享运行防线在导入框架前禁用外部网络和遥测；只允许本机事件循环所需连接，并断言没有外部连接尝试。
+直接入口是 `demo.py`，可逐行对应框架调用与输出。共享防线在导入框架前设置遥测关闭变量，并拦截 Python socket 的外部 DNS/连接，仅放行本机地址；结果断言被拦截的外部连接尝试为零。这是示例内的运行探针，不是操作系统网络沙箱。
 
 <span id="失败归因与恢复"></span>
 
@@ -65,4 +65,4 @@ uv run --project examples/frameworks/google-adk --frozen --offline python exampl
 
 会话使用内存存储；缺失模型用量不会当成真实零用量，没有 Gemini/Vertex 调用。该示例支持对这一运行时接缝的判断，不构成产品质量排名。选型方法见[框架对照](/frameworks/comparison)。
 
-来源：[官方资料](https://google.github.io/adk-docs/agents/models/)；本轮于 2026-09-08 核对文档、安装版本并执行离线示例。
+来源：[官方资料](https://adk.dev/)于 2026-09-21 复核；固定包的离线执行记录来自 2026-09-08，见 `lab/results/public/frameworks/summary.json`。来源 E0 与固定路径 E1 分开记录。

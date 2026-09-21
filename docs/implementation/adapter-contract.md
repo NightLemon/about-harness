@@ -272,6 +272,15 @@ uv run --frozen --offline python -c "import sys; sys.path.insert(0, 'lab/src'); 
 | Live 测试意外读到凭据 | adapter/client 初始化路径 | 把真实 key 放进 fixture |
 
 
-## 实践入口
+## 实际验证与清理
 
-[从最小实现进入完整工作区实验](/implementation/minimal-harness-python)。实现范围、命令、预期断言和清理步骤在实验页维护。
+按[统一环境](/guide/prerequisites)准备 Python 3.12、uv 0.11.16 和根目录锁定依赖，从仓库根运行。输入是测试中的固定 Action、Replay 记录、stream 事件及 `lab/fixtures/protocols/responses-v1.json`，不配置凭据。
+
+```bash
+uv run --frozen --offline pytest -q lab/tests/test_replay_and_live.py
+uv run --frozen --offline pytest -q lab/tests/test_streaming.py lab/tests/test_responses.py
+```
+
+预期相关测试全部通过：固定 Replay 能完成预设动作序列；未知字段和坏 checkpoint 被拒绝；不完整 stream 不提交 Action；模拟 Responses 的 call/result 显式回传、ID、错误和未知用量保持契约。普通 Replay 不实现工具结果接收协议，不能据此宣称它验证了回传。上述测试分别覆盖固定回放、通用事件组装器和非流式 Responses，不能合称已验证真实 Responses 流式调用。
+
+上方故意损坏状态的命令必须非零退出；若负例意外成功、出现凭据请求或未预期的网络访问，停止并保留首个错误。测试只清理自己的临时状态，回退只撤销本轮改动。结果限于 E1；接到工作区的方式见[最小实现](/implementation/minimal-harness-python)。

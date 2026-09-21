@@ -7,7 +7,11 @@ import { chromium } from 'playwright'
 const root = process.cwd()
 const dist = path.join(root, 'docs', '.vitepress', 'dist')
 const base = '/about-harness/'
-const outputRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'about-harness-visual-'))
+const artifactDir = process.env.VISUAL_ARTIFACT_DIR
+const outputRoot = artifactDir
+  ? path.resolve(artifactDir)
+  : fs.mkdtempSync(path.join(os.tmpdir(), 'about-harness-visual-'))
+const preserveArtifacts = Boolean(artifactDir)
 const errors = []
 const records = []
 
@@ -64,6 +68,11 @@ async function pageMetrics(page) {
       scrollWidth: table.scrollWidth,
       overflowX: getComputedStyle(table).overflowX
     }))
+    const code = [...document.querySelectorAll('main pre')].map((block) => ({
+      clientWidth: block.clientWidth,
+      scrollWidth: block.scrollWidth,
+      overflowX: getComputedStyle(block).overflowX
+    }))
     return {
       viewportWidth: window.innerWidth,
       clientWidth: root.clientWidth,
@@ -71,7 +80,8 @@ async function pageMetrics(page) {
       title: document.title,
       main: Boolean(document.querySelector('main, #VPContent')),
       targetTop: target ? Math.round(target.getBoundingClientRect().top) : null,
-      tables
+      tables,
+      code
     }
   })
 }
@@ -91,6 +101,11 @@ async function inspect(viewport) {
     await search.click()
     const box = page.locator('.VPLocalSearchBox, .DocSearch-Modal').first()
     try { await box.waitFor({ state: 'visible', timeout: 3_000 }) } catch { errors.push(`${viewport.id}: search dialog did not open`) }
+    const input = box.locator('input').first()
+    await input.fill('生态')
+    try {
+      await box.locator('a[href*="ecosystem/"]').first().waitFor({ state: 'visible', timeout: 5_000 })
+    } catch { errors.push(`${viewport.id}: search did not return an ecosystem page`) }
     await page.keyboard.press('Escape')
   } else errors.push(`${viewport.id}: search trigger not found`)
 
@@ -168,6 +183,35 @@ async function inspect(viewport) {
   const migrationScreenshot = `${viewport.id}-migration.png`
   await page.screenshot({ path: path.join(outputRoot, migrationScreenshot), fullPage: true })
 
+  const entryPages = []
+  const entryScreenshots = []
+  for (const route of [
+    'ecosystem/overview',
+    'ecosystem/protocols-and-skills',
+    'practice/ecosystem-workshop',
+    'guide/start',
+    'implementation/minimal-harness-python'
+  ]) {
+    await page.goto(`${origin}${base}${route}`, { waitUntil: 'networkidle' })
+    const metrics = await pageMetrics(page)
+    const codeBlocks = await page.locator('main pre, #VPContent pre').count()
+    if (!metrics.main || metrics.scrollWidth > metrics.clientWidth) {
+      errors.push(`${viewport.id}: ${route} has horizontal overflow or no main landmark`)
+    }
+    if ((route === 'practice/ecosystem-workshop' || route === 'implementation/minimal-harness-python') && codeBlocks === 0) {
+      errors.push(`${viewport.id}: ${route} has no executable code block coverage`)
+    }
+    for (const item of [...metrics.tables, ...metrics.code]) {
+      if (item.scrollWidth > item.clientWidth && !['auto', 'scroll'].includes(item.overflowX)) {
+        errors.push(`${viewport.id}: ${route} has a wide table/code block without local scrolling`)
+      }
+    }
+    const screenshot = `${viewport.id}-${route.replaceAll('/', '-')}.png`
+    await page.screenshot({ path: path.join(outputRoot, screenshot), fullPage: true })
+    entryScreenshots.push(screenshot)
+    entryPages.push({ route, metrics, codeBlocks })
+  }
+
   await page.goto(`${origin}${base}foundations/state-reliability#幂等与副作用`, { waitUntil: 'networkidle' })
   const anchor = await pageMetrics(page)
   if (anchor.targetTop === null || anchor.targetTop < 64 || anchor.targetTop > viewport.height) {
@@ -180,9 +224,10 @@ async function inspect(viewport) {
     table,
     migration,
     migrationTableScroll,
+    entryPages,
     anchor,
     mobileMenu: mobileMenuState,
-    screenshots: [homeScreenshot, tableScreenshot, migrationScreenshot]
+    screenshots: [homeScreenshot, tableScreenshot, migrationScreenshot, ...entryScreenshots]
   })
   await page.close()
 }
@@ -199,8 +244,8 @@ try {
 }
 
 const screenshotCount = fs.readdirSync(outputRoot).filter((name) => name.endsWith('.png')).length
-if (errors.length || process.env.KEEP_VISUAL_ARTIFACTS === '1') {
-  fs.writeFileSync(path.join(outputRoot, 'summary.json'), JSON.stringify({ base, records, errors }, null, 2) + '\n')
+fs.writeFileSync(path.join(outputRoot, 'metrics.json'), `${JSON.stringify({ base, records, errors }, null, 2)}\n`)
+if (preserveArtifacts || errors.length || process.env.KEEP_VISUAL_ARTIFACTS === '1') {
   console.log(`Visual artifacts retained: ${outputRoot}`)
 } else {
   const parent = fs.realpathSync(os.tmpdir())
@@ -215,4 +260,4 @@ if (errors.length) {
   process.exit(1)
 }
 
-console.log(`Visual check passed: ${records.length} viewports, ${screenshotCount} temporary screenshots, base ${base}.`)
+console.log(`Visual check passed: ${records.length} viewports, ${screenshotCount} ${preserveArtifacts ? `preserved screenshots in ${outputRoot}` : 'temporary screenshots'}, base ${base}. Automated screenshots and metrics are not a human visual review.`)

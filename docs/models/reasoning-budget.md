@@ -58,7 +58,7 @@ HTTP 成功不足以证明参数生效。有的中间层可能静默忽略未知
 
 因此本项目不把某一个模型页面列出的枚举、默认 effort 或建议复制为整个 OpenAI 家族规则，也不从 API model 推断 Codex surface 的可选项。来源状态、项目核对日期和证据等级以[事实注册表](/references/fact-registry)为准。
 
-该官方事实是 E0 产品来源，不是本仓库已运行 OpenAI 模型的证据。当前 lab 不包含 供应方 client 或 credential reader，不能据此把任何 effort 值标成项目 E1/E2。
+该官方事实是 E0 产品来源，不是本仓库已运行 OpenAI 模型的证据。[Responses 适配器](/models/openai)默认使用模拟传输，另有需显式授权与参数的可选 HTTP 路径；尚未取得任何真实 effort 值的 E2 证据。离线测试通过也不能证明目标模型接受或执行了某个推理档位。
 
 ## 建立可比较的配置身份
 

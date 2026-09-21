@@ -1,0 +1,341 @@
+{
+  "reviewer": "root",
+  "pages": [
+    {
+      "path": "AGENTS.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "工程规则明确来源状态、E0–E3、离线默认与独立外部授权；作为约束保留。",
+      "issues": []
+    },
+    {
+      "path": "README.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "fail",
+      "note": "快速开始、学习路径与六类离线案例完整；生态入口尚未建立。",
+      "issues": [
+        "R01",
+        "R09"
+      ]
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "fail",
+      "note": "正确区分人工深度审阅与结构门禁；季度网络探针不足以覆盖30天高易变事实维护节奏。",
+      "issues": [
+        "R07"
+      ]
+    },
+    {
+      "path": "docs/index.md",
+      "readability": "fail",
+      "accuracy": "pass",
+      "coverage": "fail",
+      "note": "问题驱动入口和六个Lab边界清楚；首屏术语偏密，缺领域全景入口。",
+      "issues": [
+        "R01"
+      ]
+    },
+    {
+      "path": "docs/references/glossary.md",
+      "readability": "pass",
+      "accuracy": "fail",
+      "coverage": "pass",
+      "note": "将pass@k与best-of-k合并成至少一次成功，混淆oracle指标与选择器后的实际交付。",
+      "issues": [
+        "R03"
+      ]
+    },
+    {
+      "path": "docs/references/sources.md",
+      "readability": "pass",
+      "accuracy": "pending",
+      "coverage": "pass",
+      "note": "有来源分类和冲突策略；日期陈旧且缺新增协议、框架、基准来源。",
+      "issues": [
+        "R02"
+      ]
+    },
+    {
+      "path": "docs/references/fact-registry.md",
+      "readability": "pass",
+      "accuracy": "pending",
+      "coverage": "pass",
+      "note": "11列表能独立记录来源和实验；五条高易变事实超期，产品生命周期和新生态未登记。",
+      "issues": [
+        "R02"
+      ]
+    },
+    {
+      "path": "docs/references/compatibility.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "fail",
+      "note": "五层证据矩阵完整；模型表遗漏Llama，新增产品与协议未有可追溯位置。",
+      "issues": [
+        "R06"
+      ]
+    },
+    {
+      "path": "evals/README.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "20任务120格设计与12条E1合成run明确区分，解释历史fixture哈希不可冒充当前输入。",
+      "issues": []
+    },
+    {
+      "path": "examples/harnesses/codex/README.md",
+      "readability": "pass",
+      "accuracy": "pending",
+      "coverage": "pass",
+      "note": "静态命令、输出、断言、反例、回滚齐备；目标surface真实配置加载仍需授权探针。",
+      "issues": [
+        "R02"
+      ]
+    },
+    {
+      "path": "examples/harnesses/codex/AGENTS.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "示例授权范围及验证要求清楚；不是当前根仓库的新授权。",
+      "issues": []
+    },
+    {
+      "path": "examples/harnesses/claude-code/README.md",
+      "readability": "pass",
+      "accuracy": "pending",
+      "coverage": "pass",
+      "note": "区分CLAUDE指导和permission执行控制；字段事实仍需新来源日期同步。",
+      "issues": [
+        "R02"
+      ]
+    },
+    {
+      "path": "examples/harnesses/claude-code/CLAUDE.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "示例阻断网络/凭据/远程并限定改动范围，保留为规则示范。",
+      "issues": []
+    },
+    {
+      "path": "examples/harnesses/pi/README.md",
+      "readability": "pass",
+      "accuracy": "fail",
+      "coverage": "pass",
+      "note": "将隔离worktree列为硬隔离手段，实际上worktree只分离Git目录，不能约束进程权限。",
+      "issues": [
+        "R04"
+      ]
+    },
+    {
+      "path": "examples/harnesses/pi/AGENTS.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "示例要求固定源码不匹配时停止；工具与外部权限边界明确。",
+      "issues": []
+    },
+    {
+      "path": "examples/portfolio-starter/README.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "E0脚手架不伪造run/trace，按任务、失败、安全、迁移形成作品集闭环。",
+      "issues": []
+    },
+    {
+      "path": "examples/portfolio-starter/environment.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "环境、锁文件、输入许可及未知项有位置；不记录个人账号标识。",
+      "issues": []
+    },
+    {
+      "path": "examples/portfolio-starter/knowledge-map.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "fail",
+      "note": "责任图有输入输出owner、成功/失败路径，尚缺纯回答完整性在安全分析中的提醒。",
+      "issues": [
+        "R08"
+      ]
+    },
+    {
+      "path": "examples/portfolio-starter/model-card/adaptation.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "模型身份、官方来源和协议正负例独立，未运行保持untested。",
+      "issues": []
+    },
+    {
+      "path": "examples/portfolio-starter/harness/verification.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "原失败/邻近正例/安全/取消/恢复矩阵清楚；不预填passed并区分Git与外部回退。",
+      "issues": []
+    },
+    {
+      "path": "examples/portfolio-starter/evaluation/study.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "以Task为分析单位，不删除失败，不用E1支持模型质量晋级。",
+      "issues": []
+    },
+    {
+      "path": "examples/portfolio-starter/evaluation/report.md",
+      "readability": "pass",
+      "accuracy": "fail",
+      "coverage": "pass",
+      "note": "尚未运行时Safety、Tool errors、Human turns预填0，会让未知观察看似零事故。",
+      "issues": [
+        "R05"
+      ]
+    },
+    {
+      "path": "examples/portfolio-starter/security/threat-model.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "fail",
+      "note": "威胁模板覆盖外泄和重复写，缺无工具时被诱导隐瞒反证的回答完整性例。",
+      "issues": [
+        "R08"
+      ]
+    },
+    {
+      "path": "examples/portfolio-starter/migration/responsibility-map.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "责任/缺口/补偿/证据逐项分开，未知目标不切换，回退包括外部receipt。",
+      "issues": []
+    },
+    {
+      "path": "examples/portfolio-starter/evidence/commands.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "命令行记录未运行与实际结果分开，提供退出码、产物哈希和敏感信息约束。",
+      "issues": []
+    },
+    {
+      "path": "examples/portfolio-starter/evidence/unresolved.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "未知项有风险、证据、负责人及触发条件；正确保留关闭后的来源。",
+      "issues": []
+    }
+  ],
+  "findings": [
+    {
+      "id": "R01",
+      "severity": "P1",
+      "type": "gap",
+      "path": "docs/index.md",
+      "line": 44,
+      "quote": "按你眼前的问题进入",
+      "reason": "缺跨模型服务、协议、运行时、部署、评测与研究的生态全景；新增概念没有统一定位。",
+      "fix": "建立九能力层全景与重点专题，旧页链接到唯一深入入口。",
+      "acceptance": "九能力层及计划指定代表产品均有来源、定位、限制与学习入口。"
+    },
+    {
+      "id": "R02",
+      "severity": "P1",
+      "type": "pending",
+      "path": "docs/references/fact-registry.md",
+      "line": 29,
+      "quote": "2026-08-20",
+      "reason": "claude-memory、LangGraph、Agents SDK、ADK、AutoGen五条高易变来源超过30天；登记过粗，不能覆盖最新行为。",
+      "fix": "逐项实读来源、登记生命周期及新增事实；不可达保留pending。",
+      "acceptance": "freshness通过且核对记录可追溯到支持主张的实际段落，不仅HTTP状态。"
+    },
+    {
+      "id": "R03",
+      "severity": "P1",
+      "type": "error",
+      "path": "docs/references/glossary.md",
+      "line": 55,
+      "quote": "pass@k / best-of-k",
+      "reason": "至少一次正确的oracle指标与候选选择策略不是同一统计对象。",
+      "fix": "拆分pass@k与best-of-k，说明选择器可能选错及k次成本。",
+      "acceptance": "术语与metrics、推理重采样及新练习一致。"
+    },
+    {
+      "id": "R04",
+      "severity": "P1",
+      "type": "error",
+      "path": "examples/harnesses/pi/README.md",
+      "line": 19,
+      "quote": "需要硬隔离时使用容器、受限用户或隔离 worktree",
+      "reason": "Git worktree不隔离文件系统/网络/进程权限。",
+      "fix": "将工作目录隔离和操作系统强制隔离分开，容器也需实际权限配置。",
+      "acceptance": "不把worktree称为sandbox或硬权限边界。"
+    },
+    {
+      "id": "R05",
+      "severity": "P1",
+      "type": "error",
+      "path": "examples/portfolio-starter/evaluation/report.md",
+      "line": 17,
+      "quote": "baseline | 0 | 未运行 | 0",
+      "reason": "没有run却将安全/工具错误/人工次数置零，混淆未知与实测零。",
+      "fix": "未运行的指标留未观测；矩阵观察格数0可保留。",
+      "acceptance": "模板不把未测安全数据解释为零事故。"
+    },
+    {
+      "id": "R06",
+      "severity": "P2",
+      "type": "gap",
+      "path": "docs/references/compatibility.md",
+      "line": 58,
+      "quote": "模型页面当前状态",
+      "reason": "Llama已有专题却未在模型兼容矩阵出现；生态新增也须同步。",
+      "fix": "补齐Llama及新增对象的来源、静态、E1与live边界。",
+      "acceptance": "各对象可查来源状态和真实未测试边界。"
+    },
+    {
+      "id": "R07",
+      "severity": "P2",
+      "type": "editorial",
+      "path": "CONTRIBUTING.md",
+      "line": 41,
+      "quote": "维护者每季度运行带网络的外链探针并刷新高易变事实",
+      "reason": "季度刷新会周期性超过30天发布门槛，贡献者不清楚何时做语义复核。",
+      "fix": "明确每次涉及易变主张和发布前复核；季度仅全量外链补充。",
+      "acceptance": "维护说明与facts:freshness职责、时间规则一致。"
+    },
+    {
+      "id": "R08",
+      "severity": "P2",
+      "type": "gap",
+      "path": "examples/portfolio-starter/security/threat-model.md",
+      "line": 11,
+      "quote": "T-02",
+      "reason": "模板没有纯回答完整性风险，与工具副作用以外的安全面缺少连接。",
+      "fix": "增加隐藏反证/引用污染威胁及输出验收。",
+      "acceptance": "不执行工具也能描述一条攻击和检查断言。"
+    },
+    {
+      "id": "R09",
+      "severity": "P2",
+      "type": "gap",
+      "path": "scripts/tutorial-check.mjs; scripts/visual-check.mjs",
+      "line": "43; 85",
+      "quote": "const cases = [coding, browser, research, data, document, migration]",
+      "reason": "教程门禁只硬编码六类Lab；实现/实践教程命令无法被结构门禁覆盖，视觉检查只有少数页面。",
+      "fix": "增加明确的教程命令契约清单与副本破坏负例；将新入口、长表、代码页纳入三视口检查。",
+      "acceptance": "新增教程/代表实现和实践命令路径受检，缺失脚本或错误引用触发失败；三视口覆盖新增内容。"
+    }
+  ]
+}

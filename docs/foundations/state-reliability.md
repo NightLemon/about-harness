@@ -96,7 +96,26 @@ approval/cancellation state
 created_at / writer / fencing token
 ```
 
-不要把完整敏感 轨迹 无条件塞进 检查点。状态存储也需要最小化、加密、访问控制、保留期和删除传播；恢复能力不是绕过隐私边界的理由。
+不要把完整敏感 trace 无条件塞进 checkpoint。状态存储也需要最小化、加密、访问控制、保留期和删除传播；恢复能力不是绕过隐私边界的理由。
+
+## 最小实现的恢复边界
+
+仓库的 `RunCheckpoint` 只有六个字段：
+
+| 字段 | 含义 | 当前校验 |
+| --- | --- | --- |
+| `step` | 已完成工具步骤数 | 非负整数 |
+| `model_calls` | 已消费的 Adapter Action 数 | 非负且不得小于 `step` |
+| `tool_calls` | 实际执行的工具调用数 | 与 reused 合计必须等于 `step` |
+| `reused_tool_calls` | 从 cache 复用的工具结果数 | 非负 |
+| `cost_usd` | 累计 Action 声明成本 | 有限、非负 |
+| `adapter_state` | Adapter 自定义 JSON 对象 | 必须为对象；FakeAdapter 另验 `index` |
+
+每次工具成功或 cache 命中后，runner 创建新 checkpoint；completion 验收拒绝后也会保存 checkpoint，以保留已消费调用、成本与 Adapter 游标。完成 Action 不增加 `steps`，验收通过时沿用最近 checkpoint；`steps` 始终只计算成功或复用的工具状态转移。最终 Result 的 `model_calls`、cost 可能已包含后续 completion proposal，因此这些值可以大于最近 checkpoint，对应的 tool step 则保持一致。
+
+恢复时，runner 继承 step/model/tool/reused/cost，并调用 `adapter.restore(adapter_state)`。它会创建新的 TraceRecorder，所以新 Result 的 trace 不包含上一段事件；`started` 也重新读取时钟，所以 `timeout_ms` 从恢复调用开始重新计算。工具 cache 不在 checkpoint 内，新建 `ToolRegistry` 后旧幂等结果不会恢复。
+
+这些限制意味着 checkpoint 适合演示 Adapter 游标继续，不足以覆盖“外部工具已成功但 checkpoint 未写入”的关键崩溃窗口。
 
 ## Deadline 与真正的超时
 

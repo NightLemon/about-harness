@@ -1,6 +1,6 @@
-# Codex、Pi 与 Claude Code：配置与使用路径
+# Codex、Pi、Claude Code 与 Gemini CLI：配置与使用路径
 
-三者都是编码工作产品。比较时同时记录产品版本、模型、工具、指令和权限；同一句提示无法固定这些条件。
+本页比较编码 Harness 的职责与证据。比较时同时记录产品版本、模型、工具、指令和权限；同一句提示无法固定这些条件。
 
 <span id="比较目标与证据边界"></span>
 <span id="先冻结比较单元"></span>
@@ -46,15 +46,20 @@
 | Codex | @openai/codex 0.153.4 | AGENTS.md、项目配置、sandbox 与 approval | [Codex](/harnesses/codex) |
 | Pi | @earendil-works/pi-coding-agent 0.84.2 | 项目资源、工具集合与外部隔离 | [Pi](/harnesses/pi) |
 | Claude Code | @anthropic-ai/claude-code 2.1.263 | CLAUDE.md、工具集合与 permission rules | [Claude Code](/harnesses/claude-code) |
+| Gemini CLI | 未固定安装版本；只有官方资料 E0 | GEMINI.md、配置、trust 与隔离各自核对 | [Gemini CLI](/harnesses/gemini-cli) |
 
 2026-09-08 已检查包身份并运行三者 --help；这只确认命令入口与选项，未启动真实模型任务。[FACT:codex-cli-entry] [FACT:pi-cli-entry] [FACT:claude-cli-entry]
+
+Gemini CLI 的来源与生命周期公告于 2026-09-21 核对；公告的账号层限制必须保留，不能泛化为全部用户已迁移。它没有本仓库包/帮助入口或模型运行证据。[FACT:gemini-cli-overview] [FACT:gemini-cli-lifecycle]
 
 ## 怎样选择
 
 先写任务需要的工具、文件范围、网络、人工关口、恢复和验收。再按目标平台验证这些控制实际生效；不能把“会询问”当成文件隔离，也不能把会话恢复当成外部副作用对账。
 
+Codex 的 permission profile 与 approval_policy 分别记录；workspace-write 不默认阻止工作区外读取。Claude allow 不是闭合白名单，AGENTS.md 条件加载还受版本与已有 Claude 指令影响。Pi 的工具集合/project trust、Gemini 的 trusted folders 都不能替代操作系统隔离；Git worktree 同样不是沙箱。细节按各教程和[兼容矩阵](/references/compatibility)核对。
+
 第一次试用从合成仓库只读开始，再做可回退本地修改。比较模型时固定产品及配置；比较产品时保留并解释工具和默认体验的差异。
 
 ## 迁移和评测
 
-[迁移实验](/labs/migration)提供六类职责表与失败例；[模型适配](/models/adaptation)决定资格与效用；[评测实践](/practice/evaluation)连接运行记录和报告。当前没有三产品模型质量排名。
+[迁移实验](/labs/migration)提供六类职责表与失败例；[模型适配](/models/adaptation)决定资格与效用；[评测实践](/practice/evaluation)连接运行记录和报告。分别记录 E0 产品来源、E0 静态配置、E1 包/帮助入口、E1 离线职责 fixture 与 E2/E3 模型实测；前四项不能替代后一项。当前没有四产品的 live 模型质量排名。

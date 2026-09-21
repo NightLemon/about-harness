@@ -22,7 +22,7 @@
 
 ## 前置与版本
 
-需要 Node.js 22+、Python 3.12、uv 0.11.16 和 Git。本轮复核使用 Node.js 22.23.2、Python 3.12.13；依赖由锁文件固定。[环境准备](/guide/prerequisites)说明首次下载与离线运行的区别。
+需要 Node.js 22+、Python 3.12、uv 0.11.16 和 Git。历史复核记录（`maintenance/verification-results.json`，2026-09-08）使用 Node.js 22.23.2、Python 3.12.13；当前复现另记实际版本，依赖由锁文件固定。[环境准备](/guide/prerequisites)说明首次下载与离线运行的区别。
 
 <span id="实验由四层组成"></span>
 
@@ -31,11 +31,12 @@
 | 入口 | 实际执行 | 核对重点 |
 | --- | --- | --- |
 | `npm run lab:smoke` | FakeAdapter 与最小循环 | 工具步骤、策略和完成验收 |
-| `npm run study:demo` | 六个临时 Git 仓库、固定补丁、真实测试 | 完整 12 单元与产物关联 |
+| `npm run study:demo` | 六任务 × 两配置的临时 Git 工作区、固定补丁、真实测试 | 完整 12 单元与产物关联 |
 | `npm run labs:source` | Markdown/HTML/CSV 和 Playwright | 解析、计算、引用及观察更新 |
 | `npm run labs:all` | 原有六个固定 JSON 契约 | 规范化 hash 与历史负例 |
 | `npm run frameworks:check` | 四个实际框架运行时 | 工具回传、状态、恢复和终止 |
 | `npm run model:probe` | Responses 模拟传输 | 串行调用、ID、用量与错误 |
+| `npm run ecosystem:workshop` | 合成能力、工具与候选记录 | 授权不扩张、共享预算、选择失败与弃权边界 |
 
 原六案例的命令和固定 hash 仍可复现。其历史输出中的品牌标签是旧映射字段，不能作为上游框架运行证据；新领域输出使用通用名称。
 
@@ -44,6 +45,14 @@
 命令退出 0 后，还要核对本例的业务条件：完整研究必须有 12 个唯一单元；研究材料保留 30/45 冲突和删除流程缺口；CSV 的两条已知分数合计 10；文档引用 v2 的具体块；浏览器刷新后旧观察失效。
 
 运行器输出 `E1` 只说明离线执行范围。真实框架使用假模型仍是 E1，真实模型可用性探针才是 E2。
+
+## 公开结果先制作副本，再扫描
+
+```bash
+npm run results:redact
+```
+
+名称中的 redact 不表示自动脱敏：该命令只扫描 `lab/results/public/` 中的 JSON、JSONL、Markdown 和 patch，拒绝已知敏感键、路径、凭据模式和不支持的文件类型；不会改写内容或生成安全副本。预期退出 0，但仍需人工核对来源与公开范围。失败时隔离原始产物，在受限位置制作最小化脱敏副本并复扫，不发布原文，也不排除整份文件来绕过检查。
 
 ## 容器与平台
 

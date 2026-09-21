@@ -23,7 +23,7 @@
 | Plugin/Extension（插件/扩展） | 加载代码、UI、事件处理或成套能力 | 宿主进程、隔离进程或浏览器 | 深度集成、分发与复用 | 默认可信的任意代码执行 |
 | MCP server | 通过协议提供跨进程资源、提示或工具 | Host 通过 client 连接 server | 多宿主共享能力、进程隔离 | 自动授权、来源背书、安全沙箱 |
 
-优先选择能满足需求的最小层。只需要“校验一个 JSON 文件”时，参数固定的 CLI 或 tool 通常足够；只有需要自动发现、跨项目分发、UI 或生命周期事件时，才上升到 plugin。MCP（Model Context（上下文） Protocol，模型上下文协议）解决 host/client/server 之间的能力发现与消息交换，不自动授予工具权限。[FACT:mcp-spec]
+优先选择能满足需求的最小层。只需要“校验一个 JSON 文件”时，参数固定的 CLI 或 tool 通常足够；只有需要自动发现、跨项目分发、UI 或生命周期事件时，才上升到 plugin。MCP（Model Context Protocol，模型上下文协议）解决 host/client/server 之间的能力发现与消息交换，不自动授予工具权限。[FACT:mcp-spec]
 
 机制可以组合，但责任不能糊在一起。例如 skill 可以解释何时调用一个 tool，hook 可以在 tool 执行前检查策略，MCP server 可以提供这个 tool；最终是否允许执行，仍应由 host 的 Task（任务）、policy 和当前主体共同决定。
 
@@ -239,7 +239,7 @@ npm run facts:check
 npm run pages:check
 ```
 
-不需要安装能修改 agent loop 的 plugin，也不需要把本地 shell 完整暴露成 tool。如果多个 harness 都需要这项能力，可以再包一层参数固定的 tool：输入只允许检查范围和严格模式，执行命令由注册表决定，工作目录固定为仓库根目录，输出限长且不联网。
+不需要安装能修改 agent loop 的 plugin，也不需要把本地 shell 完整暴露成 tool。如果多个 harness 都需要这项能力，可以再包一层参数固定的 tool：输入只允许检查范围和严格模式，执行命令由注册表决定，工作目录固定为仓库根目录，输出限长；默认链接检查只核对结构，构建与浏览器检查仅使用本地资源。首次依赖和 Chromium 下载单独按环境准备执行。
 
 如果希望模型理解“何时运行三项检查、如何读错误、失败时怎样回退”，增加一个 skill 即可；skill 不能代替 tool 的参数校验和进程权限。如果组织要求每次提交前强制检查，可在明确 timeout 和失败语义后增加 `before_commit` hook，但仍要保留人类可直接运行的 CLI 入口。
 
@@ -261,6 +261,14 @@ npm run pages:check
 定位顺序从身份与版本开始，再看注册 schema、policy 决定、运行时 轨迹、外部副作用和结果映射。不要先让模型“换一种调用方式”；那可能绕过原本的拒绝。
 
 
-## 实践入口
+## 验证这个工作例
 
-[从最小实现进入完整工作区实验](/implementation/minimal-harness-python)。实现范围、命令、预期断言和清理步骤在实验页维护。
+按[实验环境](/labs/setup)准备 Node.js 22+、Python 3.12、uv 0.11.16 与锁定依赖；Pages 视觉检查还需要当前 Playwright 对应的 Chromium。输入为本仓库 Markdown、事实注册表、站点配置和示例，没有真实扩展或凭据。
+
+顺序运行上方三条命令，预期退出 0；断言内部路由、事实引用、示例和构建产物通过各自检查。它们不能证明文字深度或外部 Plugin/MCP 的安全。
+
+```bash
+npm run repo:self-test
+```
+
+负例自测必须拒绝故意损坏的秘密、许可、workflow 和事实时效输入；外层退出 0 表示这些拒绝断言成立。首个门禁失败时保留错误，不安装更宽权限的扩展绕过检查。自测清理临时副本，构建输出留在已忽略目录；若修改规则，只回退自己的 diff，再重跑原失败。此例是仓库检查的 E1，不是第三方扩展兼容性证据。

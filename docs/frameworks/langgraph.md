@@ -1,6 +1,6 @@
 # LangGraph：可运行的离线示例
 
-本页用实际框架代码处理两份互相冲突的本地政策。框架版本固定为 1.2.11；模型输出来自回放，运行证据为 E1。[FACT:langgraph-overview]
+本页用实际框架代码处理两份互相冲突的本地政策。框架版本固定为 1.2.11；节点使用确定性本地函数，不调用模型，运行证据为 E1。[FACT:langgraph-overview]
 
 <span id="学习目标与选择问题"></span>
 <span id="从状态-schema-开始-而不是先画箭头"></span>
@@ -21,7 +21,7 @@
 
 ## 前置与输入
 
-需要 Python 3.12、uv 0.11.16；npm 入口还需要 Node.js 22+。示例有独立 pyproject 和 uv.lock，位于 `examples/frameworks/langgraph/`。共同输入为 `materials.json` 与固定的 `replay-answer.json`。
+需要 Python 3.12、uv 0.11.16；npm 入口还需要 Node.js 22+。示例有独立 pyproject 和 uv.lock，位于 `examples/frameworks/langgraph/`。本例读取共同材料 `examples/frameworks/materials.json` 并由节点计算结果；其他三例使用的 `replay-answer.json` 不参与本例生成。
 
 首次准备会下载锁定依赖：
 
@@ -45,7 +45,7 @@ npm run frameworks:check -- langgraph
 
 StateGraph 将一次读取拆到两个分支，通过 reducer（归并函数）合并状态后再汇总；条件边把冲突送到复核关口；InMemorySaver 保存暂停状态，Command(resume=True) 恢复同一运行。
 
-直接入口是 `demo.py`，可逐行对应框架调用与输出。共享运行防线在导入框架前禁用外部网络和遥测；只允许本机事件循环所需连接，并断言没有外部连接尝试。
+直接入口是 `demo.py`，可逐行对应框架调用与输出。共享防线在导入框架前设置遥测关闭变量，并拦截 Python socket 的外部 DNS/连接，仅放行本机地址；结果断言被拦截的外部连接尝试为零。这是示例内的运行探针，不是操作系统网络沙箱。
 
 <span id="失败归因"></span>
 
@@ -65,4 +65,4 @@ uv run --project examples/frameworks/langgraph --frozen --offline python example
 
 进程内状态不提供跨进程持久恢复，也不替代外部写入对账。该示例支持对这一运行时接缝的判断，不构成产品质量排名。选型方法见[框架对照](/frameworks/comparison)。
 
-来源：[官方资料](https://docs.langchain.com/oss/python/langgraph/overview)；本轮于 2026-09-08 核对文档、安装版本并执行离线示例。
+来源：[官方资料](https://docs.langchain.com/oss/python/langgraph/overview)于 2026-09-21 复核；固定包的离线执行记录来自 2026-09-08，见 `lab/results/public/frameworks/summary.json`。来源 E0 与固定路径 E1 分开记录。

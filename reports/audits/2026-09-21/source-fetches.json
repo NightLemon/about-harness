@@ -1,0 +1,547 @@
+[
+  {
+    "id": "codex-agents-md",
+    "url": "https://learn.chatgpt.com/docs/agent-configuration/agents-md",
+    "resolved_url": "https://learn.chatgpt.com/docs/agent-configuration/agents-md",
+    "http_status": 200,
+    "sha256": "2b3ce3d915b957de98aeb0eca069589d995aeb0691edb71072f77a29388805c2",
+    "bytes": 370381,
+    "checked": "2026-09-21"
+  },
+  {
+    "id": "codex-config",
+    "url": "https://learn.chatgpt.com/docs/config-file/config-basic",
+    "resolved_url": "https://learn.chatgpt.com/docs/config-file/config-basic",
+    "http_status": 200,
+    "sha256": "f197a604d2ea41031e3c36ff3c93c6ce3ce3554fe96f8e32620f43af88c24662",
+    "bytes": 384096,
+    "checked": "2026-09-21"
+  },
+  {
+    "id": "codex-sandbox-approval",
+    "url": "https://learn.chatgpt.com/docs/agent-approvals-security",
+    "resolved_url": "https://learn.chatgpt.com/docs/agent-approvals-security",
+    "http_status": 200,
+    "sha256": "d00fe7122deea121b7a1d2fa15ba9f31f6d45941da1b22688efd9edb3ebd6713",
+    "bytes": 434307,
+    "checked": "2026-09-21"
+  },
+  {
+    "id": "openai-function-calling",
+    "url": "https://developers.openai.com/api/docs/guides/function-calling",
+    "resolved_url": "https://developers.openai.com/api/docs/guides/function-calling",
+    "http_status": 200,
+    "sha256": "078619f5bb7196abc4b162e23be8427b1243a8431aa4d14d3d869a8cd93ccc0b",
+    "bytes": 75013,
+    "checked": "2026-09-21"
+  },
+  {
+    "id": "openai-function-controls",
+    "url": "https://developers.openai.com/api/docs/guides/function-calling",
+    "resolved_url": "https://developers.openai.com/api/docs/guides/function-calling",
+    "http_status": 200,
+    "sha256": "078619f5bb7196abc4b162e23be8427b1243a8431aa4d14d3d869a8cd93ccc0b",
+    "bytes": 75013,
+    "checked": "2026-09-21"
+  },
+  {
+    "id": "openai-reasoning-items",
+    "url": "https://developers.openai.com/api/docs/guides/reasoning",
+    "resolved_url": "https://developers.openai.com/api/docs/guides/reasoning",
+    "http_status": 200,
+    "sha256": "91604df954335250d16e33f3b07ebbfa3e6e2b7f821f0722ad7a69b9d586719a",
+    "bytes": 70253,
+    "checked": "2026-09-21"
+  },
+  {
+    "id": "openai-reasoning-effort",
+    "url": "https://developers.openai.com/api/docs/guides/reasoning",
+    "resolved_url": "https://developers.openai.com/api/docs/guides/reasoning",
+    "http_status": 200,
+    "sha256": "91604df954335250d16e33f3b07ebbfa3e6e2b7f821f0722ad7a69b9d586719a",
+    "bytes": 70253,
+    "checked": "2026-09-21"
+  },
+  {
+    "id": "openai-incomplete-status",
+    "url": "https://developers.openai.com/api/docs/guides/reasoning",
+    "resolved_url": "https://developers.openai.com/api/docs/guides/reasoning",
+    "http_status": 200,
+    "sha256": "91604df954335250d16e33f3b07ebbfa3e6e2b7f821f0722ad7a69b9d586719a",
+    "bytes": 70253,
+    "checked": "2026-09-21"
+  },
+  {
+    "id": "openai-streaming-events",
+    "url": "https://developers.openai.com/api/docs/guides/streaming-responses",
+    "resolved_url": "https://developers.openai.com/api/docs/guides/streaming-responses",
+    "http_status": 200,
+    "sha256": "7e147ae8c9e2ef2a30ecd7f3502a4c350e929487c7e51643cef2e4fb66281f7f",
+    "bytes": 7108,
+    "checked": "2026-09-21"
+  },
+  {
+    "id": "claude-memory",
+    "url": "https://code.claude.com/docs/en/memory",
+    "resolved_url": "https://code.claude.com/docs/en/memory",
+    "http_status": 200,
+    "sha256": "1cf44b112e7daa1bc85820c368b8bed40359abc687d962925d4f93b2f54ffb82",
+    "bytes": 52465,
+    "checked": "2026-09-21"
+  },
+  {
+    "id": "claude-settings",
+    "url": "https://code.claude.com/docs/en/settings",
+    "resolved_url": "https://code.claude.com/docs/en/settings",
+    "http_status": 200,
+    "sha256": "319fe9cbd331bd3d88d7d0109ead58231c3bf00e0b1f042fd67bb355b27f7256",
+    "bytes": 59209,
+    "checked": "2026-09-21"
+  },
+  {
+    "id": "pi-readme",
+    "url": "https://github.com/earendil-works/pi/tree/496185f6e4267b979e3663c45f7eb70b0c6a97b4/packages/coding-agent",
+    "resolved_url": "https://github.com/earendil-works/pi/tree/496185f6e4267b979e3663c45f7eb70b0c6a97b4/packages/coding-agent",
+    "http_status": 200,
+    "sha256": "1c8be61c5e5f565ff6899fe1722d6f1ea28a6da206e6ec2883f7157e870c57be",
+    "bytes": 502601,
+    "checked": "2026-09-21"
+  },
+  {
+    "id": "mcp-spec",
+    "url": "https://modelcontextprotocol.io/specification",
+    "resolved_url": "https://modelcontextprotocol.io/specification/2026-07-28.md",
+    "http_status": 200,
+    "sha256": "f8df03767e5cbdd4921ae569d1d69e8da9e455e1629fadf4d0613cd658dd632f",
+    "bytes": 5817,
+    "checked": "2026-09-21"
+  },
+  {
+    "id": "langgraph-overview",
+    "url": "https://docs.langchain.com/oss/python/langgraph/overview",
+    "resolved_url": "https://docs.langchain.com/oss/python/langgraph/overview",
+    "http_status": 200,
+    "sha256": "3fd533906d7c1eb7644e2feac4fe33cf0739b983dbc324f3786a9a1ef72a1ac3",
+    "bytes": 8467,
+    "checked": "2026-09-21"
+  },
+  {
+    "id": "openai-agents-sdk",
+    "url": "https://developers.openai.com/api/docs/guides/agents-sdk",
+    "resolved_url": "https://developers.openai.com/api/docs/guides/agents",
+    "http_status": 200,
+    "sha256": "df4f61b609550619a3f9e445c66d28318b9f681affe1a819ef0098cde32bf43a",
+    "bytes": 5432,
+    "checked": "2026-09-21"
+  },
+  {
+    "id": "google-adk",
+    "url": "https://google.github.io/adk-docs/",
+    "resolved_url": "https://adk.dev/",
+    "http_status": 200,
+    "sha256": "43e2deba541c4984d935ce3483ed70d54d7ea926576a649dfabffa8cb30fcb8c",
+    "bytes": 125482,
+    "checked": "2026-09-21"
+  },
+  {
+    "id": "autogen-overview",
+    "url": "https://microsoft.github.io/autogen/stable/",
+    "resolved_url": "https://microsoft.github.io/autogen/stable/",
+    "http_status": 200,
+    "sha256": "b6dbd2156cb2a0a00ae3c99054a2ceeb98550ff1026c5d48bf2eb335c5c3404e",
+    "bytes": 26963,
+    "checked": "2026-09-21"
+  },
+  {
+    "id": "deepseek-api-surface",
+    "url": "https://api-docs.deepseek.com/",
+    "error": "<urlopen error [SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] sslv3 alert handshake failure (_ssl.c:1010)>",
+    "checked": "2026-09-21"
+  },
+  {
+    "id": "vite-dev-server-advisory",
+    "url": "https://github.com/advisories/GHSA-fx2h-pf6j-xcff",
+    "resolved_url": "https://github.com/advisories/GHSA-fx2h-pf6j-xcff",
+    "http_status": 200,
+    "sha256": "4caf9fa23d9f8f68827fa546db39ebe0146faebb509d747e4db7bed837d53377",
+    "bytes": 196194,
+    "checked": "2026-09-21"
+  },
+  {
+    "id": "esbuild-dev-server-advisory",
+    "url": "https://github.com/advisories/GHSA-67mh-4wv8-2f99",
+    "resolved_url": "https://github.com/advisories/GHSA-67mh-4wv8-2f99",
+    "http_status": 200,
+    "sha256": "6be3c9168f440a4a634ee8e1c754d25c5e7e67b6aab9fab7ea4ca26a9e7973f6",
+    "bytes": 181382,
+    "checked": "2026-09-21"
+  },
+  {
+    "id": "agents-api",
+    "url": "https://developers.openai.com/api/docs/guides/agents-api/overview",
+    "resolved_url": "https://developers.openai.com/api/docs/guides/agents-api/overview",
+    "http_status": 200,
+    "sha256": "11812095118085202bf23f2a5ac3389e4e43c31df854ad17993842aa87ddeb07",
+    "bytes": 14436,
+    "checked": "2026-09-21"
+  },
+  {
+    "id": "openai-skills",
+    "url": "https://developers.openai.com/api/docs/guides/tools-skills",
+    "resolved_url": "https://developers.openai.com/api/docs/guides/tools-skills",
+    "http_status": 200,
+    "sha256": "a314457cb459696b9ef8cc134e27ec319f355666f3df34749fbc1f371ea501c7",
+    "bytes": 21170,
+    "checked": "2026-09-21"
+  },
+  {
+    "id": "openai-ptc",
+    "url": "https://developers.openai.com/api/docs/guides/tools-programmatic-tool-calling",
+    "resolved_url": "https://developers.openai.com/api/docs/guides/tools-programmatic-tool-calling",
+    "http_status": 200,
+    "sha256": "28f074158c38b555f6835d349806a0c8ce1b4238f7a724cef748eaf1a509d261",
+    "bytes": 32030,
+    "checked": "2026-09-21"
+  },
+  {
+    "id": "openai-cache",
+    "url": "https://developers.openai.com/api/docs/guides/prompt-caching",
+    "resolved_url": "https://developers.openai.com/api/docs/guides/prompt-caching",
+    "http_status": 200,
+    "sha256": "ecced3016c57dcef3115dbda6f73ba6f153f99856f1dadac46d165c12611ab44",
+    "bytes": 45605,
+    "checked": "2026-09-21"
+  },
+  {
+    "id": "gemini-cli",
+    "url": "https://geminicli.com/docs/",
+    "resolved_url": "https://geminicli.com/docs/",
+    "http_status": 200,
+    "sha256": "5305bf8d3e272cef4a365f4b75a2b8cfef3777d3a03b7846c1f5203f4060b7a1",
+    "bytes": 111124,
+    "checked": "2026-09-21"
+  },
+  {
+    "id": "a2a",
+    "url": "https://a2a-protocol.org/latest/",
+    "resolved_url": "https://a2a-protocol.org/latest/",
+    "http_status": 200,
+    "sha256": "cd8978404ffbc88ad48edff895a8931b751131df0ca06aae38adfa81da88a217",
+    "bytes": 92841,
+    "checked": "2026-09-21"
+  },
+  {
+    "id": "agent-skills",
+    "url": "https://agentskills.io/specification",
+    "resolved_url": "https://agentskills.io/specification",
+    "http_status": 200,
+    "sha256": "2b1dbb4fd80c31748d15812c4ebd3e66c09383d0c792801f617718684489e40d",
+    "bytes": 8157,
+    "checked": "2026-09-21"
+  },
+  {
+    "id": "mcp-tasks",
+    "url": "https://modelcontextprotocol.io/extensions/tasks/overview",
+    "resolved_url": "https://modelcontextprotocol.io/extensions/tasks/overview",
+    "http_status": 200,
+    "sha256": "08ca547b93b20be582dc419075510430dbcc152bd623ccc3009f552c1c1d2190",
+    "bytes": 10237,
+    "checked": "2026-09-21"
+  },
+  {
+    "id": "mcp-apps",
+    "url": "https://modelcontextprotocol.io/extensions/apps/overview",
+    "resolved_url": "https://modelcontextprotocol.io/extensions/apps/overview",
+    "http_status": 200,
+    "sha256": "ebae6e6d71c0561230261caf3b84a7493bd55beae704593accc6e1bceedb0e39",
+    "bytes": 12907,
+    "checked": "2026-09-21"
+  },
+  {
+    "id": "maf",
+    "url": "https://raw.githubusercontent.com/microsoft/agent-framework/main/README.md",
+    "resolved_url": "https://raw.githubusercontent.com/microsoft/agent-framework/main/README.md",
+    "http_status": 200,
+    "sha256": "4a628aa224c014ff326587cc543a4991e483e11723a226f6fcdb22664224c58a",
+    "bytes": 13336,
+    "checked": "2026-09-21"
+  },
+  {
+    "id": "autogen-maintenance",
+    "url": "https://raw.githubusercontent.com/microsoft/autogen/main/README.md",
+    "resolved_url": "https://raw.githubusercontent.com/microsoft/autogen/main/README.md",
+    "http_status": 200,
+    "sha256": "5d300aa3304aeecf1a48f68ac76a1af255b8645d666b8aa154790cb30f1dbb94",
+    "bytes": 20790,
+    "checked": "2026-09-21"
+  },
+  {
+    "id": "deepagents",
+    "url": "https://docs.langchain.com/oss/python/deepagents/overview",
+    "resolved_url": "https://docs.langchain.com/oss/python/deepagents/overview",
+    "http_status": 200,
+    "sha256": "286340c4719c8d0234246209a781aa55fafef5a6d87db9788333000549fcc102",
+    "bytes": 79367,
+    "checked": "2026-09-21"
+  },
+  {
+    "id": "pydantic-ai",
+    "url": "https://ai.pydantic.dev/",
+    "resolved_url": "https://pydantic.dev/docs/ai/overview/",
+    "http_status": 200,
+    "sha256": "059fb82c02b0393b02e6a17722ac885c0e9b81394319fb14e5e506365d7d13d2",
+    "bytes": 34294,
+    "checked": "2026-09-21"
+  },
+  {
+    "id": "crewai",
+    "url": "https://docs.crewai.com/",
+    "resolved_url": "https://docs.crewai.com/",
+    "http_status": 200,
+    "sha256": "6f3b50571310a79a9648a54907120e07e03714a44b1962fb4bd6e91198c88025",
+    "bytes": 7946,
+    "checked": "2026-09-21"
+  },
+  {
+    "id": "llamaindex",
+    "url": "https://docs.llamaindex.ai/",
+    "resolved_url": "https://developers.llamaindex.ai/python/framework/",
+    "http_status": 200,
+    "sha256": "d0b3e1142d2a3acb10f40a3a60256d7e05a2c8ed73ae3b1c07bc55499ed56592",
+    "bytes": 261436,
+    "checked": "2026-09-21"
+  },
+  {
+    "id": "browser-use",
+    "url": "https://docs.browser-use.com/introduction",
+    "resolved_url": "https://docs.browser-use.com/cloud/quickstart.md",
+    "http_status": 200,
+    "sha256": "b98b460e12ee381842756b5ec7357c9f23ff61660a99d7bb45fabbf1ba4954b3",
+    "bytes": 9845,
+    "checked": "2026-09-21"
+  },
+  {
+    "id": "otel-genai",
+    "url": "https://raw.githubusercontent.com/open-telemetry/semantic-conventions-genai/main/README.md",
+    "resolved_url": "https://raw.githubusercontent.com/open-telemetry/semantic-conventions-genai/main/README.md",
+    "http_status": 200,
+    "sha256": "8ab882b40b743b3474de8d651671e0421e82dd0a8a48967d1bd0d7b06380b46d",
+    "bytes": 1232,
+    "checked": "2026-09-21"
+  },
+  {
+    "id": "swe-bench",
+    "url": "https://www.swebench.com/",
+    "resolved_url": "https://www.swebench.com/",
+    "http_status": 200,
+    "sha256": "c862011a4ee1d1a7199fad6ca0905fa5c64f58216f7217ac1eddf37f28788433",
+    "bytes": 2392125,
+    "checked": "2026-09-21"
+  },
+  {
+    "id": "gaia",
+    "url": "https://huggingface.co/datasets/gaia-benchmark/GAIA/blob/main/README.md",
+    "resolved_url": "https://huggingface.co/datasets/gaia-benchmark/GAIA/blob/main/README.md",
+    "http_status": 200,
+    "sha256": "120f3b652d1de256279b02735c3a50acaeb0444bbfac4f39074998fdbf346e8a",
+    "bytes": 122881,
+    "checked": "2026-09-21"
+  },
+  {
+    "id": "tau-bench",
+    "url": "https://raw.githubusercontent.com/sierra-research/tau-bench/main/README.md",
+    "resolved_url": "https://raw.githubusercontent.com/sierra-research/tau-bench/main/README.md",
+    "http_status": 200,
+    "sha256": "1a4b1b00634fe46fd677dd11dfa25a9bf357b5d7c3d726ff83025e8f104329f9",
+    "bytes": 8447,
+    "checked": "2026-09-21"
+  },
+  {
+    "id": "terminal-bench",
+    "url": "https://www.tbench.ai/",
+    "resolved_url": "https://www.tbench.ai/",
+    "http_status": 200,
+    "sha256": "1ef5d5bd4774471866f969a2a7721381237187f4c8ea3158f772c1341d17b922",
+    "bytes": 134274,
+    "checked": "2026-09-21"
+  },
+  {
+    "id": "vllm",
+    "url": "https://docs.vllm.ai/en/latest/",
+    "resolved_url": "https://docs.vllm.ai/en/latest/",
+    "http_status": 200,
+    "sha256": "f4c6ada1e710485d11cad6f91ce896b9e0e98359ea45a8280bd2bea96fe9c9ba",
+    "bytes": 4445,
+    "checked": "2026-09-21"
+  },
+  {
+    "id": "sglang",
+    "url": "https://docs.sglang.ai/",
+    "resolved_url": "https://docs.sglang.io/",
+    "http_status": 200,
+    "sha256": "f35ad9d1842975003a26ea4e0191f46caaa5b3d5cea58872f1a70f5e8fb5868b",
+    "bytes": 28374,
+    "checked": "2026-09-21"
+  },
+  {
+    "id": "ollama",
+    "url": "https://docs.ollama.com/",
+    "resolved_url": "https://docs.ollama.com/",
+    "http_status": 200,
+    "sha256": "15b3b3b270b31022dfad91871bda7b8eb4288d79840ae24455d7520e33340eb8",
+    "bytes": 1613,
+    "checked": "2026-09-21"
+  },
+  {
+    "id": "anthropic-models",
+    "url": "https://platform.claude.com/docs/en/about-claude/models/overview",
+    "resolved_url": "https://platform.claude.com/docs/en/models/overview",
+    "http_status": 200,
+    "sha256": "24cee96a02abd68ca1bae07a6791fc1a9f4ba66fbbc3f6385369d7f9d4ebd7e1",
+    "bytes": 16849,
+    "checked": "2026-09-21"
+  },
+  {
+    "id": "gemini-models",
+    "url": "https://ai.google.dev/gemini-api/docs/models",
+    "resolved_url": "https://ai.google.dev/gemini-api/docs/models",
+    "http_status": 200,
+    "sha256": "d9e535f50e368066c8be4c5bedede9d4ad2d41662cc49674c2cdc3e928172418",
+    "bytes": 149858,
+    "checked": "2026-09-21"
+  },
+  {
+    "id": "qwen",
+    "url": "https://qwenlm.github.io/",
+    "resolved_url": "https://qwenlm.github.io/",
+    "http_status": 200,
+    "sha256": "f874cc1c99c3454e3ea933dac9790e5cb329e25bf5766b270ab9e38bd780bffe",
+    "bytes": 17307,
+    "checked": "2026-09-21"
+  },
+  {
+    "id": "llama",
+    "url": "https://www.llama.com/docs/overview/",
+    "resolved_url": "https://developer.meta.com/ai/docs/overview/",
+    "http_status": 200,
+    "sha256": "17bb4fe7c459db4ca7e70c5ebb5b6802f976b748c7e7ffce82d089cd2a8f72fb",
+    "bytes": 314525,
+    "checked": "2026-09-21"
+  },
+  {
+    "id": "openai-sdk-detail",
+    "url": "https://developers.openai.com/api/docs/guides/agents/sdk",
+    "resolved_url": "https://developers.openai.com/api/docs/guides/agents/sdk",
+    "http_status": 200,
+    "sha256": "df1a6382a44c178482464864bf94330a0614dcfb2e50477185349ee528405d78",
+    "bytes": 6985,
+    "checked": "2026-09-21"
+  },
+  {
+    "id": "openai-model-catalog",
+    "url": "https://developers.openai.com/api/docs/models",
+    "resolved_url": "https://developers.openai.com/api/docs/models",
+    "http_status": 200,
+    "sha256": "d363dcca39ef9206c0c7af614e8ddb1029ed520665bf74ffb170d41e24683547",
+    "bytes": 381996,
+    "checked": "2026-09-21"
+  },
+  {
+    "id": "tau3-bench",
+    "url": "https://raw.githubusercontent.com/sierra-research/tau2-bench/main/README.md",
+    "resolved_url": "https://raw.githubusercontent.com/sierra-research/tau2-bench/main/README.md",
+    "http_status": 200,
+    "sha256": "ed39688aa5d40bd73007355df65f4e41a6c250960642e56764c3ad44da1df8d2",
+    "bytes": 10443,
+    "checked": "2026-09-21"
+  },
+  {
+    "id": "gaia-card",
+    "url": "https://huggingface.co/datasets/gaia-benchmark/GAIA/raw/main/README.md",
+    "error": "HTTP Error 401: Unauthorized",
+    "checked": "2026-09-21"
+  },
+  {
+    "id": "vllm-stable",
+    "url": "https://docs.vllm.ai/en/stable/",
+    "resolved_url": "https://docs.vllm.ai/en/stable/",
+    "http_status": 200,
+    "sha256": "fea6787b78f73d868f2411d03e83f62b5a4ce5b8c719490d6943ce625ae1d2eb",
+    "bytes": 4303,
+    "checked": "2026-09-21"
+  },
+  {
+    "id": "pi-settings",
+    "url": "https://raw.githubusercontent.com/earendil-works/pi/496185f6e4267b979e3663c45f7eb70b0c6a97b4/packages/coding-agent/docs/settings.md",
+    "resolved_url": "https://raw.githubusercontent.com/earendil-works/pi/496185f6e4267b979e3663c45f7eb70b0c6a97b4/packages/coding-agent/docs/settings.md",
+    "http_status": 200,
+    "sha256": "a4bde018b3b9962d336c7ee147ce09bf8d762e3818db9fe393d876726591388f",
+    "bytes": 15221,
+    "checked": "2026-09-21"
+  },
+  {
+    "id": "pi-raw-readme",
+    "url": "https://raw.githubusercontent.com/earendil-works/pi/496185f6e4267b979e3663c45f7eb70b0c6a97b4/packages/coding-agent/README.md",
+    "resolved_url": "https://raw.githubusercontent.com/earendil-works/pi/496185f6e4267b979e3663c45f7eb70b0c6a97b4/packages/coding-agent/README.md",
+    "http_status": 200,
+    "sha256": "ce0f95c3d314dcacb5f2388b956880a86736ede3c383fd1f8e91bf9056aa134d",
+    "bytes": 32359,
+    "checked": "2026-09-21"
+  },
+  {
+    "id": "claude-permissions",
+    "url": "https://code.claude.com/docs/en/permissions",
+    "resolved_url": "https://code.claude.com/docs/en/permissions",
+    "http_status": 200,
+    "sha256": "eab3c45e44187c7be90a7566d21233835354237c9b41ac36906ea45114cc21cb",
+    "bytes": 83911,
+    "checked": "2026-09-21"
+  },
+  {
+    "id": "agent-lightning",
+    "url": "https://raw.githubusercontent.com/microsoft/agent-lightning/main/README.md",
+    "resolved_url": "https://raw.githubusercontent.com/microsoft/agent-lightning/main/README.md",
+    "http_status": 200,
+    "sha256": "80652c19f70d5f6dc2770a34b3827f34c1b90fd79b05fbc6d84c5bf173635dc5",
+    "checked": "2026-09-21"
+  },
+  {
+    "id": "letta-memory",
+    "url": "https://docs.letta.com/concepts/memory/",
+    "error": "HTTP Error 404: Not Found",
+    "checked": "2026-09-21"
+  },
+  {
+    "id": "test-time-scaling",
+    "url": "https://arxiv.org/abs/2408.03314",
+    "resolved_url": "https://arxiv.org/abs/2408.03314",
+    "http_status": 200,
+    "sha256": "c38ea95eb2e29a5154f502608d5abea49cfddaf6b74674bb3cd42a5fd6d16086",
+    "checked": "2026-09-21"
+  },
+  {
+    "id": "gaia-paper",
+    "url": "https://arxiv.org/abs/2311.12983",
+    "http_status": 200,
+    "sha256": "456b2f17fcafca41eca47921efb5da8fd2b46f43f54155e15f692a9d05bcadea",
+    "checked": "2026-09-21",
+    "hash_note": "Hash of saved UTF-8 text; PowerShell normalization may differ from HTTP bytes."
+  },
+  {
+    "id": "llama-repo",
+    "url": "https://raw.githubusercontent.com/meta-llama/llama-models/main/README.md",
+    "http_status": 200,
+    "sha256": "0a7b304b54835ceaf99899789c03fadcd862f4be696ad41c98f7bcc0c238262f",
+    "checked": "2026-09-21",
+    "hash_note": "Hash of saved UTF-8 text; PowerShell normalization may differ from HTTP bytes."
+  },
+  {
+    "id": "maf-mcp-support",
+    "url": "https://raw.githubusercontent.com/microsoft/agent-framework/main/python/samples/02-agents/mcp/README.md",
+    "resolved_url": "https://raw.githubusercontent.com/microsoft/agent-framework/main/python/samples/02-agents/mcp/README.md",
+    "http_status": 200,
+    "sha256": "528a0adaffa31790ba0db95393237a4c545409b6c9dc2c68dc8426e6dbdb2777",
+    "bytes": 8053,
+    "checked": "2026-09-21"
+  }
+]

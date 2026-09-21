@@ -1,0 +1,29 @@
+{
+  "files": {
+    "lab/fixtures/answer-integrity.json": "e4d1b5475948a808104dffe0492873dec138ce1125f5a1a11b191689f77032b9",
+    "lab/tests/test_answer_integrity.py": "05b798ac51885de1dd01fd049e0c55907ff5ce4240f422d2c88dcb90aef2253c",
+    "lab/fixtures/ecosystem.json": "6794b50484f85bc22a6f9b0dc60a121ca5bd2e5891178846e8c7cd4bc6365043",
+    "lab/src/about_harness/ecosystem.py": "408bad5001833cc47f6a2e725b50d05e8af18e1d620bde294f2038fe61ff16f4",
+    "lab/tests/test_ecosystem.py": "18cd9ef4510e60f140e6fa49505ee9c64295ea3753902cf0c01f5fb3b4f32056"
+  },
+  "checks": [
+    {
+      "command": "uv run --frozen --offline pytest -q lab/tests/test_answer_integrity.py lab/tests/test_ecosystem.py",
+      "checked_at": "2026-09-21T07:13:50.710598+00:00",
+      "exit_code": 0,
+      "output": "..............                                                           [100%]\n"
+    },
+    {
+      "command": "uv run --frozen --offline ruff check",
+      "checked_at": "2026-09-21T07:13:51.046714+00:00",
+      "exit_code": 0,
+      "output": "All checks passed!\n"
+    },
+    {
+      "command": "uv run --frozen --offline pyright",
+      "checked_at": "2026-09-21T07:14:02.980151+00:00",
+      "exit_code": 0,
+      "output": "0 errors, 0 warnings, 0 informations\nWARNING: there is a new pyright version available (v1.1.411 -> v1.1.414).\nPlease install the new version or set PYRIGHT_PYTHON_FORCE_VERSION to `latest`\n\n"
+    }
+  ]
+}

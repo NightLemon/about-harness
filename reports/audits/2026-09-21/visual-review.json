@@ -1,0 +1,235 @@
+{
+  "status": "pass",
+  "automatic_viewports": [
+    1440,
+    390,
+    320
+  ],
+  "automatic_checks": [
+    "home/main/body overflow",
+    "search for 生态 returns ecosystem route",
+    "mobile menu open/close",
+    "dark theme",
+    "migration table horizontal scroll",
+    "deep anchor visibility",
+    "eight page routes and code/table local overflow",
+    "no browser runtime errors"
+  ],
+  "manual_review": {
+    "reviewer": "root",
+    "status": "pass",
+    "inspected_crops": {
+      "desktop-1440-ecosystem-overview.png": "top 1100px",
+      "mobile-390-ecosystem-overview.png": "top 1100px",
+      "narrow-320-ecosystem-overview.png": "top 1100px and 1100..2100px table",
+      "narrow-320-practice-ecosystem-workshop.png": "top 1100px and 1400..2400px code/example",
+      "mobile-390-migration.png": "top 1100px and 2200..3200px",
+      "desktop-1440-home.png": "top 1100px",
+      "mobile-390-evaluation.png": "2000..3000px"
+    },
+    "observations": [
+      "heading and prose wrap without body overflow",
+      "navigation remains reachable on 320/390px",
+      "wide tables and code remain local scroll regions",
+      "no overlap or missing glyphs in inspected regions"
+    ],
+    "limits": "人工视觉检查覆盖所列取景；其余页面依靠全路由构建/静态验证和有限自动UI检查，未宣称逐页逐像素人工验收。"
+  },
+  "screenshots": [
+    {
+      "file": "desktop-1440-ecosystem-overview.png",
+      "sha256": "172384af1389ea0bd379e85993eec90a51a1172382768041fd4daccb6616a3d5",
+      "size": [
+        1440,
+        2777
+      ]
+    },
+    {
+      "file": "desktop-1440-ecosystem-protocols-and-skills.png",
+      "sha256": "2a412813ba31d3a80fbf53d23ab47cf1b0631f1a12db19216288398c85342762",
+      "size": [
+        1440,
+        2889
+      ]
+    },
+    {
+      "file": "desktop-1440-evaluation.png",
+      "sha256": "b297d4aa2f73bea7ab2af4c31aacdd6b8af05032931f25d140306d3df5dbda94",
+      "size": [
+        1440,
+        7701
+      ]
+    },
+    {
+      "file": "desktop-1440-guide-start.png",
+      "sha256": "8e50403def380d55cb34db98f87e0725b106927c4898e67a8944c9120cbed3c1",
+      "size": [
+        1440,
+        7808
+      ]
+    },
+    {
+      "file": "desktop-1440-home.png",
+      "sha256": "f2cae0763d07d90b284497fe3a734aed38b7a58beea758f5a11943238e9a5ece",
+      "size": [
+        1440,
+        3999
+      ],
+      "earlier_pages_check_sha256": "8a8a4d32ec1bb6cde49c416b975108d9bc9444c24c84727d0babecae5a7e7059"
+    },
+    {
+      "file": "desktop-1440-implementation-minimal-harness-python.png",
+      "sha256": "5f12c42dff53d2b4eff31fcfe1d0cb0c2a7d7cc4f54f9ef4fa1c00b96444aefb",
+      "size": [
+        1440,
+        12776
+      ]
+    },
+    {
+      "file": "desktop-1440-migration.png",
+      "sha256": "eed76af74a23ea98f980510cb02a91cc3cc635d271379cc6bafd8c81ad5b04e3",
+      "size": [
+        1440,
+        11078
+      ]
+    },
+    {
+      "file": "desktop-1440-practice-ecosystem-workshop.png",
+      "sha256": "73d853bd1ed291ad1e6c5c8ea96dd163c4cf70cf2baa872897f0a3ceb05540a1",
+      "size": [
+        1440,
+        3812
+      ]
+    },
+    {
+      "file": "mobile-390-ecosystem-overview.png",
+      "sha256": "25b7c02f1e09c1339df0e27695d274e5f11721161d8e848ddb34ceea4a309a1f",
+      "size": [
+        390,
+        3705
+      ]
+    },
+    {
+      "file": "mobile-390-ecosystem-protocols-and-skills.png",
+      "sha256": "1fcfa228192cec900a8e67ec003b2e36a705193cba862e72d5c4edcb3aa75b14",
+      "size": [
+        390,
+        4251
+      ]
+    },
+    {
+      "file": "mobile-390-evaluation.png",
+      "sha256": "febb36ec9d8a72da501a81c535dba88fc79b5b0aea0ccc50bd08bca70b0073a6",
+      "size": [
+        390,
+        10895
+      ]
+    },
+    {
+      "file": "mobile-390-guide-start.png",
+      "sha256": "bf78cab2e6f9da372a28b4e9d2df5347222584c7c1eec0e6133796c2d107a8de",
+      "size": [
+        390,
+        10510
+      ]
+    },
+    {
+      "file": "mobile-390-home.png",
+      "sha256": "c410e7c98e9a158c8b735410cafeda88b2c0aa268e7699fb160569fa35beeb24",
+      "size": [
+        390,
+        6636
+      ]
+    },
+    {
+      "file": "mobile-390-implementation-minimal-harness-python.png",
+      "sha256": "bc3fa2c2ce4c58c6ee23281d5b8daca76fc7432ad2c86128b9bbc75c8d514d4e",
+      "size": [
+        390,
+        16838
+      ]
+    },
+    {
+      "file": "mobile-390-migration.png",
+      "sha256": "39d2d31c3ee6a78b4fc6b7d52e457e1d3024d448da00c1ed126eb41117035c1f",
+      "size": [
+        390,
+        13629
+      ]
+    },
+    {
+      "file": "mobile-390-practice-ecosystem-workshop.png",
+      "sha256": "d0dd7a08b3c953457481faa39ad2a5c55ee50578889964d6e15c3201584c2ea6",
+      "size": [
+        390,
+        5462
+      ]
+    },
+    {
+      "file": "narrow-320-ecosystem-overview.png",
+      "sha256": "8a4419fc0755841ab4612ff7164a7a942145bbe2ddb5d3be1da0b6015e729383",
+      "size": [
+        320,
+        4045
+      ]
+    },
+    {
+      "file": "narrow-320-ecosystem-protocols-and-skills.png",
+      "sha256": "56e4b25d36ccdceb7f4d2b76952007e2f524d71ca5a544d44658123ab9488c6f",
+      "size": [
+        320,
+        4927
+      ]
+    },
+    {
+      "file": "narrow-320-evaluation.png",
+      "sha256": "ac93206d2cdc421c7bd9e3468be6ae1383369f2d6a6c264a27aa99068e062d98",
+      "size": [
+        320,
+        12409
+      ]
+    },
+    {
+      "file": "narrow-320-guide-start.png",
+      "sha256": "f903306323591d68fba683a18f7d5ef417dffc18997f0653ad7724831a4e9f16",
+      "size": [
+        320,
+        11694
+      ]
+    },
+    {
+      "file": "narrow-320-home.png",
+      "sha256": "031a8c98fae6385e481d774aca16563b34e45f24ba5dbd7a86f40d60e3f11679",
+      "size": [
+        320,
+        7131
+      ]
+    },
+    {
+      "file": "narrow-320-implementation-minimal-harness-python.png",
+      "sha256": "714029f9db998d0ddf64b7e7687fa70cbfd050932a7084060a342671d4d6fd0d",
+      "size": [
+        320,
+        18600
+      ]
+    },
+    {
+      "file": "narrow-320-migration.png",
+      "sha256": "97d9c598d6e6182f1eb1be53e97c59189fca0b1b53ec62515a90abcde177a93c",
+      "size": [
+        320,
+        15009
+      ]
+    },
+    {
+      "file": "narrow-320-practice-ecosystem-workshop.png",
+      "sha256": "b7ce03d9175af9e59b31a4815f8adc802d573b2c94376c7bc200d1b07f98ddf7",
+      "size": [
+        320,
+        6250
+      ]
+    }
+  ],
+  "artifact_policy": "24张完整PNG留在本轮临时目录；仓库保存两张实际查看的拼图及metrics，可通过VISUAL_ARTIFACT_DIR复跑。",
+  "automatic_run": "Final npm run verify; contact sheets preserve the manually viewed preceding pages:check captures from identical content and code."
+}

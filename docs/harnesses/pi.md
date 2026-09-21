@@ -60,7 +60,7 @@ git status --short
 预期准备命令退出 0，最后的测试命令退出 1，工作树干净。目录内包含 README.md、带末项缺陷的 solution.py、固定 verify.py 及产品指令/配置。已存在的目录不会被覆盖。后续产品命令都在这个练习目录执行。
 
 
-[FACT:pi-readme]
+Pi 核心工具、session、compaction 与扩展的来源固定到维护仓库 commit `496185f6e4267b979e3663c45f7eb70b0c6a97b4`，于 2026-09-21 复核。[FACT:pi-readme] 这份 E0 源码说明与上面的 0.84.2 包/帮助入口 E1 记录是不同身份；未证明二者逐项等价的行为仍需按安装版本验证。
 
 准备命令生成本例所需的指令和权限；仓库中的通用参考另见 `examples/harnesses/pi/` 中的 AGENTS.md 与 .pi/settings.json。先记录 cwd、起始 commit、实际加载的指令和配置来源；把 MODEL_ID 替换为可核验型号，Pi 还要替换 PROVIDER。通过产品官方认证流程准备账号，凭据不写入示例或日志。
 

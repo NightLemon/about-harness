@@ -1,6 +1,6 @@
 # 学习路径：先完成一次可复核的运行
 
-这条路线面向会使用 Git、命令行和基础 Python/TypeScript 的读者。围绕同一个小任务学习，避免每章重新准备背景。
+这条路线面向会使用 Git、命令行和基础 Python/TypeScript 的读者。围绕同一个小任务学习，避免每章重新准备背景。需要先定位组件时看[生态全景](/ecosystem/overview)；准备面试材料时做[五张迁移卡](/guide/interview-practice)。本页维护学习顺序，[知识地图](/guide/roadmap)负责依赖与查漏，不重复维护另一条路线。
 
 <span id="这套站点怎样使用"></span>
 <span id="先建立一个核心判断"></span>
@@ -72,6 +72,8 @@ npm run study:demo
 先用[框架示例](/frameworks/comparison)理解实际运行时；再选[产品教程](/harnesses/comparison)或[Responses 接入](/models/openai)。这些是不同路径，不要求全部安装。
 
 真实模型调用先固定型号、供应方、权限和预算，并另行授权。离线模式下仍可完成协议、工具和验收测试；真实兼容状态保持未验证。
+
+完成运行主线后，可用[生态工作坊](/practice/ecosystem-workshop)补练能力协商、授权、程序化汇总和候选验收。它使用合成记录，与四框架实际运行时的 E1 示例分开记录。
 
 ## 最后交付
 

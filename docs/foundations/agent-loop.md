@@ -76,7 +76,7 @@ Action（动作提议） 只是模型输出的结构化提议。它通过 schema
 
 一次 model call 可以没有 Tool、产生一个 Tool，或在更丰富协议中产生多个并发 Tool；一次 Tool call 也可能有多个 attempt。预算、轨迹 和报告分别保存这些计数，否则“三步完成”没有可比较含义。
 
-当前 `steps` 只计算成功或复用的工具步骤，等于 `tool_calls + reused_tool_calls`；完成提议与验收修正只消耗模型调用。
+当前 `HarnessRunner` 的 `step` 只累计成功/复用的 Tool Action，因此 `steps = tool_calls + reused_tool_calls`；Result 在 `complete` 时返回当前 `step`，不会额外加一。验收拒绝 completion 时会保存含最新 model call、cost 和 Adapter 游标的 checkpoint，但其 `step` 不增加。完成提议和验收修正消耗模型调用与申报成本，不能因没有工具步骤而忽略预算。
 
 ## 一轮的安全顺序
 

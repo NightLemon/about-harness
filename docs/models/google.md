@@ -27,6 +27,8 @@
 
 来源记录属于 E0；本仓库没有该家族真实模型运行结果。具体型号、套餐、区域、上下文和价格不跨版本继承。
 
+[Gemini 模型目录](https://ai.google.dev/gemini-api/docs/models)于 2026-09-21 复核，区分 stable、preview、latest 与 experimental 类别。[FACT:google-catalog] Gemini API、Vertex AI、Google ADK 与 Gemini CLI 是不同层，不能用同一家族名合并其版本、区域和运行证据。
+
 ## 冻结这个组合
 
 分别固定 Gemini API 或 Vertex AI、区域、精确型号、SDK、输入媒体 hash 和预处理参数；安全拒绝、截断和参数错误分开统计。

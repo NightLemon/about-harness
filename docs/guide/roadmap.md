@@ -56,6 +56,10 @@
 | 多智能体与人工 | 谁拥有结果、预算和授权 | [编排](/foundations/multi-agent)、[人工控制](/foundations/human-control) |
 | 安全 | 不可信内容能触达什么能力 | [安全原理](/foundations/security)、[威胁模型](/security/threat-model) |
 
+## 生态定位与学习顺序
+
+[生态全景](/ecosystem/overview)补充模型服务、框架、协议、知识、部署和应用的分层关系；[学习路径](/guide/start)是学习顺序的唯一主入口。本页只用于查依赖和补缺，不重复维护执行步骤。
+
 ## 从机制到具体系统
 
 [Python 实现](/implementation/minimal-harness-python)展示单循环；[框架对照](/frameworks/comparison)展示四种编排入口；[Harness 对照](/harnesses/comparison)展示产品配置。三者分别是代码实现、开发框架和工作产品。

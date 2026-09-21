@@ -399,6 +399,25 @@
       "cleanup": "只清理本次临时资源，保留结果",
       "rollback": "恢复自己的候选配置，使用新目录重跑",
       "limits": "E1，不支持真实模型或生产采用结论"
+    },
+    {
+      "page": "docs/practice/ecosystem-workshop.md",
+      "kind": "offline",
+      "environment": "docs/guide/prerequisites.md",
+      "command": "ecosystem:workshop",
+      "inputs": [
+        "lab/fixtures/ecosystem.json",
+        "scripts/ecosystem-workshop.py"
+      ],
+      "assertions": [
+        "协议能力交集仅计 planned_handler_calls",
+        "固定库存合计 10，预算不足拒绝",
+        "u >= threshold 弃权，无接受时风险 null"
+      ],
+      "failure": "固定缺失能力、预算不足和选中错误候选负例",
+      "cleanup": "保留标准输出；仅移除自己保存的本地结果",
+      "rollback": "恢复个人候选配置后用原 fixture 重跑",
+      "limits": "E1 教学模拟，不运行上游协议、工具 handler 或模型生成"
     }
   ]
 }

@@ -38,6 +38,9 @@ Agent Harness（智能体运行与控制系统）连接任务、模型和工具�
 
 | 你想解决什么 | 从这里开始 | 得到什么 |
 | --- | --- | --- |
+| 定位 Agent 生态中的职责 | [生态全景](/ecosystem/overview) | 分层责任图与选择入口 |
+| 练习能力与编排边界 | [生态工作坊](/practice/ecosystem-workshop) | 三类 E1 合成实验与失败断言 |
+| 准备工程面试材料 | [五张迁移卡](/guide/interview-practice) | 可复现证据与项目深挖记录 |
 | 理解一次智能体运行 | [什么是 Harness](/foundations/what-is-harness) | 一张组件责任图 |
 | 亲手跑通完整流程 | [端到端案例](/practice/end-to-end) | 实际补丁、测试、轨迹与报告 |
 | 选择或适配模型 | [模型适配与选择](/models/adaptation) | 资格测试和采用依据 |

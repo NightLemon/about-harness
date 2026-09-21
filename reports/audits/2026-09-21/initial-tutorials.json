@@ -1,0 +1,38 @@
+{
+  "reviewer": "initial-tutorials",
+  "pages": [
+    {"path":"docs/guide/capstone.md","readability":"pass","accuracy":"pass","coverage":"pass","note":"以 Starter、Coding E1 种子和六项作品产物组织完整闭环，明确区分 E0 模板与运行证据。","issues":[]},
+    {"path":"docs/guide/interview-practice.md","readability":"fail","accuracy":"pending","coverage":"fail","note":"五张问答卡把本仓库离线实验指向相邻 Travel 目录；该目录不是独立 Git 仓库，读者无法按文中方式冻结 Travel 身份或获得可移植输入。","issues":["C01","C04"]},
+    {"path":"docs/guide/portfolio.md","readability":"pass","accuracy":"pass","coverage":"pass","note":"按六项可复核产物、硬门槛和评分锚点组织，清楚列出证据包与失败边界。","issues":[]},
+    {"path":"docs/guide/prerequisites.md","readability":"pass","accuracy":"pass","coverage":"pass","note":"按阅读、构建、Lab、贡献分层给出版本、命令、输出、停止、清理和回滚。","issues":[]},
+    {"path":"docs/guide/roadmap.md","readability":"pass","accuracy":"pass","coverage":"pass","note":"知识地图的依赖图、七层主题、查漏表和检查点清晰；与 start 的四条路线内容重复。","issues":["C02"]},
+    {"path":"docs/guide/start.md","readability":"pass","accuracy":"pass","coverage":"pass","note":"面向首次学习者按交付物分流，包含离线 smoke、证据等级、停止和回滚；四条路线与 roadmap 重复。","issues":["C02"]},
+    {"path":"docs/labs/browser.md","readability":"pass","accuracy":"pass","coverage":"pass","note":"准确限定为预结构化 observation 的 Browser Use 职责接缝，并给出负例、E1 边界与升级路线。","issues":[]},
+    {"path":"docs/labs/coding.md","readability":"pass","accuracy":"pass","coverage":"pass","note":"fixture、内存 patch、基线/候选断言、定向测试和真实 Coding Agent 的证据边界相互对应。","issues":[]},
+    {"path":"docs/labs/data.md","readability":"pass","accuracy":"pass","coverage":"pass","note":"明确字段级 email 替换和精确字符串扫描的范围，未把它表述为通用 PII 检测。","issues":[]},
+    {"path":"docs/labs/document.md","readability":"pass","accuracy":"pass","coverage":"pass","note":"以版本选择、块级引用、拒答和 typed stop 解释离线文档接缝及其限制。","issues":[]},
+    {"path":"docs/labs/migration.md","readability":"pass","accuracy":"pass","coverage":"pass","note":"把六类责任、两条目标 Harness 路径、自动负例和真实迁移阶段对应起来。","issues":[]},
+    {"path":"docs/labs/research.md","readability":"pass","accuracy":"pass","coverage":"pass","note":"区分结构化 ledger 的冲突/引用校验与真实搜索、来源独立性、自然语言综合。","issues":[]},
+    {"path":"docs/labs/runner.md","readability":"pass","accuracy":"pass","coverage":"pass","note":"准确说明 hash-first 生命周期、单/全案例命令、临时篡改演练以及 Runner 不写结果文件。","issues":[]},
+    {"path":"docs/labs/setup.md","readability":"pass","accuracy":"pass","coverage":"fail","note":"六例离线环境、矩阵不完整和容器边界清晰；`results:redact` 的动作名容易被读成执行脱敏，而实现仅扫描并拒绝命中。","issues":["C03"]},
+    {"path":"docs/implementation/adapter-contract.md","readability":"pass","accuracy":"pass","coverage":"pass","note":"Fake、Replay、Live 禁用、stream 组装与 checkpoint 的运行边界和验证命令完整。","issues":[]},
+    {"path":"docs/implementation/extensions.md","readability":"pass","accuracy":"pass","coverage":"pass","note":"以 manifest、权限数据流、Hook/MCP/Plugin 生命周期解释扩展审查，文档门禁示例有边界说明。","issues":[]},
+    {"path":"docs/implementation/minimal-harness-python.md","readability":"pass","accuracy":"pass","coverage":"pass","note":"从源码地图贯穿 contract、policy、recovery、acceptance、trace 和 Live 硬禁用，验证路径完整。","issues":[]},
+    {"path":"docs/implementation/testing.md","readability":"pass","accuracy":"pass","coverage":"pass","note":"当前 172 项 Python 收集基线与逐文件分布同代码一致，并准确限制各层测试结论。","issues":[]},
+    {"path":"docs/implementation/typescript-mapping.md","readability":"pass","accuracy":"pass","coverage":"pass","note":"用 wire schema、JSON 值边界、判别联合和运行时重放说明 TypeScript 与 Python 的契约差异。","issues":[]},
+    {"path":"docs/practice/debugging.md","readability":"pass","accuracy":"pass","coverage":"pass","note":"将现场保全、第一处分歧、可证伪假设、故障注入和最小复现包连成可执行诊断流程。","issues":[]},
+    {"path":"docs/practice/end-to-end.md","readability":"pass","accuracy":"pass","coverage":"pass","note":"以明确的 E0 教学案例和 E1 eval 结构区分身份、资格、配对、晋级、停止与回退。","issues":[]},
+    {"path":"docs/practice/evaluation.md","readability":"pass","accuracy":"pass","coverage":"pass","note":"lineage、矩阵、promotion 自测和结果扫描的作用范围与不能替代的真实比较均已标明。","issues":[]},
+    {"path":"docs/practice/framework-selection.md","readability":"pass","accuracy":"pass","coverage":"pass","note":"从决策问题、baseline、资格探针到 adopt/reject/defer，迁移 fixture 仅作 E1 结构验证的边界明确。","issues":[]},
+    {"path":"docs/practice/harness-design.md","readability":"pass","accuracy":"pass","coverage":"pass","note":"按 Task、责任、权限、Action、Tool、State、Validator、证据十一阶段给出完整设计工作表和验证链。","issues":[]},
+    {"path":"docs/practice/model-playbook.md","readability":"pass","accuracy":"pass","coverage":"pass","note":"模型卡将身份、两条证据轴、资格、评测、路由、回退和重测触发分开，离线示例未冒充 live。","issues":[]},
+    {"path":"docs/practice/reliability-recovery.md","readability":"pass","accuracy":"pass","coverage":"pass","note":"写 intent、幂等、receipt、reconciliation 与不安全重试反例组成可观察的恢复练习。","issues":[]},
+    {"path":"docs/practice/security-review.md","readability":"pass","accuracy":"pass","coverage":"pass","note":"数据流、威胁链、auto/ask/deny、事件 Runbook 和离线安全验证形成可审阅证据包。","issues":[]}
+  ],
+  "findings": [
+    {"id":"C01","severity":"P1","type":"pending","path":"docs/guide/interview-practice.md","line":3,"quote":"Travel 位于同级本地仓库的 `../interview-guide/projects/travel-agent`","reason":"教程依赖未随本仓库发布的相邻目录；本机该目录没有 Git metadata，故第 12 行要求记录 Travel 当前代码 hash 不可执行，其他读者也没有可验证的固定输入。","fix":"把五张卡改为本仓库固定 fixture/示例，或发布许可明确、带 commit/hash 的 Travel fixture bundle 和独立运行入口；外部项目只作为可选补充。","acceptance":"全新 checkout 中不依赖相邻私人路径即可运行每张卡的命令、获得预期断言；若保留外部扩展，缺失时必须安全跳过并给出固定身份要求。"},
+    {"id":"C02","severity":"P2","type":"editorial","path":"docs/guide/roadmap.md","line":81,"quote":"## 四条可独立完成的学习路径","reason":"roadmap 的四条路径及产物与 start.md 的“路线 A–D”重复，读者需要在两处维护同一学习顺序，未来更新会漂移。","fix":"保留 roadmap 的依赖图、知识索引和按症状查漏；将可执行路线只保留在 start，roadmap 改为链接到对应路线。","acceptance":"四条路线只有一个规范正文来源；知识地图只保留依赖/索引并链接该来源，两个页面的入门入口仍可达。"},
+    {"id":"C03","severity":"P2","type":"editorial","path":"docs/labs/setup.md","line":98,"quote":"npm run results:redact","reason":"脚本 `scripts/redact-results.mjs` 只扫描既有 JSON/JSONL、发现模式后非零退出，不会生成或改写脱敏副本；命令名与学习流程容易造成“已自动脱敏”的误读。","fix":"将公开流程明确命名为 scan/check，或在命令前后用醒目文字说明它是失败关闭扫描，人工/上游脱敏必须先完成。","acceptance":"读者能从页面和命令名判断该步骤不会修改 artifact；文档明确给出产生脱敏副本的责任方或说明该步骤不负责产生副本。"},
+    {"id":"C04","severity":"P2","type":"gap","path":"docs/guide/interview-practice.md","line":11,"quote":"先完成[实验环境](../labs/setup.md)的依赖准备；本页沿用锁文件","reason":"页面把五张实践卡作为教程，但没有为 Travel 环境给出固定版本、安装/输入身份、每卡可复制的命令块、预期结构化输出或精确清理/回滚步骤；第 16–17 行只汇总退出码预期。","fix":"在本仓库替代路径确定后，为每卡补齐前置版本、固定输入、命令、期望输出、业务断言、失败例、清理、回滚和已知限制，或明确改名为非可执行面试讨论卡。","acceptance":"每张卡都能独立复现并记录上述教程要素；任何不可运行的外部扩展均标为 optional/pending，不作为主线完成条件。"}
+  ]
+}

@@ -50,9 +50,11 @@ Framework（框架）提供循环、图、会话或协作运行时。项目仍�
 | [LangGraph 1.2.11](/frameworks/langgraph) | 条件图、聚合、暂停与恢复 | 业务状态和恢复点是主要难点 |
 | [Agents SDK 0.22.1](/frameworks/openai-agents-sdk) | Runner、模型替身与工具往返 | 需要标准模型—工具循环 |
 | [Google ADK 2.8.0](/frameworks/google-adk) | 运行事件和会话状态 | 需要组合 Agent、工具和会话 |
-| [AutoGen 0.7.5](/frameworks/autogen) | 参与者调度与有界终止 | 多个职责确实需要协作 |
+| [AutoGen 0.7.5（存量）](/frameworks/autogen) | 参与者调度与有界终止 | 审计既有协作系统与准备迁移 |
 
 四例共用本地政策材料与验收，全部实际导入对应框架；它们采用不同编排路径，不是同条件性能比较。[FACT:langgraph-overview] [FACT:openai-agents-sdk] [FACT:google-adk] [FACT:autogen-overview]
+
+AutoGen 当前处于 maintenance mode，维护方建议新用户从 [Microsoft Agent Framework](/frameworks/microsoft-agent-framework)开始。[FACT:autogen-maintenance] MAF、DeepAgents、PydanticAI 与 CrewAI 的采用条件见[现代运行时](/frameworks/modern-runtimes)。这些新增候选目前只有 E0 来源与资格设计，不在上述四个真实框架示例中；项目同名 integration 也不能替代上游包执行。
 
 ## 先做最小对照
 
@@ -73,6 +75,8 @@ npm run frameworks:check
 ```
 
 准备步骤下载锁定依赖，检查步骤离线运行四例和四个错误产物负例。预期每个示例都保留来源冲突，工具确实执行，外部连接尝试为零。
+
+固定输入为 `examples/frameworks/materials.json` 与 `replay-answer.json`，结果必须包含 30/45、两份来源和 `conflict`；验收从材料独立计算。LangGraph 使用确定性节点，其余三例使用模型替身或回放，都没有调用真实模型。2026-09-08 公共记录及源码/锁文件 hash 见 `lab/results/public/frameworks/summary.json`，对应执行时字节保存在 `maintenance/execution-sources/frameworks.json`；不能把历史 hash 当作当前工作树身份。重跑写入 `lab/results/local/frameworks/summary.json`，不覆盖公共记录。
 
 <span id="失败归因顺序"></span>
 <span id="失败、停止、清理与回退"></span>

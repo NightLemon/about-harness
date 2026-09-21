@@ -261,7 +261,18 @@ escalation rate = 弃权或规则触发人工的样本 / 全部合格输入
 invalid rate    = schema/引用/身份无效的 Judge run / 全部 Judge run
 ```
 
-提高不确定阈值通常会降低覆盖率、提高人工成本，也可能降低自动错误；这是一条 risk-coverage curve（风险—覆盖曲线），不是“confidence 越高越好”。模型自报 `uncertainty=low` 不是校准概率，阈值必须在 development set 选择，再在未见 validation set 验证。
+先定义阈值方向，才谈覆盖率。若规则是 `uncertainty >= u_abstain` 就弃权，提高 `u_abstain` 会减少弃权、提高覆盖率，也可能提高自动错误；若规则是 `confidence >= c_accept` 才自动接受，提高 `c_accept` 会降低覆盖率、提高人工成本，也可能降低自动错误。这两种写法可以表达同一条 risk-coverage curve（风险—覆盖曲线），但不能混用。模型自报 `uncertainty=low` 不是校准概率；阈值与比较符号必须在 development set 选择，再在未见 validation set 验证。
+
+用同一组固定候选手算方向（不是模型概率校准）：
+
+| 候选 | 不确定性 u | 置信度 c=1−u | Oracle 标签 |
+| --- | --- | --- | --- |
+| a | 0.1 | 0.9 | 正确 |
+| b | 0.3 | 0.7 | 错误 |
+| c | 0.6 | 0.4 | 正确 |
+| d | 0.8 | 0.2 | 错误 |
+
+规则 `u < 0.25` 接受 a，覆盖 1/4、接受后错误率 0/1、转人工 3/4；改为 `u < 0.75` 接受 a、b、c，覆盖 3/4、错误率 1/3、转人工 1/4。完全等价的置信度规则分别是 `c > 0.75` 和 `c > 0.25`，注意严格不等号对应 `u >= τ` 弃权；若改用 `c >=`，边界相等样本的处理也必须一起调整。阈值提高只保证接受集合的包含关系，错误率不保证单调。无人接受时错误率无定义，机器输出应为 `null`，不能填零。此固定例可在[生态工作坊](/practice/ecosystem-workshop)运行，标签只用于验收，不交给选择器。
 
 单一总一致率会隐藏代价不同的错误。对“把危险答案判通过”通常设置比“把好答案送人工”更严格的阈值。
 
@@ -271,7 +282,24 @@ invalid rate    = schema/引用/身份无效的 Judge run / 全部 Judge run
 
 多数票只能减少某些随机波动，不能消除共同偏差。三个共享同一错误参考答案的 Judge，会更一致地给出错误结论。发现不一致时先检查 rubric、输入和引用，再考虑增加评分次数。
 
-重复评分要保留每次原始记录和聚合规则。若策略是“最多三次，前两次一致则停止”，就预先写清 adaptive stopping（自适应停止）如何计费、怎样处理一次无效 schema、是否允许同一 供应方 重试。只对争议样本多跑几次后把所有投票混在一起，会让不同样本拥有不同权重。
+重复评分要保留每次原始记录和聚合规则，并先区分互斥的 attempt（尝试）类型：
+
+- **infrastructure/schema retry（基础设施或格式重试）**：限于超时、限流或无效 schema；它恢复同一个计划评分，保留 `parent_run_id`、失败原因和原始响应，不增加独立 draw 或投票。无效原响应仍计入成本与 invalid rate；
+- **resample（随机重采样）**：为了估计随机性而预先安排的新 draw；记录 draw ID、sampling 参数、seed（若可用）、预算和独立验证结果，并按预注册规则计入聚合；
+- **position swap（位置交换）**：为诊断顺序偏好而重评同一 pair；它不能悄悄替代原判定。
+
+例如先冻结两个 draw、每个 draw 最多一次格式恢复；位置交换只作诊断，全部尝试都消耗调用预算：
+
+| run_id | parent_run_id | draw_id | attempt_reason | seed | schema | winner | 聚合资格 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| r1 | — | d1 | scheduled | 11 | invalid | — | 不投票，保留失败 |
+| r2 | r1 | d1 | schema_retry | 11 | valid | A | d1 的唯一有效票 |
+| r3 | — | d2 | resample | 22 | valid | B | d2 的唯一有效票 |
+| r4 | r2 | d1-swap | position_swap | 11 | valid | B（已映回原候选 ID） | 仅诊断，不进多数票 |
+
+汇总器先按预注册的 `draw_id` 选择唯一有效恢复结果，再只聚合 d1/d2：A、B 各一票，结论为分歧；r4 暴露位置翻转，转人工。调用数为 4、计划 draw 为 2、有效投票为 2，invalid rate 为 1/4。不能把 r1 丢弃后称“所有评分都有效”，也不能把 r4 加成 B 的第二票。真实 surface 若不支持 seed，记录 `unsupported`，不能假定此表意味着可复现采样。
+
+若策略是“最多三次，前两次一致则停止”，就预先写清 adaptive stopping（自适应停止）如何计费、每类 attempt 是否消耗配额及其聚合资格。只对争议样本多跑几次后把所有投票混在一起，会让不同样本拥有不同权重。
 
 对 Pairwise 结果至少建立四类诊断：
 

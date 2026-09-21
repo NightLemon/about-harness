@@ -1,0 +1,273 @@
+{
+  "reviewer": "second-products",
+  "transcription": "主代理根据独立审阅者的逐页返回整理；非自动质量评分。",
+  "status": "pass",
+  "pages": [
+    {
+      "path": "docs/models/adaptation.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "身份、资格和回退完整；预期改行为断言。",
+      "issues": [
+        "S-B04"
+      ]
+    },
+    {
+      "path": "docs/models/anthropic.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "API、转售与Claude Code分开；固定ID快照获官方支持。",
+      "issues": []
+    },
+    {
+      "path": "docs/models/deepseek.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "TLS失败保留pending，未填补不可核实的产品数值。",
+      "issues": []
+    },
+    {
+      "path": "docs/models/google.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "版本类别、多模态预处理、协议与ADK职责分开。",
+      "issues": []
+    },
+    {
+      "path": "docs/models/llama.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "权重、许可、量化、运行时和硬件身份完整。",
+      "issues": []
+    },
+    {
+      "path": "docs/models/openai.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "工具执行、strict、reasoning连续性与streaming边界明确。",
+      "issues": []
+    },
+    {
+      "path": "docs/models/protocol-compatibility.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "冻结回放与独立请求采用不同等价断言。",
+      "issues": []
+    },
+    {
+      "path": "docs/models/qwen.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "托管端点和本地权重分开，目标revision仍需资格测试。",
+      "issues": []
+    },
+    {
+      "path": "docs/models/reasoning-budget.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "单次参数与任务总预算分开，未扩大E1结论。",
+      "issues": []
+    },
+    {
+      "path": "docs/harnesses/claude-code.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "allow非封闭白名单；加载条件、例外、诊断及import完整。",
+      "issues": [
+        "S-B01",
+        "S-B03"
+      ]
+    },
+    {
+      "path": "docs/harnesses/codex.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "permission profile、approval、sandbox读写边界分别记录。",
+      "issues": [
+        "S-B02",
+        "S-B08"
+      ]
+    },
+    {
+      "path": "docs/harnesses/comparison.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "四产品统一责任矩阵及五证据轴；Gemini未测项明确。",
+      "issues": [
+        "S-B07"
+      ]
+    },
+    {
+      "path": "docs/harnesses/gemini-cli.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "迁移公告限定未付费层与Google One，没有外推账号可用性。",
+      "issues": []
+    },
+    {
+      "path": "docs/harnesses/pi.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "固定commit、trust、配置、session与外部隔离边界一致。",
+      "issues": []
+    },
+    {
+      "path": "docs/frameworks/autogen.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "维护态及存量迁移定位正确，探针覆盖现代模块名。",
+      "issues": [
+        "S-B05"
+      ]
+    },
+    {
+      "path": "docs/frameworks/comparison.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "MAF新项目入口、现代运行时与协议服务职责分开。",
+      "issues": [
+        "S-B05"
+      ]
+    },
+    {
+      "path": "docs/frameworks/google-adk.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "导航事实与建议分开，Session、授权、部署和验收责任完整。",
+      "issues": []
+    },
+    {
+      "path": "docs/frameworks/langgraph.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "状态图与checkpoint清楚，纯Python示例不冒充上游执行。",
+      "issues": []
+    },
+    {
+      "path": "docs/frameworks/microsoft-agent-framework.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "Agent/workflow、迁移及互操作边界清楚，保持E0。",
+      "issues": []
+    },
+    {
+      "path": "docs/frameworks/modern-runtimes.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "三框架均有机制、取舍和负例；没有宣称已集成。",
+      "issues": []
+    },
+    {
+      "path": "docs/frameworks/openai-agents-sdk.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "SDK、Responses及应用职责分层，handoff与验收独立。",
+      "issues": []
+    },
+    {
+      "path": "docs/domains/browser.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "观察、提交与未知副作用清楚，JSON拒绝不冒充浏览器防护。",
+      "issues": []
+    },
+    {
+      "path": "docs/domains/coding.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "仓库保护、diff与回退完整，内存patch/AST的E1限制清楚。",
+      "issues": []
+    },
+    {
+      "path": "docs/domains/data.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "单位、missing/null及隐私范围明确，邮箱扫描不等于完整PII防护。",
+      "issues": []
+    },
+    {
+      "path": "docs/domains/document.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "解析、版本、ACL、引用及删除分层，整数版本仅属fixture。",
+      "issues": []
+    },
+    {
+      "path": "docs/domains/research.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "主张、原文与冲突分开，字面链校验不等于语义核验。",
+      "issues": []
+    },
+    {
+      "path": "docs/ecosystem/models-and-services.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "推理服务与框架分开，缓存及运行时定位有官方支持。",
+      "issues": []
+    },
+    {
+      "path": "docs/ecosystem/protocols-and-skills.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "MCP核心/扩展、A2A、Skills、PTC能力与权限边界准确。",
+      "issues": []
+    },
+    {
+      "path": "docs/ecosystem/knowledge-and-memory.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "RAG、压缩与记忆治理清楚，纸上练习自含输入和判据。",
+      "issues": [
+        "S-B06"
+      ]
+    },
+    {
+      "path": "docs/ecosystem/long-running.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "托管与自管边界明确，队列、审批、取消和回执分开。",
+      "issues": []
+    },
+    {
+      "path": "docs/ecosystem/multimodal.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "观察与验收分开，Cloud V4及本地库区分，取消竞态例具体。",
+      "issues": [
+        "S-B06"
+      ]
+    }
+  ]
+}

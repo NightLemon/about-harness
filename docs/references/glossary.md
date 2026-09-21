@@ -54,7 +54,14 @@
 | Failure classification | 把失败归入 contract、context、protocol、policy、tool、state、validator、model 或 infrastructure 等责任层 |
 | Worktree | Git 提供的独立工作目录，可让并行任务避免写同一 checkout |
 | P50 / P90 | 分位数；P50 是中位数，P90 表示 90% 样本不超过该值，需同时报告样本量 |
-| pass@k / best-of-k | 运行/采样 k 次至少一次成功的指标，不等同于单次成功率 |
+| pass@k | 衡量同一任务的 k 个候选中至少一个满足判据的指标；使用正确性判据识别成功，不保证实际系统能选中该候选 |
+| best-of-k | 生成 k 个候选后按选择器交付一个的策略；须评估选择器选出的结果并计入全部生成和验证成本，不等于 pass@k |
+| A2A | Agent2Agent，独立 Agent 间的发现、任务委派与结果交换协议；不自动转移调用者权限 |
+| RAG | Retrieval-Augmented Generation，检索增强生成；将相关来源作为生成输入，命中不自动保证答案或引用正确 |
+| Reranking | 重排：对召回候选进一步排序，不能替代访问控制或来源真实性检查 |
+| Programmatic Tool Calling | 程序化工具调用：用受限程序组织工具调用并处理结果；运行环境和授权由具体产品及宿主决定 |
+| OTel / OpenTelemetry | 可观测数据的采集与导出规范和工具生态；span、event、metric分别表达执行区间、事件与统计量 |
+| Abstain | 弃权：证据不足或风险不可接受时不输出确定判断；评测要分别报告覆盖率和已接受结果的错误率 |
 | Wilson interval | 二元成功率的小样本区间估计方法；区间宽说明不确定性大 |
 | Prompt injection | 不可信内容试图被当作高优先级指令，诱导越权或偏离目标 |
 | E0 | 没有仓库实验记录；它只描述实验强度，不表示来源是否已核验 |
@@ -70,4 +77,4 @@
 
 产品可能对同一词使用更窄或不同定义。引用产品行为时以对应官方文档为准。
 
-需要学习顺序时回到[学习路径](/guide/start)；遇到同名产品能力时用[兼容性矩阵](/references/compatibility)核对责任。
+需要学习顺序时回到[学习路径](/guide/start)，用[知识地图](/guide/roadmap)查漏；遇到同名产品能力时用[生态全景](/ecosystem/overview)定位层次，再到[兼容性矩阵](/references/compatibility)核对证据。

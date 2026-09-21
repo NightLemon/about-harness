@@ -6,7 +6,7 @@
 
 ## 固定版本
 
-配置语义按 2026-08-27 实际核对的 OpenAI Docs 滚动页面编写。运行者必须另行记录 Codex surface、精确版本、模型 ID、provider、cwd 和 trust 状态。
+配置语义按 2026-09-21 实际核对的 OpenAI Docs 滚动页面编写。运行者必须另行记录 Codex surface、精确版本、模型 ID、provider、cwd 和 trust 状态。
 
 ## 输入
 

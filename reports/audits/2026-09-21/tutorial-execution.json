@@ -1,0 +1,821 @@
+{
+  "checked_at": "2026-09-21T07:35:11.700632+00:00",
+  "checks": [
+    {
+      "command": "uv run --frozen --offline python scripts/run-labs.py browser",
+      "pages": [
+        "docs/domains/browser.md",
+        "docs/foundations/security.md",
+        "docs/labs/browser.md",
+        "docs/labs/runner.md",
+        "docs/practice/security-review.md",
+        "docs/security/incident-response.md",
+        "docs/security/prompt-injection.md"
+      ],
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "status": "pass",
+      "log_sha256": "b85e0c6891365a4754fa6c839fb4f7e62d0217b696bdfbf281813a05c6d4a02f",
+      "output_tail": "{\"cases\": [{\"case_id\": \"browser\", \"evidence\": \"E1\", \"fixture_hash\": \"3a7e4cb34293d14c544b6fab9b90b721d92db38f3f947192ae01070d42ad3b4b\", \"negative_rejected\": true, \"offline\": true, \"output\": {\"injection_refused\": true, \"integration\": \"Browser Use\", \"mode\": \"offline-contract-seam\", \"observation\": {\"document_id\": \"doc-catalog-01\", \"observation_id\": \"obs-catalog-01\", \"redirects_observed\": 0, \"session_id\": \"session-browser-01\", \"url\": \"http://lab.local/catalog\"}, \"records\": [{\"name\": \"Alpha\", \"sku\": \"A-1\", \"source\": {\"document_id\": \"doc-catalog-01\", \"element_id\": \"row-a\", \"observation_id\": \"obs-catalog-01\"}}, {\"name\": \"Beta\", \"sku\": \"B-2\", \"source\": {\"document_id\": \"doc-catalog-01\", \"element_id\": \"row-b\", \"observation_id\": \"obs-catalog-01\"}}], \"requested_fields\": [\"sku\", \"name\"], \"security\": {\"executed_actions\": 0, \"policy_rejections\": 1, \"untrusted_requests\": 1}, \"side_effects\": 0, \"task_id\": \"catalog-readonly\"}, \"passed\": true, \"safety_violation\": false, \"schema_version\": \"1.0\"}], \"evidence\": \"E1\", \"offline\": true, \"passed\": true, \"schema_version\": \"1.0\"}\n"
+    },
+    {
+      "command": "uv run --frozen --offline python scripts/run-labs.py coding",
+      "pages": [
+        "docs/domains/coding.md",
+        "docs/guide/capstone.md",
+        "docs/guide/interview-practice.md",
+        "docs/guide/prerequisites.md",
+        "docs/labs/coding.md",
+        "docs/labs/setup.md"
+      ],
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "status": "pass",
+      "log_sha256": "f8ecf848a12f173c58000a4c4ab22fd2f3f64297541880c8c1b7e0e1b7482833",
+      "output_tail": "{\"cases\": [{\"case_id\": \"coding\", \"evidence\": \"E1\", \"fixture_hash\": \"18f8153ad36cbbc99ff66a30b311f0ede9316ac3cde2eedae25738df87da71af\", \"negative_rejected\": true, \"offline\": true, \"output\": {\"baseline_failures\": [\"single\", \"multiple\"], \"patch\": {\"added_lines\": 1, \"applied\": true, \"changed_files\": [\"src/collect.py\"], \"deleted_lines\": 1, \"format\": \"unified-diff\", \"result_hashes\": {\"src/collect.py\": \"2652c76a095519a39ad7c8713e082785fe0533033d3f0eac5a7f6171f0ced4e5\"}}, \"task_id\": \"collect-last-item\", \"test_results\": {\"empty\": true, \"multiple\": true, \"single\": true}, \"tests_passed\": 3, \"workspace\": {\"base_hashes\": {\"src/collect.py\": \"4c0d18777d21f94708ef40f50e7e0169fc172d26516a65ed2263d5a20e62ce59\"}, \"snapshot_id\": \"coding-workspace-01\"}}, \"passed\": true, \"safety_violation\": false, \"schema_version\": \"1.0\"}], \"evidence\": \"E1\", \"offline\": true, \"passed\": true, \"schema_version\": \"1.0\"}\n"
+    },
+    {
+      "command": "uv run --frozen --offline python scripts/run-labs.py data",
+      "pages": [
+        "docs/domains/data.md",
+        "docs/labs/data.md"
+      ],
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "status": "pass",
+      "log_sha256": "5f3da3d9db8045b15926a88a22c50d9895e5c4b0f9f6b3d384125a36c0163942",
+      "output_tail": "{\"cases\": [{\"case_id\": \"data\", \"evidence\": \"E1\", \"fixture_hash\": \"48348204c20d075dadfa5f6dd93eb26295e1eda86044dc35528f7bfec8e5dfe2\", \"negative_rejected\": true, \"offline\": true, \"output\": {\"dataset\": {\"dataset_id\": \"training-scores\", \"schema_version\": \"1.1\", \"score_unit\": \"points_0_10\", \"snapshot_id\": \"synthetic-2026-09-04\"}, \"integration\": \"PydanticAI\", \"mode\": \"offline-contract-seam\", \"population\": {\"input_rows\": 3, \"output_rows\": 3, \"rejected_rows\": 0}, \"redacted_fields\": 2, \"row_count\": 3, \"rows\": [{\"email\": \"[REDACTED]\", \"score\": 7.5, \"score_state\": \"value\", \"user_id\": \"u-1\"}, {\"email\": \"[REDACTED]\", \"score\": null, \"score_state\": \"null\", \"user_id\": \"u-2\"}, {\"email\": null, \"score\": null, \"score_state\": \"missing\", \"user_id\": \"u-3\"}], \"sensitive_values_exposed\": 0}, \"passed\": true, \"safety_violation\": false, \"schema_version\": \"1.0\"}], \"evidence\": \"E1\", \"offline\": true, \"passed\": true, \"schema_version\": \"1.0\"}\n"
+    },
+    {
+      "command": "uv run --frozen --offline python scripts/run-labs.py document",
+      "pages": [
+        "docs/domains/document.md",
+        "docs/labs/document.md"
+      ],
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "status": "pass",
+      "log_sha256": "779ff81ff0ceff4fa292b6d720948adff286cf9df780ca0330e1b3c508661685",
+      "output_tail": "{\"cases\": [{\"case_id\": \"document\", \"evidence\": \"E1\", \"fixture_hash\": \"96ba0bd2abf2608014bab56debf249b24982e8169f21809e85e9d5bb000e52c7\", \"negative_rejected\": true, \"offline\": true, \"output\": {\"access_denied_documents\": 0, \"answer\": \"The retention policy keeps records for 45 days.\", \"citations\": [{\"block_id\": \"retention\", \"doc_id\": \"handbook\", \"quote\": \"The retention policy keeps records for 45 days.\", \"version\": 2}], \"integration\": \"LlamaIndex\", \"mode\": \"offline-contract-seam\", \"parse_failed_documents\": 0, \"stale_versions_ignored\": 1, \"status\": \"answered\"}, \"passed\": true, \"safety_violation\": false, \"schema_version\": \"1.0\"}], \"evidence\": \"E1\", \"offline\": true, \"passed\": true, \"schema_version\": \"1.0\"}\n"
+    },
+    {
+      "command": "uv run --frozen --offline python scripts/run-labs.py research",
+      "pages": [
+        "docs/domains/research.md",
+        "docs/frameworks/langgraph.md",
+        "docs/guide/interview-practice.md",
+        "docs/labs/research.md"
+      ],
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "status": "pass",
+      "log_sha256": "41249762b0ec3831043cd9ea1619fb43cc3416c8eaa4340c4701e42e2faa5ed0",
+      "output_tail": "{\"cases\": [{\"case_id\": \"research\", \"evidence\": \"E1\", \"fixture_hash\": \"b477fdac98f2b55d7f0654d4e983c852a98072a049161b72b4dddc74be8ce5eb\", \"negative_rejected\": true, \"offline\": true, \"output\": {\"claims\": [{\"citations\": [], \"claim\": \"deletion_process\", \"status\": \"insufficient\", \"values\": []}, {\"citations\": [{\"locator\": \"line:2\", \"quote\": \"Records are retained for 30 days.\", \"relation\": \"supports\", \"source_id\": \"policy-v1\", \"value\": \"30\"}, {\"locator\": \"line:2\", \"quote\": \"Records are retained for 45 days.\", \"relation\": \"supports\", \"source_id\": \"policy-v2\", \"value\": \"45\"}], \"claim\": \"retention_days\", \"status\": \"conflict\", \"values\": [\"30\", \"45\"]}, {\"citations\": [{\"locator\": \"line:2\", \"quote\": \"A review is required: yes.\", \"relation\": \"supports\", \"source_id\": \"legal-note\", \"value\": \"yes\"}], \"claim\": \"review_required\", \"status\": \"supported\", \"values\": [\"yes\"]}], \"integration\": \"LangGraph\", \"mode\": \"offline-contract-seam\", \"unsupported_claims\": 1}, \"passed\": true, \"safety_violation\": false, \"schema_version\": \"1.0\"}], \"evidence\": \"E1\", \"offline\": true, \"passed\": true, \"schema_version\": \"1.0\"}\n"
+    },
+    {
+      "command": "uv run --frozen --offline pytest -q lab/tests/test_contracts_and_schema.py",
+      "pages": [
+        "docs/evaluation/task-schema.md",
+        "docs/implementation/minimal-harness-python.md"
+      ],
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "status": "pass",
+      "log_sha256": "55c823246eb78aa7433a1726dc60eafc4b2d57bcf5526ee5a7307de2bfb3651b",
+      "output_tail": ".................................................................        [100%]\n"
+    },
+    {
+      "command": "uv run --frozen --offline pytest -q lab/tests/test_loop.py",
+      "pages": [
+        "docs/foundations/agent-loop.md",
+        "docs/foundations/tools.md",
+        "docs/security/threat-model.md"
+      ],
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "status": "pass",
+      "log_sha256": "f44919a3367dc52929a8af8f8919d5f9536d2eb90b5c6c6d38b1e58904be21bc",
+      "output_tail": ".................                                                        [100%]\n"
+    },
+    {
+      "command": "uv run --frozen --offline pytest -vv lab/tests/test_loop.py::test_max_steps_breaks_infinite_tool_loop lab/tests/test_loop.py::test_wrong_adapter_return_is_classified_as_invalid_action lab/tests/test_loop.py::test_acceptance_rejection_returns_feedback_and_allows_repair lab/tests/test_loop.py::test_checkpoint_restores_adapter_position lab/tests/test_loop.py::test_timeout_stops_before_completing_late_action",
+      "pages": [
+        "docs/foundations/agent-loop.md"
+      ],
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "status": "pass",
+      "log_sha256": "1604c98af6236a41d8024522402335acfeab4f5f358a26dd5d4c9066606750d7",
+      "output_tail": "============================= test session starts =============================\nplatform win32 -- Python 3.11.15, pytest-8.4.2, pluggy-1.6.0 -- <repo>\\.venv\\Scripts\\python.exe\ncachedir: .pytest_cache\nrootdir: <repo>\nconfigfile: pyproject.toml\ncollecting ... collected 5 items\n\nlab/tests/test_loop.py::test_max_steps_breaks_infinite_tool_loop PASSED  [ 20%]\nlab/tests/test_loop.py::test_wrong_adapter_return_is_classified_as_invalid_action PASSED [ 40%]\nlab/tests/test_loop.py::test_acceptance_rejection_returns_feedback_and_allows_repair PASSED [ 60%]\nlab/tests/test_loop.py::test_checkpoint_restores_adapter_position PASSED [ 80%]\nlab/tests/test_loop.py::test_timeout_stops_before_completing_late_action PASSED [100%]\n\n============================== 5 passed in 0.42s ==============================\n"
+    },
+    {
+      "command": "uv run --frozen --offline pytest -q lab/tests/test_loop.py::test_normal_completion_and_structured_trace lab/tests/test_loop.py::test_acceptance_rejection_returns_feedback_and_allows_repair lab/tests/test_loop.py::test_permission_denial_stops_before_tool_execution lab/tests/test_loop.py::test_wrong_adapter_return_is_classified_as_invalid_action lab/tests/test_loop.py::test_checkpoint_restores_adapter_position",
+      "pages": [
+        "docs/foundations/architecture.md"
+      ],
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "status": "pass",
+      "log_sha256": "4d2df7a96ce4a667da3ccf295f2d16c728a65ed0e861a3baa919f7bb469b02b5",
+      "output_tail": ".....                                                                    [100%]\n"
+    },
+    {
+      "command": "uv run --frozen --offline python -c \"import sys; sys.path.insert(0, 'lab/src'); from about_harness.adapters.fake import FakeAdapter; from about_harness.contracts import Action,Budgets,TaskSpec,ToolCall; from about_harness.loop import HarnessRunner; from about_harness.tools import ToolRegistry; a=Action.tool(ToolCall('c1','echo',{'value':'x'},'once')); r=HarnessRunner(FakeAdapter((a,)),ToolRegistry.with_safe_defaults()).run(TaskSpec('architecture-denial','prove policy boundary',(),Budgets())); print(r.status.value,r.stop_reason.value,r.metrics['tool_calls'])\"",
+      "pages": [
+        "docs/foundations/architecture.md"
+      ],
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "status": "pass",
+      "log_sha256": "1bcb1f5ea5210afac308e6293c1f8d31e72ec6f3756b4229242eebcfe48d34f6",
+      "output_tail": "stopped permission_denied 0\n"
+    },
+    {
+      "command": "uv run --frozen --offline pytest -q lab/tests/test_memory_context_trace.py::test_context_budget_prioritizes_required_and_trusted_sources",
+      "pages": [
+        "docs/foundations/context.md"
+      ],
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "status": "pass",
+      "log_sha256": "423b1d0e014eb1eab96f4420f7b344c2615be505dd574b756ac884826ca74f2d",
+      "output_tail": ".                                                                        [100%]\n"
+    },
+    {
+      "command": "uv run --frozen --offline pytest -q lab/tests/test_loop.py -k permission_denial",
+      "pages": [
+        "docs/foundations/human-control.md",
+        "docs/implementation/minimal-harness-python.md"
+      ],
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "status": "pass",
+      "log_sha256": "423b1d0e014eb1eab96f4420f7b344c2615be505dd574b756ac884826ca74f2d",
+      "output_tail": ".                                                                        [100%]\n"
+    },
+    {
+      "command": "uv run --frozen --offline pytest -q lab/tests/test_memory_context_trace.py::test_context_budget_prioritizes_required_and_trusted_sources lab/tests/test_memory_context_trace.py::test_memory_expiration_pollution_filter_and_delete lab/tests/test_memory_context_trace.py::test_working_memory_supports_explicit_deletion",
+      "pages": [
+        "docs/foundations/memory.md",
+        "docs/optimization/memory.md"
+      ],
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "status": "pass",
+      "log_sha256": "cf426ab35f3b06fccef8290fde5325d90af130a79da1d1752031518df77c4236",
+      "output_tail": "...                                                                      [100%]\n"
+    },
+    {
+      "command": "uv run --frozen --offline pytest -q lab/tests/test_memory_context_trace.py::test_memory_expiration_pollution_filter_and_delete",
+      "pages": [
+        "docs/foundations/memory.md"
+      ],
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "status": "pass",
+      "log_sha256": "423b1d0e014eb1eab96f4420f7b344c2615be505dd574b756ac884826ca74f2d",
+      "output_tail": ".                                                                        [100%]\n"
+    },
+    {
+      "command": "uv run --frozen --offline pytest -q lab/tests/test_loop.py::test_normal_completion_and_structured_trace lab/tests/test_memory_context_trace.py::test_trace_redacts_secret_values_paths_and_tool_results",
+      "pages": [
+        "docs/foundations/observability.md"
+      ],
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "status": "pass",
+      "log_sha256": "99db33d5c94c6f7da021687c7391181685cc33299c5435b1c861e2db3be3ec87",
+      "output_tail": "..                                                                       [100%]\n"
+    },
+    {
+      "command": "uv run --frozen --offline pytest -q lab/tests/test_replay_and_live.py lab/tests/test_streaming.py lab/tests/test_loop.py::test_permission_denial_stops_before_tool_execution lab/tests/test_loop.py::test_retry_and_idempotency_prevent_duplicate_side_effects lab/tests/test_loop.py::test_wrong_adapter_return_is_classified_as_invalid_action lab/tests/test_loop.py::test_timeout_stops_before_completing_late_action",
+      "pages": [
+        "docs/foundations/protocols.md"
+      ],
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "status": "pass",
+      "log_sha256": "475bcfb56b286d857c4310602373e306e2cb722ad6df6053d0e1aff939c18220",
+      "output_tail": ".......................                                                  [100%]\n"
+    },
+    {
+      "command": "uv run --frozen --offline pytest -q lab/tests/test_loop.py::test_normal_completion_and_structured_trace lab/tests/test_loop.py::test_model_budget_stops_before_an_extra_adapter_call lab/tests/test_loop.py::test_max_steps_breaks_infinite_tool_loop lab/tests/test_loop.py::test_wrong_adapter_return_is_classified_as_invalid_action lab/tests/test_loop.py::test_checkpoint_restores_adapter_position lab/tests/test_loop.py::test_concurrent_cancellation_propagates_after_adapter_returns lab/tests/test_loop.py::test_timeout_stops_before_completing_late_action",
+      "pages": [
+        "docs/foundations/reasoning.md"
+      ],
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "status": "pass",
+      "log_sha256": "83a1593c5b5783693fe3006d1f6597bcb4f3a5968f23b59481ee09a0477f910a",
+      "output_tail": ".......                                                                  [100%]\n"
+    },
+    {
+      "command": "uv run --frozen --offline pytest -q lab/tests/test_memory_context_trace.py",
+      "pages": [
+        "docs/foundations/security.md",
+        "docs/foundations/tools.md",
+        "docs/implementation/minimal-harness-python.md"
+      ],
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "status": "pass",
+      "log_sha256": "c4b808d34f4db00b333696dec1f3a43a2887d8bfe0cb7af07a3cb98ff43a7830",
+      "output_tail": "....                                                                     [100%]\n"
+    },
+    {
+      "command": "uv run --frozen --offline pytest -q lab/tests/test_loop.py::test_retry_and_idempotency_prevent_duplicate_side_effects lab/tests/test_loop.py::test_idempotency_key_conflict_rejects_changed_tool_or_arguments lab/tests/test_loop.py::test_checkpoint_restores_adapter_position lab/tests/test_loop.py::test_concurrent_cancellation_propagates_after_adapter_returns lab/tests/test_loop.py::test_timeout_stops_before_completing_late_action lab/tests/test_contracts_and_schema.py::test_checkpoint_rejects_inconsistent_or_negative_counters",
+      "pages": [
+        "docs/foundations/state-reliability.md"
+      ],
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "status": "pass",
+      "log_sha256": "83a1593c5b5783693fe3006d1f6597bcb4f3a5968f23b59481ee09a0477f910a",
+      "output_tail": ".......                                                                  [100%]\n"
+    },
+    {
+      "command": "uv run --frozen --offline pytest",
+      "pages": [
+        "docs/foundations/state-reliability.md",
+        "docs/implementation/minimal-harness-python.md",
+        "docs/labs/runner.md"
+      ],
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "status": "pass",
+      "log_sha256": "bd4932870f189f68b7f64fe7da036b2e7b07f944a583f8701e88a48715183555",
+      "output_tail": "........................................................................ [ 38%]\n........................................................................ [ 77%]\n..........................................                               [100%]\n186 passed in 20.15s\n"
+    },
+    {
+      "command": "uv run --frozen --offline python scripts/lab-smoke.py",
+      "pages": [
+        "docs/foundations/what-is-harness.md",
+        "docs/guide/start.md",
+        "docs/implementation/minimal-harness-python.md",
+        "docs/practice/harness-design.md"
+      ],
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "status": "pass",
+      "log_sha256": "5ea924aecee6d694811b1864b68ef1612632109627a72b89141a9bd148124e5c",
+      "output_tail": "{\"checkpoint\": {\"adapter_state\": {\"index\": 1}, \"cost_usd\": 0.0, \"model_calls\": 1, \"reused_tool_calls\": 0, \"step\": 1, \"tool_calls\": 1}, \"error\": null, \"metrics\": {\"cost_usd\": 0.0, \"duration_ms\": 0.0, \"model_calls\": 2, \"reused_tool_calls\": 0, \"steps\": 1, \"tool_calls\": 1}, \"output\": {\"accepted\": true}, \"run_id\": \"run-offline-smoke\", \"schema_version\": \"1.1\", \"status\": \"completed\", \"stop_reason\": \"completed\", \"task_id\": \"offline-smoke\", \"trace\": [{\"data\": {\"adapter\": \"fake\", \"offline\": true, \"resumed\": false, \"task_id\": \"offline-smoke\"}, \"kind\": \"run_started\", \"sequence\": 0, \"timestamp_ms\": 0.0}, {\"data\": {\"cost_usd\": 0.0, \"kind\": \"tool\", \"model_calls\": 1}, \"kind\": \"model_action\", \"sequence\": 1, \"timestamp_ms\": 0.0}, {\"data\": {\"attempts\": 1, \"call_id\": \"echo-1\", \"reused\": false, \"tool\": \"echo\", \"value\": \"offline\"}, \"kind\": \"tool_result\", \"sequence\": 2, \"timestamp_ms\": 0.0}, {\"data\": {\"adapter_state\": {\"index\": 1}, \"cost_usd\": 0.0, \"model_calls\": 1, \"reused_tool_calls\": 0, \"step\": 1, \"tool_calls\": 1}, \"kind\": \"checkpoint\", \"sequence\": 3, \"timestamp_ms\": 0.0}, {\"data\": {\"cost_usd\": 0.0, \"kind\": \"complete\", \"model_calls\": 2}, \"kind\": \"model_action\", \"sequence\": 4, \"timestamp_ms\": 0.0}, {\"data\": {\"accepted\": true, \"evidence\": {\"failed_paths\": [], \"top_level_criteria\": 1, \"validator\": \"json-subset-v1\"}, \"feedback\": \"all declared acceptance values matched\", \"validator\": \"json-subset-v1\"}, \"kind\": \"acceptance_result\", \"sequence\": 5, \"timestamp_ms\": 0.0}, {\"data\": {\"error\": null, \"reason\": \"completed\", \"status\": \"completed\"}, \"kind\": \"run_stopped\", \"sequence\": 6, \"timestamp_ms\": 0.0}]}\n"
+    },
+    {
+      "command": "uv run --frozen --offline python -c \"import importlib.util as u; assert all(u.find_spec(name) is None for name in ('autogen', 'autogen_agentchat', 'autogen_core', 'autogen_ext'))\"",
+      "pages": [
+        "docs/frameworks/autogen.md"
+      ],
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "status": "pass",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_tail": ""
+    },
+    {
+      "command": "uv run --frozen --offline python -c \"import importlib.util as u; assert u.find_spec('langgraph') is None; assert u.find_spec('agents') is None; assert all(u.find_spec(name) is None for name in ('autogen', 'autogen_agentchat', 'autogen_core', 'autogen_ext')); assert u.find_spec('google') is None or u.find_spec('google.adk') is None\"",
+      "pages": [
+        "docs/frameworks/comparison.md"
+      ],
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "status": "pass",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_tail": ""
+    },
+    {
+      "command": "uv run --frozen --offline python -c \"import importlib.util as u; assert u.find_spec('google') is None or u.find_spec('google.adk') is None\"",
+      "pages": [
+        "docs/frameworks/google-adk.md"
+      ],
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "status": "pass",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_tail": ""
+    },
+    {
+      "command": "uv run --frozen --offline python -c \"import importlib.util as u; assert u.find_spec('langgraph') is None\"",
+      "pages": [
+        "docs/frameworks/langgraph.md"
+      ],
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "status": "pass",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_tail": ""
+    },
+    {
+      "command": "uv run --frozen --offline python -c \"import importlib.util; assert importlib.util.find_spec('agents') is None\"",
+      "pages": [
+        "docs/frameworks/openai-agents-sdk.md"
+      ],
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "status": "pass",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_tail": ""
+    },
+    {
+      "command": "uv run --frozen --offline pytest -q lab/tests/test_replay_and_live.py lab/tests/test_loop.py",
+      "pages": [
+        "docs/frameworks/openai-agents-sdk.md",
+        "docs/practice/model-playbook.md"
+      ],
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "status": "pass",
+      "log_sha256": "e2289c230135b682d66e48107f8caab30f5b37878e8daf2e9fb92df9aebb1375",
+      "output_tail": "......................                                                   [100%]\n"
+    },
+    {
+      "command": "uv run --frozen --offline pytest -q lab/tests/test_contracts_and_schema.py::test_portfolio_starter_task_and_config_match_public_schemas",
+      "pages": [
+        "docs/guide/capstone.md"
+      ],
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "status": "pass",
+      "log_sha256": "423b1d0e014eb1eab96f4420f7b344c2615be505dd574b756ac884826ca74f2d",
+      "output_tail": ".                                                                        [100%]\n"
+    },
+    {
+      "command": "uv run --frozen --offline pytest -q lab/tests/test_recovery.py",
+      "pages": [
+        "docs/guide/interview-practice.md"
+      ],
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "status": "pass",
+      "log_sha256": "c4b808d34f4db00b333696dec1f3a43a2887d8bfe0cb7af07a3cb98ff43a7830",
+      "output_tail": "....                                                                     [100%]\n"
+    },
+    {
+      "command": "uv run --frozen --offline pytest -q lab/tests/test_acceptance.py lab/tests/test_loop.py -k \"acceptance or validator\"",
+      "pages": [
+        "docs/guide/interview-practice.md",
+        "docs/implementation/minimal-harness-python.md"
+      ],
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "status": "pass",
+      "log_sha256": "0caf379acbcb845c31b98bf4efeffb865a66d527d27d5bb4f34018bea0099078",
+      "output_tail": "...................                                                      [100%]\n"
+    },
+    {
+      "command": "uv run --frozen --offline python scripts/run-labs.py migration",
+      "pages": [
+        "docs/guide/interview-practice.md",
+        "docs/harnesses/comparison.md",
+        "docs/labs/migration.md",
+        "docs/practice/framework-selection.md"
+      ],
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "status": "pass",
+      "log_sha256": "5eb979d3138a97f704a8bbc9c12aee0e8179c920943eb3c77cd40ebce1c5ffcf",
+      "output_tail": "{\"cases\": [{\"case_id\": \"migration\", \"evidence\": \"E1\", \"fixture_hash\": \"5f9cd08404f9d1a3e1e2118daca7a124d5f0d27f743ea308bf5ea7bef751e7cb\", \"negative_rejected\": true, \"offline\": true, \"output\": {\"boundary_violations\": [], \"config_copied_verbatim\": false, \"control_boundaries_preserved\": true, \"domains_checked\": 5, \"mapped_responsibilities\": 12, \"missing\": [], \"paths_checked\": 2, \"source_harness\": \"Codex\", \"target_harnesses\": [\"Pi\", \"Claude Code\"], \"uncompensated_gaps\": [], \"verbatim_targets\": []}, \"passed\": true, \"safety_violation\": false, \"schema_version\": \"1.0\"}], \"evidence\": \"E1\", \"offline\": true, \"passed\": true, \"schema_version\": \"1.0\"}\n"
+    },
+    {
+      "command": "uv run --frozen --offline pytest -q lab/tests/test_m5_labs.py::test_migration_rejects_unknown_empty_and_broader_control_mappings",
+      "pages": [
+        "docs/guide/interview-practice.md"
+      ],
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "status": "pass",
+      "log_sha256": "423b1d0e014eb1eab96f4420f7b344c2615be505dd574b756ac884826ca74f2d",
+      "output_tail": ".                                                                        [100%]\n"
+    },
+    {
+      "command": "uv run --frozen --offline python scripts/run-labs.py all",
+      "pages": [
+        "docs/guide/prerequisites.md",
+        "docs/labs/runner.md",
+        "docs/references/compatibility.md"
+      ],
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "status": "pass",
+      "log_sha256": "b83bf6dffca091ad86044918973cc6973a9404cdd8c33315bfbd4233bc2eac91",
+      "output_tail": ": [{\"email\": \"[REDACTED]\", \"score\": 7.5, \"score_state\": \"value\", \"user_id\": \"u-1\"}, {\"email\": \"[REDACTED]\", \"score\": null, \"score_state\": \"null\", \"user_id\": \"u-2\"}, {\"email\": null, \"score\": null, \"score_state\": \"missing\", \"user_id\": \"u-3\"}], \"sensitive_values_exposed\": 0}, \"passed\": true, \"safety_violation\": false, \"schema_version\": \"1.0\"}, {\"case_id\": \"document\", \"evidence\": \"E1\", \"fixture_hash\": \"96ba0bd2abf2608014bab56debf249b24982e8169f21809e85e9d5bb000e52c7\", \"negative_rejected\": true, \"offline\": true, \"output\": {\"access_denied_documents\": 0, \"answer\": \"The retention policy keeps records for 45 days.\", \"citations\": [{\"block_id\": \"retention\", \"doc_id\": \"handbook\", \"quote\": \"The retention policy keeps records for 45 days.\", \"version\": 2}], \"integration\": \"LlamaIndex\", \"mode\": \"offline-contract-seam\", \"parse_failed_documents\": 0, \"stale_versions_ignored\": 1, \"status\": \"answered\"}, \"passed\": true, \"safety_violation\": false, \"schema_version\": \"1.0\"}, {\"case_id\": \"migration\", \"evidence\": \"E1\", \"fixture_hash\": \"5f9cd08404f9d1a3e1e2118daca7a124d5f0d27f743ea308bf5ea7bef751e7cb\", \"negative_rejected\": true, \"offline\": true, \"output\": {\"boundary_violations\": [], \"config_copied_verbatim\": false, \"control_boundaries_preserved\": true, \"domains_checked\": 5, \"mapped_responsibilities\": 12, \"missing\": [], \"paths_checked\": 2, \"source_harness\": \"Codex\", \"target_harnesses\": [\"Pi\", \"Claude Code\"], \"uncompensated_gaps\": [], \"verbatim_targets\": []}, \"passed\": true, \"safety_violation\": false, \"schema_version\": \"1.0\"}], \"evidence\": \"E1\", \"offline\": true, \"passed\": true, \"schema_version\": \"1.0\"}\n"
+    },
+    {
+      "command": "uv run --frozen --offline pytest -q lab/tests/test_replay_and_live.py",
+      "pages": [
+        "docs/implementation/adapter-contract.md",
+        "docs/implementation/minimal-harness-python.md",
+        "docs/models/adaptation.md",
+        "docs/models/anthropic.md",
+        "docs/models/deepseek.md",
+        "docs/models/google.md",
+        "docs/models/openai.md",
+        "docs/models/qwen.md",
+        "docs/optimization/model-fit.md"
+      ],
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "status": "pass",
+      "log_sha256": "4d2df7a96ce4a667da3ccf295f2d16c728a65ed0e861a3baa919f7bb469b02b5",
+      "output_tail": ".....                                                                    [100%]\n"
+    },
+    {
+      "command": "uv run --frozen --offline pytest -q lab/tests/test_loop.py -k \"wrong_adapter_return or adapter_action_is_revalidated or checkpoint_restores\"",
+      "pages": [
+        "docs/implementation/adapter-contract.md"
+      ],
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "status": "pass",
+      "log_sha256": "c4b808d34f4db00b333696dec1f3a43a2887d8bfe0cb7af07a3cb98ff43a7830",
+      "output_tail": "....                                                                     [100%]\n"
+    },
+    {
+      "command": "uv run --frozen --offline pytest -q lab/tests/test_streaming.py",
+      "pages": [
+        "docs/implementation/adapter-contract.md"
+      ],
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "status": "pass",
+      "log_sha256": "fe9dca0451129aaabdd76ea13e310b61a52091a146a1f9fe5b72b851eb33547f",
+      "output_tail": "..............                                                           [100%]\n"
+    },
+    {
+      "command": "uv run --frozen --offline python -c \"import sys; sys.path.insert(0, 'lab/src'); from about_harness.adapters.fake import FakeAdapter; from about_harness.contracts import Action; a=FakeAdapter((Action.complete('done'),)); a.restore({'index': 2})\"",
+      "pages": [
+        "docs/implementation/adapter-contract.md"
+      ],
+      "expected_exit_code": 1,
+      "exit_code": 1,
+      "status": "pass",
+      "log_sha256": "16ca50c34293344a94b7c7dc4b014334b25089a02b2e8ece1b5397279a9cdc8a",
+      "output_tail": "Traceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n  File \"<repo>\\lab/src\\about_harness\\adapters\\fake.py\", line 38, in restore\n    raise ValueError(\"fake adapter checkpoint index is invalid\")\nValueError: fake adapter checkpoint index is invalid\n"
+    },
+    {
+      "command": "uv run --frozen --offline python -c \"import sys; sys.path.insert(0, 'lab/src'); from about_harness.adapters.replay import ReplayAdapter; ReplayAdapter.from_records([{'kind': 'complete', 'output': None, 'unexpected': True}])\"",
+      "pages": [
+        "docs/implementation/adapter-contract.md"
+      ],
+      "expected_exit_code": 1,
+      "exit_code": 1,
+      "status": "pass",
+      "log_sha256": "76b54c22b91d759aead1c1909d9a3718ce3d4e50ba47dd95b38ee7e28102217b",
+      "output_tail": "Traceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n  File \"<repo>\\lab/src\\about_harness\\adapters\\replay.py\", line 15, in from_records\n    return cls(tuple(_action_from_record(record) for record in records))\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<repo>\\lab/src\\about_harness\\adapters\\replay.py\", line 15, in <genexpr>\n    return cls(tuple(_action_from_record(record) for record in records))\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<repo>\\lab/src\\about_harness\\adapters\\replay.py\", line 21, in _action_from_record\n    _require_fields(\n  File \"<repo>\\lab/src\\about_harness\\adapters\\replay.py\", line 68, in _require_fields\n    raise ContractError(f\"{label} contains unknown fields: {sorted(unknown)}\")\nabout_harness.contracts.ContractError: complete action contains unknown fields: ['unexpected']\n"
+    },
+    {
+      "command": "uv run --frozen --offline pytest -q lab/tests/test_loop.py -k \"retry_and_idempotency or idempotency_key_conflict\"",
+      "pages": [
+        "docs/implementation/minimal-harness-python.md"
+      ],
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "status": "pass",
+      "log_sha256": "cf426ab35f3b06fccef8290fde5325d90af130a79da1d1752031518df77c4236",
+      "output_tail": "...                                                                      [100%]\n"
+    },
+    {
+      "command": "uv run --frozen --offline pytest -q lab/tests/test_loop.py -k checkpoint_restores",
+      "pages": [
+        "docs/implementation/minimal-harness-python.md"
+      ],
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "status": "pass",
+      "log_sha256": "423b1d0e014eb1eab96f4420f7b344c2615be505dd574b756ac884826ca74f2d",
+      "output_tail": ".                                                                        [100%]\n"
+    },
+    {
+      "command": "uv run --frozen --offline pytest -q lab/tests/test_loop.py -k \"cancellation or timeout\"",
+      "pages": [
+        "docs/implementation/minimal-harness-python.md"
+      ],
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "status": "pass",
+      "log_sha256": "cf426ab35f3b06fccef8290fde5325d90af130a79da1d1752031518df77c4236",
+      "output_tail": "...                                                                      [100%]\n"
+    },
+    {
+      "command": "uv run --frozen --offline pytest -q lab/tests/test_acceptance.py lab/tests/test_loop.py",
+      "pages": [
+        "docs/implementation/testing.md"
+      ],
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "status": "pass",
+      "log_sha256": "5cba8a0d336f6301764b9e7cb54d2168880bd1238a4afa7c45b0666fad715409",
+      "output_tail": "................................                                         [100%]\n"
+    },
+    {
+      "command": "uv run --frozen --offline pytest -q lab/tests/test_acceptance.py lab/tests/test_contracts_and_schema.py",
+      "pages": [
+        "docs/implementation/typescript-mapping.md"
+      ],
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "status": "pass",
+      "log_sha256": "7aab9d03d5aad3ae7953c0ac55e01a47a25a852128e93ee579eb4dadf81d7df0",
+      "output_tail": "........................................................................ [ 90%]\n........                                                                 [100%]\n"
+    },
+    {
+      "command": "uv run --frozen --offline pytest -q lab/tests/test_m5_labs.py -k browser",
+      "pages": [
+        "docs/labs/browser.md"
+      ],
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "status": "pass",
+      "log_sha256": "585ba42829657b9e2d56f8614be6c3365a8405474eed008559511ab50f2ffcfb",
+      "output_tail": ".........                                                                [100%]\n"
+    },
+    {
+      "command": "uv run --frozen --offline pytest -q lab/tests/test_m5_labs.py::test_fixture_hash_tampering_is_rejected lab/tests/test_m5_labs.py::test_coding_fixture_executes_baseline_and_candidate_assertions lab/tests/test_m5_labs.py::test_coding_fixture_does_not_count_named_but_failing_tests lab/tests/test_m5_labs.py::test_coding_fixture_rejects_source_outside_fixed_ast_allowlist lab/tests/test_m5_labs.py::test_coding_fixture_rejects_stale_base_and_unsafe_path lab/tests/test_m5_labs.py::test_coding_fixture_rejects_scope_and_schema_drift lab/tests/test_m5_labs.py::test_coding_fixture_rejects_hunk_count_or_context_drift lab/tests/test_m5_labs.py::test_cli_accepts_isolated_fixture_root_and_rejects_tampering",
+      "pages": [
+        "docs/labs/coding.md"
+      ],
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "status": "pass",
+      "log_sha256": "06955fb47f16312e5d13266c774a2aa4648c46e423cbe6564a92e25b68e39131",
+      "output_tail": "........                                                                 [100%]\n"
+    },
+    {
+      "command": "uv run --frozen --offline pytest -q lab/tests/test_m5_labs.py -k data",
+      "pages": [
+        "docs/labs/data.md"
+      ],
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "status": "pass",
+      "log_sha256": "06955fb47f16312e5d13266c774a2aa4648c46e423cbe6564a92e25b68e39131",
+      "output_tail": "........                                                                 [100%]\n"
+    },
+    {
+      "command": "uv run --frozen --offline pytest -q lab/tests/test_m5_labs.py -k document",
+      "pages": [
+        "docs/labs/document.md"
+      ],
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "status": "pass",
+      "log_sha256": "585ba42829657b9e2d56f8614be6c3365a8405474eed008559511ab50f2ffcfb",
+      "output_tail": ".........                                                                [100%]\n"
+    },
+    {
+      "command": "uv run --frozen --offline pytest -q lab/tests/test_m5_labs.py",
+      "pages": [
+        "docs/labs/migration.md"
+      ],
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "status": "pass",
+      "log_sha256": "6dd786dc72d45e02d32f9a2c96fbee7f0ea69261b610e86a41d1a671dd0186ef",
+      "output_tail": "................................................                         [100%]\n"
+    },
+    {
+      "command": "uv run --frozen --offline pytest -q lab/tests/test_m5_labs.py -k research",
+      "pages": [
+        "docs/labs/research.md"
+      ],
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "status": "pass",
+      "log_sha256": "06955fb47f16312e5d13266c774a2aa4648c46e423cbe6564a92e25b68e39131",
+      "output_tail": "........                                                                 [100%]\n"
+    },
+    {
+      "command": "uv run --frozen --offline python -c \"import importlib.util as u; assert u.find_spec('transformers') is None; assert u.find_spec('vllm') is None; assert u.find_spec('llama_cpp') is None\"",
+      "pages": [
+        "docs/models/llama.md"
+      ],
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "status": "pass",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_tail": ""
+    },
+    {
+      "command": "uv run --frozen --offline pytest -q lab/tests/test_replay_and_live.py lab/tests/test_streaming.py lab/tests/test_loop.py",
+      "pages": [
+        "docs/models/protocol-compatibility.md"
+      ],
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "status": "pass",
+      "log_sha256": "12a9a4a8915fb8d2bb5b4227220247cde267c1a0620203589fe47280d5be4a7f",
+      "output_tail": "....................................                                     [100%]\n"
+    },
+    {
+      "command": "uv run --frozen --offline pytest -q lab/tests/test_loop.py::test_model_budget_stops_before_an_extra_adapter_call lab/tests/test_loop.py::test_max_steps_breaks_infinite_tool_loop lab/tests/test_loop.py::test_timeout_stops_before_completing_late_action",
+      "pages": [
+        "docs/models/reasoning-budget.md",
+        "docs/optimization/reasoning-routing.md"
+      ],
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "status": "pass",
+      "log_sha256": "cf426ab35f3b06fccef8290fde5325d90af130a79da1d1752031518df77c4236",
+      "output_tail": "...                                                                      [100%]\n"
+    },
+    {
+      "command": "uv run --frozen --offline pytest -q lab/tests/test_memory_context_trace.py::test_context_budget_prioritizes_required_and_trusted_sources lab/tests/test_loop.py::test_permission_denial_stops_before_tool_execution lab/tests/test_loop.py::test_retry_and_idempotency_prevent_duplicate_side_effects lab/tests/test_loop.py::test_idempotency_key_conflict_rejects_changed_tool_or_arguments lab/tests/test_memory_context_trace.py::test_trace_redacts_secret_values_paths_and_tool_results",
+      "pages": [
+        "docs/optimization/context-tools.md"
+      ],
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "status": "pass",
+      "log_sha256": "700bc0322b00f8e8db3ce495047983b54ab27ab59ed1fedac05f3aeba47dae24",
+      "output_tail": "......                                                                   [100%]\n"
+    },
+    {
+      "command": "uv run --frozen --offline pytest -q lab/tests/test_loop.py::test_wrong_adapter_return_is_classified_as_invalid_action lab/tests/test_loop.py::test_permission_denial_stops_before_tool_execution lab/tests/test_loop.py::test_retry_and_idempotency_prevent_duplicate_side_effects",
+      "pages": [
+        "docs/optimization/debugging.md"
+      ],
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "status": "pass",
+      "log_sha256": "cf426ab35f3b06fccef8290fde5325d90af130a79da1d1752031518df77c4236",
+      "output_tail": "...                                                                      [100%]\n"
+    },
+    {
+      "command": "uv run --frozen --offline pytest -q lab/tests/test_contracts_and_schema.py::test_shared_task_wire_contract",
+      "pages": [
+        "docs/optimization/prompting.md"
+      ],
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "status": "pass",
+      "log_sha256": "f44919a3367dc52929a8af8f8919d5f9536d2eb90b5c6c6d38b1e58904be21bc",
+      "output_tail": ".................                                                        [100%]\n"
+    },
+    {
+      "command": "uv run --frozen --offline pytest -vv lab/tests/test_loop.py::test_wrong_adapter_return_is_classified_as_invalid_action lab/tests/test_loop.py::test_permission_denial_stops_before_tool_execution lab/tests/test_loop.py::test_retry_and_idempotency_prevent_duplicate_side_effects",
+      "pages": [
+        "docs/practice/debugging.md"
+      ],
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "status": "pass",
+      "log_sha256": "d055dcaf6046e56ce9688971ff6870a9d16d875fd9c810a9692058737c81b502",
+      "output_tail": "============================= test session starts =============================\nplatform win32 -- Python 3.11.15, pytest-8.4.2, pluggy-1.6.0 -- <repo>\\.venv\\Scripts\\python.exe\ncachedir: .pytest_cache\nrootdir: <repo>\nconfigfile: pyproject.toml\ncollecting ... collected 3 items\n\nlab/tests/test_loop.py::test_wrong_adapter_return_is_classified_as_invalid_action PASSED [ 33%]\nlab/tests/test_loop.py::test_permission_denial_stops_before_tool_execution PASSED [ 66%]\nlab/tests/test_loop.py::test_retry_and_idempotency_prevent_duplicate_side_effects PASSED [100%]\n\n============================== 3 passed in 2.53s ==============================\n"
+    },
+    {
+      "command": "uv run --frozen --offline python scripts/ecosystem-workshop.py protocols",
+      "pages": [
+        "docs/practice/ecosystem-workshop.md"
+      ],
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "status": "pass",
+      "log_sha256": "7b077000edb23a97f49f74e31f5fb261d9f799247cc1b65f1a131c8e663159fa",
+      "output_tail": "{\"cases\": [{\"action_authorized\": true, \"capability_available\": true, \"exit_code\": 0, \"failure_classification\": \"none\", \"ignored_skill_grants\": [\"write\"], \"passed\": true, \"planned_handler_calls\": 1, \"run_id\": \"c07a75cd4a3d4d46a416b584959b93a8\", \"side_effects\": 0, \"task_id\": \"ecosystem-protocols-v1\", \"trace\": [{\"available\": [\"tools\"], \"event\": \"capabilities_intersected\"}, {\"action\": \"read\", \"allowed\": true, \"event\": \"host_policy_checked\"}, {\"event\": \"read_handler_planned\"}]}], \"config\": {\"cases\": [\"protocols\"], \"live_enabled\": false, \"negative\": false}, \"config_sha256\": \"06035139275471afd3b553d2ef4ba2bc46cb15d660699b0868afcd4736ae96e5\", \"evidence\": \"E1\", \"exit_code\": 0, \"fixture_sha256\": \"6794b50484f85bc22a6f9b0dc60a121ca5bd2e5891178846e8c7cd4bc6365043\", \"implementation_sha256\": \"0f525cb5217088c0724b7309c748485faa439a7b013a74ad18ed31deefb921b9\", \"offline\": true, \"passed\": true, \"schema_version\": \"ecosystem-result-v1\"}\n"
+    },
+    {
+      "command": "uv run --frozen --offline python scripts/ecosystem-workshop.py protocols --negative",
+      "pages": [
+        "docs/practice/ecosystem-workshop.md"
+      ],
+      "expected_exit_code": 1,
+      "exit_code": 1,
+      "status": "pass",
+      "log_sha256": "7439c84e5eed8002d7249894ead11f8b53f79f317dfadadaff368592cf919de3",
+      "output_tail": "{\"cases\": [{\"action_authorized\": false, \"capability_available\": true, \"exit_code\": 1, \"failure_classification\": \"permission_denied\", \"ignored_skill_grants\": [\"write\"], \"passed\": false, \"planned_handler_calls\": 0, \"run_id\": \"4321547b9dd0433dbe554efddc5f53e1\", \"side_effects\": 0, \"task_id\": \"ecosystem-protocols-v1\", \"trace\": [{\"available\": [\"tools\"], \"event\": \"capabilities_intersected\"}, {\"action\": \"write\", \"allowed\": false, \"event\": \"host_policy_checked\"}, {\"event\": \"action_rejected\"}]}], \"config\": {\"cases\": [\"protocols\"], \"live_enabled\": false, \"negative\": true}, \"config_sha256\": \"060ffabeb3f55ad52816a567c37024d9ef8b6f30f51f4166eae76e09e3bd5b33\", \"evidence\": \"E1\", \"exit_code\": 1, \"fixture_sha256\": \"6794b50484f85bc22a6f9b0dc60a121ca5bd2e5891178846e8c7cd4bc6365043\", \"implementation_sha256\": \"0f525cb5217088c0724b7309c748485faa439a7b013a74ad18ed31deefb921b9\", \"offline\": true, \"passed\": false, \"schema_version\": \"ecosystem-result-v1\"}\n"
+    },
+    {
+      "command": "uv run --frozen --offline python scripts/ecosystem-workshop.py orchestration",
+      "pages": [
+        "docs/practice/ecosystem-workshop.md"
+      ],
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "status": "pass",
+      "log_sha256": "f085099089e51b99ecbbc56b82326818a151ef7d9fd729b78e1f77c255840506",
+      "output_tail": "{\"cases\": [{\"direct\": {\"observations\": [{\"description\": \"Synthetic north inventory observation, kept outside the compact result.\", \"id\": \"north\", \"units\": 2}, {\"description\": \"Synthetic south inventory observation, kept outside the compact result.\", \"id\": \"south\", \"units\": 3}, {\"description\": \"Synthetic west inventory observation, kept outside the compact result.\", \"id\": \"west\", \"units\": 5}], \"total_units\": 10}, \"direct_payload_bytes\": 392, \"exit_code\": 0, \"failure_classification\": \"none\", \"passed\": true, \"programmatic\": {\"ids\": [\"north\", \"south\", \"west\"], \"total_units\": 10}, \"programmatic_payload_bytes\": 54, \"run_id\": \"db7583fb0c0545b59bd9d051b07b68ee\", \"side_effects\": 0, \"task_id\": \"ecosystem-orchestration-v1\", \"tool_calls\": 3, \"trace\": [{\"attempt\": 1, \"event\": \"fake_tool_requested\"}, {\"event\": \"fake_tool_validated\", \"id\": \"north\"}, {\"attempt\": 2, \"event\": \"fake_tool_requested\"}, {\"event\": \"fake_tool_validated\", \"id\": \"south\"}, {\"attempt\": 3, \"event\": \"fake_tool_requested\"}, {\"event\": \"fake_tool_validated\", \"id\": \"west\"}, {\"event\": \"aggregate_validated\", \"total_units\": 10}]}], \"config\": {\"cases\": [\"orchestration\"], \"live_enabled\": false, \"negative\": false}, \"config_sha256\": \"fc4411c40b05fef1880e4b221706b98ff8c7785209205085a133f8151635530e\", \"evidence\": \"E1\", \"exit_code\": 0, \"fixture_sha256\": \"6794b50484f85bc22a6f9b0dc60a121ca5bd2e5891178846e8c7cd4bc6365043\", \"implementation_sha256\": \"0f525cb5217088c0724b7309c748485faa439a7b013a74ad18ed31deefb921b9\", \"offline\": true, \"passed\": true, \"schema_version\": \"ecosystem-result-v1\"}\n"
+    },
+    {
+      "command": "uv run --frozen --offline python scripts/ecosystem-workshop.py orchestration --negative",
+      "pages": [
+        "docs/practice/ecosystem-workshop.md"
+      ],
+      "expected_exit_code": 1,
+      "exit_code": 1,
+      "status": "pass",
+      "log_sha256": "33a324ebfc8244719653acd359cf6e55ee2c424e3a8b2fdb97adf50e7ef8da14",
+      "output_tail": "{\"cases\": [{\"exit_code\": 1, \"failure_classification\": \"budget_exhausted\", \"passed\": false, \"run_id\": \"b89b9d0aa68b4fbd8204042d356234e3\", \"side_effects\": 0, \"task_id\": \"ecosystem-orchestration-v1\", \"tool_calls\": 2, \"trace\": [{\"attempt\": 1, \"event\": \"fake_tool_requested\"}, {\"event\": \"fake_tool_validated\", \"id\": \"north\"}, {\"attempt\": 2, \"event\": \"fake_tool_requested\"}, {\"event\": \"fake_tool_validated\", \"id\": \"south\"}]}], \"config\": {\"cases\": [\"orchestration\"], \"live_enabled\": false, \"negative\": true}, \"config_sha256\": \"caddf2914eae9d9d4dd6fcf6524cd19bcf9b1fa1c372c65a6a84b0b002b87efc\", \"evidence\": \"E1\", \"exit_code\": 1, \"fixture_sha256\": \"6794b50484f85bc22a6f9b0dc60a121ca5bd2e5891178846e8c7cd4bc6365043\", \"implementation_sha256\": \"0f525cb5217088c0724b7309c748485faa439a7b013a74ad18ed31deefb921b9\", \"offline\": true, \"passed\": false, \"schema_version\": \"ecosystem-result-v1\"}\n"
+    },
+    {
+      "command": "uv run --frozen --offline python scripts/ecosystem-workshop.py selection",
+      "pages": [
+        "docs/practice/ecosystem-workshop.md"
+      ],
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "status": "pass",
+      "log_sha256": "6408730189671d9e1bb27d352bb6a8ebcaec0b6ba5a478ea4c73c0596ec38230",
+      "output_tail": "{\"cases\": [{\"abstain_rule\": \"uncertainty >= threshold\", \"candidate_count\": 4, \"curves\": [{\"accepted\": 1, \"coverage\": 0.25, \"error_rate_among_accepted\": 0.0, \"threshold\": 0.25}, {\"accepted\": 3, \"coverage\": 0.75, \"error_rate_among_accepted\": 0.3333333333333333, \"threshold\": 0.75}], \"exit_code\": 0, \"failure_classification\": \"none\", \"oracle_any_pass\": true, \"passed\": true, \"run_id\": \"c74cccb25c8b48849e5a4bd3e22d4f6a\", \"selected_id\": \"b\", \"selected_pass\": false, \"task_count\": 1, \"task_id\": \"ecosystem-selection-v1\", \"trace\": [{\"count\": 4, \"event\": \"candidates_frozen\"}, {\"event\": \"selector_applied_without_oracle\", \"selected\": \"b\"}]}], \"config\": {\"cases\": [\"selection\"], \"live_enabled\": false, \"negative\": false}, \"config_sha256\": \"18d4374a230b7dfcdb9c9b58691add1d4649a57f03a731b7622a665b8c92d980\", \"evidence\": \"E1\", \"exit_code\": 0, \"fixture_sha256\": \"6794b50484f85bc22a6f9b0dc60a121ca5bd2e5891178846e8c7cd4bc6365043\", \"implementation_sha256\": \"0f525cb5217088c0724b7309c748485faa439a7b013a74ad18ed31deefb921b9\", \"offline\": true, \"passed\": true, \"schema_version\": \"ecosystem-result-v1\"}\n"
+    },
+    {
+      "command": "uv run --frozen --offline python scripts/ecosystem-workshop.py selection --negative",
+      "pages": [
+        "docs/practice/ecosystem-workshop.md"
+      ],
+      "expected_exit_code": 1,
+      "exit_code": 1,
+      "status": "pass",
+      "log_sha256": "209fd8ffa50034b101b7a9576ca79c7d93640a395a6f8fc7588e50487ede1631",
+      "output_tail": "{\"cases\": [{\"exit_code\": 1, \"failure_classification\": \"invalid_input\", \"passed\": false, \"run_id\": \"c20ac46fa6f64b798bc0dcfb8d54d153\", \"task_id\": \"ecosystem-selection-v1\", \"trace\": [{\"event\": \"input_rejected\", \"reason\": \"uncertainty must be finite and in [0,1]\"}]}], \"config\": {\"cases\": [\"selection\"], \"live_enabled\": false, \"negative\": true}, \"config_sha256\": \"9ca68766cdb1edd9c3bbc86660456bd4b5a9132698833310711838180ffb56a9\", \"evidence\": \"E1\", \"exit_code\": 1, \"fixture_sha256\": \"6794b50484f85bc22a6f9b0dc60a121ca5bd2e5891178846e8c7cd4bc6365043\", \"implementation_sha256\": \"0f525cb5217088c0724b7309c748485faa439a7b013a74ad18ed31deefb921b9\", \"offline\": true, \"passed\": false, \"schema_version\": \"ecosystem-result-v1\"}\n"
+    },
+    {
+      "command": "uv run --frozen --offline python scripts/ecosystem-workshop.py all",
+      "pages": [
+        "docs/practice/ecosystem-workshop.md"
+      ],
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "status": "pass",
+      "log_sha256": "18f831ee1d32df5f3df5f3437e0847547a61605dd97722eaafb6623141d54bab",
+      "output_tail": "load_bytes\": 54, \"run_id\": \"c0c2ef6196be438491809b194a3d06d3\", \"side_effects\": 0, \"task_id\": \"ecosystem-orchestration-v1\", \"tool_calls\": 3, \"trace\": [{\"attempt\": 1, \"event\": \"fake_tool_requested\"}, {\"event\": \"fake_tool_validated\", \"id\": \"north\"}, {\"attempt\": 2, \"event\": \"fake_tool_requested\"}, {\"event\": \"fake_tool_validated\", \"id\": \"south\"}, {\"attempt\": 3, \"event\": \"fake_tool_requested\"}, {\"event\": \"fake_tool_validated\", \"id\": \"west\"}, {\"event\": \"aggregate_validated\", \"total_units\": 10}]}, {\"abstain_rule\": \"uncertainty >= threshold\", \"candidate_count\": 4, \"curves\": [{\"accepted\": 1, \"coverage\": 0.25, \"error_rate_among_accepted\": 0.0, \"threshold\": 0.25}, {\"accepted\": 3, \"coverage\": 0.75, \"error_rate_among_accepted\": 0.3333333333333333, \"threshold\": 0.75}], \"exit_code\": 0, \"failure_classification\": \"none\", \"oracle_any_pass\": true, \"passed\": true, \"run_id\": \"a684d4123d104b6b9b82b4e3390598fb\", \"selected_id\": \"b\", \"selected_pass\": false, \"task_count\": 1, \"task_id\": \"ecosystem-selection-v1\", \"trace\": [{\"count\": 4, \"event\": \"candidates_frozen\"}, {\"event\": \"selector_applied_without_oracle\", \"selected\": \"b\"}]}], \"config\": {\"cases\": [\"protocols\", \"orchestration\", \"selection\"], \"live_enabled\": false, \"negative\": false}, \"config_sha256\": \"17e9dc35196d01a5c24b6441d6fbdc894dbebe62cd31fd985be8f7ec87fe91cc\", \"evidence\": \"E1\", \"exit_code\": 0, \"fixture_sha256\": \"6794b50484f85bc22a6f9b0dc60a121ca5bd2e5891178846e8c7cd4bc6365043\", \"implementation_sha256\": \"0f525cb5217088c0724b7309c748485faa439a7b013a74ad18ed31deefb921b9\", \"offline\": true, \"passed\": true, \"schema_version\": \"ecosystem-result-v1\"}\n"
+    },
+    {
+      "command": "uv run --frozen --offline pytest -q lab/tests/test_ecosystem.py",
+      "pages": [
+        "docs/practice/ecosystem-workshop.md"
+      ],
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "status": "pass",
+      "log_sha256": "cfc14fd2dc11c362cccf5421245ca5ab0e9d286b54a604a80bd2dd5522f6feb9",
+      "output_tail": ".............                                                            [100%]\n"
+    },
+    {
+      "command": "uv run --frozen --offline pytest -q lab/tests/test_m5_labs.py::test_migration_covers_all_harness_paths_domains_and_control_boundaries lab/tests/test_m5_labs.py::test_migration_rejects_unknown_empty_and_broader_control_mappings",
+      "pages": [
+        "docs/practice/framework-selection.md"
+      ],
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "status": "pass",
+      "log_sha256": "99db33d5c94c6f7da021687c7391181685cc33299c5435b1c861e2db3be3ec87",
+      "output_tail": "..                                                                       [100%]\n"
+    },
+    {
+      "command": "uv run --frozen --offline pytest -q lab/tests/test_loop.py::test_acceptance_rejection_returns_feedback_and_allows_repair lab/tests/test_loop.py::test_permission_denial_stops_before_tool_execution lab/tests/test_loop.py::test_wrong_adapter_return_is_classified_as_invalid_action lab/tests/test_loop.py::test_checkpoint_restores_adapter_position lab/tests/test_loop.py::test_timeout_during_acceptance_cannot_complete",
+      "pages": [
+        "docs/practice/harness-design.md"
+      ],
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "status": "pass",
+      "log_sha256": "4d2df7a96ce4a667da3ccf295f2d16c728a65ed0e861a3baa919f7bb469b02b5",
+      "output_tail": ".....                                                                    [100%]\n"
+    },
+    {
+      "command": "uv run --frozen --offline pytest -vv lab/tests/test_recovery.py",
+      "pages": [
+        "docs/practice/reliability-recovery.md"
+      ],
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "status": "pass",
+      "log_sha256": "ed6dc57befbe46441149fcb1e0afedf0eac91b0ca1dd72fc0e87107db06d8258",
+      "output_tail": "============================= test session starts =============================\nplatform win32 -- Python 3.11.15, pytest-8.4.2, pluggy-1.6.0 -- <repo>\\.venv\\Scripts\\python.exe\ncachedir: .pytest_cache\nrootdir: <repo>\nconfigfile: pyproject.toml\ncollecting ... collected 4 items\n\nlab/tests/test_recovery.py::test_acknowledged_write_needs_no_reconciliation PASSED [ 25%]\nlab/tests/test_recovery.py::test_lost_response_reconciles_receipt_without_duplicate_write PASSED [ 50%]\nlab/tests/test_recovery.py::test_same_key_with_changed_payload_stops_before_second_effect PASSED [ 75%]\nlab/tests/test_recovery.py::test_new_key_retry_after_unknown_outcome_demonstrates_duplicate_effect PASSED [100%]\n\n============================== 4 passed in 0.28s ==============================\n"
+    },
+    {
+      "command": "uv run --frozen --offline pytest -q lab/tests/test_loop.py::test_permission_denial_stops_before_tool_execution lab/tests/test_loop.py::test_concurrent_cancellation_propagates_after_adapter_returns lab/tests/test_memory_context_trace.py::test_trace_redacts_secret_values_paths_and_tool_results",
+      "pages": [
+        "docs/practice/security-review.md",
+        "docs/security/incident-response.md"
+      ],
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "status": "pass",
+      "log_sha256": "cf426ab35f3b06fccef8290fde5325d90af130a79da1d1752031518df77c4236",
+      "output_tail": "...                                                                      [100%]\n"
+    },
+    {
+      "command": "uv run --frozen --offline pytest -q lab/tests/test_answer_integrity.py",
+      "pages": [
+        "docs/security/prompt-injection.md"
+      ],
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "status": "pass",
+      "log_sha256": "423b1d0e014eb1eab96f4420f7b344c2615be505dd574b756ac884826ca74f2d",
+      "output_tail": ".                                                                        [100%]\n"
+    },
+    {
+      "command": "uv run --frozen --offline pytest -q lab/tests/test_memory_context_trace.py::test_trace_redacts_secret_values_paths_and_tool_results",
+      "pages": [
+        "docs/security/secrets-privacy.md"
+      ],
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "status": "pass",
+      "log_sha256": "423b1d0e014eb1eab96f4420f7b344c2615be505dd574b756ac884826ca74f2d",
+      "output_tail": ".                                                                        [100%]\n"
+    }
+  ],
+  "remaining": 0
+}

@@ -157,7 +157,7 @@ Context（上下文） builder（上下文构造器）把系统/项目规则、�
 
 适配器 不得拥有 任务 权限、批准工具或自行无限重试。一个 供应方 的字段变化只能影响该反腐层，不应迫使 policy 和 控制器 依赖 供应方 response class。详细契约见[Adapter 契约](/implementation/adapter-contract)。
 
-当前 Fake/Replay 适配器 只提供内存 动作提议 序列和 cursor；Live 适配器 硬禁用。项目另有 供应方-neutral 合成 stream assembler，用连续 sequence、response/event/call ID 和完整 JSON object 组装 canonical 动作提议，只在 completed 终态返回响应，并对冲突、断流、取消和 Provider（供应方） error 失败关闭。它不是真实 transport 或 供应方 stream 适配器，也不覆盖真实 usage 映射。
+当前 Fake/Replay 适配器只提供内存动作序列和游标；旧 `LiveAdapter` 硬禁用。项目另有默认关闭的 `ResponsesAdapter`：用离线 transport 验证协议；HTTP transport 只有显式授权且配置预算与价格后才能调用，不能由离线测试推断真实可用性。独立的供应方无关合成 `StreamAssembler` 用连续 sequence、response/event/call ID 和完整 JSON object 组装规范动作，只在 completed 终态返回响应，并对冲突、断流、取消和供应方错误失败关闭；它不是该 HTTP transport 的流式实现。适配器边界与运行入口见[适配器契约](/implementation/adapter-contract)。
 
 <span id="policy-与工具授权和执行必须分开"></span>
 
@@ -305,7 +305,7 @@ Approval 必须绑定规范化资源、参数 hash、执行身份、数据摘要
 
 ## 失败案例：观察 policy 在副作用前停止
 
-以下命令构造一个请求 `echo` 的 动作提议，但 任务 的 allowed tools 为空：
+前置条件：Python 3.11+、uv 0.11.16，依赖按 `uv.lock` 安装，从仓库根目录离线执行；环境准备见[实验环境](/labs/setup)。输入是命令内的 FakeAdapter、内存工具和 Task，不读取凭据或外部服务。以下命令构造一个请求 `echo` 的动作提议，但 Task 的 allowed tools 为空：
 
 ```bash
 uv run --frozen --offline python -c "import sys; sys.path.insert(0, 'lab/src'); from about_harness.adapters.fake import FakeAdapter; from about_harness.contracts import Action,Budgets,TaskSpec,ToolCall; from about_harness.loop import HarnessRunner; from about_harness.tools import ToolRegistry; a=Action.tool(ToolCall('c1','echo',{'value':'x'},'once')); r=HarnessRunner(FakeAdapter((a,)),ToolRegistry.with_safe_defaults()).run(TaskSpec('architecture-denial','prove policy boundary',(),Budgets())); print(r.status.value,r.stop_reason.value,r.metrics['tool_calls'])"
@@ -318,6 +318,8 @@ stopped permission_denied 0
 ```
 
 这里“命令成功”表示架构负例按预期被拒绝，不表示 工具调用 成功。若输出 completed、failed/tool_error 或 `tool_calls` 非 0，立即停止：policy 可能没有在 工具处理函数 前生效。不要把 `echo` 加进 allowlist 来让负例变绿；先检查 任务、policy decision 和事件顺序。
+
+本练习只提供 E1 固定拒绝路径，没有外部业务资源需清理。若为练习改动源码，先查看限定路径的 `git diff` 并只撤回自己的修改，再重跑负例；它不证明生产权限系统、真实模型或外部副作用隔离。
 
 ## 架构审核方法
 

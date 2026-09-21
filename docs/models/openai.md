@@ -31,7 +31,7 @@
 
 使用 Python 3.12、uv 0.11.16；npm 入口需要 Node.js 22+。适配器使用 Python 标准库 HTTP 客户端，没有额外供应方 SDK 依赖。输入为 `lab/fixtures/protocols/responses-v1.json` 和只允许 sum 的固定任务。
 
-协议依据是本轮 2026-09-08 打开的官方 Responses、function calling 和 reasoning 文档。真实型号必须显式填写，不从产品展示名推断 API 身份。
+协议依据是 2026-09-08 打开、2026-09-21 复核的官方 [Responses/function calling](https://developers.openai.com/api/docs/guides/function-calling)、[reasoning](https://developers.openai.com/api/docs/guides/reasoning) 与 [streaming](https://developers.openai.com/api/docs/guides/streaming-responses) 文档；来源 E0 不提升固定响应的 E1，也不证明 live 兼容。真实型号必须显式填写，不从产品展示名推断 API 身份。Codex 是另一个产品 surface，其模型与配置应单独记录。[FACT:codex-config]
 
 ## 先跑离线协议
 

@@ -15,7 +15,7 @@
 
 ## 固定工具链
 
-本轮复核环境为 Node.js 22.23.2、Python 3.12.13、uv 0.11.16。Node 项目最低版本仍为 22，Python 库最低版本仍为 3.11；框架示例固定使用 Python 3.12。
+仓库保存的 2026-09-08 执行记录（`maintenance/verification-results.json`）使用 Node.js 22.23.2、Python 3.12.13、uv 0.11.16；这份历史记录不代替当前环境验证。Node 项目最低版本仍为 22，Python 库最低版本仍为 3.11；框架示例固定使用 Python 3.12。
 
 ```bash
 node --version

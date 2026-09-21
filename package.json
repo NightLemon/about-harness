@@ -40,7 +40,7 @@
     "pages:serve": "node scripts/serve-pages.mjs",
     "pages:smoke": "node scripts/pages-smoke.mjs",
     "repo:self-test": "node scripts/test-repo-checks.mjs",
-    "check": "npm run docs:check && npm run examples:check && npm run docs:build && npm run docs:verify-build && npm run docs:legacy && npm run facts:check && npm run examples:self-test && npm run labs:all && npm run lab:ts-runtime-test && npm run eval:validate && npm run eval:summary && npm run results:redact && npm run eval:self-test && npm run labs:source && npm run study:check && npm run model:probe && npm run product:check",
+    "check": "npm run docs:check && npm run examples:check && npm run docs:build && npm run docs:verify-build && npm run docs:legacy && npm run facts:check && npm run examples:self-test && npm run labs:all && npm run lab:ts-runtime-test && npm run ecosystem:workshop && npm run eval:validate && npm run eval:summary && npm run results:redact && npm run eval:self-test && npm run labs:source && npm run study:check && npm run model:probe && npm run product:check",
     "verify": "npm run verify:core && npm run frameworks:check",
     "study:demo": "uv run --frozen --offline python scripts/study-demo.py",
     "study:check": "node scripts/check-study.mjs",
@@ -51,7 +51,8 @@
     "verify:core": "npm run check && npm run tutorial:check && npm run tutorial:self-test && npm run docs:project-base && uv run --frozen --offline pytest && uv run --frozen --offline ruff check && npm run lab:pyright && npm run lab:typecheck && npm run facts:freshness && npm run links:check && npm run licenses:check && npm run secrets:check && npm run workflows:check && npm run docs:visual:run && npm run repo:self-test",
     "docs:legacy": "node scripts/check-legacy-routes.mjs",
     "product:prepare": "uv run --frozen --offline python scripts/product-workspace.py",
-    "product:check": "node scripts/check-product-workspace.mjs"
+    "product:check": "node scripts/check-product-workspace.mjs",
+    "ecosystem:workshop": "uv run --frozen --offline python scripts/ecosystem-workshop.py all"
   },
   "devDependencies": {
     "playwright": "^1.62.1",

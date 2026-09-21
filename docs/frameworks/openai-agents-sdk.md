@@ -57,7 +57,7 @@ npm run frameworks:check -- openai-agents-sdk
 
 Agent 注册本地工具，Runner 真正执行两轮调用；自定义 Model 先返回函数请求，再检查带原 call_id 的函数结果，最后返回固定回放答案。
 
-直接入口是 `demo.py`，可逐行对应框架调用与输出。共享运行防线在导入框架前禁用外部网络和遥测；只允许本机事件循环所需连接，并断言没有外部连接尝试。
+直接入口是 `demo.py`，可逐行对应框架调用与输出。共享防线在导入框架前设置遥测关闭变量，并拦截 Python socket 的外部 DNS/连接，仅放行本机地址；结果断言被拦截的外部连接尝试为零。这是示例内的运行探针，不是操作系统网络沙箱。
 
 <span id="失败归因"></span>
 <span id="失败、停止、清理与回退"></span>
@@ -79,4 +79,4 @@ uv run --project examples/frameworks/openai-agents-sdk --frozen --offline python
 
 没有调用 OpenAI 网络、测试真实模型或运行流式协议；tracing 显式关闭。该示例支持对这一运行时接缝的判断，不构成产品质量排名。选型方法见[框架对照](/frameworks/comparison)。
 
-来源：[官方资料](https://developers.openai.com/api/docs/guides/agents)；本轮于 2026-09-08 核对文档、安装版本并执行离线示例。
+来源：[官方资料](https://developers.openai.com/api/docs/guides/agents)于 2026-09-21 复核；固定包的离线执行记录来自 2026-09-08，见 `lab/results/public/frameworks/summary.json`。来源 E0 与固定路径 E1 分开记录。

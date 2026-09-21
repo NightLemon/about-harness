@@ -66,7 +66,7 @@ uv run --frozen --offline python scripts/source-labs.py
 uv run --frozen --offline pytest -q lab/tests/test_source_labs.py
 ```
 
-重复用户 ID、NaN、字段漂移或行数/总和不符时必须失败。 负例测试通过表示错误被预期拒绝，不能只看顶层 passed。
+定向测试要求重复用户 ID 和 NaN 被拒绝，并核对正常数据的均值。实现另检查字段、行形状、行数、总和与分母；这些条件需要在扩展数据格式时补充相应负例，不能只看顶层 passed。
 
 <span id="停止、清理、回滚与限制"></span>
 <span id="停止清理回滚与限制"></span>

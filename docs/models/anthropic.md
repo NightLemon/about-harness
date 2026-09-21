@@ -20,7 +20,9 @@
 
 ## 来源与版本
 
-[官方入口](https://docs.anthropic.com/en/docs/build-with-claude/tool-use/overview)，本轮检查日期 2026-09-08。[FACT:anthropic-tools] 工具请求与工具结果分别使用 tool_use 和 tool_result 内容块，结果需要对应原工具调用身份。应用执行工具，模型输出不授予权限。
+[工具官方入口](https://docs.anthropic.com/en/docs/build-with-claude/tool-use/overview)，检查日期 2026-09-08。[FACT:anthropic-tools] 工具请求与工具结果分别使用 tool_use 和 tool_result 内容块，结果需要对应原工具调用身份。应用执行工具，模型输出不授予权限。
+
+[模型目录](https://platform.claude.com/docs/en/models/overview)于 2026-09-21 复核：Claude API model ID 是 pinned snapshot（固定快照）；4.6 及以后可使用无日期 ID，不能把所有 alias 都描述为滚动别名。[FACT:anthropic-catalog] 云转售 provider 的部署名、区域、生命周期与解析身份仍须单独核对。
 
 来源记录属于 E0；本仓库没有该家族真实模型运行结果。具体型号、套餐、区域、上下文和价格不跨版本继承。
 
@@ -32,7 +34,7 @@
 
 ## 产品特有的检查
 
-CLAUDE.md 和自动记忆属于产品上下文；它们不能替代工具权限。使用产品时进入 [Claude Code 教程](/harnesses/claude-code)。
+CLAUDE.md、按版本和条件加载的 AGENTS.md 与自动记忆属于产品上下文；它们不能替代工具权限。使用产品时进入 [Claude Code 教程](/harnesses/claude-code)，分别冻结版本、有效指令、工具与 permission。
 
 先做一个无副作用文本探针、一个完整工具往返和一个错误/取消探针。保存请求与实际型号、协议映射、用量状态和终态；协议不合格时修适配层，不进入质量比较。
 

@@ -172,7 +172,7 @@ Provider（供应方） 5xx、runner 崩溃等基础设施失败可以按预注�
 
 ## 当前示例的设计缺口
 
-示例 `study.json` 足以演示矩阵、split 和三个晋级字段，但尚未表达抽样理由、预注册时间、随机 seed、运行顺序、排除/重跑/停止规则、环境身份、Judge 版本和回退操作。正式 E3 不能因为 schema 没有这些字段就省略；应扩展版本化 study schema 或用关联的 protocol manifest 保存，并让报告引用其 hash。
+历史 `evals/study.example.json` 使用 Study 1.1，主要演示矩阵、split 和晋级门槛；新的 Study 1.2 已增加 `study_kind` 与 `sampling_rationale`，完整学习研究也保存执行环境和产物关联。但这还不等于正式研究协议：预注册时间、随机 seed、运行顺序、排除/重跑/停止规则、Judge 版本和回退操作仍需按研究补齐。正式 E3 不能因为 schema 没有强制这些字段就省略；可扩展版本化 schema 或用关联的 protocol manifest 保存，并让报告引用其 hash。
 
 继续阅读[Task、Run、Trace 与 Result Schema](/evaluation/task-schema)、[指标与区间](/evaluation/metrics)、[Judge](/evaluation/judges)、[回归集](/evaluation/regression)和[报告纪律](/evaluation/reporting)。
 

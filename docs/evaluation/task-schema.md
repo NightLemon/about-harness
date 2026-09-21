@@ -120,7 +120,7 @@ run_started → model_action → acceptance_result/tool_result/policy_denied/ret
 
 ## Result：终态快照与停止语义
 
-当前 `result-v1.1` 固定十个字段：`schema_version`、`run_id`、`task_id`、`status`、`stop_reason`、`output`、metrics、轨迹、检查点 和 error。字段必须显式存在；没有 检查点/error 时写 `null`，避免消费者猜测“未生成”“被截断”还是“不适用”。旧 `result-v1.0.json` 原样保留；它只做较宽松的字段检查，不能承载本节新增的关系保证。当前状态有 `completed/stopped/failed`，停止原因包括：
+当前 `result-v1.1` 固定十个字段：`schema_version`、`run_id`、`task_id`、`status`、`stop_reason`、`output`、`metrics`、`trace`、`checkpoint` 和 `error`。字段必须显式存在；没有 checkpoint/error 时写 `null`，避免消费者猜测“未生成”“被截断”还是“不适用”。旧 `result-v1.0.json` 原样保留；它只做较宽松的字段检查，不能承载本节新增的关系保证。当前状态有 `completed/stopped/failed`，停止原因包括：
 
 | stop_reason | 含义 | 常见 status |
 | --- | --- | --- |
@@ -168,17 +168,19 @@ Schema 校验通过只证明第一层。反过来，runner 顺利退出也不证
 
 ## 当前跨对象不变量
 
-一次有效研究至少保持：
+一次有效研究至少保持以下关系；历史 fixture 谱系与新执行产物分别使用自己的哈希口径：
 
-- 任务 的 fixture ref 能解析到固定 Git commit/path；
-- 历史 manifest 中三个文件 hash 与重新计算值一致，bundle hash 再与 ref 一致；
+- 历史任务的 fixture ref 能解析到固定 Git commit/path；三个 JSON 文件先解析，再递归排序对象键、保留数组顺序，以紧凑 UTF-8 JSON 编码后计算 SHA-256，与历史 manifest 一致；bundle hash 再与 ref 一致。这是项目的 canonical JSON（规范化 JSON）口径，不是直接哈希文件原始字节，也不是宣称完整支持 JCS；
+- 新 EvalRun 1.1 的六类 artifact 引用及 `fixtures/tasks.json` 源文件按原始字节计算 SHA-256；即使 JSON 语义相同，空白变化也会改变这类 hash，不能混用历史口径；
 - 任务 metadata、FixtureLineage 和每条 EvalRun 的 fixture hash 相同；
 - Study 中存在该 task/config，EvalRun split 与 Study 一致；
 - `run_id` 唯一，`(task, config, repeat)` cell 唯一且 repeat 在范围内；
 - 同一 `config_id` 下 config version、model、harness、instruction hash 和 evidence 身份不漂移；
 - 观察 cell 加缺失 cell 等于预期矩阵，而不是用总行数代替覆盖率。
 
-仍需正式系统补充的关系包括：独立 Run/轨迹/结果 的 ID 与 hash 一致性、metrics 与具体事件数量、重试的 `attempt_of`、Judge/rubric 版本、environment/config hash 和 artifact 签名。当前 结果 验证器 只对内嵌 轨迹 做连续性和终态对账；这些更大的跨 artifact 缺口应在报告中公开，不能由读者从文件名猜测。
+新 EvalRun 1.1 的读取器已检查六类产物的路径、原始字节 hash、task/run/config 身份、结果状态、duration/cost、独立轨迹与 Result 内嵌轨迹一致性、配置内容，以及任务与源 fixture 的对应关系。Run 封套中的执行文件引用也会复核 hash；这些关联校验不能推断为重新执行了测试或确认数据真实。Result 运行时另校验连续序号、终态对账和计数关系。
+
+仍需正式系统补充完整的尝试谱系（如 `attempt_of`）、Judge/rubric 身份、环境的不可变身份、artifact 签名及按事件重算全部资源指标；历史 EvalRun 1.0 也没有新产物关联保证。报告应按实际 reader 版本公开缺口，不能笼统声称所有跨产物关系都未验证或都已验证。
 
 ## Schema 怎样安全演进
 

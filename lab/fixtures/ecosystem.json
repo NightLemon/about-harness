@@ -1,0 +1,30 @@
+{
+  "schema_version": "ecosystem-fixture-v1",
+  "license": "CC0-1.0",
+  "provenance": "Project-authored synthetic records; no external data or model output.",
+  "protocols": {
+    "client_capabilities": ["tools"],
+    "server_capabilities": ["tools", "tasks"],
+    "required_capability": "tools",
+    "authorized_actions": ["read"],
+    "requested_action": "read",
+    "skill_suggested_actions": ["read", "write"]
+  },
+  "orchestration": {
+    "call_budget": 3,
+    "responses": [
+      {"id": "north", "units": 2, "description": "Synthetic north inventory observation, kept outside the compact result."},
+      {"id": "south", "units": 3, "description": "Synthetic south inventory observation, kept outside the compact result."},
+      {"id": "west", "units": 5, "description": "Synthetic west inventory observation, kept outside the compact result."}
+    ]
+  },
+  "selection": {
+    "candidates": [
+      {"id": "a", "score": 0.8, "uncertainty": 0.1, "oracle_pass": true},
+      {"id": "b", "score": 0.9, "uncertainty": 0.3, "oracle_pass": false},
+      {"id": "c", "score": 0.6, "uncertainty": 0.6, "oracle_pass": true},
+      {"id": "d", "score": 0.2, "uncertainty": 0.8, "oracle_pass": false}
+    ],
+    "thresholds": [0.25, 0.75]
+  }
+}

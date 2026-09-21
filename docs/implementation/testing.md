@@ -142,7 +142,7 @@ Flaky test（不稳定测试）不能直接自动重跑到绿色。保留第一�
 
 六类 Lab 的每个 fixture bundle 包含 `manifest.json`、`input.json`、`expected.json` 与 `negative.json`。Loader 核对 hash；测试还会把 bundle 复制到临时目录、篡改 input，并要求 CLI 非零退出且 stderr 包含 hash mismatch。
 
-这证明当前字节与 manifest 一致，不证明 fixture 代表真实世界分布。Fixture 还要记录来源许可、版本、生成方法、预期责任层和证据等级。修改 input 时应产生新 hash 并解释语义变化，不能只更新 expected 让测试继续通过。
+这证明当前 canonical JSON（规范化 JSON）身份与 manifest 一致：解析后排序对象键并紧凑编码，缩进、换行或对象键顺序变化不改变身份。新增 `sources-v2` 与 `study-coding` 则按原始文件字节计算 hash，两种算法不能混用；详见[输入身份](/labs/runner)。两者都不证明 fixture 代表真实世界分布。Fixture 还要记录来源许可、版本、生成方法、预期责任层和证据等级。修改 input 时应产生新 hash 并解释语义变化，不能只更新 expected 让测试继续通过。
 
 Eval 还把 task、immutable fixture ref 和 run 的 hash 串成 lineage（来源链）。`eval:self-test` 故意制造 task/ref/run 不一致、重复 run/matrix cell、config drift 和不安全公开 artifact；任一坏样例被接受，门禁自身就失败。
 
@@ -201,6 +201,26 @@ Negative test（负例测试）有两层：
 这个 oracle 仍不知道 JSON 字段是否真实：模型自己返回 `{"tests_passed": true}` 并不等于测试执行。空 acceptance 也会明确记录零条件后通过。正式任务应注入会读取冻结 artifact、退出码、diff 或目标系统回执的 验证器，并测试 验证器 版本/身份、坏 artifact、异常、超时与脱敏。当前 result-v1.1 把 验证器 契约/执行异常暂映射到 `invalid_action`，还没有独立错误枚举。
 
 
-## 实践入口
+## 运行与验收入口
 
-[从最小实现进入完整工作区实验](/implementation/minimal-harness-python)。实现范围、命令、预期断言和清理步骤在实验页维护。
+按[统一环境](/guide/prerequisites)准备 Node.js 22+、Python 3.12、uv 0.11.16、Git、锁定依赖及对应 Chromium；完整验证还需提前准备四个框架环境。输入是当前源码、共享契约 fixture、研究材料和故障探针。
+
+```bash
+uv run --frozen --offline pytest -q lab/tests/test_acceptance.py lab/tests/test_loop.py lab/tests/test_contracts_and_schema.py
+npm run lab:typecheck
+npm run lab:ts-runtime-test
+npm run eval:self-test
+npm run study:check
+```
+
+预期全部退出 0。分别断言非法 Action 在记账/handler 前拒绝、验收失败/超时不能 completed、共享契约一致、坏来源链被拒绝、完整研究及错误产物负例成立。测试收集数会随覆盖扩展变化，不作为固定教程输出。
+
+| 聚合入口 | 覆盖范围与边界 |
+| --- | --- |
+| `npm run check` | 文档、示例、构建、旧路由、事实、领域/原始材料实验、完整研究、模拟协议、产品工作区、生态工作坊与评测扫描；不替代完整语言测试 |
+| `npm run pages:check` | Pages base、教程/示例、事实时效、链接、许可、秘密、workflow 与有限视觉；不验收完整 runtime |
+| `npm run verify` | `verify:core` 加四框架离线环境；核心另含完整 pytest、Ruff、Pyright、TypeScript 和检查器负例自测 |
+
+共享构建目录的命令顺序执行。门禁自测退出 0 应表示内部坏输入按预期失败；先保存首个失败分类，不能把检查器崩溃误判为成功拒绝。
+
+测试清理自己的临时副本，研究报告保留；回退只撤销本轮配置/实现，再重跑原失败及正常对照。所有默认执行仍是 E1，不证明真实模型质量、生产隔离或部署可用。完整执行链见[最小实现](/implementation/minimal-harness-python)。

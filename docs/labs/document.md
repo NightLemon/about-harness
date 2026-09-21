@@ -65,7 +65,7 @@ uv run --frozen --offline python scripts/source-labs.py
 uv run --frozen --offline pytest -q lab/tests/test_source_labs.py
 ```
 
-重复版本、活动脚本内容和损坏段落必须失败；无权限与无匹配分别测试。 负例测试通过表示错误被预期拒绝，不能只看顶层 passed。
+定向测试要求重复版本和活动脚本内容被拒绝、最新版无权限时返回 access_denied；正常运行另断言无匹配为 insufficient。解析器还拒绝未闭合段落，但当前测试不覆盖任意 HTML 错误恢复。负例通过表示这些列出的输入被预期拒绝，不能只看顶层 passed。
 
 <span id="停止、清理、回滚与限制"></span>
 <span id="停止清理回滚与限制"></span>

@@ -62,11 +62,15 @@ git status --short
 预期准备命令退出 0，最后的测试命令退出 1，工作树干净。目录内包含 README.md、带末项缺陷的 solution.py、固定 verify.py 及产品指令/配置。已存在的目录不会被覆盖。后续产品命令都在这个练习目录执行。
 
 
-[FACT:codex-agents-md] [FACT:codex-config] [FACT:codex-sandbox-approval]
+官方配置、安全与 AGENTS 文档于 2026-09-21 复核；这是 E0 来源核验，与 2026-09-08 固定包帮助入口的 E1 记录分开。[FACT:codex-agents-md] [FACT:codex-config] [FACT:codex-sandbox-approval]
 
 准备命令生成本例所需的指令和权限；仓库中的通用参考另见 `examples/harnesses/codex/` 中的 AGENTS.md 与 .codex/config.toml。先记录 cwd、起始 commit、实际加载的指令和配置来源；把 MODEL_ID 替换为可核验型号。通过产品官方认证流程准备账号，凭据不写入示例或日志。
 
-sandbox_mode 控制执行范围，approval_policy 控制询问。workspace-write 不是“只能读取工作区”；不要用它承诺范围外读取必然失败。网络、受保护路径和命令执行另行核对。
+sandbox_mode 控制执行范围，approval_policy 控制询问。workspace-write 不是“只能读取工作区”；它通常限制可写范围，不默认禁止读取工作区外文件。按有效配置分别验证允许读取、受保护路径写入拒绝和网络；只有额外配置读取隔离时，才把范围外读取失败作为断言。探针使用合成文件，不读取真实私人数据。
+
+当前官方文档还提供 permission profile（权限配置档），由 `default_permissions` 与 `permissions.<name>` 选择文件系统和网络策略；它不替代独立的 `approval_policy`。旧 `untrusted` approval 模式已退役，也不同于项目 trust。[FACT:codex-permission-profiles] [FACT:codex-retired-approval] 本页固定包命令保留已经核对的选项；不要假定滚动文档中的新配置都适用于该版本。记录目标 surface 的有效 profile、approval 和 managed restrictions，冲突时先停止核对。
+
+`AGENTS.md` 是项目指令，不是强制权限。工具授权在 handler 前核对，操作系统沙箱的拒绝可能发生在进程执行时，应分别记录拦截层。Git worktree 只隔离工作树；文件读取、进程与网络仍需实际执行环境控制。
 
 ## 第一个只读任务
 

@@ -93,7 +93,7 @@ Reasoning routing（推理路由）是在任务执行前或出现新证据后，
 
 预算耗尽的停止原因也要具体：`max_steps`、`max_model_calls`、`timeout`、`max_cost`、token limit 和 供应方 rate limit 不是同一种失败。把它们都记成 `failed` 会让路由器学不到该增加什么，也可能把权限错误误判为计算不足。
 
-当前 lab 只实现 `max_steps`、`max_model_calls`、`timeout_ms` 和 `max_cost_usd`。它没有真实 token ledger、reasoning token、父子 reservation 或 供应方 reasoning 档位；本节其余内容是项目设计建议，不是实现声明。
+当前最小循环执行 `max_steps`、`max_model_calls`、`timeout_ms` 和 `max_cost_usd`。独立 `usage-v1` 已能表达已知/未知 token 与费用，但它不是父子共享的预算账本；当前实现仍没有全局 token ledger、reasoning token 或父子 reservation，也没有供应方 reasoning 档位路由。本节其余账本与路由机制是项目设计建议，不是实现声明。
 
 <span id="失败、停止、清理与回退"></span>
 <span id="失败停止清理与回退"></span>
@@ -113,7 +113,7 @@ Escalation（升级）应由新证据触发，而不是“失败就加预算”�
 | 预算耗尽 | 返回结构化 stop reason，交给策略/人决定 | 在子任务内重置计数 |
 | 高影响且无法可靠验证 | 人工复核或拒绝自动执行 | 以多数模型投票代替责任人 |
 
-重试只有在输入、状态、模型配置或外部可用性发生了有意义变化时才可能提供新信息。相同 prompt、相同状态和相同配置的连续重试通常只是增加费用与尾延迟。
+没有有效验证反馈的盲重试，只有在输入、状态、模型配置或外部可用性发生有意义变化时才通常值得继续；相同 prompt、相同状态和相同配置的此类重试通常只增加费用与尾延迟。随机模型的 resample（随机重采样）是另一条预注册路径：它可在相同输入下产生新候选，但必须有 draw 上限、sampling 身份、总预算、独立 validator 和聚合规则；它不能被记作新的 Task 样本，也不能借此绕过安全或授权拒绝。
 
 ## Fallback 是有上限的状态机
 

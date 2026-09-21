@@ -64,11 +64,17 @@ git status --short
 预期准备命令退出 0，最后的测试命令退出 1，工作树干净。目录内包含 README.md、带末项缺陷的 solution.py、固定 verify.py 及产品指令/配置。已存在的目录不会被覆盖。后续产品命令都在这个练习目录执行。
 
 
-[FACT:claude-memory] [FACT:claude-settings]
+Memory、Settings 与 Permissions 官方文档于 2026-09-21 复核；来源 E0 与固定包的帮助入口 E1 分开记录。[FACT:claude-memory] [FACT:claude-settings] [FACT:claude-permissions]
 
 准备命令生成本例所需的指令和权限；仓库中的通用参考另见 `examples/harnesses/claude-code/` 中的 CLAUDE.md 与 .claude/settings.json。先记录 cwd、起始 commit、实际加载的指令和配置来源；把 MODEL_ID 替换为可核验型号。通过产品官方认证流程准备账号，凭据不写入示例或日志。
 
-allow 规则控制自动批准，不表示其他资源技术上不可达。需要限制工具集合时使用 --tools；deny、ask、sandbox 和执行身份分别验证。共享设置不能证明最终有效设置，因为个人与 managed 配置也可能参与。
+allow 规则控制自动批准，不是闭合白名单：未匹配的读取或命令仍由其他生效规则和模式决定，不会因为未列出就自动 deny，也不表示其他资源技术上不可达。需要限制工具集合时使用 --tools；deny、ask、sandbox 和执行身份分别验证。共享设置不能证明最终有效设置，因为个人与 managed 配置也可能参与。
+
+## 新版本的 AGENTS.md 条件加载
+
+以下是 2026-09-21 核对的 E0 产品事实，适用于文档所述 v2.1.277+，不能套到本教程固定的 2.1.263 帮助入口证据。新版在工作目录及父目录没有 `CLAUDE.md`、`.claude/CLAUDE.md` 或 `CLAUDE.local.md` 时可直接读取 `AGENTS.md`；存在这些项目层文件时默认只读取 Claude 文件。用户级 `~/.claude/CLAUDE.md`、组织 managed `CLAUDE.md` 和 `.claude/rules/` 不计入这项阻止默认加载的检查，仍按各自规则加载。[FACT:claude-agents-md]
+
+`claude-md-and-agents-md` 可请求两者共同加载，但第三方 provider、关闭 telemetry 或特性不可用的 session 可能不支持直接加载。升级后先在 `/config` 的 **Project instructions** 查看设置，再用 `/context` 核对实际加载文件及 hash；不要将文件名相同当成加载等价。直接加载不可用时，可在根 `CLAUDE.md` 中用单独一行 `@AGENTS.md` 显式导入同目录受审查文件，并验证有效上下文。回退只撤销该 import 或恢复原设置。指令文件和 memory 都不能替代 permission 或 sandbox。
 
 ## 第一个只读任务
 

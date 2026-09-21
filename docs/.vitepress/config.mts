@@ -6,9 +6,23 @@ const sidebars = {
     items: [
       { text: '前置知识', link: '/guide/prerequisites' },
       { text: '学习路径', link: '/guide/start' },
+      { text: 'Travel 面试迁移练习', link: '/guide/interview-practice' },
       { text: '知识地图', link: '/guide/roadmap' },
       { text: '作品集与评分', link: '/guide/portfolio' },
       { text: 'Capstone 综合项目', link: '/guide/capstone' }
+    ]
+  }],
+  '/ecosystem/': [{
+    text: 'Agent 生态全景',
+    items: [
+      { text: '全景与责任地图', link: '/ecosystem/overview' },
+      { text: '模型与服务', link: '/ecosystem/models-and-services' },
+      { text: '协议与技能', link: '/ecosystem/protocols-and-skills' },
+      { text: '知识与记忆', link: '/ecosystem/knowledge-and-memory' },
+      { text: '长任务与部署', link: '/ecosystem/long-running' },
+      { text: '多模态与交互', link: '/ecosystem/multimodal' },
+      { text: '评测与观测', link: '/ecosystem/evaluation-observability' },
+      { text: '研究前沿', link: '/ecosystem/research-frontiers' }
     ]
   }],
   '/foundations/': [{
@@ -63,7 +77,9 @@ const sidebars = {
       { text: 'LangGraph', link: '/frameworks/langgraph' },
       { text: 'OpenAI Agents SDK', link: '/frameworks/openai-agents-sdk' },
       { text: 'Google ADK', link: '/frameworks/google-adk' },
-      { text: 'AutoGen', link: '/frameworks/autogen' }
+      { text: 'Microsoft Agent Framework', link: '/frameworks/microsoft-agent-framework' },
+      { text: '现代 Agent runtimes', link: '/frameworks/modern-runtimes' },
+      { text: 'AutoGen 存量迁移', link: '/frameworks/autogen' }
     ]
   }],
   '/domains/': [{
@@ -102,7 +118,8 @@ const sidebars = {
       { text: '横向比较', link: '/harnesses/comparison' },
       { text: 'Codex', link: '/harnesses/codex' },
       { text: 'Pi', link: '/harnesses/pi' },
-      { text: 'Claude Code', link: '/harnesses/claude-code' }
+      { text: 'Claude Code', link: '/harnesses/claude-code' },
+      { text: 'Gemini CLI', link: '/harnesses/gemini-cli' }
     ]
   }],
   '/labs/': [{
@@ -139,7 +156,8 @@ const sidebars = {
       { text: '端到端适配案例', link: '/practice/end-to-end' },
       { text: '评测实验室', link: '/practice/evaluation' },
       { text: '可靠性恢复工作坊', link: '/practice/reliability-recovery' },
-      { text: '诊断工作表', link: '/practice/debugging' }
+      { text: '诊断工作表', link: '/practice/debugging' },
+      { text: '生态机制工作坊', link: '/practice/ecosystem-workshop' }
     ]
   }],
   '/references/': [{
@@ -169,6 +187,7 @@ export default defineConfig({
     nav: [
       { text: '学习路径', link: '/guide/start' },
       { text: '知识地图', link: '/guide/roadmap' },
+      { text: '生态全景', link: '/ecosystem/overview' },
       { text: '模型优化', link: '/models/adaptation' },
       { text: 'Harness 指南', link: '/harnesses/comparison' },
       { text: '实验与评测', link: '/labs/setup' }

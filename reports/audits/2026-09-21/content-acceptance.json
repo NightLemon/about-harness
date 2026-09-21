@@ -1,0 +1,611 @@
+{
+  "page_count": 120,
+  "site_pages": 99,
+  "initial_findings": 28,
+  "second_findings": 25,
+  "initial_closed": 28,
+  "second_closed": 25,
+  "content_status": "pass",
+  "pages": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "7f1e0c236a0311f2b246138f3c3d02e7b2fcf08842ea5426c4204d5148d6173c",
+      "reviewer": "second-learning"
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "sha256": "024f21f12766af6fbc0bb3957cb020a7154345fc1b6a68d87a4b4a4e377f7df5",
+      "reviewer": "second-learning"
+    },
+    {
+      "path": "README.md",
+      "sha256": "70a394a35d2018f17783da20ed7eaacae90ae164c79b0523adf90f90b4b74f07",
+      "reviewer": "second-learning"
+    },
+    {
+      "path": "docs/domains/browser.md",
+      "sha256": "5d93916688b96a5255926666ef187334f7fa0e3bd5ca8a70fe3f7f93e44a19f7",
+      "reviewer": "second-products"
+    },
+    {
+      "path": "docs/domains/coding.md",
+      "sha256": "db6fada8c583a54642a844ecae764fe181cf5e82eabc00e36c0cb97838f1d1e2",
+      "reviewer": "second-products"
+    },
+    {
+      "path": "docs/domains/data.md",
+      "sha256": "82e0c6640336990dbb8d84ac7de4f73e180e3dfc63029d218590e0f0538ac5de",
+      "reviewer": "second-products"
+    },
+    {
+      "path": "docs/domains/document.md",
+      "sha256": "66e3402f02cf65d05cf2309bb4f0f6a78308d52827dd78d6314c1e1352413577",
+      "reviewer": "second-products"
+    },
+    {
+      "path": "docs/domains/research.md",
+      "sha256": "14661b8401d7b2d4c23b5668b7755f1244f3544c60902c6a2debd30dea74a576",
+      "reviewer": "second-products"
+    },
+    {
+      "path": "docs/ecosystem/evaluation-observability.md",
+      "sha256": "eaff1571e754c32d1fe18ad95b8259bd85c59fe0e0062957f5062a8c0e1ac5b7",
+      "reviewer": "second-principles"
+    },
+    {
+      "path": "docs/ecosystem/knowledge-and-memory.md",
+      "sha256": "884feee86ebbb8b53deedd6d8db7df21f1ab81070160305e5cd9d05294d59709",
+      "reviewer": "second-products"
+    },
+    {
+      "path": "docs/ecosystem/long-running.md",
+      "sha256": "661f6e24384e32a99b7d502818332ad42110e8723132e3cde3eb48980c6f1bca",
+      "reviewer": "second-products"
+    },
+    {
+      "path": "docs/ecosystem/models-and-services.md",
+      "sha256": "58f42e0a46decf17e95a577564cd41fd49ed5abac08fe15a78fc1421b525a0f7",
+      "reviewer": "second-products"
+    },
+    {
+      "path": "docs/ecosystem/multimodal.md",
+      "sha256": "c44a945497387522ec398c7ffc7d29d5fba4a43b6edbc0826158bb16b488f85c",
+      "reviewer": "second-products"
+    },
+    {
+      "path": "docs/ecosystem/overview.md",
+      "sha256": "fe741349eb602d6aaff8824a86955cbcf95dcceffa203e93dc9013ca63e3a8d7",
+      "reviewer": "second-learning"
+    },
+    {
+      "path": "docs/ecosystem/protocols-and-skills.md",
+      "sha256": "c067f2461d0d7a976f0974f6eecb015e229e658ae5f2ddf6bdb909e242d07bff",
+      "reviewer": "second-products"
+    },
+    {
+      "path": "docs/ecosystem/research-frontiers.md",
+      "sha256": "162579c61e332ffc22492f3e9d134dd65d0af3805674b2b9236427cc0ca302ff",
+      "reviewer": "second-principles"
+    },
+    {
+      "path": "docs/evaluation/judges.md",
+      "sha256": "937e0749b41ba1c8de1d8de7623a958ba9d2235c1845ec14ff9c098a85df2fd6",
+      "reviewer": "second-principles"
+    },
+    {
+      "path": "docs/evaluation/method.md",
+      "sha256": "804e17b72a27d9c713851ae7fe911df46543c81cbdc701131efe9da080b04cf3",
+      "reviewer": "second-principles"
+    },
+    {
+      "path": "docs/evaluation/metrics.md",
+      "sha256": "6b9a899a200ee87fac25feb992af913698b7a254df3e79f1408f3fe17c6ceab8",
+      "reviewer": "second-principles"
+    },
+    {
+      "path": "docs/evaluation/regression.md",
+      "sha256": "9382d0e9097ab13d2966d403ba520d1f21d778919d4a1b4eb578faec257598be",
+      "reviewer": "second-principles"
+    },
+    {
+      "path": "docs/evaluation/reporting.md",
+      "sha256": "44759470ac47f63583d0bdc6a2f238784d6e261bc7e8962117a886ce16153eb5",
+      "reviewer": "second-principles"
+    },
+    {
+      "path": "docs/evaluation/task-schema.md",
+      "sha256": "a0ac66ee2d6dc682d7a71791d04a889425b10491c2cd4fa9464b7b911291fa1f",
+      "reviewer": "second-principles"
+    },
+    {
+      "path": "docs/foundations/agent-loop.md",
+      "sha256": "ddd2a486e184d5061f6e0ebc8332be8553c9b9bb17899a4f4481160100311d05",
+      "reviewer": "second-principles"
+    },
+    {
+      "path": "docs/foundations/architecture.md",
+      "sha256": "3a8234c7be640b50f512922b9b9a2c2ff52f0d65eb8ee65830cca871fffe9fff",
+      "reviewer": "second-principles"
+    },
+    {
+      "path": "docs/foundations/context.md",
+      "sha256": "eb62e5282d85c5e59e01438785979f2ecd1bb1db1c7b32025b1fe22ba60c7d3b",
+      "reviewer": "second-principles"
+    },
+    {
+      "path": "docs/foundations/human-control.md",
+      "sha256": "72de864bf43efc02c36e4176bf3f0199e799a7f9a63b4cdf1e00064ee138487b",
+      "reviewer": "second-principles"
+    },
+    {
+      "path": "docs/foundations/instructions.md",
+      "sha256": "e4bfa16f5fa3ab84352df4f3d703044d8b809b098f799fb9ff3d722cb1adf2d9",
+      "reviewer": "second-principles"
+    },
+    {
+      "path": "docs/foundations/memory.md",
+      "sha256": "012acfbfcfc5c80793dd31aa0f771dafd0ee629081e243730aabc2ecd271e655",
+      "reviewer": "second-principles"
+    },
+    {
+      "path": "docs/foundations/multi-agent.md",
+      "sha256": "ad9b855f8e8158805ef61d8ef1925c78f1e6e10b9a9aec122c537693c5367aa6",
+      "reviewer": "second-principles"
+    },
+    {
+      "path": "docs/foundations/observability.md",
+      "sha256": "47d01d86095fcf8f91e6b4d523d8814183d194a5da5e615f1a4160e1822bd3eb",
+      "reviewer": "second-principles"
+    },
+    {
+      "path": "docs/foundations/protocols.md",
+      "sha256": "d60c2601dc2705f02c200ef3bd377da0f0dcf15adca14d330c5f71731ebb0991",
+      "reviewer": "second-principles"
+    },
+    {
+      "path": "docs/foundations/reasoning.md",
+      "sha256": "ae78c6d7e7bee9dfc618b0f2bbf6e3abb2f372cdf9905a2523f065f89b39e763",
+      "reviewer": "second-principles"
+    },
+    {
+      "path": "docs/foundations/security.md",
+      "sha256": "fc223f2d0cbb5903efd0d108e5bac3b5653e2df5a5888e7ab36832394e322a1d",
+      "reviewer": "second-principles"
+    },
+    {
+      "path": "docs/foundations/state-reliability.md",
+      "sha256": "c82f102ce77693f18f1d3d0380124deb463442e589ff67517959fc160111a1ae",
+      "reviewer": "second-principles"
+    },
+    {
+      "path": "docs/foundations/tools.md",
+      "sha256": "58fbe4fbc5bed5b47e1ac1e09129197cfeef90325be6ba2f21e2328ec0a5546f",
+      "reviewer": "second-principles"
+    },
+    {
+      "path": "docs/foundations/what-is-harness.md",
+      "sha256": "31186a5e54ba8965c95aca0536b595a8a199b28e630ffbe29ceb5a8fc87aa1bf",
+      "reviewer": "second-principles"
+    },
+    {
+      "path": "docs/frameworks/autogen.md",
+      "sha256": "a34caf0120afac4ebe45be5170bdb096dff7198798d26ac32463a612d5afa05d",
+      "reviewer": "second-products"
+    },
+    {
+      "path": "docs/frameworks/comparison.md",
+      "sha256": "a69e169431eae1fd5aac3d098dd54ddf6cfb78db9f4bf705bc4f3320568508e4",
+      "reviewer": "second-products"
+    },
+    {
+      "path": "docs/frameworks/google-adk.md",
+      "sha256": "894b9f22b9956b2ea0b9469a18417d5dd3412fae655acefaced5dd0b3937e2cc",
+      "reviewer": "second-products"
+    },
+    {
+      "path": "docs/frameworks/langgraph.md",
+      "sha256": "159e60b0a302bcf83b2547c555ddb13a232a19636c63a39d5813abd74f25a882",
+      "reviewer": "second-products"
+    },
+    {
+      "path": "docs/frameworks/microsoft-agent-framework.md",
+      "sha256": "19319b37009594b443316cdec81039f37c2483064c5d8e7b0e34ab06857b73d0",
+      "reviewer": "second-products"
+    },
+    {
+      "path": "docs/frameworks/modern-runtimes.md",
+      "sha256": "1b0088b374262a528a9488820bef31035d7acee3a65fed12bd00f1b2fef2c5ab",
+      "reviewer": "second-products"
+    },
+    {
+      "path": "docs/frameworks/openai-agents-sdk.md",
+      "sha256": "c9cb232d7672b5228c3b0fac47ff15736a9d1d02f95743ed81c780f4ea2dc808",
+      "reviewer": "second-products"
+    },
+    {
+      "path": "docs/guide/capstone.md",
+      "sha256": "a57d8cf947902bc02f4983684c81e8082d0b9eb456bf5b146b14c13b63be75d0",
+      "reviewer": "second-learning"
+    },
+    {
+      "path": "docs/guide/interview-practice.md",
+      "sha256": "960f5336829492c32372d9d1e8365415dc7845845b7d1a9a03781349db37da79",
+      "reviewer": "second-learning"
+    },
+    {
+      "path": "docs/guide/portfolio.md",
+      "sha256": "f4a803435f436575ee205fd9f525d1aa868257e6006d3b0a74b3c0bca8bdb65a",
+      "reviewer": "second-learning"
+    },
+    {
+      "path": "docs/guide/prerequisites.md",
+      "sha256": "8bbc8cc2e1cd6db8ce577f94b229a209fc968c1a6cf135370d643a05fc1dceb4",
+      "reviewer": "second-learning"
+    },
+    {
+      "path": "docs/guide/roadmap.md",
+      "sha256": "e98798d5fbbc60d3fca5015d7d915c80436aef5b7cbebf37d8222cf7eace30c0",
+      "reviewer": "second-learning"
+    },
+    {
+      "path": "docs/guide/start.md",
+      "sha256": "9a31cfa262d9f79be781d37f9bb97de8a7f17449f25ed2080398e62c1ec59696",
+      "reviewer": "second-learning"
+    },
+    {
+      "path": "docs/harnesses/claude-code.md",
+      "sha256": "5e49fce89236272c2d9a7ce01a4fe51e13ca7b305c44d72d8038487726cb0928",
+      "reviewer": "second-products"
+    },
+    {
+      "path": "docs/harnesses/codex.md",
+      "sha256": "b07b09bbcec176ca56d71801965281d038de8155c0e0099166dd8c45971a45b9",
+      "reviewer": "second-products"
+    },
+    {
+      "path": "docs/harnesses/comparison.md",
+      "sha256": "a95f80b32e499e4c4b9c1ccc2761fbf2abe19bf403ecb72ca01f24d8d9128276",
+      "reviewer": "second-products"
+    },
+    {
+      "path": "docs/harnesses/gemini-cli.md",
+      "sha256": "c102b87210e7c7d75f5e8b3d3e5a79f430bfd2601efa8e516fb39d08284470da",
+      "reviewer": "second-products"
+    },
+    {
+      "path": "docs/harnesses/pi.md",
+      "sha256": "bdb06fbd3a4f1fce993ba31859fa95a4e880158b1224612873a311118d6f8d97",
+      "reviewer": "second-products"
+    },
+    {
+      "path": "docs/implementation/adapter-contract.md",
+      "sha256": "441a1f55193b3e631160c52adec26be23c47862a53957e450f2689a6f053f6b0",
+      "reviewer": "second-learning"
+    },
+    {
+      "path": "docs/implementation/extensions.md",
+      "sha256": "0eadaf8d3be21ce61078973fa4880b478960f079f2accc95864aedff65c7f2f1",
+      "reviewer": "second-learning"
+    },
+    {
+      "path": "docs/implementation/minimal-harness-python.md",
+      "sha256": "e4205794926a01999e7ea7521d71de4df7c7749813d1d919c2224c83fd31640f",
+      "reviewer": "second-learning"
+    },
+    {
+      "path": "docs/implementation/testing.md",
+      "sha256": "d408919f4cc3608039280f7c33f69cf564dc34c90fed2c990d54711d8fa6a7d1",
+      "reviewer": "second-learning"
+    },
+    {
+      "path": "docs/implementation/typescript-mapping.md",
+      "sha256": "6687fc87e04e1109cf24bce213a1ad6a7a41c48b7d3009f677be4ee9364929d8",
+      "reviewer": "second-learning"
+    },
+    {
+      "path": "docs/index.md",
+      "sha256": "1c11efa3257d92160e5d492ae878416958b3e49f35663f11eb6c808fe2971b0e",
+      "reviewer": "second-learning"
+    },
+    {
+      "path": "docs/labs/browser.md",
+      "sha256": "5ff31992131d704b5c86326c0faf108465c4279fba3dec56b4af775690997a29",
+      "reviewer": "second-learning"
+    },
+    {
+      "path": "docs/labs/coding.md",
+      "sha256": "45798dc768eca02402d0a8b17059de00a41e049419eee70e9fd971ba6ac1f398",
+      "reviewer": "second-learning"
+    },
+    {
+      "path": "docs/labs/data.md",
+      "sha256": "1272df4cd975db9abc0194dc3acc63e208bdd7ab02e1f67889a1261da59a77a5",
+      "reviewer": "second-learning"
+    },
+    {
+      "path": "docs/labs/document.md",
+      "sha256": "02f47b194429387473398dbb5b877020423ea87d2f2869808e58b64885394953",
+      "reviewer": "second-learning"
+    },
+    {
+      "path": "docs/labs/migration.md",
+      "sha256": "8a11635ac29a90c8301fd1b22269e358b0cdd5cfffebe16ebc3a1ef7e7e0378f",
+      "reviewer": "second-learning"
+    },
+    {
+      "path": "docs/labs/research.md",
+      "sha256": "c0d3beaaccb63a36b428cff89e0c7ba039dc988b76b2bbfa173dac88e4fb9665",
+      "reviewer": "second-learning"
+    },
+    {
+      "path": "docs/labs/runner.md",
+      "sha256": "1453f69767a178a31341a76961d5c7b310f2938a922aca8708bbfe863f041bf4",
+      "reviewer": "second-learning"
+    },
+    {
+      "path": "docs/labs/setup.md",
+      "sha256": "737c919291c623cb45718154e637db5aa3bcbe549c43675d4045fccebb7bc7a2",
+      "reviewer": "second-learning"
+    },
+    {
+      "path": "docs/models/adaptation.md",
+      "sha256": "d917d7fadeb661014d7f315b9602e92c04f2b82b4b535fe5650310382380c735",
+      "reviewer": "second-products"
+    },
+    {
+      "path": "docs/models/anthropic.md",
+      "sha256": "46e5f67166f1f99a38441981d2a6883892457d338887e052cd68f872ea2cf8a5",
+      "reviewer": "second-products"
+    },
+    {
+      "path": "docs/models/deepseek.md",
+      "sha256": "041c90a50f03ac5d9ca181a69c958fd740c5f14baa1173c89228ca7d65950fe3",
+      "reviewer": "second-products"
+    },
+    {
+      "path": "docs/models/google.md",
+      "sha256": "62882de7f559f57ca36ac84c372a812e2d3518b79f834fbee2762c6a0e41b480",
+      "reviewer": "second-products"
+    },
+    {
+      "path": "docs/models/llama.md",
+      "sha256": "ce338e9711f43c806d46f1fb7877716423f5735d31bf4a493bd737c8423c6ccb",
+      "reviewer": "second-products"
+    },
+    {
+      "path": "docs/models/openai.md",
+      "sha256": "cbb34d219e9ecaeb7067d2ac6568fcc3395a02e18270f3b10b6f114611fa553b",
+      "reviewer": "second-products"
+    },
+    {
+      "path": "docs/models/protocol-compatibility.md",
+      "sha256": "7cbdfbd837d7d40546a1b30c9710bd81cfe3a75a00d7e02af974c998fad4cc29",
+      "reviewer": "second-products"
+    },
+    {
+      "path": "docs/models/qwen.md",
+      "sha256": "7cc52f52e825ee13f84c008befca000182f0f9252d9165a8959c7fa9145bc8f8",
+      "reviewer": "second-products"
+    },
+    {
+      "path": "docs/models/reasoning-budget.md",
+      "sha256": "91932e3d82c68666c1b645d285eeb61400802ac4d0187e5f5081c9edb641e0d0",
+      "reviewer": "second-products"
+    },
+    {
+      "path": "docs/optimization/context-tools.md",
+      "sha256": "e780953c6ece9449bf1189c8219571dd4ae131a83c28f66528166efd7d83e380",
+      "reviewer": "second-principles"
+    },
+    {
+      "path": "docs/optimization/debugging.md",
+      "sha256": "1b7e80aab34954cbd588a545b39127d9f5fd82849e18ae24cb8b424789f02ef4",
+      "reviewer": "second-principles"
+    },
+    {
+      "path": "docs/optimization/experiment.md",
+      "sha256": "75dd1c94c98764116f8788e6356b36e6627263aed8107e3f004353fa75f7c4f0",
+      "reviewer": "second-principles"
+    },
+    {
+      "path": "docs/optimization/memory.md",
+      "sha256": "fb9ffa78212dcfd778eff265cf3e3b76b076ba76c5c54deea3a5f2ba22fd9492",
+      "reviewer": "second-principles"
+    },
+    {
+      "path": "docs/optimization/model-fit.md",
+      "sha256": "847ebf939b62bad56085b8f71d228a2e3ce86adce7df048b2242e65161fd739b",
+      "reviewer": "second-principles"
+    },
+    {
+      "path": "docs/optimization/prompting.md",
+      "sha256": "1142ad37bcefc0614ebc9e908ddb19979eb3228844ec259982090fff16cd2264",
+      "reviewer": "second-principles"
+    },
+    {
+      "path": "docs/optimization/reasoning-routing.md",
+      "sha256": "ec9007afdeee7e3c857247a732cd972638da7655c8799695a21b55041d5d4bc1",
+      "reviewer": "second-principles"
+    },
+    {
+      "path": "docs/practice/debugging.md",
+      "sha256": "9ef8a63e7edd6ed45a163565c535acf41b9eb6e080839b1f513b163001cec7f3",
+      "reviewer": "second-learning"
+    },
+    {
+      "path": "docs/practice/ecosystem-workshop.md",
+      "sha256": "8883b32591b7166270fa95bbe5e7b0d0e13a85b7a11b6a39e22f2f88d7ca359a",
+      "reviewer": "second-learning"
+    },
+    {
+      "path": "docs/practice/end-to-end.md",
+      "sha256": "4859beff89c66c593d8244195d65028d4bd1328eba399c5b925e74ec480865ec",
+      "reviewer": "second-learning"
+    },
+    {
+      "path": "docs/practice/evaluation.md",
+      "sha256": "cfd1f7c888c8ad15e3fe72cd7110f0dfbf0dc6147fe72190758bb3989028a5fb",
+      "reviewer": "second-learning"
+    },
+    {
+      "path": "docs/practice/framework-selection.md",
+      "sha256": "8332123e019740f9d063b21abd2e1f3be53ef7988419e725f27c3f9ceac78299",
+      "reviewer": "second-learning"
+    },
+    {
+      "path": "docs/practice/harness-design.md",
+      "sha256": "6f81dc66ca9d9f75f5cabf1cc3b324b7624f6ca8dd1030d6dbcd6e9b361803bf",
+      "reviewer": "second-learning"
+    },
+    {
+      "path": "docs/practice/model-playbook.md",
+      "sha256": "06903c9cb714ec2ca38c5dad7a11dd7f52558d457a42bb045a0c117c8ca13319",
+      "reviewer": "second-learning"
+    },
+    {
+      "path": "docs/practice/reliability-recovery.md",
+      "sha256": "795a38fee3dabd64b5c73b8103f9229835335e8311e88a0cca3e737116ed2150",
+      "reviewer": "second-learning"
+    },
+    {
+      "path": "docs/practice/security-review.md",
+      "sha256": "bc8a455e82cf2fe7ab53167e2f919dd4c6fc6e5abca3b388112f9f6197ac1ce6",
+      "reviewer": "second-learning"
+    },
+    {
+      "path": "docs/references/compatibility.md",
+      "sha256": "d83692670de3e0c00902ba6c692736a505369a44f49310409ac5ca531f9716ba",
+      "reviewer": "second-learning"
+    },
+    {
+      "path": "docs/references/fact-registry.md",
+      "sha256": "b93dae9370ad8273926e57954982c066cadbb9ca52e5c9613066bb838003794d",
+      "reviewer": "second-learning"
+    },
+    {
+      "path": "docs/references/glossary.md",
+      "sha256": "182350eb9a9be3695f4139b13e69798f0d31ffba22f77742225898194ff9d80b",
+      "reviewer": "second-learning"
+    },
+    {
+      "path": "docs/references/sources.md",
+      "sha256": "ea5a9f5d507e4fe74e671f6ce2d75d9980993568709c99b2d105237c74f547a0",
+      "reviewer": "second-learning"
+    },
+    {
+      "path": "docs/security/incident-response.md",
+      "sha256": "b372251bbe8bc794f24741add4b7a4a4e4d4c1afa306e522d90a6a0ff8878622",
+      "reviewer": "second-principles"
+    },
+    {
+      "path": "docs/security/prompt-injection.md",
+      "sha256": "fd9c0964065edb0b765d1b78f5b5d8e7021ed37827913466f72066523d8b2694",
+      "reviewer": "second-principles"
+    },
+    {
+      "path": "docs/security/secrets-privacy.md",
+      "sha256": "6c7c417c0598b9121e103629fa4e2c63a36f7407b75d40528f0b035dcb7bada9",
+      "reviewer": "second-principles"
+    },
+    {
+      "path": "docs/security/supply-chain.md",
+      "sha256": "314fee54a46180838645307910e32d287e06c618dddcb6c851fe24ccc57c9fc8",
+      "reviewer": "second-principles"
+    },
+    {
+      "path": "docs/security/threat-model.md",
+      "sha256": "eb5e6716b9f850718c37adbf608335451c5e149bba822d03409b04e9a021a7ab",
+      "reviewer": "second-principles"
+    },
+    {
+      "path": "evals/README.md",
+      "sha256": "7c00ef79a6f497a17dbcc264f549248da6e506907ddb37ddd9bb63747929de3e",
+      "reviewer": "second-learning"
+    },
+    {
+      "path": "examples/harnesses/claude-code/CLAUDE.md",
+      "sha256": "de8c4d3283f305bd27486e0775c4e90edc80dd3338ab645e65f509bac99ee95d",
+      "reviewer": "second-learning"
+    },
+    {
+      "path": "examples/harnesses/claude-code/README.md",
+      "sha256": "ba1f9f7bb8ebf675b1c16d92c20cb46ed8468ea92a4e4700a777f15abc0fd04e",
+      "reviewer": "second-learning"
+    },
+    {
+      "path": "examples/harnesses/codex/AGENTS.md",
+      "sha256": "94f68b0ac1e41bff75800fc3ec290b9354e7bff3ee8ba21d1361775eca3fb859",
+      "reviewer": "second-learning"
+    },
+    {
+      "path": "examples/harnesses/codex/README.md",
+      "sha256": "d0da79331e2c529211c2e9c955c0f1109ae202d30ee344ed78ae0358a60b91be",
+      "reviewer": "second-learning"
+    },
+    {
+      "path": "examples/harnesses/pi/AGENTS.md",
+      "sha256": "bbc6e8eb67623691f10c5ad4e50f4b064cea6a817b62e60a76a65d2426fc257c",
+      "reviewer": "second-learning"
+    },
+    {
+      "path": "examples/harnesses/pi/README.md",
+      "sha256": "b5b0939ad3d7792a0e517a0bdee4559673a06c7f694a8157f29a170abd66b199",
+      "reviewer": "second-learning"
+    },
+    {
+      "path": "examples/portfolio-starter/README.md",
+      "sha256": "6dae8f01dcd21de710d9d07fd6849b0e52dbfb70b509cd75ce6ce45ca01e5e63",
+      "reviewer": "second-learning"
+    },
+    {
+      "path": "examples/portfolio-starter/environment.md",
+      "sha256": "044246c7fcbf8b04ef5aa94772a9737ff503d3a4acd11f13d900464f95b4a9a4",
+      "reviewer": "second-learning"
+    },
+    {
+      "path": "examples/portfolio-starter/evaluation/report.md",
+      "sha256": "2fd051b167a5ca63f0bb5d3ac6636631787f3a7f567b661603cd6865905394f6",
+      "reviewer": "second-learning"
+    },
+    {
+      "path": "examples/portfolio-starter/evaluation/study.md",
+      "sha256": "5ef1c33d5dc6146eaea12a24883742c564626c4b0120fad4e1f74e3a5fd578d6",
+      "reviewer": "second-learning"
+    },
+    {
+      "path": "examples/portfolio-starter/evidence/commands.md",
+      "sha256": "9e369e28a2453289c09579f5072b3863d139e079b4a70f615b474634d2e422ed",
+      "reviewer": "second-learning"
+    },
+    {
+      "path": "examples/portfolio-starter/evidence/unresolved.md",
+      "sha256": "c3f510d1df3da69d0af68db0ef1448a7e60093869014e0c520a9bf6a9fa600ad",
+      "reviewer": "second-learning"
+    },
+    {
+      "path": "examples/portfolio-starter/harness/verification.md",
+      "sha256": "d4e8c27b419226ee17c4df814a4d6853d1965ef99b5951e3ad5c76e212b9a970",
+      "reviewer": "second-learning"
+    },
+    {
+      "path": "examples/portfolio-starter/knowledge-map.md",
+      "sha256": "ed6c48ae4b59e0175678fa6213f772dc7a285dab7454f5cdb3b1103b64103592",
+      "reviewer": "second-learning"
+    },
+    {
+      "path": "examples/portfolio-starter/migration/responsibility-map.md",
+      "sha256": "e9378596aab5b7623dcee23af6531041f7c7b279c37a17f4dcbb1687e0428d87",
+      "reviewer": "second-learning"
+    },
+    {
+      "path": "examples/portfolio-starter/model-card/adaptation.md",
+      "sha256": "c87cabb113d0773f9df5ad33880c6a8f5f2ea7b6834a272c32bd02119bcf08bb",
+      "reviewer": "second-learning"
+    },
+    {
+      "path": "examples/portfolio-starter/security/threat-model.md",
+      "sha256": "6507b2e836192d29d4a4707138b7159ed9480fc5ecd07a47f511479b2f5f239c",
+      "reviewer": "second-learning"
+    }
+  ]
+}

@@ -69,7 +69,7 @@ Task（任务）通常是主要独立样本；同一任务的多次 run 是对�
 - **Workload（工作负载）-level 结果**：按 coding、browser 等任务族分层，防止一个大类掩盖另一个小类；
 - **Pair-level 差异**：同一 task、repeat 下候选与 基线 的直接对照，减少任务难度差异。
 
-任务-level 聚合必须提前定义，例如“3 次中至少 2 次通过”或“3 次全部通过”。当前 `study-v1.1` 用 `task_pass_min_runs=2` 固定前一种规则；`npm run eval:summary` 同时保留 run-level 原始汇总和 task-level 结果。一个任务只有收齐 `study.repeats` 个矩阵单元才可聚合，缺失重复进入 `incomplete_tasks`，不能被静默算作失败或从分母消失。
+Task-level 聚合必须提前定义，例如“3 次中至少 2 次通过”或“3 次全部通过”。历史 Study 1.1 样例用 `task_pass_min_runs=2` 固定前一种规则；Study 1.2 同样由研究显式指定 `task_pass_min_runs` 与 `repeats`，不把 2/3 当成所有研究的默认值。汇总器同时保留 run-level 原始汇总和 task-level 结果。一个任务只有收齐 `study.repeats` 个矩阵单元才可聚合，缺失重复进入 `incomplete_tasks`，不能被静默算作失败或从分母消失。
 
 ### 数据通常是嵌套的
 
@@ -88,12 +88,15 @@ Repeat 聚合规则代表不同产品体验：
 
 | 聚合 | 回答的问题 | 必须同时记录 |
 | --- | --- | --- |
-| 任一次成功 | 允许 best-of-k 时最终能否完成 | 全部 k 次费用、延迟与失败 |
+| Oracle 任一次成功（pass@k） | k 个候选中是否存在正确答案 | 全部标签、k、费用和失败；这不代表交付结果 |
+| 选择器交付成功 | best-of-k 选出的答案是否正确 | 不读取 oracle 的选择规则、选中 ID、独立验收和全部成本 |
 | 多数成功 | 常规运行是否较稳定 | k、阈值和每次结果 |
 | 全部成功 | 是否要求高重复可靠性 | 任一失败类型与成本 |
 | 首次成功 | 默认单次体验如何 | 后续重试不能回填首轮 |
 
-选择“任一次成功”不能只保留最好的一次；它测的是带重试策略的整体系统。若线上只允许一次运行，离线 best-of-5 不对应目标体验。
+Oracle（已知判据）可以事后判断候选集合是否包含正确答案，但线上选择器通常看不到标签。只有把选择器实际交付的候选交给独立验收，才能测量 best-of-k 系统的成功；若采用“验证通过就停止”的流程，也必须把可执行验证器、停止规则及所有尝试计入系统。若线上只允许一次运行，离线 best-of-5 不对应目标体验。参见[固定候选练习](/practice/ecosystem-workshop)：存在正确候选 a、c，最高分 b 却错误。
+
+这里的固定练习只计算给定候选集合的 `oracle_any_pass`，不估计真实模型的采样 pass@k，也不把四个候选算成四个独立任务。真正报告 pass@k 时，应另写明候选生成、采样和估计规则。
 
 ## 先验证矩阵完整性
 
@@ -331,7 +334,7 @@ Evaluator 本身变化会改变结论。聚合器、Wilson/quantile 实现、Jud
 
 ## 用历史合成样例验证
 
-前置条件是 Node.js 22+，输入是已固定的 `evals/study.example.json` 与 `evals/runs.example.jsonl`，命令不联网、不调用真实模型：
+前置条件是 Node.js 22+、Git 可用，依赖按 `package-lock.json` 安装，从仓库根目录执行；输入是已固定的 `evals/study.example.json`、`evals/runs.example.jsonl` 与 fixture 谱系引用，引用的历史 commit 必须在本地可解析。环境准备见[实验环境](/labs/setup)。命令不联网、不调用真实模型：
 
 ```bash
 npm run eval:validate

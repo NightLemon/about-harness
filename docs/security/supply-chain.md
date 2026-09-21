@@ -104,23 +104,27 @@ Lockfile 主要回答解析到了哪些版本及其完整性信息。它不能�
 
 生成物不是天然可信。Source map、搜索索引、错误页、打包日志和 metadata 都可能泄漏个人路径、环境变量或私人文本；发布前应扫描最终目录，而不只是源码。
 
+以下仓库检查从根目录运行，使用当前 commit 的配置、锁文件、工作流与合成 fixture。前置条件是 Node.js 22+、Python 3.12、uv 0.11.16，以及按[实验环境](/labs/setup)缓存的锁定依赖和浏览器；不配置真实模型或发布凭据。许可检查和工作流检查只读输入，`verify` 还会运行本地实验并生成被忽略的构建、测试与实验产物。
+
 ```bash
 npm run licenses:check
 npm run workflows:check
 npm run verify
 ```
 
-`workflows:check` 拒绝可变镜像、非完整 动作提议 SHA、顶层写权限，以及 deploy job 之外的 Pages/OIDC 权限。未知或自定义许可默认阻断，直到人工确认再分发义务。
+`workflows:check` 拒绝可变镜像、非完整 GitHub Actions commit SHA、顶层写权限，以及 deploy job 之外的 Pages/OIDC 权限。未知或自定义许可默认阻断，直到人工确认再分发义务。
 
 这些检查只覆盖本仓库定义的确定性策略。它们不验证第三方 maintainer 是否可信、SHA 对应源码是否经过可复现构建，也不替代 advisory 研判。
+
+预期各命令退出 0，且许可、工作流和验证输出没有失败项；这是静态门禁与 E1 离线运行证据。未知许可、可变引用、非预期网络或权限扩张是停止条件，不能通过删门禁来接受依赖。清理只处理本轮生成的被忽略产物，保留失败记录；若练习修改配置，先看精确 diff 并只恢复自己的变更，再重跑检查。
 
 <span id="ci-action容器与发布身份"></span>
 
 ## CI Action、容器与发布身份
 
-CI 同时拥有源码、缓存和发布通道，第三方 动作提议 应像可执行依赖一样审查。人类可读 tag 放在注释中，真正引用固定完整 commit；workflow 顶层保持只读，只有独立 deploy job 获得 Pages/OIDC 所需写权限。来自不可信分支的代码不能在持有发布 credential 的上下文执行。
+CI 同时拥有源码、缓存和发布通道，第三方 GitHub Action 应像可执行依赖一样审查。人类可读 tag 放在注释中，真正引用固定完整 commit；workflow 顶层保持只读，只有独立 deploy job 获得 Pages/OIDC 所需写权限。来自不可信分支的代码不能在持有发布 credential 的上下文执行。
 
-对 动作提议 更新，比较的不只是 `uses:` 一行：查看 commit 间源码、入口文件、runtime、依赖、权限和网络变化。Composite 动作提议 中每个 shell step 都是执行面；JavaScript 动作提议 的打包文件也需要与源码/发布过程对账。
+对 GitHub Action 更新，比较的不只是 `uses:` 一行：查看 commit 间源码、入口文件、runtime、依赖、权限和网络变化。Composite Action 中每个 shell step 都是执行面；JavaScript Action 的打包文件也需要与源码/发布过程对账。
 
 容器 tag 用于人读，digest 用于机器锁定。审查基础镜像、架构、用户、入口、包管理器缓存、证书和复制进去的文件；默认以非 root 运行，限制 mount、capability、网络和临时目录。固定 digest 后仍需主动更新：不漂移意味着可复现，也意味着安全修复不会自动进入。
 

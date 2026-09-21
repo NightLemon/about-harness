@@ -173,7 +173,7 @@ Number.NaN <= 0 // false
 6. 先查询幂等缓存，再查找并执行 工具处理函数；
 7. 达到 tool step 上限时返回 `stopped / max_steps`。
 
-适配器 只能提出动作，不能直接执行工具或写入 `completed`。工具 工具处理函数 也只能返回值，不能修改 run 状态。这与[状态与可靠执行](/foundations/state-reliability)中的 控制器 所有权一致。
+适配器 只能提出动作，不能直接执行工具或写入 `completed`。工具处理函数 也只能返回值，不能修改 run 状态。这与[状态与可靠执行](/foundations/state-reliability)中的 控制器 所有权一致。
 
 ### Completion proposal 怎样变成终态
 
@@ -228,6 +228,20 @@ Validator（验证器） 是外部信任边界。`validateAcceptanceResult` 要�
 跨语言真正共用的是公开 任务/动作提议/结果 schema、输入、动作与结果正负例、JSON 子集验收 fixture 和若干控制不变量，不是所有 class 或运行能力。`result-v1.1` 可以跨语言读取，但 检查点 的 适配器 state 仍属于产生它的实现；没有版本/适配器 身份和迁移器时，TS 不应尝试恢复 Python 检查点。旧 `result-v1.0.json` 只用于解释历史宽松格式，当前 writer 不再生成 1.0。
 
 <span id="失败练习证明类型断言会破坏防线"></span>
+
+## 验证当前映射
+
+按[统一环境](/guide/prerequisites)准备 Node.js 22+、Python 3.12、uv 0.11.16；依赖使用根目录 `package-lock.json` 与 `uv.lock`。输入是上面的共享契约 fixture 和 TS/Python 实现，从仓库根执行：
+
+```bash
+npm run lab:typecheck
+npm run lab:ts-runtime-test
+uv run --frozen --offline pytest -q lab/tests/test_acceptance.py lab/tests/test_contracts_and_schema.py
+```
+
+预期相关测试全部通过。分别检查静态编译、共享 Task/Action/Result 与验收语义、非法输入在预算和副作用之前拒绝；以业务断言为准，不固定 pytest 收集数量。版本化 usage 观察还由 `lab/ts/usage.ts` 与 `lab/fixtures/contracts/usage-v1.json` 单独验证，不能把缺失用量写成已知零。
+
+以下失败练习只在自己的可撤销修改中执行；先保留原始 diff，已有不明改动时停止。测试只产生已忽略缓存，回退后重新执行上述命令。证据为 E1，静态类型与共享 wire 契约通过不证明跨进程恢复或真实 provider 可用。
 
 ## 失败练习：证明类型断言会破坏防线
 

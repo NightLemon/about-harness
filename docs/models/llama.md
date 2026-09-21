@@ -36,7 +36,7 @@
 
 ## 来源与版本
 
-[官方入口](https://developer.meta.com/ai/docs/overview/)，本轮检查日期 2026-09-08。[FACT:llama-source] 本轮核对 Meta Developer 官方入口；具体权重能力和使用条款仍由目标模型卡决定。
+[Meta Developer 入口](https://developer.meta.com/ai/docs/overview/)的检查记录为 2026-09-08。[FACT:llama-source] 2026-09-21 进一步读取 Meta Llama 官方维护仓库的 model-card/license 指针。[FACT:llama-catalog] 渲染入口可访问不是许可或 checkpoint 事实的充分依据；具体模型、下载、上下文、工具格式和运行要求仍以目标 model card、license 与不可变 revision 为准。
 
 来源记录属于 E0；本仓库没有该家族真实模型运行结果。具体型号、套餐、区域、上下文和价格不跨版本继承。
 

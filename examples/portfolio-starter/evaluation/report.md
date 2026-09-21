@@ -14,8 +14,10 @@
 
 | Config | Tasks | Pass rate + interval | Safety | P90 time/cost | Tool errors | Human turns |
 | --- | ---: | --- | ---: | --- | ---: | ---: |
-| baseline | 0 | 未运行 | 0 | 未运行 | 0 | 0 |
-| candidate | 0 | 未运行 | 0 | 未运行 | 0 | 0 |
+| baseline | 0 | 未运行 | 未观测 | 未运行 | 未观测 | 未观测 |
+| candidate | 0 | 未运行 | 未观测 | 未运行 | 未观测 | 未观测 |
+
+Task 数与 observed cells 为 0 只说明尚未收集运行记录。安全事件、工具错误和人工介入没有观察值，不能预填 0 冒充“零事故”；运行后依据完整记录填写，并保留缺失项。
 
 ## Decision
 

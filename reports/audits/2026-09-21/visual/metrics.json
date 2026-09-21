@@ -1,0 +1,1564 @@
+{
+  "base": "/about-harness/",
+  "records": [
+    {
+      "id": "desktop-1440",
+      "width": 1440,
+      "height": 900,
+      "home": {
+        "viewportWidth": 1440,
+        "clientWidth": 1440,
+        "scrollWidth": 1440,
+        "title": "About Harness",
+        "main": true,
+        "targetTop": null,
+        "tables": [],
+        "code": []
+      },
+      "table": {
+        "viewportWidth": 1440,
+        "clientWidth": 1440,
+        "scrollWidth": 1440,
+        "title": "评测方法与证据晋级 | About Harness",
+        "main": true,
+        "targetTop": null,
+        "tables": [
+          {
+            "clientWidth": 688,
+            "scrollWidth": 688,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 688,
+            "scrollWidth": 688,
+            "overflowX": "auto"
+          }
+        ],
+        "code": [
+          {
+            "clientWidth": 688,
+            "scrollWidth": 688,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 688,
+            "scrollWidth": 688,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 688,
+            "scrollWidth": 688,
+            "overflowX": "auto"
+          }
+        ]
+      },
+      "migration": {
+        "viewportWidth": 1440,
+        "clientWidth": 1440,
+        "scrollWidth": 1440,
+        "title": "跨 Harness 迁移：保留职责而非文件名 | About Harness",
+        "main": true,
+        "targetTop": null,
+        "tables": [
+          {
+            "clientWidth": 688,
+            "scrollWidth": 688,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 688,
+            "scrollWidth": 688,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 688,
+            "scrollWidth": 688,
+            "overflowX": "auto"
+          }
+        ],
+        "code": [
+          {
+            "clientWidth": 688,
+            "scrollWidth": 688,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 688,
+            "scrollWidth": 688,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 688,
+            "scrollWidth": 688,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 688,
+            "scrollWidth": 688,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 688,
+            "scrollWidth": 688,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 688,
+            "scrollWidth": 688,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 688,
+            "scrollWidth": 688,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 688,
+            "scrollWidth": 688,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 688,
+            "scrollWidth": 688,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 688,
+            "scrollWidth": 688,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 688,
+            "scrollWidth": 688,
+            "overflowX": "auto"
+          }
+        ]
+      },
+      "migrationTableScroll": null,
+      "entryPages": [
+        {
+          "route": "ecosystem/overview",
+          "metrics": {
+            "viewportWidth": 1440,
+            "clientWidth": 1440,
+            "scrollWidth": 1440,
+            "title": "Agent 生态全景：先定位责任，再选择产品 | About Harness",
+            "main": true,
+            "targetTop": null,
+            "tables": [
+              {
+                "clientWidth": 688,
+                "scrollWidth": 688,
+                "overflowX": "auto"
+              }
+            ],
+            "code": [
+              {
+                "clientWidth": 688,
+                "scrollWidth": 688,
+                "overflowX": "auto"
+              }
+            ]
+          },
+          "codeBlocks": 1
+        },
+        {
+          "route": "ecosystem/protocols-and-skills",
+          "metrics": {
+            "viewportWidth": 1440,
+            "clientWidth": 1440,
+            "scrollWidth": 1440,
+            "title": "协议与技能：连接工具、委派任务和复用流程 | About Harness",
+            "main": true,
+            "targetTop": null,
+            "tables": [
+              {
+                "clientWidth": 688,
+                "scrollWidth": 688,
+                "overflowX": "auto"
+              }
+            ],
+            "code": []
+          },
+          "codeBlocks": 0
+        },
+        {
+          "route": "practice/ecosystem-workshop",
+          "metrics": {
+            "viewportWidth": 1440,
+            "clientWidth": 1440,
+            "scrollWidth": 1440,
+            "title": "生态机制工作坊：能力、编排与候选验收 | About Harness",
+            "main": true,
+            "targetTop": null,
+            "tables": [
+              {
+                "clientWidth": 688,
+                "scrollWidth": 688,
+                "overflowX": "auto"
+              }
+            ],
+            "code": [
+              {
+                "clientWidth": 688,
+                "scrollWidth": 688,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 688,
+                "scrollWidth": 718,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 688,
+                "scrollWidth": 688,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 688,
+                "scrollWidth": 688,
+                "overflowX": "auto"
+              }
+            ]
+          },
+          "codeBlocks": 4
+        },
+        {
+          "route": "guide/start",
+          "metrics": {
+            "viewportWidth": 1440,
+            "clientWidth": 1440,
+            "scrollWidth": 1440,
+            "title": "学习路径：从理解 Harness 到交付可复核证据 | About Harness",
+            "main": true,
+            "targetTop": null,
+            "tables": [
+              {
+                "clientWidth": 688,
+                "scrollWidth": 688,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 688,
+                "scrollWidth": 688,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 688,
+                "scrollWidth": 688,
+                "overflowX": "auto"
+              }
+            ],
+            "code": [
+              {
+                "clientWidth": 688,
+                "scrollWidth": 688,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 688,
+                "scrollWidth": 688,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 688,
+                "scrollWidth": 688,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 688,
+                "scrollWidth": 688,
+                "overflowX": "auto"
+              }
+            ]
+          },
+          "codeBlocks": 4
+        },
+        {
+          "route": "implementation/minimal-harness-python",
+          "metrics": {
+            "viewportWidth": 1440,
+            "clientWidth": 1440,
+            "scrollWidth": 1440,
+            "title": "Python 最小 Harness：从契约到可恢复循环 | About Harness",
+            "main": true,
+            "targetTop": null,
+            "tables": [
+              {
+                "clientWidth": 688,
+                "scrollWidth": 688,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 688,
+                "scrollWidth": 688,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 688,
+                "scrollWidth": 688,
+                "overflowX": "auto"
+              }
+            ],
+            "code": [
+              {
+                "clientWidth": 688,
+                "scrollWidth": 688,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 688,
+                "scrollWidth": 688,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 688,
+                "scrollWidth": 688,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 688,
+                "scrollWidth": 688,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 688,
+                "scrollWidth": 688,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 688,
+                "scrollWidth": 688,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 688,
+                "scrollWidth": 688,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 688,
+                "scrollWidth": 688,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 688,
+                "scrollWidth": 918,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 688,
+                "scrollWidth": 688,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 688,
+                "scrollWidth": 688,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 688,
+                "scrollWidth": 688,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 688,
+                "scrollWidth": 718,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 688,
+                "scrollWidth": 941,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 688,
+                "scrollWidth": 688,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 688,
+                "scrollWidth": 688,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 688,
+                "scrollWidth": 688,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 688,
+                "scrollWidth": 688,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 688,
+                "scrollWidth": 688,
+                "overflowX": "auto"
+              }
+            ]
+          },
+          "codeBlocks": 19
+        }
+      ],
+      "anchor": {
+        "viewportWidth": 1440,
+        "clientWidth": 1440,
+        "scrollWidth": 1440,
+        "title": "状态与可靠执行 | About Harness",
+        "main": true,
+        "targetTop": 110,
+        "tables": [
+          {
+            "clientWidth": 688,
+            "scrollWidth": 688,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 688,
+            "scrollWidth": 688,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 688,
+            "scrollWidth": 688,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 688,
+            "scrollWidth": 688,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 688,
+            "scrollWidth": 688,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 688,
+            "scrollWidth": 688,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 688,
+            "scrollWidth": 688,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 688,
+            "scrollWidth": 688,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 688,
+            "scrollWidth": 688,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 688,
+            "scrollWidth": 688,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 688,
+            "scrollWidth": 688,
+            "overflowX": "auto"
+          }
+        ],
+        "code": [
+          {
+            "clientWidth": 688,
+            "scrollWidth": 688,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 688,
+            "scrollWidth": 688,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 688,
+            "scrollWidth": 688,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 688,
+            "scrollWidth": 688,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 688,
+            "scrollWidth": 810,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 688,
+            "scrollWidth": 810,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 688,
+            "scrollWidth": 688,
+            "overflowX": "auto"
+          }
+        ]
+      },
+      "mobileMenu": null,
+      "screenshots": [
+        "desktop-1440-home.png",
+        "desktop-1440-evaluation.png",
+        "desktop-1440-migration.png",
+        "desktop-1440-ecosystem-overview.png",
+        "desktop-1440-ecosystem-protocols-and-skills.png",
+        "desktop-1440-practice-ecosystem-workshop.png",
+        "desktop-1440-guide-start.png",
+        "desktop-1440-implementation-minimal-harness-python.png"
+      ]
+    },
+    {
+      "id": "mobile-390",
+      "width": 390,
+      "height": 844,
+      "home": {
+        "viewportWidth": 390,
+        "clientWidth": 390,
+        "scrollWidth": 390,
+        "title": "About Harness",
+        "main": true,
+        "targetTop": null,
+        "tables": [],
+        "code": []
+      },
+      "table": {
+        "viewportWidth": 390,
+        "clientWidth": 390,
+        "scrollWidth": 390,
+        "title": "评测方法与证据晋级 | About Harness",
+        "main": true,
+        "targetTop": null,
+        "tables": [
+          {
+            "clientWidth": 342,
+            "scrollWidth": 452,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 342,
+            "scrollWidth": 659,
+            "overflowX": "auto"
+          }
+        ],
+        "code": [
+          {
+            "clientWidth": 390,
+            "scrollWidth": 547,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 390,
+            "scrollWidth": 390,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 390,
+            "scrollWidth": 390,
+            "overflowX": "auto"
+          }
+        ]
+      },
+      "migration": {
+        "viewportWidth": 390,
+        "clientWidth": 390,
+        "scrollWidth": 390,
+        "title": "跨 Harness 迁移：保留职责而非文件名 | About Harness",
+        "main": true,
+        "targetTop": null,
+        "tables": [
+          {
+            "clientWidth": 342,
+            "scrollWidth": 501,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 342,
+            "scrollWidth": 427,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 342,
+            "scrollWidth": 487,
+            "overflowX": "auto"
+          }
+        ],
+        "code": [
+          {
+            "clientWidth": 390,
+            "scrollWidth": 390,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 390,
+            "scrollWidth": 502,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 390,
+            "scrollWidth": 532,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 390,
+            "scrollWidth": 478,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 390,
+            "scrollWidth": 525,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 390,
+            "scrollWidth": 390,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 390,
+            "scrollWidth": 390,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 390,
+            "scrollWidth": 571,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 390,
+            "scrollWidth": 390,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 390,
+            "scrollWidth": 390,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 390,
+            "scrollWidth": 525,
+            "overflowX": "auto"
+          }
+        ]
+      },
+      "migrationTableScroll": {
+        "found": true,
+        "moved": true,
+        "maxScroll": 159
+      },
+      "entryPages": [
+        {
+          "route": "ecosystem/overview",
+          "metrics": {
+            "viewportWidth": 390,
+            "clientWidth": 390,
+            "scrollWidth": 390,
+            "title": "Agent 生态全景：先定位责任，再选择产品 | About Harness",
+            "main": true,
+            "targetTop": null,
+            "tables": [
+              {
+                "clientWidth": 342,
+                "scrollWidth": 409,
+                "overflowX": "auto"
+              }
+            ],
+            "code": [
+              {
+                "clientWidth": 390,
+                "scrollWidth": 390,
+                "overflowX": "auto"
+              }
+            ]
+          },
+          "codeBlocks": 1
+        },
+        {
+          "route": "ecosystem/protocols-and-skills",
+          "metrics": {
+            "viewportWidth": 390,
+            "clientWidth": 390,
+            "scrollWidth": 390,
+            "title": "协议与技能：连接工具、委派任务和复用流程 | About Harness",
+            "main": true,
+            "targetTop": null,
+            "tables": [
+              {
+                "clientWidth": 342,
+                "scrollWidth": 441,
+                "overflowX": "auto"
+              }
+            ],
+            "code": []
+          },
+          "codeBlocks": 0
+        },
+        {
+          "route": "practice/ecosystem-workshop",
+          "metrics": {
+            "viewportWidth": 390,
+            "clientWidth": 390,
+            "scrollWidth": 390,
+            "title": "生态机制工作坊：能力、编排与候选验收 | About Harness",
+            "main": true,
+            "targetTop": null,
+            "tables": [
+              {
+                "clientWidth": 342,
+                "scrollWidth": 569,
+                "overflowX": "auto"
+              }
+            ],
+            "code": [
+              {
+                "clientWidth": 390,
+                "scrollWidth": 687,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 390,
+                "scrollWidth": 718,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 390,
+                "scrollWidth": 687,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 390,
+                "scrollWidth": 556,
+                "overflowX": "auto"
+              }
+            ]
+          },
+          "codeBlocks": 4
+        },
+        {
+          "route": "guide/start",
+          "metrics": {
+            "viewportWidth": 390,
+            "clientWidth": 390,
+            "scrollWidth": 390,
+            "title": "学习路径：从理解 Harness 到交付可复核证据 | About Harness",
+            "main": true,
+            "targetTop": null,
+            "tables": [
+              {
+                "clientWidth": 342,
+                "scrollWidth": 569,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 342,
+                "scrollWidth": 511,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 342,
+                "scrollWidth": 412,
+                "overflowX": "auto"
+              }
+            ],
+            "code": [
+              {
+                "clientWidth": 390,
+                "scrollWidth": 483,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 390,
+                "scrollWidth": 456,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 390,
+                "scrollWidth": 390,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 390,
+                "scrollWidth": 390,
+                "overflowX": "auto"
+              }
+            ]
+          },
+          "codeBlocks": 4
+        },
+        {
+          "route": "implementation/minimal-harness-python",
+          "metrics": {
+            "viewportWidth": 390,
+            "clientWidth": 390,
+            "scrollWidth": 390,
+            "title": "Python 最小 Harness：从契约到可恢复循环 | About Harness",
+            "main": true,
+            "targetTop": null,
+            "tables": [
+              {
+                "clientWidth": 342,
+                "scrollWidth": 508,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 342,
+                "scrollWidth": 641,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 342,
+                "scrollWidth": 481,
+                "overflowX": "auto"
+              }
+            ],
+            "code": [
+              {
+                "clientWidth": 390,
+                "scrollWidth": 390,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 390,
+                "scrollWidth": 390,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 390,
+                "scrollWidth": 456,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 390,
+                "scrollWidth": 687,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 390,
+                "scrollWidth": 390,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 390,
+                "scrollWidth": 525,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 390,
+                "scrollWidth": 618,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 390,
+                "scrollWidth": 656,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 390,
+                "scrollWidth": 918,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 390,
+                "scrollWidth": 390,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 390,
+                "scrollWidth": 672,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 390,
+                "scrollWidth": 441,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 390,
+                "scrollWidth": 718,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 390,
+                "scrollWidth": 941,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 390,
+                "scrollWidth": 409,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 390,
+                "scrollWidth": 618,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 390,
+                "scrollWidth": 579,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 390,
+                "scrollWidth": 390,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 390,
+                "scrollWidth": 425,
+                "overflowX": "auto"
+              }
+            ]
+          },
+          "codeBlocks": 19
+        }
+      ],
+      "anchor": {
+        "viewportWidth": 390,
+        "clientWidth": 390,
+        "scrollWidth": 390,
+        "title": "状态与可靠执行 | About Harness",
+        "main": true,
+        "targetTop": 110,
+        "tables": [
+          {
+            "clientWidth": 342,
+            "scrollWidth": 533,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 342,
+            "scrollWidth": 729,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 342,
+            "scrollWidth": 590,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 342,
+            "scrollWidth": 481,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 342,
+            "scrollWidth": 569,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 342,
+            "scrollWidth": 412,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 342,
+            "scrollWidth": 441,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 342,
+            "scrollWidth": 342,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 342,
+            "scrollWidth": 440,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 342,
+            "scrollWidth": 465,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 342,
+            "scrollWidth": 641,
+            "overflowX": "auto"
+          }
+        ],
+        "code": [
+          {
+            "clientWidth": 390,
+            "scrollWidth": 402,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 390,
+            "scrollWidth": 509,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 390,
+            "scrollWidth": 433,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 390,
+            "scrollWidth": 390,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 390,
+            "scrollWidth": 810,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 390,
+            "scrollWidth": 810,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 390,
+            "scrollWidth": 390,
+            "overflowX": "auto"
+          }
+        ]
+      },
+      "mobileMenu": {
+        "opened": true,
+        "closed": true,
+        "expandedAfterClose": "false"
+      },
+      "screenshots": [
+        "mobile-390-home.png",
+        "mobile-390-evaluation.png",
+        "mobile-390-migration.png",
+        "mobile-390-ecosystem-overview.png",
+        "mobile-390-ecosystem-protocols-and-skills.png",
+        "mobile-390-practice-ecosystem-workshop.png",
+        "mobile-390-guide-start.png",
+        "mobile-390-implementation-minimal-harness-python.png"
+      ]
+    },
+    {
+      "id": "narrow-320",
+      "width": 320,
+      "height": 700,
+      "home": {
+        "viewportWidth": 320,
+        "clientWidth": 320,
+        "scrollWidth": 320,
+        "title": "About Harness",
+        "main": true,
+        "targetTop": null,
+        "tables": [],
+        "code": []
+      },
+      "table": {
+        "viewportWidth": 320,
+        "clientWidth": 320,
+        "scrollWidth": 320,
+        "title": "评测方法与证据晋级 | About Harness",
+        "main": true,
+        "targetTop": null,
+        "tables": [
+          {
+            "clientWidth": 272,
+            "scrollWidth": 452,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 272,
+            "scrollWidth": 659,
+            "overflowX": "auto"
+          }
+        ],
+        "code": [
+          {
+            "clientWidth": 320,
+            "scrollWidth": 547,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 320,
+            "scrollWidth": 348,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 320,
+            "scrollWidth": 320,
+            "overflowX": "auto"
+          }
+        ]
+      },
+      "migration": {
+        "viewportWidth": 320,
+        "clientWidth": 320,
+        "scrollWidth": 320,
+        "title": "跨 Harness 迁移：保留职责而非文件名 | About Harness",
+        "main": true,
+        "targetTop": null,
+        "tables": [
+          {
+            "clientWidth": 272,
+            "scrollWidth": 501,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 272,
+            "scrollWidth": 427,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 272,
+            "scrollWidth": 487,
+            "overflowX": "auto"
+          }
+        ],
+        "code": [
+          {
+            "clientWidth": 320,
+            "scrollWidth": 320,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 320,
+            "scrollWidth": 502,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 320,
+            "scrollWidth": 532,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 320,
+            "scrollWidth": 478,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 320,
+            "scrollWidth": 525,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 320,
+            "scrollWidth": 320,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 320,
+            "scrollWidth": 320,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 320,
+            "scrollWidth": 571,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 320,
+            "scrollWidth": 325,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 320,
+            "scrollWidth": 320,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 320,
+            "scrollWidth": 525,
+            "overflowX": "auto"
+          }
+        ]
+      },
+      "migrationTableScroll": {
+        "found": true,
+        "moved": true,
+        "maxScroll": 229
+      },
+      "entryPages": [
+        {
+          "route": "ecosystem/overview",
+          "metrics": {
+            "viewportWidth": 320,
+            "clientWidth": 320,
+            "scrollWidth": 320,
+            "title": "Agent 生态全景：先定位责任，再选择产品 | About Harness",
+            "main": true,
+            "targetTop": null,
+            "tables": [
+              {
+                "clientWidth": 272,
+                "scrollWidth": 409,
+                "overflowX": "auto"
+              }
+            ],
+            "code": [
+              {
+                "clientWidth": 320,
+                "scrollWidth": 380,
+                "overflowX": "auto"
+              }
+            ]
+          },
+          "codeBlocks": 1
+        },
+        {
+          "route": "ecosystem/protocols-and-skills",
+          "metrics": {
+            "viewportWidth": 320,
+            "clientWidth": 320,
+            "scrollWidth": 320,
+            "title": "协议与技能：连接工具、委派任务和复用流程 | About Harness",
+            "main": true,
+            "targetTop": null,
+            "tables": [
+              {
+                "clientWidth": 272,
+                "scrollWidth": 441,
+                "overflowX": "auto"
+              }
+            ],
+            "code": []
+          },
+          "codeBlocks": 0
+        },
+        {
+          "route": "practice/ecosystem-workshop",
+          "metrics": {
+            "viewportWidth": 320,
+            "clientWidth": 320,
+            "scrollWidth": 320,
+            "title": "生态机制工作坊：能力、编排与候选验收 | About Harness",
+            "main": true,
+            "targetTop": null,
+            "tables": [
+              {
+                "clientWidth": 272,
+                "scrollWidth": 569,
+                "overflowX": "auto"
+              }
+            ],
+            "code": [
+              {
+                "clientWidth": 320,
+                "scrollWidth": 687,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 320,
+                "scrollWidth": 718,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 320,
+                "scrollWidth": 687,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 320,
+                "scrollWidth": 556,
+                "overflowX": "auto"
+              }
+            ]
+          },
+          "codeBlocks": 4
+        },
+        {
+          "route": "guide/start",
+          "metrics": {
+            "viewportWidth": 320,
+            "clientWidth": 320,
+            "scrollWidth": 320,
+            "title": "学习路径：从理解 Harness 到交付可复核证据 | About Harness",
+            "main": true,
+            "targetTop": null,
+            "tables": [
+              {
+                "clientWidth": 272,
+                "scrollWidth": 569,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 272,
+                "scrollWidth": 511,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 272,
+                "scrollWidth": 412,
+                "overflowX": "auto"
+              }
+            ],
+            "code": [
+              {
+                "clientWidth": 320,
+                "scrollWidth": 483,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 320,
+                "scrollWidth": 456,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 320,
+                "scrollWidth": 320,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 320,
+                "scrollWidth": 320,
+                "overflowX": "auto"
+              }
+            ]
+          },
+          "codeBlocks": 4
+        },
+        {
+          "route": "implementation/minimal-harness-python",
+          "metrics": {
+            "viewportWidth": 320,
+            "clientWidth": 320,
+            "scrollWidth": 320,
+            "title": "Python 最小 Harness：从契约到可恢复循环 | About Harness",
+            "main": true,
+            "targetTop": null,
+            "tables": [
+              {
+                "clientWidth": 272,
+                "scrollWidth": 508,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 272,
+                "scrollWidth": 641,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 272,
+                "scrollWidth": 481,
+                "overflowX": "auto"
+              }
+            ],
+            "code": [
+              {
+                "clientWidth": 320,
+                "scrollWidth": 320,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 320,
+                "scrollWidth": 320,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 320,
+                "scrollWidth": 456,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 320,
+                "scrollWidth": 687,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 320,
+                "scrollWidth": 320,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 320,
+                "scrollWidth": 525,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 320,
+                "scrollWidth": 618,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 320,
+                "scrollWidth": 656,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 320,
+                "scrollWidth": 918,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 320,
+                "scrollWidth": 320,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 320,
+                "scrollWidth": 672,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 320,
+                "scrollWidth": 441,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 320,
+                "scrollWidth": 718,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 320,
+                "scrollWidth": 941,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 320,
+                "scrollWidth": 409,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 320,
+                "scrollWidth": 618,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 320,
+                "scrollWidth": 579,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 320,
+                "scrollWidth": 325,
+                "overflowX": "auto"
+              },
+              {
+                "clientWidth": 320,
+                "scrollWidth": 425,
+                "overflowX": "auto"
+              }
+            ]
+          },
+          "codeBlocks": 19
+        }
+      ],
+      "anchor": {
+        "viewportWidth": 320,
+        "clientWidth": 320,
+        "scrollWidth": 320,
+        "title": "状态与可靠执行 | About Harness",
+        "main": true,
+        "targetTop": 110,
+        "tables": [
+          {
+            "clientWidth": 272,
+            "scrollWidth": 533,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 272,
+            "scrollWidth": 729,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 272,
+            "scrollWidth": 590,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 272,
+            "scrollWidth": 481,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 272,
+            "scrollWidth": 569,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 272,
+            "scrollWidth": 412,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 272,
+            "scrollWidth": 441,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 272,
+            "scrollWidth": 281,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 272,
+            "scrollWidth": 440,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 272,
+            "scrollWidth": 465,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 272,
+            "scrollWidth": 641,
+            "overflowX": "auto"
+          }
+        ],
+        "code": [
+          {
+            "clientWidth": 320,
+            "scrollWidth": 402,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 320,
+            "scrollWidth": 509,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 320,
+            "scrollWidth": 433,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 320,
+            "scrollWidth": 320,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 320,
+            "scrollWidth": 810,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 320,
+            "scrollWidth": 810,
+            "overflowX": "auto"
+          },
+          {
+            "clientWidth": 320,
+            "scrollWidth": 320,
+            "overflowX": "auto"
+          }
+        ]
+      },
+      "mobileMenu": {
+        "opened": true,
+        "closed": true,
+        "expandedAfterClose": "false"
+      },
+      "screenshots": [
+        "narrow-320-home.png",
+        "narrow-320-evaluation.png",
+        "narrow-320-migration.png",
+        "narrow-320-ecosystem-overview.png",
+        "narrow-320-ecosystem-protocols-and-skills.png",
+        "narrow-320-practice-ecosystem-workshop.png",
+        "narrow-320-guide-start.png",
+        "narrow-320-implementation-minimal-harness-python.png"
+      ]
+    }
+  ],
+  "errors": []
+}

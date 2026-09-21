@@ -67,7 +67,7 @@ uv run --frozen --offline python scripts/source-labs.py
 uv run --frozen --offline pytest -q lab/tests/test_source_labs.py
 ```
 
-删除 policy-b 的保留条款或破坏来源关系时，研究断言必须失败。 负例测试通过表示错误被预期拒绝，不能只看顶层 passed。
+定向测试删除 policy-b 的保留条款，要求研究断言失败，并核对 deletion_process 保持证据不足。实现另检查固定引用数、独立来源数与数值集合；它没有实现通用来源图校验。负例通过表示列出的输入被预期拒绝，不能只看顶层 passed。
 
 <span id="停止、清理、回滚与限制"></span>
 <span id="停止清理回滚与限制"></span>

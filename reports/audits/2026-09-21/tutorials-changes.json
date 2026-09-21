@@ -1,0 +1,54 @@
+{
+  "reviewer": "tutorials-implementation",
+  "scope": {
+    "pages": "docs/{guide,labs,implementation,practice}/*.md",
+    "scripts": [
+      "scripts/tutorial-check.mjs",
+      "scripts/test-tutorial-check.mjs",
+      "scripts/visual-check.mjs",
+      "scripts/tutorial-contracts.json"
+    ]
+  },
+  "changes": [
+    {
+      "finding": "C01",
+      "artifacts": ["docs/guide/interview-practice.md", "docs/guide/start.md", "docs/guide/capstone.md"],
+      "revision": "五张面试卡改为本仓库 Coding、Research、Recovery、runtime acceptance 与 Migration 的离线正负例；相邻 Travel 路径改为需要身份和授权的可选外部映射。"
+    },
+    {
+      "finding": "C02",
+      "artifacts": ["docs/guide/roadmap.md", "docs/guide/start.md"],
+      "revision": "start 保留四条可执行路线；roadmap 只保留依赖图、知识索引、检查点和症状查漏，并链接 start。"
+    },
+    {
+      "finding": "C03",
+      "artifacts": ["docs/labs/setup.md", "docs/practice/evaluation.md"],
+      "revision": "明确 results:redact 是失败关闭扫描，不会改写内容或生成脱敏副本；失败后隔离原始 artifact、在受限位置制作副本并复扫，原文不得发布。"
+    },
+    {
+      "finding": "C04",
+      "artifacts": ["docs/guide/interview-practice.md"],
+      "revision": "补齐共同前置、固定环境、输入、命令、预期/人工断言、失败例、停止、清理、回滚和证据限制；每张卡都有可复制命令。"
+    },
+    {
+      "finding": "R09",
+      "artifacts": ["scripts/tutorial-contracts.json", "scripts/tutorial-check.mjs", "scripts/test-tutorial-check.mjs", "scripts/visual-check.mjs", "docs/implementation/testing.md", "docs/labs/browser.md", "docs/labs/coding.md", "docs/labs/data.md", "docs/practice/framework-selection.md"],
+      "revision": "移除易漂移的 pytest 收集/通过数量，改为行为断言；命令契约验证实施与实践页以及 ecosystem workshop 的页面命令、npm script 和脚本/测试路径；self-test 用临时页面副本损坏命令验证门禁；视觉检查扩展新入口并支持保留自动截图与 metrics。"
+    }
+  ],
+  "actual_checks": [
+    {"command":"npm run tutorial:check","result":"pass"},
+    {"command":"npm run tutorial:self-test","result":"pass"},
+    {"command":"npm run docs:visual","result":"blocked before visual runner: docs:project-base reports unrelated orphan docs/harnesses/gemini-cli.md"},
+    {"command":"uv run --frozen --offline python scripts/ecosystem-workshop.py all","result":"pass; E1/offline/passed=true"},
+    {"command":"uv run --frozen --offline python scripts/ecosystem-workshop.py protocols --negative","result":"expected exit 1; permission_denied and handler_calls=0"},
+    {"command":"node --check scripts/tutorial-check.mjs && node --check scripts/visual-check.mjs","result":"pass"}
+  ],
+  "assumptions": [
+    "ecosystem overview 与 protocols-and-skills 页面、导航和 package wiring 由 root 统一落盘。"
+  ],
+  "remaining_risks": [
+    "视觉检查的新 ecosystem routes 已加入脚本，但当前站点 project-base 被 docs/harnesses/gemini-cli.md 的孤立页门禁阻断；自动截图和 metrics 不能代替人工视觉复核。",
+    "results:redact 的 package script 名称因本卡禁止修改 package 而保留；正文已明确其扫描语义。"
+  ]
+}

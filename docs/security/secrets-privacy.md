@@ -138,6 +138,12 @@ Cache 要能回答 key 如何隔离、值何时过期、删除如何传播、是
 
 Redaction token 应明确不可逆还是可在受控 vault 中映射。可逆 tokenization（令牌化）仍需保护映射表；相同 hash 跨记录复用会泄露相等关系，低熵字段还可能被字典枚举。
 
+## 当前扫描器的边界
+
+`npm run secrets:check` 检查已跟踪及未被忽略的候选文件中的已知凭据和个人路径模式，并拒绝非 example 的 `.env` 文件；值扫描跳过超过 2 MB 或含 NUL 字节的文件，因此不是全格式内容审查。`npm run results:redact` 检查 `lab/results/public/` 中的公开产物。两者都是扫描与拒绝门禁，不会替用户删除敏感字段或重写文件，命令名称中的 `redact` 不代表自动完成脱敏。
+
+当前公开结果扫描允许 JSON、JSONL、Markdown 与补丁文本，拒绝符号链接及不支持的文件格式。JSON/JSONL 还会解析结构，按规范化键名拒绝 `rawPrompt`、`authorization` 等字段；全部允许格式都检查已知敏感值模式。Markdown 和补丁仅做文本模式扫描，仍需人工审查内容和许可。文件数量随结果集变化，不应把固定数量当成验收断言；扫描通过只能证明未命中已实现规则。
+
 ## 删除必须覆盖所有副本
 
 维护一张 deletion map（删除映射）：

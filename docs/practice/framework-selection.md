@@ -62,7 +62,7 @@
 | 决定 | 固定任务继续使用简单基线；四框架保留为机制教学样例 |
 | 未决 | 没有同条件真实模型效用研究，不据此排序或决定生产采用 |
 
-运行证据见 `lab/results/public/frameworks/summary.json`。版本为本轮固定身份，升级必须重跑，不能沿用旧结论。
+运行证据见 `lab/results/public/frameworks/summary.json`。版本由各示例的 `pyproject.toml` 与 `uv.lock` 固定，公开摘要是对应执行记录。框架机制及来源日期分别见[LangGraph](/frameworks/langgraph)、[Agents SDK](/frameworks/openai-agents-sdk)、[Google ADK](/frameworks/google-adk)、[AutoGen](/frameworks/autogen)。升级必须重跑，不能沿用旧结论。
 
 <span id="在当前仓库运行一次工作表验证"></span>
 <span id="前置条件与固定输入"></span>

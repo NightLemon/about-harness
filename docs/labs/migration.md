@@ -66,7 +66,7 @@
 | network | 实际出口与允许目标 | 容器网络或出口控制 |
 | state | 检查点、未决动作与回执 | 先对账，再决定恢复 |
 
-每行保存 `source_semantics`、`target_semantics`、`gap`、`compensating_control`、`evidence_axis` 和 `preserves_boundary`。非空字段只证明记录完整，补偿是否有效需要目标环境证据。
+每行保存 `source_semantics`、`target_semantics`、`gap`、`compensating_control`、`evidence_axis` 和 `preserves_boundary`。非空字段只证明记录完整，补偿是否有效需要目标环境证据。独立 Git worktree 只隔离改动，不限制进程读目录、联网或访问凭据；sandbox 缺口需要容器、受限账户、只读挂载等 OS 级控制，并实际验证边界。
 
 <span id="运行与预期"></span>
 

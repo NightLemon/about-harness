@@ -1,0 +1,8 @@
+{
+  "B01":{"changed_paths":["docs/frameworks/autogen.md","docs/frameworks/comparison.md","docs/frameworks/microsoft-agent-framework.md"],"fix":"AutoGen changed to a legacy migration page; MAF is the new-project candidate with E0-only qualification guidance."},
+  "B02":{"changed_paths":["docs/harnesses/gemini-cli.md","docs/harnesses/comparison.md"],"fix":"Added Gemini CLI responsibility page and an explicit untested column in the harness matrix."},
+  "B03":{"changed_paths":["docs/frameworks/modern-runtimes.md","docs/frameworks/comparison.md"],"fix":"Added task-shape selection for DeepAgents, PydanticAI, CrewAI and separated MCP/A2A/Skills/Agents API from framework runtime claims."},
+  "B04":{"changed_paths":["docs/models/protocol-compatibility.md"],"fix":"Only the same frozen response may preserve identical call IDs; independent stream/non-stream requests compare task invariants and their own call/result links."},
+  "B05":{"changed_paths":["docs/models/anthropic.md","docs/models/google.md","docs/models/qwen.md","docs/models/llama.md","docs/frameworks/google-adk.md","docs/frameworks/langgraph.md","docs/harnesses/claude-code.md","docs/harnesses/codex.md"],"fix":"Refreshed claims only where official source text was read; added FACT references and retained E0/untested limits."},
+  "B06":{"changed_paths":["docs/harnesses/claude-code.md"],"fix":"Added versioned AGENTS.md/CLAUDE.md conditional loading, verification and fallback import semantics."}
+}

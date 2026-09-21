@@ -1,6 +1,12 @@
-# AutoGen：可运行的离线示例
+# AutoGen：存量迁移与可运行的离线示例
 
 本页用实际框架代码处理两份互相冲突的本地政策。框架版本固定为 0.7.5；模型输出来自回放，运行证据为 E1。[FACT:autogen-overview]
+
+## 先决定：保留存量，还是迁移
+
+AutoGen 维护仓库于 2026-09-21 核对，当前标记为 maintenance mode（维护模式），建议新用户从 [Microsoft Agent Framework（MAF）](/frameworks/microsoft-agent-framework)开始。[FACT:autogen-maintenance] 这是 E0 生命周期事实；下面的旧版本运行示例用于理解和审计既有系统，不构成新项目采用建议，也没有验证 MAF 迁移。
+
+已有工作流先冻结 participant（参与者）输入输出、工具 schema、checkpoint/session、trace 和外部副作用账本，再用同一 Task 与 validator 保留迁移前基线。迁移逐项记录原职责、目标职责、语义缺口、补偿控制和正负例；类名替换或本页回放通过都不能证明运行时等价。
 
 <span id="学习目标与采用问题"></span>
 <span id="四层分别解决什么"></span>
@@ -44,7 +50,7 @@ npm run frameworks:check -- autogen
 
 RoundRobinGroupChat 调度 reader 和 reviewer。ReplayChatCompletionClient 给出固定工具请求和答案；显式声明函数调用能力，并组合消息上限与终止词。
 
-直接入口是 `demo.py`，可逐行对应框架调用与输出。共享运行防线在导入框架前禁用外部网络和遥测；只允许本机事件循环所需连接，并断言没有外部连接尝试。
+直接入口是 `demo.py`，可逐行对应框架调用与输出。共享防线在导入框架前设置遥测关闭变量，并拦截 Python socket 的外部 DNS/连接，仅放行本机地址；结果断言被拦截的外部连接尝试为零。这是示例内的运行探针，不是操作系统网络沙箱。
 
 ## 失败与恢复
 
@@ -62,4 +68,4 @@ uv run --project examples/frameworks/autogen --frozen --offline python examples/
 
 固定回放只验证协作与终止路径，不证明多智能体比单智能体更准确或更省成本。该示例支持对这一运行时接缝的判断，不构成产品质量排名。选型方法见[框架对照](/frameworks/comparison)。
 
-来源：[官方资料](https://microsoft.github.io/autogen/stable/reference/python/autogen_ext.models.replay.html)；本轮于 2026-09-08 核对文档、安装版本并执行离线示例。
+来源：[ReplayChatCompletionClient 文档](https://microsoft.github.io/autogen/stable/reference/python/autogen_ext.models.replay.html)；2026-09-08 的固定包执行记录见 `lab/results/public/frameworks/summary.json`。2026-09-21 的[维护仓库](https://github.com/microsoft/autogen)核验只更新生命周期 E0，不提升运行证据。

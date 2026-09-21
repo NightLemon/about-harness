@@ -54,6 +54,16 @@ npm run eval:self-test
 
 正确阻断项仍是 `incomplete_matrix` 与 `evidence_below_target`。旧格式按原规则读取，不原地更改历史 hash、分母或证据等级。
 
+## 公开结果扫描
+
+先在受限位置最小化并制作脱敏副本，再扫描将公开的目录：
+
+```bash
+npm run results:redact
+```
+
+当前命令扫描 `lab/results/public/` 的 JSON、JSONL、Markdown 和 patch，只拒绝已知敏感键、路径和凭据模式；不会改写内容或自动生成脱敏副本。预期退出 0 仍不能证明任意自由文本已安全。扫描失败则隔离原始产物、修复受限副本后复扫，不发布原文。敏感原始 prompt、trace 和私有源码保留在受限存储。
+
 ## 为自己的研究选择规则
 
 Study 1.2 允许单一工作负载和按需要设置重复次数。填写 `sampling_rationale` 说明任务来源与样本规模；`comparison` 需要分别声明开发与留出任务，质量聚合和成本阈值在运行前固定。

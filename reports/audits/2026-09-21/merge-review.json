@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "date": "2026-09-21",
+  "scope": "Independent review of merge differences; not a replacement for the frozen initial/full-site audit",
+  "parents": [
+    "ed0d0c35fd1f1cb5230642694ac3231bab95f3d1",
+    "f945c6c9eecdb65b001deb37cce2f97d92051a6b"
+  ],
+  "reviewers": [
+    {
+      "id": "review_merge_learning",
+      "status": "pass",
+      "scope": [
+        "README",
+        "CONTRIBUTING",
+        "index",
+        "guide",
+        "implementation",
+        "labs",
+        "practice",
+        "models",
+        "harnesses",
+        "frameworks",
+        "ecosystem connections"
+      ],
+      "evidence": [
+        "16 historical framework source hashes match archived bytes",
+        "historical Study has 12 units with 6 passed",
+        "read-only source parser returns retention conflict 30/45, mean 5, document v2 with 45 days",
+        "Replay/Responses wording fix rechecked"
+      ]
+    },
+    {
+      "id": "review_merge_concepts",
+      "status": "pass",
+      "scope": [
+        "foundations",
+        "optimization",
+        "evaluation",
+        "security",
+        "references",
+        "shared verification scripts and configuration"
+      ],
+      "evidence": [
+        "mechanisms checked against loop, eval and scanner implementations",
+        "baseline checker exits 0; 17 VM-injected contract violations exit 1",
+        "example checker baseline exits 0; 3 existing negative cases remain rejected after narrowing copy scope"
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "id": "M01",
+      "finding": "Two old context-tools anchors were missing after section renaming",
+      "resolution": "Preserved aliases; built site now validates all 2570 old anchors",
+      "status": "closed"
+    },
+    {
+      "id": "M02",
+      "finding": "Generic Replay wording incorrectly claimed explicit tool-result feedback",
+      "resolution": "Separated fixed action replay from Responses ToolResultReceiver behavior; independently rechecked",
+      "status": "closed"
+    },
+    {
+      "id": "M03",
+      "finding": "Merged tutorial checker omitted exact commands for six labs",
+      "resolution": "Registered current six lab commands plus runner; independent mutation checks reject all seven",
+      "status": "closed"
+    },
+    {
+      "id": "M04",
+      "finding": "Node lockfile and workflow baseline consistency checks were lost",
+      "resolution": "Restored machine-file checks and negative cases; independently rechecked",
+      "status": "closed"
+    },
+    {
+      "id": "M05",
+      "finding": "Compose isolation configuration checks were lost",
+      "resolution": "Restored shared-template and service-override checks with negative cases; independently rechecked",
+      "status": "closed"
+    },
+    {
+      "id": "M06",
+      "finding": "Examples self-test copied framework virtual environments unnecessarily",
+      "resolution": "Copy only examples/harnesses, preserve all three negative cases, validate temporary cleanup root; independently rechecked",
+      "status": "closed"
+    }
+  ],
+  "limits": [
+    "VM negative cases prove static checker rejection only",
+    "No actual Docker isolation or real model/API evaluation",
+    "Historic audit and public execution artifacts remain unchanged"
+  ]
+}
