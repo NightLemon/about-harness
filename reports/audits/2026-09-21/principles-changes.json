@@ -1,0 +1,33 @@
+{
+  "reviewer": "initial-principles-implementation",
+  "changed_paths": [
+    "docs/evaluation/judges.md",
+    "docs/foundations/reasoning.md",
+    "docs/optimization/reasoning-routing.md",
+    "docs/optimization/experiment.md",
+    "docs/foundations/what-is-harness.md",
+    "docs/optimization/debugging.md",
+    "docs/foundations/context.md",
+    "docs/optimization/context-tools.md",
+    "docs/security/prompt-injection.md",
+    "docs/ecosystem/evaluation-observability.md",
+    "docs/ecosystem/research-frontiers.md",
+    "reports/audits/2026-09-21/principles-source-additions.json"
+  ],
+  "findings": [
+    {"id":"A01","changed_paths":["docs/evaluation/judges.md"],"fix":"定义 uncertainty-abstain 与 confidence-accept 两种阈值及相反的覆盖率方向。","verification":"人工核对比较符号、弃权数量与 coverage 分母一致。"},
+    {"id":"A02","changed_paths":["docs/evaluation/judges.md"],"fix":"把 infrastructure/schema retry、随机 resample、position swap 规定为互斥 attempt 类型，并写明谱系、配额和聚合资格。","verification":"人工核对三类记录不会被混成独立投票。"},
+    {"id":"A03","changed_paths":["docs/optimization/experiment.md"],"fix":"把 E1 样例明确为共享 offline-replay 的多控制配置包，禁止模型、单变量和单控制归因。","verification":"人工核对样例描述列出额外控制与可支持的唯一结论。"},
+    {"id":"A04","changed_paths":["docs/security/prompt-injection.md"],"fix":"新增无工具答案完整性攻击、独立 oracle、action_safety 与 answer_integrity 分列。","verification":"人工核对 side_effects=0 不再被当作完整性通过。"},
+    {"id":"A05","changed_paths":["docs/foundations/what-is-harness.md"],"fix":"在首屏定义模型、Agent、Harness 与工具/环境的责任。","verification":"人工核对首段可独立区分四者。"},
+    {"id":"A06","changed_paths":["docs/foundations/context.md","docs/optimization/context-tools.md"],"fix":"前者固定机制与不变量，后者只负责干预、诊断与配对评测，并互相链接。","verification":"人工核对两页开头各有明确职责边界。"},
+    {"id":"A07","changed_paths":["docs/optimization/debugging.md"],"fix":"诊断模板字段改为首次中英并列的中文标题。","verification":"人工核对模板可由中文读者直接填写。"},
+    {"id":"A08","changed_paths":["docs/foundations/reasoning.md","docs/optimization/reasoning-routing.md"],"fix":"把无信息断言限定为无验证反馈的盲重试，补充随机重采样的 draw、预算、validator 与分母边界。","verification":"人工核对两页均允许可验证的新候选，且不把 draw 当作独立 Task。"},
+    {"id":"A09","changed_paths":["docs/optimization/experiment.md"],"fix":"将模型工具选择假设的最低证据目标改为 E2，E1 仅作为 replay 接缝预检。","verification":"人工核对假设、evidence_target、输入和可支持结论处于同一证据层。"}
+  ],
+  "validation": {
+    "performed": ["两份实施报告已用 PowerShell ConvertFrom-Json 解析，A01-A09 与 6 个来源建议条目计数正确", "git diff --check 通过", "已用 targeted rg 确认 A01-A09 的关键文本与两页生态材料存在"],
+    "not_run": ["npm run check", "npm run facts:check", "npm run pages:check"],
+    "reason": "root owns facts/navigation integration and full validation."
+  }
+}

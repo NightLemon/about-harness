@@ -25,6 +25,7 @@ npm run verify
 
 ## 学习路线
 
+- 用[Agent 生态全景](docs/ecosystem/overview.md)定位模型服务、Harness、框架、协议、知识、部署、应用与评测的职责；
 - 从[学习路径](docs/guide/start.md)和[知识地图](docs/guide/roadmap.md)建立全局心智模型；
 - 用[指定模型适配](docs/models/adaptation.md)和[模型—Harness 匹配](docs/optimization/model-fit.md)设计对照实验；
 - 在[Codex](docs/harnesses/codex.md)、[Pi](docs/harnesses/pi.md)、[Claude Code](docs/harnesses/claude-code.md)中映射指令、配置、权限和回滚；
@@ -38,9 +39,12 @@ npm run verify
 
 ```bash
 uv run --frozen --offline python scripts/run-labs.py all
+npm run ecosystem:workshop
 npm run eval:validate
 npm run eval:summary
 ```
+
+新增生态工作坊用三类合成案例检查能力与授权、程序化汇总、候选选择与弃权阈值；它同样只有 E1，不运行真实协议、服务或模型。全站内容初审、逐页覆盖和复审记录位于 `reports/audits/2026-09-21/`。
 
 ## 贡献与维护
 

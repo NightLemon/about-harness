@@ -254,7 +254,7 @@ uv run --frozen --offline python --version
 uv run --frozen --offline pytest -q lab/tests/test_replay_and_live.py
 ```
 
-预期退出码为 0，5 项测试通过。断言证明：
+预期退出码为 0，相关测试全部通过。断言证明：
 
 - Replay 把固定 tool call 映射为 Action，并通过安全默认工具得到 `sum=6`；
 - complete Action 与嵌套 tool call 的未知字段都会被拒绝；
@@ -267,7 +267,7 @@ uv run --frozen --offline pytest -q lab/tests/test_replay_and_live.py
 uv run --frozen --offline pytest -q lab/tests/test_loop.py -k "wrong_adapter_return or adapter_action_is_revalidated or checkpoint_restores"
 ```
 
-预期 4 项测试通过。第一项让 adapter 返回伪装成 Action 的 dict；两个参数化案例分别把 `NaN` 藏入 completion output、把 `Infinity` 藏入 tool arguments，runner 都必须在记账和 handler 前产生 `failed / invalid_action`；最后一项先在一个 tool step 后停止，再用 checkpoint 恢复 Fake cursor，最终只消费剩余 complete Action。
+预期相关测试全部通过。第一项让 adapter 返回伪装成 Action 的 dict；两个参数化案例分别把 `NaN` 藏入 completion output、把 `Infinity` 藏入 tool arguments，runner 都必须在记账和 handler 前产生 `failed / invalid_action`；最后一项先在一个 tool step 后停止，再用 checkpoint 恢复 Fake cursor，最终只消费剩余 complete Action。
 
 ### 验证 stream 只在结构完成后提交
 
@@ -275,7 +275,7 @@ uv run --frozen --offline pytest -q lab/tests/test_loop.py -k "wrong_adapter_ret
 uv run --frozen --offline pytest -q lab/tests/test_streaming.py
 ```
 
-预期 14 项通过。三个正例分别重组中文文本与 usage、跨两个 delta 的 tool arguments、完全重复事件；十一项负例覆盖 sequence/response/event ID 冲突、坏 JSON、无终态断流、tool 未完成、终态后事件、Provider error、取消、未知事件和当前不支持的并行 tool call。测试只比较 assembler 返回或错误码，没有 ToolRegistry/handler，因此 partial stream 不可能产生副作用。
+预期相关测试全部通过。三个正例分别重组中文文本与 usage、跨两个 delta 的 tool arguments、完全重复事件；十一项负例覆盖 sequence/response/event ID 冲突、坏 JSON、无终态断流、tool 未完成、终态后事件、Provider error、取消、未知事件和当前不支持的并行 tool call。测试只比较 assembler 返回或错误码，没有 ToolRegistry/handler，因此 partial stream 不可能产生副作用。
 
 ## 失败练习：直接观察 checkpoint 和 replay 拒绝
 

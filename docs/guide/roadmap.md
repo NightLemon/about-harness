@@ -78,55 +78,11 @@ Policy/Sandbox ── State/Trace/Recovery
 
 安全不是提示词附录。先建立[威胁模型](/security/threat-model)，再处理[Prompt Injection](/security/prompt-injection)、[Secret 与隐私](/security/secrets-privacy)、[供应链](/security/supply-chain)和[事件响应](/security/incident-response)。产品主张通过[事实注册表](/references/fact-registry)追溯来源；易变事实、依赖、许可与 Pages 维护说明在仓库 README 和贡献指南中。
 
-## 四条可独立完成的学习路径
+## 学习路径由主入口维护
 
-### 路径 A：先理解一次运行
+[学习路径](/guide/start)是四条可执行路线的唯一规范来源：首次系统学习、指定模型适配、迁移工作流和失败任务修复都从那里选择。这里不重复步骤或产物，以免两页在后续更新时漂移。
 
-适合第一次接触 Agent 系统，或只能看到聊天结果、无法解释中间过程的人。
-
-```text
-what-is-harness → architecture → agent-loop
-→ context → tools → state-reliability
-→ minimal-harness-python → 任一 Lab
-```
-
-阶段产物：组件责任图、一条成功 trace、一条失败 trace，以及对 `completed` 为什么不等于业务通过的说明。若仍把 ToolCall 当作已执行动作，先不要进入模型比较。
-
-### 路径 B：适配一个指定模型
-
-适合已经有明确 provider/model，希望判断它能否在某个 Harness 内可靠工作的人。
-
-```text
-adaptation → protocol-compatibility → reasoning-budget
-→ harness comparison → model-playbook
-→ experiment → metrics → reporting
-```
-
-阶段产物：完整身份、协议资格矩阵、默认与候选配置、配对 Task、路由和回退规则。只有文档来源时保持 E0；获得真实调用授权后先做 E2，不从一次成功跳到全局排名。
-
-### 路径 C：修复一个失败任务
-
-适合已有失败 run、成本异常、越权动作或“偶尔成功”的系统。
-
-```text
-observability → debugging → threat-model
-→ 对应领域页 → 最小 fixture
-→ regression → reporting
-```
-
-阶段产物：冻结身份的失败包、最小复现、责任层分类、单变量修复、原失败与相邻负例。若原始副作用状态未知，先对账再重试；不要用提高预算或权限掩盖根因。
-
-### 路径 D：迁移 Harness
-
-适合把工作流从 Codex、Pi、Claude Code 或自建 runtime 迁往另一环境。
-
-```text
-harness comparison → 目标 Harness 专题
-→ migration Lab → security/human-control
-→ 领域状态清单 → qualification/shadow/cutover
-```
-
-阶段产物：instructions、tools、sandbox、approval、network、state 六类责任表，逐项写 source semantics、target semantics、gap、补偿控制和证据。文件名翻译不是迁移，恢复聊天文本也不是恢复外部状态。
+回到本页的用途是查依赖和补缺：先用上方依赖图定位机制层，再用下方检查点和症状表选择需要补读的节点。路线完成后也应回到这里，确认没有跳过 Task、权限、状态、validator 或证据边界。
 
 ## 五个学习检查点
 

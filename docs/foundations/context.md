@@ -2,6 +2,8 @@
 
 Context engineering（上下文工程）是选择、组织和验证模型在当前一步实际看到的信息。它不等于写一个更长的提示词，也不等于把仓库、记忆和日志全部装进窗口。系统指令、项目规则、Task（任务契约）、会话消息、文件片段、工具结果、计划、记忆和压缩摘要都可能成为上下文，但它们的来源、权限、时效和用途不同。
 
+本页只说明稳定机制：内容怎样取得身份、怎样进入当前上下文、哪些不变量不能在压缩中丢失。需要决定改哪个选择策略、工具 schema 或结果格式，并以配对任务验证收益时，转到[上下文与工具调优](/optimization/context-tools)；该页不重复定义本页的数据流。
+
 ## 学习目标
 
 读完本页，你应能：
@@ -191,7 +193,7 @@ required → trusted → priority（高到低）→ item_id
 uv run --frozen --offline pytest -q lab/tests/test_memory_context_trace.py::test_context_budget_prioritizes_required_and_trusted_sources
 ```
 
-预期退出码为 0，显示 `1 passed`。该断言证明在这个固定输入上，required/trusted 排序先于 untrusted priority。若 required 项放不下，选择器会抛出 `required context exceeds budget`，而不是静默丢弃。
+预期退出码为 0，显示 `passed`。该断言证明在这个固定输入上，required/trusted 排序先于 untrusted priority。若 required 项放不下，选择器会抛出 `required context exceeds budget`，而不是静默丢弃。
 
 测试失败时停止扩大上下文或接入真实数据；先检查排序键、声明 token 和 fixture。命令不读取凭据、网络或外部数据，只创建 pytest 临时状态；需要时清理 `.pytest_cache/`。若为了练习修改实现，用 `git diff -- lab/src/about_harness/context.py lab/tests/test_memory_context_trace.py` 定位并只回滚自己的变更。
 

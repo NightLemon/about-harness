@@ -224,7 +224,7 @@ npm run eval:summary
 
 ### 预期输出与断言
 
-- pytest 有 2 项通过：replay 在无网络/凭据下完成 `1+2+3=6`；live adapter 在产生 provider action 前抛出 `LiveAdapterDisabled`；
+- 相关测试应全部通过：replay 在无网络/凭据下完成 `1+2+3=6`；live adapter 在产生 provider action 前抛出 `LiveAdapterDisabled`；
 - `facts:check` 确认易变主张的来源状态、版本、日期和正文引用一致；
 - 人工对照兼容矩阵，确认 Source fact、Offline seam、Live evidence 与控制层责任分别记录，且没有用 integration 名称替代上游安装或 live run；
 - `eval:validate` 验证 task、不可变 fixture ref、run 与 hash lineage 一致；

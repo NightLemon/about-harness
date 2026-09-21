@@ -32,7 +32,7 @@ git status --short --branch
 uv sync --frozen --offline
 ```
 
-Fixture version 是 `1.1`，source 为 `project-synthetic`，license 为 `CC-BY-4.0`，不含个人数据。Manifest 固定 `input.json`、`expected.json` 与 `negative.json` 的 SHA256；任一字节变化会在迁移逻辑前失败。
+Fixture version 是 `1.1`，source 为 `project-synthetic`，license 为 `CC-BY-4.0`，不含个人数据。Manifest 固定 `input.json`、`expected.json` 与 `negative.json` 的 SHA256；哈希基于解析后的 canonical JSON；内容变化会在迁移逻辑前失败，仅空白或对象键顺序变化不影响身份。
 
 ## 本案例的迁移图
 
@@ -61,7 +61,7 @@ instructions / tools / sandbox / approval / network / state
 
 ### Sandbox：技术可达范围
 
-迁移“模型/进程技术上不能触达什么”。若目标没有被证明具有等价内建 sandbox，使用容器、受限账户、只读挂载和隔离 worktree 补偿。
+迁移“模型/进程技术上不能触达什么”。若目标没有被证明具有等价内建 sandbox，使用容器、受限账户、只读挂载等 OS 级控制补偿，并实际验证边界。独立 worktree 只隔离 Git 改动，不限制进程读取、联网或访问其他目录。
 
 ### Approval：何时停下来询问
 

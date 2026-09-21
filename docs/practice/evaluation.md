@@ -126,13 +126,13 @@ npm run eval:self-test
 
 外层命令通过，含义是“坏输入按预期失败”，不是坏输入被接受。测试会删除自己创建的临时目录，不修改 `evals/`。
 
-如果要发布脱敏后的公开结果，再运行：
+先在受限位置最小化并制作脱敏副本，再对将发布的公开目录运行失败关闭扫描：
 
 ```powershell
 npm run results:redact
 ```
 
-当前扫描只接受公开目录中的 JSON/JSONL，并检查有限的键名、路径和凭据模式。通过不证明任意自由文本都已安全脱敏；原始 prompt、trace 和私有源码应默认留在受限存储。
+当前扫描只接受公开目录中的 JSON/JSONL，并检查有限的键名、路径和凭据模式；它不会改写内容或生成脱敏副本。扫描失败时隔离原始 artifact、修复受限副本并重新扫描，不能发布原文。通过不证明任意自由文本都已安全脱敏；原始 prompt、trace 和私有源码应默认留在受限存储。
 
 ## 如何设计自己的 A/B
 
@@ -195,7 +195,7 @@ npm run results:redact
 1. 为什么 12 条合法 run 不能支持 120-cell study 的晋级？
 2. 重复 `run_id` 与重复矩阵 cell 有什么区别？
 3. `fixture_hash` 为什么还需要 commit 和 path？
-4. 当前 `promotion_eligible` 没有执行哪两个预注册阈值？
+4. 当前 `promotion_eligible` 怎样执行两个预注册阈值，哪些证据缺口仍会阻止晋级？
 5. 1/6 与 6/6 的样例为什么不能形成模型排名？
 
 下一步：阅读[评测方法与证据晋级](/evaluation/method)、[指标与区间](/evaluation/metrics)和[报告纪律](/evaluation/reporting)，再把自己的矩阵设计成可验证而非只可汇总的数据。

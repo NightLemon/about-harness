@@ -1,0 +1,807 @@
+{
+  "reviewer": "second-learning",
+  "transcription": "主代理根据独立审阅者的逐页返回整理；非自动质量评分。",
+  "status": "pass",
+  "pages": [
+    {
+      "path": "AGENTS.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "来源、E0–E3、离线与授权规则完整。",
+      "issues": [],
+      "first_review": {
+        "readability": "pass",
+        "accuracy": "pass",
+        "coverage": "pass",
+        "note": "来源、E0–E3、离线与授权规则完整。"
+      }
+    },
+    {
+      "path": "README.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "生态与工作坊入口完整，六Lab及发布边界保留。",
+      "issues": [],
+      "first_review": {
+        "readability": "pass",
+        "accuracy": "pass",
+        "coverage": "pass",
+        "note": "生态与工作坊入口完整，六Lab及发布边界保留。"
+      }
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "语义复核与30天时效门槛一致。",
+      "issues": [],
+      "first_review": {
+        "readability": "pass",
+        "accuracy": "pass",
+        "coverage": "pass",
+        "note": "语义复核与30天时效门槛一致。"
+      }
+    },
+    {
+      "path": "docs/index.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "问题驱动入口连接生态、设计、恢复与作品集。",
+      "issues": [],
+      "first_review": {
+        "readability": "pass",
+        "accuracy": "pass",
+        "coverage": "pass",
+        "note": "问题驱动入口连接生态、设计、恢复与作品集。"
+      }
+    },
+    {
+      "path": "docs/references/glossary.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "pass@k/best-of-k拆分，新增术语定义一致。",
+      "issues": [],
+      "first_review": {
+        "readability": "pass",
+        "accuracy": "pass",
+        "coverage": "pass",
+        "note": "pass@k/best-of-k拆分，新增术语定义一致。"
+      }
+    },
+    {
+      "path": "docs/references/sources.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "复验通过：为59条补实际来源摘录、定位、支持范围及缓存身份",
+      "issues": [
+        "S-C08"
+      ],
+      "first_review": {
+        "readability": "pass",
+        "accuracy": "blocked",
+        "coverage": "pass",
+        "note": "分类与pending清楚，段落级证据待补。"
+      }
+    },
+    {
+      "path": "docs/references/fact-registry.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "复验通过：为59条补实际来源摘录、定位、支持范围及缓存身份",
+      "issues": [
+        "S-C08"
+      ],
+      "first_review": {
+        "readability": "pass",
+        "accuracy": "blocked",
+        "coverage": "pass",
+        "note": "59条11列结构与日期通过；语义记录待补。"
+      }
+    },
+    {
+      "path": "docs/references/compatibility.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "复验通过：为59条补实际来源摘录、定位、支持范围及缓存身份",
+      "issues": [
+        "S-C08"
+      ],
+      "first_review": {
+        "readability": "pass",
+        "accuracy": "blocked",
+        "coverage": "pass",
+        "note": "Llama及新生态对象和五证据轴齐全；来源追溯待补。"
+      }
+    },
+    {
+      "path": "evals/README.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "任务、合成记录、历史fixture与晋级限制清楚。",
+      "issues": [],
+      "first_review": {
+        "readability": "pass",
+        "accuracy": "pass",
+        "coverage": "pass",
+        "note": "任务、合成记录、历史fixture与晋级限制清楚。"
+      }
+    },
+    {
+      "path": "examples/harnesses/codex/README.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "复验通过：为59条补实际来源摘录、定位、支持范围及缓存身份",
+      "issues": [
+        "S-C08"
+      ],
+      "first_review": {
+        "readability": "pass",
+        "accuracy": "blocked",
+        "coverage": "pass",
+        "note": "静态、反例和回滚完整；日期来源记录待补。"
+      }
+    },
+    {
+      "path": "examples/harnesses/codex/AGENTS.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "练习范围和权限约束明确。",
+      "issues": [],
+      "first_review": {
+        "readability": "pass",
+        "accuracy": "pass",
+        "coverage": "pass",
+        "note": "练习范围和权限约束明确。"
+      }
+    },
+    {
+      "path": "examples/harnesses/claude-code/README.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "复验通过：为59条补实际来源摘录、定位、支持范围及缓存身份",
+      "issues": [
+        "S-C08"
+      ],
+      "first_review": {
+        "readability": "pass",
+        "accuracy": "blocked",
+        "coverage": "pass",
+        "note": "指令与权限执行分开；来源记录待补。"
+      }
+    },
+    {
+      "path": "examples/harnesses/claude-code/CLAUDE.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "项目、凭据及远程操作限制明确。",
+      "issues": [],
+      "first_review": {
+        "readability": "pass",
+        "accuracy": "pass",
+        "coverage": "pass",
+        "note": "项目、凭据及远程操作限制明确。"
+      }
+    },
+    {
+      "path": "examples/harnesses/pi/README.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "复验通过：为59条补实际来源摘录、定位、支持范围及缓存身份",
+      "issues": [
+        "S-C08"
+      ],
+      "first_review": {
+        "readability": "pass",
+        "accuracy": "blocked",
+        "coverage": "pass",
+        "note": "worktree与强制隔离已拆分；来源记录待补。"
+      }
+    },
+    {
+      "path": "examples/harnesses/pi/AGENTS.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "文档不匹配即停止，不扩大访问。",
+      "issues": [],
+      "first_review": {
+        "readability": "pass",
+        "accuracy": "pass",
+        "coverage": "pass",
+        "note": "文档不匹配即停止，不扩大访问。"
+      }
+    },
+    {
+      "path": "examples/portfolio-starter/README.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "E0脚手架与成果分开，没有预造运行记录。",
+      "issues": [],
+      "first_review": {
+        "readability": "pass",
+        "accuracy": "pass",
+        "coverage": "pass",
+        "note": "E0脚手架与成果分开，没有预造运行记录。"
+      }
+    },
+    {
+      "path": "examples/portfolio-starter/environment.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "环境、改动、许可及停止条件有填写位置。",
+      "issues": [],
+      "first_review": {
+        "readability": "pass",
+        "accuracy": "pass",
+        "coverage": "pass",
+        "note": "环境、改动、许可及停止条件有填写位置。"
+      }
+    },
+    {
+      "path": "examples/portfolio-starter/knowledge-map.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "无工具回答完整性失败路径已补。",
+      "issues": [],
+      "first_review": {
+        "readability": "pass",
+        "accuracy": "pass",
+        "coverage": "pass",
+        "note": "无工具回答完整性失败路径已补。"
+      }
+    },
+    {
+      "path": "examples/portfolio-starter/model-card/adaptation.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "身份、来源和资格保持pending/untested。",
+      "issues": [],
+      "first_review": {
+        "readability": "pass",
+        "accuracy": "pass",
+        "coverage": "pass",
+        "note": "身份、来源和资格保持pending/untested。"
+      }
+    },
+    {
+      "path": "examples/portfolio-starter/harness/verification.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "原失败、邻近正例、安全和实际结果分栏。",
+      "issues": [],
+      "first_review": {
+        "readability": "pass",
+        "accuracy": "pass",
+        "coverage": "pass",
+        "note": "原失败、邻近正例、安全和实际结果分栏。"
+      }
+    },
+    {
+      "path": "examples/portfolio-starter/evaluation/study.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "Task单位、控制变量、失败保留及E1限制清楚。",
+      "issues": [],
+      "first_review": {
+        "readability": "pass",
+        "accuracy": "pass",
+        "coverage": "pass",
+        "note": "Task单位、控制变量、失败保留及E1限制清楚。"
+      }
+    },
+    {
+      "path": "examples/portfolio-starter/evaluation/report.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "未运行指标写未观测，零记录数语义明确。",
+      "issues": [],
+      "first_review": {
+        "readability": "pass",
+        "accuracy": "pass",
+        "coverage": "pass",
+        "note": "未运行指标写未观测，零记录数语义明确。"
+      }
+    },
+    {
+      "path": "examples/portfolio-starter/security/threat-model.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "纯回答风险和引用/反证验收完整。",
+      "issues": [],
+      "first_review": {
+        "readability": "pass",
+        "accuracy": "pass",
+        "coverage": "pass",
+        "note": "纯回答风险和引用/反证验收完整。"
+      }
+    },
+    {
+      "path": "examples/portfolio-starter/migration/responsibility-map.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "责任unknown不补通过，切换需资格和回退。",
+      "issues": [],
+      "first_review": {
+        "readability": "pass",
+        "accuracy": "pass",
+        "coverage": "pass",
+        "note": "责任unknown不补通过，切换需资格和回退。"
+      }
+    },
+    {
+      "path": "examples/portfolio-starter/evidence/commands.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "命令、退出码、身份、产物与预期分开。",
+      "issues": [],
+      "first_review": {
+        "readability": "pass",
+        "accuracy": "pass",
+        "coverage": "pass",
+        "note": "命令、退出码、身份、产物与预期分开。"
+      }
+    },
+    {
+      "path": "examples/portfolio-starter/evidence/unresolved.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "未知项含风险、owner、触发与决定。",
+      "issues": [],
+      "first_review": {
+        "readability": "pass",
+        "accuracy": "pass",
+        "coverage": "pass",
+        "note": "未知项含风险、owner、触发与决定。"
+      }
+    },
+    {
+      "path": "docs/guide/start.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "路线按交付物分流，停止、回滚和E1限制明确。",
+      "issues": [],
+      "first_review": {
+        "readability": "pass",
+        "accuracy": "pass",
+        "coverage": "pass",
+        "note": "路线按交付物分流，停止、回滚和E1限制明确。"
+      }
+    },
+    {
+      "path": "docs/guide/roadmap.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "删重复路线，保留依赖图和查漏索引。",
+      "issues": [],
+      "first_review": {
+        "readability": "pass",
+        "accuracy": "pass",
+        "coverage": "pass",
+        "note": "删重复路线，保留依赖图和查漏索引。"
+      }
+    },
+    {
+      "path": "docs/guide/prerequisites.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "阅读、构建、Lab分层，缓存准备与离线运行分开。",
+      "issues": [],
+      "first_review": {
+        "readability": "pass",
+        "accuracy": "pass",
+        "coverage": "pass",
+        "note": "阅读、构建、Lab分层，缓存准备与离线运行分开。"
+      }
+    },
+    {
+      "path": "docs/guide/portfolio.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "产物、硬门槛和独立复核一致。",
+      "issues": [],
+      "first_review": {
+        "readability": "pass",
+        "accuracy": "pass",
+        "coverage": "pass",
+        "note": "产物、硬门槛和独立复核一致。"
+      }
+    },
+    {
+      "path": "docs/guide/capstone.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "Starter、Coding种子与个人证据身份分开。",
+      "issues": [],
+      "first_review": {
+        "readability": "pass",
+        "accuracy": "pass",
+        "coverage": "pass",
+        "note": "Starter、Coding种子与个人证据身份分开。"
+      }
+    },
+    {
+      "path": "docs/guide/interview-practice.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "五卡只需本仓库，外部项目可选。",
+      "issues": [],
+      "first_review": {
+        "readability": "pass",
+        "accuracy": "pass",
+        "coverage": "pass",
+        "note": "五卡只需本仓库，外部项目可选。"
+      }
+    },
+    {
+      "path": "docs/labs/setup.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "复验通过：保留deletion_process不足及unsupported_claims=1",
+      "issues": [
+        "S-C02"
+      ],
+      "first_review": {
+        "readability": "pass",
+        "accuracy": "pass",
+        "coverage": "pass",
+        "note": "三路径及扫描语义完整，research不足项已修。"
+      }
+    },
+    {
+      "path": "docs/labs/runner.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "复验通过：明确规范化内容身份与空白/键序边界",
+      "issues": [
+        "S-C01"
+      ],
+      "first_review": {
+        "readability": "pass",
+        "accuracy": "pass",
+        "coverage": "pass",
+        "note": "生命周期、失败副本与canonical JSON一致。"
+      }
+    },
+    {
+      "path": "docs/labs/coding.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "内存patch、精确AST、真实断言与历史身份分开。",
+      "issues": [],
+      "first_review": {
+        "readability": "pass",
+        "accuracy": "pass",
+        "coverage": "pass",
+        "note": "内存patch、精确AST、真实断言与历史身份分开。"
+      }
+    },
+    {
+      "path": "docs/labs/browser.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "预标请求、零副作用与真实浏览器分开。",
+      "issues": [],
+      "first_review": {
+        "readability": "pass",
+        "accuracy": "pass",
+        "coverage": "pass",
+        "note": "预标请求、零副作用与真实浏览器分开。"
+      }
+    },
+    {
+      "path": "docs/labs/research.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "字面引用与冲突标签不冒充语义核验。",
+      "issues": [],
+      "first_review": {
+        "readability": "pass",
+        "accuracy": "pass",
+        "coverage": "pass",
+        "note": "字面引用与冲突标签不冒充语义核验。"
+      }
+    },
+    {
+      "path": "docs/labs/data.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "missing/null、单位、有限数及邮箱扫描范围明确。",
+      "issues": [],
+      "first_review": {
+        "readability": "pass",
+        "accuracy": "pass",
+        "coverage": "pass",
+        "note": "missing/null、单位、有限数及邮箱扫描范围明确。"
+      }
+    },
+    {
+      "path": "docs/labs/document.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "版本筛选、ACL、解析停止与引用限制明确。",
+      "issues": [],
+      "first_review": {
+        "readability": "pass",
+        "accuracy": "pass",
+        "coverage": "pass",
+        "note": "版本筛选、ACL、解析停止与引用限制明确。"
+      }
+    },
+    {
+      "path": "docs/labs/migration.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "复验通过：明确规范化内容身份与空白/键序边界；明确Git隔离不等于OS强制边界",
+      "issues": [
+        "S-C01",
+        "S-C03"
+      ],
+      "first_review": {
+        "readability": "pass",
+        "accuracy": "pass",
+        "coverage": "pass",
+        "note": "12映射完整；canonical hash与worktree边界已修。"
+      }
+    },
+    {
+      "path": "docs/implementation/minimal-harness-python.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "控制流、修正、内存恢复和软deadline清楚。",
+      "issues": [],
+      "first_review": {
+        "readability": "pass",
+        "accuracy": "pass",
+        "coverage": "pass",
+        "note": "控制流、修正、内存恢复和软deadline清楚。"
+      }
+    },
+    {
+      "path": "docs/implementation/adapter-contract.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "Adapter不接管权限，call ID/stream/restore可定位。",
+      "issues": [],
+      "first_review": {
+        "readability": "pass",
+        "accuracy": "pass",
+        "coverage": "pass",
+        "note": "Adapter不接管权限，call ID/stream/restore可定位。"
+      }
+    },
+    {
+      "path": "docs/implementation/testing.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "复验通过：明确规范化内容身份与空白/键序边界；与package.json实际脚本逐项对齐",
+      "issues": [
+        "S-C01",
+        "S-C05"
+      ],
+      "first_review": {
+        "readability": "pass",
+        "accuracy": "pass",
+        "coverage": "pass",
+        "note": "Oracle与语言契约完整；门禁及哈希已修。"
+      }
+    },
+    {
+      "path": "docs/implementation/typescript-mapping.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "静态与runtime分开，线协议一致不等于恢复一致。",
+      "issues": [],
+      "first_review": {
+        "readability": "pass",
+        "accuracy": "pass",
+        "coverage": "pass",
+        "note": "静态与runtime分开，线协议一致不等于恢复一致。"
+      }
+    },
+    {
+      "path": "docs/implementation/extensions.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "复验通过：补Python/uv锁文件及Chromium前置，setup补获取命令",
+      "issues": [
+        "S-C06"
+      ],
+      "first_review": {
+        "readability": "pass",
+        "accuracy": "pass",
+        "coverage": "pass",
+        "note": "扩展生命周期完整，Python/uv/Chromium前置已补。"
+      }
+    },
+    {
+      "path": "docs/practice/debugging.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "首处分歧、区分性测试和oracle负例可操作。",
+      "issues": [],
+      "first_review": {
+        "readability": "pass",
+        "accuracy": "pass",
+        "coverage": "pass",
+        "note": "首处分歧、区分性测试和oracle负例可操作。"
+      }
+    },
+    {
+      "path": "docs/practice/end-to-end.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "虚构E0与仓库E1分开，错误分母和路由有解释。",
+      "issues": [],
+      "first_review": {
+        "readability": "pass",
+        "accuracy": "pass",
+        "coverage": "pass",
+        "note": "虚构E0与仓库E1分开，错误分母和路由有解释。"
+      }
+    },
+    {
+      "path": "docs/practice/evaluation.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "复验通过：改问执行前提与剩余证据缺口",
+      "issues": [
+        "S-C07"
+      ],
+      "first_review": {
+        "readability": "pass",
+        "accuracy": "fail",
+        "coverage": "pass",
+        "note": "正文阈值正确，首次复审检查题仍有相反说法。"
+      }
+    },
+    {
+      "path": "docs/practice/framework-selection.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "Task形状、基线、资格、效用及退场成本完整。",
+      "issues": [],
+      "first_review": {
+        "readability": "pass",
+        "accuracy": "pass",
+        "coverage": "pass",
+        "note": "Task形状、基线、资格、效用及退场成本完整。"
+      }
+    },
+    {
+      "path": "docs/practice/harness-design.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "当前/目标/unknown分开，动作和恢复可追溯。",
+      "issues": [],
+      "first_review": {
+        "readability": "pass",
+        "accuracy": "pass",
+        "coverage": "pass",
+        "note": "当前/目标/unknown分开，动作和恢复可追溯。"
+      }
+    },
+    {
+      "path": "docs/practice/model-playbook.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "身份、资格、采用及路由分开，未知不补零。",
+      "issues": [],
+      "first_review": {
+        "readability": "pass",
+        "accuracy": "pass",
+        "coverage": "pass",
+        "note": "身份、资格、采用及路由分开，未知不补零。"
+      }
+    },
+    {
+      "path": "docs/practice/reliability-recovery.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "attempt、回执和副作用分开，对账反例明确。",
+      "issues": [],
+      "first_review": {
+        "readability": "pass",
+        "accuracy": "pass",
+        "coverage": "pass",
+        "note": "attempt、回执和副作用分开，对账反例明确。"
+      }
+    },
+    {
+      "path": "docs/practice/security-review.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "数据流、主体、失效与E1边界完整。",
+      "issues": [],
+      "first_review": {
+        "readability": "pass",
+        "accuracy": "pass",
+        "coverage": "pass",
+        "note": "数据流、主体、失效与E1边界完整。"
+      }
+    },
+    {
+      "path": "docs/practice/ecosystem-workshop.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "复验通过：字段改planned_handler_calls，事件和正文同步",
+      "issues": [
+        "S-C04"
+      ],
+      "first_review": {
+        "readability": "pass",
+        "accuracy": "pass",
+        "coverage": "pass",
+        "note": "三个练习可手算，计划handler正确标注。"
+      }
+    },
+    {
+      "path": "docs/ecosystem/overview.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "九层责任清楚，主路线仍指start，未冒充live。",
+      "issues": [],
+      "first_review": {
+        "readability": "pass",
+        "accuracy": "pass",
+        "coverage": "pass",
+        "note": "九层责任清楚，主路线仍指start，未冒充live。"
+      }
+    }
+  ],
+  "first_review_status": "fail",
+  "recheck_note": "独立审阅者重新读取修订文件与证据后通过；first_review保留首次三维结果。"
+}

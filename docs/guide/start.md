@@ -4,7 +4,7 @@
 
 这套文档面向具备 Git、CLI、基础编程和基本 LLM 概念的工程师。这里的 Agent Harness 指围绕模型、把目标转成受控执行循环的工作环境，不是名为 Harness 的持续交付产品。
 
-你不需要从侧栏第一页读到最后一页。先选一个要交付的 artifact（产物），沿对应路线完成一次小闭环，再回到[知识地图](/guide/roadmap)补缺。环境还没准备好时先做[前置知识自检](/guide/prerequisites)。
+你不需要从侧栏第一页读到最后一页。先选一个要交付的 artifact（产物），沿对应路线完成一次小闭环，再回到[知识地图](/guide/roadmap)补缺。环境还没准备好时先做[前置知识自检](/guide/prerequisites)。准备面试材料时执行[五张迁移卡](interview-practice.md)。
 
 ## 先建立一个核心判断
 

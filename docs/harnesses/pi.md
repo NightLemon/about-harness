@@ -2,7 +2,7 @@
 
 ## 来源与证据边界
 
-Pi 在这里指终端 coding Harness。产品事实固定到维护仓库 commit [`496185f`](https://github.com/earendil-works/pi/tree/496185f6e4267b979e3663c45f7eb70b0c6a97b4/packages/coding-agent)，并于 **2026-08-27** 复核。[FACT:pi-readme]
+Pi 在这里指终端 coding Harness。产品事实固定到维护仓库 commit [`496185f`](https://github.com/earendil-works/pi/tree/496185f6e4267b979e3663c45f7eb70b0c6a97b4/packages/coding-agent)，并于 **2026-09-21** 复核。[FACT:pi-readme]
 
 固定源码说明该版本的核心工具、session、compaction（上下文压缩）、context files、skills、prompt templates 和 TypeScript extensions。真实执行前仍需核对安装 artifact、目标 model/provider、运行环境和本地 `--help`；仓库没有安装或启动 Pi。
 
@@ -291,4 +291,4 @@ disable/uninstall/rollback
 4. Session fork 为什么不能单独保证外部写入隔离？
 5. 比较模型时为什么必须冻结 extension 与 context/template？
 
-下一步阅读[扩展与供应链安全](/security/supply-chain)、[三个 Harness 对照](/harnesses/comparison)和[迁移案例](/labs/migration)。
+下一步阅读[扩展与供应链安全](/security/supply-chain)、[Harness 职责对照](/harnesses/comparison)和[迁移案例](/labs/migration)。

@@ -218,7 +218,7 @@ npm run pages:check
 
 ### 前置条件与固定输入
 
-需要 Node.js 22+，依赖由 `package-lock.json` 固定；从仓库根目录运行。输入是当前工作树的 Markdown、站点配置和事实注册表。不配置真实 API、credential、MCP server 或外部扩展，不产生费用。
+需要 Node.js 22+、Python 3.11+、uv 0.11.16，Node/Python 依赖分别由 `package-lock.json`、`uv.lock` 固定；Pages 视觉检查还需对应 Playwright 版本的 Chromium。先按[实验环境](/labs/setup)准备依赖与浏览器缓存，再从仓库根目录运行。输入是当前工作树的 Markdown、站点配置和事实注册表。不配置真实 API、credential、MCP server 或外部扩展，不产生费用。
 
 ### 命令、预期输出与断言
 

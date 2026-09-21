@@ -72,20 +72,20 @@ controller + adapter + policy + tool 集成
 
 ## 当前 Python 测试矩阵
 
-当前基线由 `pytest --collect-only -q` 得到 172 项：
+测试文件按责任分工，而不是按易漂移的收集数量评分：
 
-| 文件 | 数量 | 主要责任 |
-| --- | ---: | --- |
-| `test_acceptance.py` | 15 | 九个跨语言 JSON 样例、非有限数、结果契约与循环对象 |
-| `test_contracts_and_schema.py` | 65 | 30 个 Task/Action 与 14 个 Result 跨语言案例、非 JSON 值、内部互斥、公共 schema 与 Portfolio Starter 契约 |
-| `test_loop.py` | 17 | completion/验收修正、Adapter Action 深层重验、预算、权限、retry、幂等冲突、恢复、取消、timeout |
-| `test_m5_labs.py` | 48 | 六类 fixture、hash/CLI 隔离、领域身份与边界负例、公开 Trace/摘要一致性 |
-| `test_memory_context_trace.py` | 4 | 上下文选择、记忆污染/过期/删除、trace 脱敏 |
-| `test_recovery.py` | 4 | 明确回执、提交后丢响应、receipt 冲突与换 key 重复副作用 |
-| `test_replay_and_live.py` | 5 | Replay 精确字段、Fake state、Live 硬禁用 |
-| `test_streaming.py` | 14 | 合成 stream 的顺序、ID、tool JSON、终态、重放与失败关闭 |
+| 文件 | 主要责任 |
+| --- | --- |
+| `test_acceptance.py` | 跨语言 JSON 样例、非有限数、结果契约与循环对象 |
+| `test_contracts_and_schema.py` | Task/Action/Result 公共契约、非 JSON 值、内部互斥与 Portfolio Starter |
+| `test_loop.py` | completion/验收修正、Adapter Action 深层重验、预算、权限、retry、幂等、恢复、取消与 timeout |
+| `test_m5_labs.py` | 六类 fixture、hash/CLI 隔离、领域身份与边界负例、公开 Trace/摘要一致性 |
+| `test_memory_context_trace.py` | 上下文选择、记忆污染/过期/删除、trace 脱敏 |
+| `test_recovery.py` | 明确回执、提交后丢响应、receipt 冲突与换 key 重复副作用 |
+| `test_replay_and_live.py` | Replay 精确字段、Fake state 与 Live 硬禁用 |
+| `test_streaming.py` | 合成 stream 的顺序、ID、tool JSON、终态、重放与失败关闭 |
 
-数字只描述覆盖面，不代表质量分数。一个参数化测试可以计为多项，十个相似 happy path 也可能没有一个关键负例。新增能力时先补责任层和故障路径，而不是追求总数。
+新增能力时先补责任层和故障路径。一个参数化测试可以产生多个收集项，许多相似 happy path 也可能没有关键负例；不要把收集数量当质量分数或稳定教程输出。
 
 ## Python 之外还有哪些测试
 
@@ -94,7 +94,7 @@ controller + adapter + policy + tool 集成
 | TypeScript 静态映射 | `npm run lab:typecheck` | strict/noEmit 下源码可编译 |
 | TypeScript 运行时 | `npm run lab:ts-runtime-test` | 重放 30 个 Task/Action、14 个 RunResult 契约案例和九个验收案例 |
 | 六类领域 Lab | `npm run labs:all` | 固定 hash fixture 的 E1 接缝 |
-| 内容/导航/模型/教程 checkers | 多个 `*:check` | Markdown 契约、链接和结构规则 |
+| 文档/示例/事实/教程 checkers | 多个 `*:check` | Markdown 契约、链接和结构规则 |
 | Checker self-tests | 多个 `*:self-test` | 门禁会拒绝故意损坏的 canary |
 | Eval validation | `eval:validate` / `eval:self-test` | lineage、矩阵、promotion 与公开结果负例 |
 | Site build / visual | `docs:project-base` / `docs:visual:run` | 路由、base path 和三个 viewport 的有限检查 |
@@ -106,19 +106,19 @@ Static check（静态检查）、build 和 visual smoke 都是必要证据，但
 
 ### `npm run check`
 
-覆盖：基础文档/内容/示例检查、普通 VitePress build、事实注册、内容与示例 checker 自测、六类离线 Lab、TypeScript 运行时、eval validate/summary/self-test 和公开结果扫描。
+覆盖：文档与示例检查、普通 VitePress build 及产物检查、事实注册、示例 checker 自测、六类离线 Lab、TypeScript 运行时、生态工作坊、eval validate/summary/self-test 和公开结果扫描。
 
 它不运行完整 pytest、Ruff、Pyright、TypeScript 静态 typecheck，也不包含 tutorial/repository 等高价值 checker self-tests。因此 `check` 通过不能替代 `verify`。
 
 ### `npm run pages:check`
 
-覆盖：GitHub Pages base build、roadmap/learning/model/compat/tutorial/content/examples、事实新鲜度、外链结构、许可证、Secret、workflow 与有限视觉检查。
+覆盖：GitHub Pages base build 与产物检查、tutorial/examples、事实新鲜度、外链结构、许可证、Secret、workflow 与有限视觉检查。
 
 它不运行 Python 单元/集成测试、TypeScript runtime 或 eval 全链。它回答“站点与发布相关门禁是否满足”，不回答 harness runtime 是否正确。
 
 ### `npm run verify`
 
-先运行 `check`，再补 roadmap/learning/model/compat/tutorial 的正负检查、Pages base build、完整 pytest、Ruff、Pyright、TypeScript typecheck、事实新鲜度、链接、许可证、Secret、workflow、视觉和 repository checker self-test。CI 的 PR 与 `main` push 都运行这一入口。
+先运行 `check`，再补 tutorial 的契约检查与负例自测、Pages base build、完整 pytest、Ruff、Pyright、TypeScript typecheck、事实新鲜度、链接、许可证、Secret、workflow、视觉和 repository checker self-test。CI 的 PR 与 `main` push 都运行这一入口。
 
 `verify` 是当前最完整的本地/CI 聚合入口，但仍不访问真实 provider，不运行付费 API，不做生产部署或真实用户数据测试。聚合命令通过只能继承各子检查的证据边界。
 
@@ -179,7 +179,7 @@ Flaky test（不稳定测试）不能直接自动重跑到绿色。保留第一�
 
 六类 Lab 的每个 fixture bundle 包含 `manifest.json`、`input.json`、`expected.json` 与 `negative.json`。Loader 核对 hash；测试还会把 bundle 复制到临时目录、篡改 input，并要求 CLI 非零退出且 stderr 包含 hash mismatch。
 
-这证明当前字节与 manifest 一致，不证明 fixture 代表真实世界分布。Fixture 还要记录来源许可、版本、生成方法、预期责任层和证据等级。修改 input 时应产生新 hash 并解释语义变化，不能只更新 expected 让测试继续通过。
+这证明当前规范化 JSON 身份与 manifest 一致，不证明 fixture 代表真实世界分布。Fixture 还要记录来源许可、版本、生成方法、预期责任层和证据等级。修改 input 时应产生新 hash 并解释语义变化，不能只更新 expected 让测试继续通过。
 
 Eval 还把 task、immutable fixture ref 和 run 的 hash 串成 lineage（来源链）。`eval:self-test` 故意制造 task/ref/run 不一致、重复 run/matrix cell、config drift 和不安全公开 artifact；任一坏样例被接受，门禁自身就失败。
 
@@ -255,7 +255,7 @@ npm run lab:typecheck
 npm run lab:ts-runtime-test
 ```
 
-预期 Python 有 32 项通过，TypeScript typecheck 退出 0；runtime test 依次输出本地边界通过、九个共享验收案例、30 个 Task/Action 案例和 14 个 RunResult 案例通过。这里没有运行完整 Python 契约/schema 测试、领域 fixture、站点或 checker self-tests。
+预期相关测试全部通过，TypeScript typecheck 退出 0；runtime test 依次输出本地边界通过、九个共享验收案例、30 个 Task/Action 案例和 14 个 RunResult 案例通过。这里没有运行完整 Python 契约/schema 测试、领域 fixture、站点或 checker self-tests。
 
 ### 证明高价值门禁会拒绝坏输入
 
@@ -272,7 +272,7 @@ npm run repo:self-test
 npm run verify
 ```
 
-当前基线应包含 172 项 pytest 全通过，以及 Ruff、Pyright、TypeScript typecheck、文档/事实/站点/安全/工作流/视觉和 checker self-tests 通过。不要只看最后一行；保留首个失败子命令和退出码。
+当前基线应包含完整 pytest 测试集通过，以及 Ruff、Pyright、TypeScript typecheck、文档/事实/站点/安全/工作流/视觉和 checker self-tests 通过。不要只看最后一行；保留首个失败子命令和退出码。
 
 ## 失败时的停止、清理与回滚
 

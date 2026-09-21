@@ -8,7 +8,7 @@
 - [Settings](https://code.claude.com/docs/en/settings)
 - [Permissions](https://code.claude.com/docs/en/permissions)
 
-Settings 与 permissions 于 **2026-08-27** 实际核对；memory 页面沿用 **2026-08-20** 的注册记录。[FACT:claude-memory] [FACT:claude-settings] 模型、套餐、默认值、managed policy 和不同 surface 行为仍须在目标版本确认。
+本页于 **2026-09-21** 复读 Memory、Settings 与 Permissions。[FACT:claude-memory] [FACT:claude-settings] [FACT:claude-agents-md] [FACT:claude-permissions] 模型、套餐、默认值、managed policy 和不同 surface 行为仍须在目标版本确认。
 
 仓库只提供 E0 静态配置；没有安装 Claude Code、调用 Claude 模型或验证真实 permission/sandbox/hook。跨 Harness fixture 的 E1 只证明迁移责任可执行，不证明产品兼容性。
 
@@ -16,7 +16,7 @@ Settings 与 permissions 于 **2026-08-27** 实际核对；memory 页面沿用 *
 
 ```text
 Task
-  + effective CLAUDE.md / rules / memory
+  + effective CLAUDE.md / AGENTS.md / rules / memory
   + model + active settings
         ↓
   Claude Code agent loop
@@ -28,7 +28,13 @@ tools / MCP / plugins / subagents
 diff / tests / trace / human review / recovery
 ```
 
-`CLAUDE.md`、rules 和 auto memory 属于 conversation context（对话上下文），不是不可绕过的 policy。[FACT:claude-memory] Shared settings、permission rules、sandbox、hooks 和 managed controls 承担更硬的控制，但其实际语义必须由目标版本与探针确认。[FACT:claude-settings]
+`CLAUDE.md`、`AGENTS.md`、rules 和 auto memory 属于 conversation context（对话上下文），不是不可绕过的 policy。[FACT:claude-memory] Shared settings、permission rules、sandbox、hooks 和 managed controls 承担更硬的控制，但其实际语义必须由目标版本与探针确认。[FACT:claude-settings]
+
+## AGENTS.md 与 CLAUDE.md 的条件加载
+
+当前文档说明，Claude Code v2.1.277+ 在工作目录及其父目录没有 `CLAUDE.md`、`.claude/CLAUDE.md` 或 `CLAUDE.local.md` 时可直接读取 `AGENTS.md`；存在这些项目层文件时默认只读取 Claude 文件。用户级 `~/.claude/CLAUDE.md`、组织 managed `CLAUDE.md` 和 `.claude/rules/` 不计入这项阻止 AGENTS 默认加载的检查，仍会按各自规则共同加载。使用 `claude-md-and-agents-md` 设置可请求两者共同加载，但第三方 provider、关闭 telemetry 或特性不可用的 session 可能不支持直接加载。[FACT:claude-agents-md]
+
+因此迁移不能假定文件名等价：记录实际版本、surface、Project instructions 设置和有效文件 hash；在 `/config` 的 **Project instructions** 查看设置，再用 `/context` 核对实际加载文件。若直接加载不可用，可在仓库根 `CLAUDE.md` 中单独写一行 `@AGENTS.md`，显式导入同目录受审查的文件；子目录和其他相对路径需按该 CLAUDE 文件位置重新核对。回退时只撤销该 import 或恢复原设置，并重新确认有效文件。两者都只是指令层，不能替代 permission、sandbox 或工具 policy。
 
 指令说明“应该怎样做”；permission/policy 决定“是否允许”；sandbox/身份决定“技术上能触达什么”；validator 决定“任务是否完成”。
 
@@ -40,7 +46,7 @@ diff / tests / trace / human review / recovery
 Claude Code exact version / surface / OS
 model request / provider surface / resolved model identity
 cwd / repository root / commit / dirty paths / trust state
-effective CLAUDE.md + rules + memory identities/hashes
+effective CLAUDE.md + AGENTS.md + rules + memory identities/hashes
 all active settings sources + CLI flags + managed controls
 permission allow/ask/deny + rule match observations
 sandbox / network / execution identity
@@ -93,8 +99,8 @@ Memory 中的旧结论、网页内容或工具结果可能过期或受污染。�
 
 它表达：
 
-- 只读范围限定在 `docs`；
-- 只允许一条确定性本地检查命令；
+- 对 `docs` 的指定读取操作预先允许；未匹配操作仍由其他生效规则和模式决定，这不是文件系统读取白名单；
+- 预先允许一条确定性本地检查命令；未列出的命令不因此自动被 deny；
 - 编辑 `docs` 进入 ask；
 - 环境文件、WebFetch 和 push 进入 deny；
 - 没有 `Bash(*)`、credential、model 或 provider。
@@ -275,4 +281,4 @@ remaining acceptance and budgets
 4. Hook timeout 后为什么要判断副作用状态？
 5. 比较模型时为何必须冻结 Claude Code 的 context、tool 和 policy？
 
-下一步对照[人在循环中](/foundations/human-control)、[三个 Harness 对照](/harnesses/comparison)与[迁移案例](/labs/migration)。
+下一步对照[人在循环中](/foundations/human-control)、[Harness 职责对照](/harnesses/comparison)与[迁移案例](/labs/migration)。

@@ -5,7 +5,7 @@
 - [DeepSeek API Docs](https://api-docs.deepseek.com/)
 - 目标模型的官方 model card（模型说明卡）与发布说明
 
-核对日期：2026-08-20。本轮对特定 pricing 页面出现 TLS 失败，因此 API surface（API 使用界面）中的价格、model alias（模型别名）、上下文和可用性保持 `pending`，不得抄写旧值或从第三方摘要补空。[FACT:deepseek-api-surface]
+上次登记日期：2026-08-20；2026-09-21 对官方入口复核仍出现 TLS 握手失败，因此 API surface（API 使用界面）中的价格、model alias（模型别名）、上下文和可用性保持 `pending`，不得抄写旧值或从第三方摘要补空。[FACT:deepseek-api-surface]
 
 本页只有 E0 适配方法。项目没有调用 DeepSeek 官方 API、第三方 endpoint（端点）或本地权重，没有 reasoning、tool、stream、usage、成本与模型质量证据。`pending` 不是“暂时相信旧数字”，而是阻止依赖这些数字的费用实验、容量承诺和能力比较。
 
@@ -174,7 +174,7 @@ npm run lab:ts-runtime-test
 npm run facts:check
 ```
 
-前置条件是 Python 3.11+、`uv 0.11.16`、Node.js 22+ 与锁定依赖。输入为仓库固定 replay fixture；预期 Python 显示 `5 passed`，TypeScript runtime 拒绝坏 Task/Action，事实检查保留 DeepSeek 主张的 `pending` 来源状态。断言 live adapter 在任何 provider、网络或权重动作前失败。
+前置条件是 Python 3.11+、`uv 0.11.16`、Node.js 22+ 与锁定依赖。输入为仓库固定 replay fixture；预期 Python 显示 `passed`，TypeScript runtime 拒绝坏 Task/Action，事实检查保留 DeepSeek 主张的 `pending` 来源状态。断言 live adapter 在任何 provider、网络或权重动作前失败。
 
 这些 E1 控制结果不访问 DeepSeek/第三方 API、不下载权重，也不验证 reasoning、tool、stream、usage、价格、alias、上下文、可用性或模型质量。`facts:check` 只阻止未登记或错误升级的事实，不是 DeepSeek 兼容测试。
 
@@ -186,6 +186,6 @@ npm run facts:check
 2. `pending` 为什么必须阻止费用和容量结论，而不只是页面上加一句免责声明？
 3. Reasoning、text 与 tool arguments 在 streaming 中应如何分流验证？
 4. “OpenAI-compatible”还不能证明哪些 stop、error 与 usage 语义？
-5. 当前离线 `5 passed` 为什么不能证明 DeepSeek API 或模型可用？
+5. 当前离线 `passed` 为什么不能证明 DeepSeek API 或模型可用？
 
 先查[事实注册表](/references/fact-registry)，再按[模型适配方法](/models/adaptation)冻结身份，用[协议兼容性](/models/protocol-compatibility)建立资格探针，并以[实验方法](/optimization/experiment)设计单变量比较。

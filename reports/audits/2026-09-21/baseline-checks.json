@@ -1,0 +1,17 @@
+[
+  {
+    "command": "npm run docs:check",
+    "exit_code": 0,
+    "output": "\n> about-harness@0.1.0 docs:check\n> node scripts/check-docs.mjs\n\nDocumentation check passed: 87 Markdown files, 87 routes, about 612898 non-whitespace characters.\n"
+  },
+  {
+    "command": "npm run facts:check",
+    "exit_code": 0,
+    "output": "\n> about-harness@0.1.0 facts:check\n> node scripts/facts-check.mjs\n\nFact check passed: 21 claims; sources {\"verified\":20,\"pending\":1,\"conflict\":0,\"retired\":0}; experiments {\"E0\":21,\"E1\":0,\"E2\":0,\"E3\":0}; as-of 2026-09-21; stale notices 7.\nWarning: boundary-harness: 32 days old; queued for review\nWarning: claude-memory: 32 days old; queued for review\nWarning: mcp-spec: 32 days old; queued for review\nWarning: langgraph-overview: 32 days old; queued for review\nWarning: openai-agents-sdk: 32 days old; queued for review\nWarning: google-adk: 32 days old; queued for review\nWarning: autogen-overview: 32 days old; queued for review\n"
+  },
+  {
+    "command": "npm run facts:freshness",
+    "exit_code": 1,
+    "output": "\n> about-harness@0.1.0 facts:freshness\n> node scripts/facts-check.mjs --max-age=30\n\nFact check failed with 5 error(s):\n- claude-memory: high-volatility fact is 32 days old; freshness limit is 30\n- langgraph-overview: high-volatility fact is 32 days old; freshness limit is 30\n- openai-agents-sdk: high-volatility fact is 32 days old; freshness limit is 30\n- google-adk: high-volatility fact is 32 days old; freshness limit is 30\n- autogen-overview: high-volatility fact is 32 days old; freshness limit is 30\n"
+  }
+]

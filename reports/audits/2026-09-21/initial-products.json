@@ -1,0 +1,281 @@
+{
+  "reviewer": "initial-products",
+  "pages": [
+    {
+      "path": "docs/models/adaptation.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "以完整组合身份、资格门禁、单变量适配和回退为主线；稳定方法与产品事实分开。",
+      "issues": []
+    },
+    {
+      "path": "docs/models/anthropic.md",
+      "readability": "pass",
+      "accuracy": "pending",
+      "coverage": "pass",
+      "note": "区分 Anthropic API、转售 surface 与 Claude Code，协议探针和 coding 评测边界具体；家族页的易变来源尚未进入细粒度事实注册。",
+      "issues": [
+        "B05"
+      ]
+    },
+    {
+      "path": "docs/models/deepseek.md",
+      "readability": "pass",
+      "accuracy": "pending",
+      "coverage": "pass",
+      "note": "明确把价格、alias、上下文和可用性保留为 pending，并将官方、兼容 endpoint 与本地权重拆分。",
+      "issues": []
+    },
+    {
+      "path": "docs/models/google.md",
+      "readability": "pass",
+      "accuracy": "pending",
+      "coverage": "pass",
+      "note": "围绕多模态输入供应链、part 顺序、流式与评测边界展开；易变模型来源未有逐项事实注册。",
+      "issues": [
+        "B05"
+      ]
+    },
+    {
+      "path": "docs/models/llama.md",
+      "readability": "pass",
+      "accuracy": "pending",
+      "coverage": "pass",
+      "note": "覆盖权重许可、模板、量化、runtime、硬件与部署恢复；上游版本敏感事实尚缺逐项注册。",
+      "issues": [
+        "B05"
+      ]
+    },
+    {
+      "path": "docs/models/openai.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "函数调用、reasoning state、streaming、用量和离线 E1 边界均有对应 FACT 引用与独立验收说明。",
+      "issues": []
+    },
+    {
+      "path": "docs/models/protocol-compatibility.md",
+      "readability": "pass",
+      "accuracy": "fail",
+      "coverage": "pass",
+      "note": "协议矩阵、状态载体和负例充分，但流式与非流式独立请求的 ID 等价条件写得过强。",
+      "issues": [
+        "B04"
+      ]
+    },
+    {
+      "path": "docs/models/qwen.md",
+      "readability": "pass",
+      "accuracy": "pending",
+      "coverage": "pass",
+      "note": "将官方、兼容 API 与本地部署拆开，覆盖 reasoning、工具和预算；易变家族事实尚未逐项登记。",
+      "issues": [
+        "B05"
+      ]
+    },
+    {
+      "path": "docs/models/reasoning-budget.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "清楚区分 provider reasoning control、harness task budget 与离线 controller 证据。",
+      "issues": []
+    },
+    {
+      "path": "docs/harnesses/claude-code.md",
+      "readability": "pass",
+      "accuracy": "pending",
+      "coverage": "fail",
+      "note": "权限、hook、恢复和静态示例边界完整；当前产品已支持 AGENTS.md 的条件化加载，页面未纳入该迁移/共存语义。",
+      "issues": [
+        "B05",
+        "B06"
+      ]
+    },
+    {
+      "path": "docs/harnesses/codex.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "将 AGENTS.md、配置、sandbox、approval、network 和恢复分层，并给出受控资格测试顺序。",
+      "issues": []
+    },
+    {
+      "path": "docs/harnesses/comparison.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "fail",
+      "note": "三产品比较的责任矩阵可读且边界严谨，但用户已批准的 Gemini CLI 尚未纳入比较单元和迁移责任。",
+      "issues": [
+        "B02"
+      ]
+    },
+    {
+      "path": "docs/harnesses/pi.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "固定到 Pi commit，具体讨论 project trust、扩展、compaction、session tree 和外部隔离补偿。",
+      "issues": []
+    },
+    {
+      "path": "docs/frameworks/autogen.md",
+      "readability": "pass",
+      "accuracy": "fail",
+      "coverage": "fail",
+      "note": "多 Agent 控制责任讲解完整，但将已进入 maintenance mode 的 AutoGen 作为主要新采用路径，与当前官方迁移建议冲突。",
+      "issues": [
+        "B01"
+      ]
+    },
+    {
+      "path": "docs/frameworks/comparison.md",
+      "readability": "pass",
+      "accuracy": "fail",
+      "coverage": "fail",
+      "note": "选型方法扎实，但候选表仍列 AutoGen，且未覆盖已批准的 Microsoft Agent Framework、DeepAgents、PydanticAI、CrewAI 与互操作生态。",
+      "issues": [
+        "B01",
+        "B03"
+      ]
+    },
+    {
+      "path": "docs/frameworks/google-adk.md",
+      "readability": "pass",
+      "accuracy": "pending",
+      "coverage": "pass",
+      "note": "Agent、Session、Tool、Runtime 与 Deployment 的控制责任区分明确；上游事实的登记日期已超过高易变事实 30 天复核窗口。",
+      "issues": [
+        "B05"
+      ]
+    },
+    {
+      "path": "docs/frameworks/langgraph.md",
+      "readability": "pass",
+      "accuracy": "pending",
+      "coverage": "pass",
+      "note": "状态 schema、reducer、checkpoint 与 interrupt 的工程边界完整；上游 overview 事实已超过高易变复核窗口。",
+      "issues": [
+        "B05"
+      ]
+    },
+    {
+      "path": "docs/frameworks/openai-agents-sdk.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "以 agent、runner、tool、handoff、guardrail、session/trace 契约组织，明确未安装 SDK 的 E0/E1 边界。",
+      "issues": []
+    },
+    {
+      "path": "docs/domains/browser.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "以观察身份、导航门禁、提交确认、注入防护、profile 隔离和离线 fixture 说明浏览器任务。",
+      "issues": []
+    },
+    {
+      "path": "docs/domains/coding.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "以仓库冻结、最小变更、分层验证、diff 审查和回退覆盖编码 Agent 的完整闭环。",
+      "issues": []
+    },
+    {
+      "path": "docs/domains/data.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "聚焦数据契约、PII、来源、变换验证和离线 PydanticAI 职责接缝的限制。",
+      "issues": []
+    },
+    {
+      "path": "docs/domains/document.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "将文档解析、结构化主张、引用、渲染验证和公开产物脱敏分开处理。",
+      "issues": []
+    },
+    {
+      "path": "docs/domains/research.md",
+      "readability": "pass",
+      "accuracy": "pass",
+      "coverage": "pass",
+      "note": "覆盖问题分解、来源分级、冲突保留、引用核验、停止条件与离线研究 case。",
+      "issues": []
+    }
+  ],
+  "findings": [
+    {
+      "id": "B01",
+      "severity": "P1",
+      "type": "error",
+      "path": "docs/frameworks/autogen.md",
+      "line": 1,
+      "quote": "# AutoGen：从对话原型到可控多 Agent 系统",
+      "reason": "当前页面与框架对照仍把 AutoGen 作为面向新采用的候选；本轮官方维护仓库明确其已进入 maintenance mode，建议新用户转向 Microsoft Agent Framework（MAF）。",
+      "fix": "把 AutoGen 改为迁移/存量兼容页，在框架主路线与对照表中以 MAF 替代；为 MAF 建立带来源状态、版本/commit、适用 surface 和 E0 边界的页面及事实项。",
+      "acceptance": "AutoGen 页面明确 maintenance 与迁移边界；框架选型和目录主路径使用 MAF；事实注册表可定位 MAF 与 AutoGen 生命周期来源，且不把 E0 写成已集成。"
+    },
+    {
+      "id": "B02",
+      "severity": "P2",
+      "type": "gap",
+      "path": "docs/harnesses/comparison.md",
+      "line": 1,
+      "quote": "# Codex、Pi 与 Claude Code：职责对照",
+      "reason": "比较单元只覆盖 Codex、Pi、Claude Code，遗漏已获批准补齐的 Gemini CLI，读者无法以同一责任矩阵比较其指令、权限、状态、扩展与恢复。",
+      "fix": "新增 Gemini CLI 专题，并把它加入 harness comparison 的冻结身份、责任矩阵、迁移场景、来源登记和 E0/E1/E2/E3 边界。",
+      "acceptance": "Gemini CLI 有官方来源与实际核对日期；对照表逐责任项写 unknown/untested 而非假定等价；无 live probe 时结论保持 E0。"
+    },
+    {
+      "id": "B03",
+      "severity": "P2",
+      "type": "gap",
+      "path": "docs/frameworks/comparison.md",
+      "line": 12,
+      "quote": "| AutoGen | AgentChat、Core、Extensions 与 Studio 等分层",
+      "reason": "框架候选集未纳入已批准的 Microsoft Agent Framework、DeepAgents、PydanticAI、CrewAI，也没有把 MCP、A2A、Skills、Agents API 作为互操作或运行时边界单列，选型覆盖不完整。",
+      "fix": "以任务形状重构候选矩阵：保留 LangGraph、Agents SDK、ADK，加入 MAF、DeepAgents、PydanticAI、CrewAI；把 MCP/A2A/Skills/Agents API 作为协议或服务层，避免混作框架能力。",
+      "acceptance": "每个新增对象有来源、版本/日期、职责与非职责、最小资格探针和 E0 边界；对照页不把协议/服务/API 当成已验证 framework runtime。"
+    },
+    {
+      "id": "B04",
+      "severity": "P1",
+      "type": "error",
+      "path": "docs/models/protocol-compatibility.md",
+      "line": 179,
+      "quote": "非流式与流式路径应产生等价 canonical result：相同 item 类型、call ID、stop class 和完整参数。",
+      "reason": "对于同一次请求的两种传输表示，可比较语义；但分别发起的流式与非流式请求会生成独立 provider tool call，不能要求相同 call_id。该表述会诱导以跨请求 ID 相等作为兼容性断言。",
+      "fix": "同一冻结响应的流式重组比较工具、参数和ID；两次独立生成仅比较任务级/规范化不变量，各自保持call/result关联，不要求工具、参数、ID或item数相同。",
+      "acceptance": "冻结回放与独立采样用不同断言；独立请求生成的不同合法候选不误报协议失败，错误关联仍被拒绝。"
+    },
+    {
+      "id": "B05",
+      "severity": "P2",
+      "type": "pending",
+      "path": "docs/references/fact-registry.md",
+      "line": 28,
+      "quote": "| langgraph-overview | ... | 2026-08-20 | high | verified |",
+      "reason": "Anthropic、Google、Qwen、Llama 家族页的易变产品来源未逐项登记；且 Claude、LangGraph、Google ADK、AutoGen 等 high volatility 项的登记核对日为 2026-08-20，已超过注册表规定的 30 天复核窗口。本文审未把抓取成功升级为 verified。",
+      "fix": "逐 claim 增补或更新事实项，复核官方原文、目标版本或固定 commit 后填写实际 checked date；无法逐条确认的字段保留 pending，并在对应页面改为条件表述。",
+      "acceptance": "所有易变产品主张有可定位 FACT、官方来源、版本/commit、实际核对日期和独立 source status；高易变项在发布时未超过 30 天，未核实项不以确定语气出现。"
+    },
+    {
+      "id": "B06",
+      "severity": "P2",
+      "type": "gap",
+      "path": "docs/harnesses/claude-code.md",
+      "line": 28,
+      "quote": "`CLAUDE.md`、rules 和 auto memory 属于 conversation context（对话上下文）",
+      "reason": "当前 Claude Code 文档已描述 AGENTS.md 的条件化直接加载、与 CLAUDE.md 的关系及迁移方式；本页只讲 CLAUDE.md/rules/memory，缺少该现行互操作路径。",
+      "fix": "补充 AGENTS.md/CLAUDE.md 并存时的发现条件、版本/surface 限制、验证命令和安全回退，并避免把 AGENTS.md 当作强制 policy。",
+      "acceptance": "页面明确何时加载 AGENTS.md、何时需 import、如何验证实际加载；示例和比较页不再暗示只有 CLAUDE.md 可作为项目指令。"
+    }
+  ]
+}

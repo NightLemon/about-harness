@@ -5,7 +5,7 @@
 - [Gemini models](https://ai.google.dev/gemini-api/docs/models)
 - [Google ADK models](https://google.github.io/adk-docs/agents/models/)
 
-核对日期：2026-08-20。Gemini API、Vertex AI 与 Google ADK 是不同层；model ID、区域、provider adapter（供应方适配器）和 surface（使用界面/执行表面）必须分别记录。当前项目不运行 Gemini live API；本页只有 E0 适配方法与官方入口，没有性能或模型质量证据。
+核对日期：2026-09-21。[FACT:google-catalog] Gemini API、Vertex AI 与 Google ADK 是不同层；目录把 stable、preview、latest、experimental 作为不同版本类别，model ID、区域、provider adapter（供应方适配器）和 surface（使用界面/执行表面）必须分别记录。当前项目不运行 Gemini live API；本页只有 E0 适配方法与官方入口，没有性能或模型质量证据。
 
 ## 先冻结“从哪里调用什么”
 
@@ -158,7 +158,7 @@ npm run lab:ts-runtime-test
 npm run facts:check
 ```
 
-前置条件是 Python 3.11+、`uv 0.11.16`、Node.js 22+ 与锁定依赖。预期 Python `5 passed`，证明固定 replay tool loop、未知字段/坏 checkpoint 拒绝和 live hard-disable；TypeScript 拒绝坏 Task/Action；事实检查确认正文引用的产品主张已登记来源状态、版本和日期。
+前置条件是 Python 3.11+、`uv 0.11.16`、Node.js 22+ 与锁定依赖。预期 Python `passed`，证明固定 replay tool loop、未知字段/坏 checkpoint 拒绝和 live hard-disable；TypeScript 拒绝坏 Task/Action；事实检查确认正文引用的产品主张已登记来源状态、版本和日期。
 
 这些 E1 结果不发送文本/媒体到 Gemini API 或 Vertex，不验证 parts、function calling、safety、streaming、usage、区域或 ADK。`facts:check` 也不是 Google 兼容测试；协议覆盖是否完整需要人工对照目标 surface 和官方来源。
 

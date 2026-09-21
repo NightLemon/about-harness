@@ -27,16 +27,26 @@ try {
   write('package-lock.json', JSON.stringify({ packages: { '': { engines: { node: '>=24' } } } }))
   for (const name of ['ci', 'deploy', 'facts']) write(`.github/workflows/${name}.yml`, 'node-version: 24\n')
 
+  const contractPage = 'docs/implementation/minimal-harness-python.md'
+  const expectedCommand = 'uv run --frozen --offline python scripts/lab-smoke.py'
+  const copiedPage = fs.readFileSync(path.join(sourceRoot, contractPage), 'utf8')
+  write(contractPage, copiedPage.replaceAll(expectedCommand, expectedCommand.replace('lab-smoke.py', 'broken-smoke.py')))
+  write('scripts/lab-smoke.py', 'print("fixture")\n')
+  write('scripts/tutorial-contracts.json', JSON.stringify({
+    schema_version: 1,
+    contracts: [{ page: contractPage, command: expectedCommand, references: ['scripts/lab-smoke.py'] }]
+  }))
+
   const result = spawnSync(
     process.execPath,
     [path.join(sourceRoot, 'scripts', 'tutorial-check.mjs'), temp],
     { encoding: 'utf8' }
   )
-  for (const expected of ['container/cross-platform', 'failure drill', 'shared environment', 'Dockerfile', 'Compose', 'isolated fixture', 'Node runtime baseline', 'migration tutorial missing responsibility contract']) {
+  for (const expected of ['container/cross-platform', 'failure drill', 'shared environment', 'Dockerfile', 'Compose', 'isolated fixture', 'Node runtime baseline', 'migration tutorial missing responsibility contract', 'tutorial command contracts']) {
     if (!result.stderr.includes(expected)) throw new Error(`tutorial checker missed canary: ${expected}`)
   }
   if (result.status === 0) throw new Error('tutorial checker accepted non-reproducible tutorials')
-  console.log('Tutorial checker negative test passed: missing platform, fixture, container, and Node runtime contracts were rejected.')
+  console.log('Tutorial checker negative test passed: missing platform, fixture, container, Node runtime, and corrupted tutorial command contracts were rejected.')
 } finally {
   fs.rmSync(temp, { recursive: true, force: true })
 }

@@ -1,0 +1,846 @@
+{
+  "schema": "source-evidence-notes/v1",
+  "reviewed_on": "2026-09-21",
+  "normalization": "cache_file_sha256 hashes the named local review cache exactly as read. For .plain files it is extracted visible text, so it intentionally differs from source-fetches.json's HTTP-response bytes hash. .txt is the saved UTF-8 response/extraction; the GAIA and Llama entries retain the fetch-index qualification instead of claiming HTTP-byte equality.",
+  "source_hashes": {
+    "boundary-harness": {
+      "source_sha256": "not-applicable",
+      "basis": "项目本地定义；可复核文件哈希见对应 entry 的 cache_file_sha256。"
+    },
+    "codex-agents-md": {
+      "source_sha256": "2b3ce3d915b957de98aeb0eca069589d995aeb0691edb71072f77a29388805c2",
+      "basis": "source-fetches.json 所记抓取响应的 SHA-256；不以 .plain 抽取文本哈希替代。"
+    },
+    "codex-config": {
+      "source_sha256": "f197a604d2ea41031e3c36ff3c93c6ce3ce3554fe96f8e32620f43af88c24662",
+      "basis": "source-fetches.json 所记抓取响应的 SHA-256；不以 .plain 抽取文本哈希替代。"
+    },
+    "codex-sandbox-approval": {
+      "source_sha256": "d00fe7122deea121b7a1d2fa15ba9f31f6d45941da1b22688efd9edb3ebd6713",
+      "basis": "source-fetches.json 所记抓取响应的 SHA-256；不以 .plain 抽取文本哈希替代。"
+    },
+    "openai-function-calling": {
+      "source_sha256": "078619f5bb7196abc4b162e23be8427b1243a8431aa4d14d3d869a8cd93ccc0b",
+      "basis": "source-fetches.json 所记抓取响应的 SHA-256；不以 .plain 抽取文本哈希替代。"
+    },
+    "openai-function-controls": {
+      "source_sha256": "078619f5bb7196abc4b162e23be8427b1243a8431aa4d14d3d869a8cd93ccc0b",
+      "basis": "source-fetches.json 所记抓取响应的 SHA-256；不以 .plain 抽取文本哈希替代。"
+    },
+    "openai-reasoning-items": {
+      "source_sha256": "91604df954335250d16e33f3b07ebbfa3e6e2b7f821f0722ad7a69b9d586719a",
+      "basis": "source-fetches.json 所记抓取响应的 SHA-256；不以 .plain 抽取文本哈希替代。"
+    },
+    "openai-reasoning-effort": {
+      "source_sha256": "91604df954335250d16e33f3b07ebbfa3e6e2b7f821f0722ad7a69b9d586719a",
+      "basis": "source-fetches.json 所记抓取响应的 SHA-256；不以 .plain 抽取文本哈希替代。"
+    },
+    "openai-incomplete-status": {
+      "source_sha256": "91604df954335250d16e33f3b07ebbfa3e6e2b7f821f0722ad7a69b9d586719a",
+      "basis": "source-fetches.json 所记抓取响应的 SHA-256；不以 .plain 抽取文本哈希替代。"
+    },
+    "openai-streaming-events": {
+      "source_sha256": "7e147ae8c9e2ef2a30ecd7f3502a4c350e929487c7e51643cef2e4fb66281f7f",
+      "basis": "source-fetches.json 所记抓取响应的 SHA-256；不以 .plain 抽取文本哈希替代。"
+    },
+    "claude-memory": {
+      "source_sha256": "1cf44b112e7daa1bc85820c368b8bed40359abc687d962925d4f93b2f54ffb82",
+      "basis": "source-fetches.json 所记抓取响应的 SHA-256；不以 .plain 抽取文本哈希替代。"
+    },
+    "claude-settings": {
+      "source_sha256": "319fe9cbd331bd3d88d7d0109ead58231c3bf00e0b1f042fd67bb355b27f7256",
+      "basis": "source-fetches.json 所记抓取响应的 SHA-256；不以 .plain 抽取文本哈希替代。"
+    },
+    "pi-readme": {
+      "source_sha256": "1c8be61c5e5f565ff6899fe1722d6f1ea28a6da206e6ec2883f7157e870c57be",
+      "basis": "source-fetches.json 所记抓取响应的 SHA-256；不以 .plain 抽取文本哈希替代。"
+    },
+    "mcp-spec": {
+      "source_sha256": "f8df03767e5cbdd4921ae569d1d69e8da9e455e1629fadf4d0613cd658dd632f",
+      "basis": "source-fetches.json 所记抓取响应的 SHA-256；不以 .plain 抽取文本哈希替代。"
+    },
+    "langgraph-overview": {
+      "source_sha256": "3fd533906d7c1eb7644e2feac4fe33cf0739b983dbc324f3786a9a1ef72a1ac3",
+      "basis": "source-fetches.json 所记抓取响应的 SHA-256；不以 .plain 抽取文本哈希替代。"
+    },
+    "openai-agents-sdk": {
+      "source_sha256": "df4f61b609550619a3f9e445c66d28318b9f681affe1a819ef0098cde32bf43a",
+      "basis": "source-fetches.json 所记抓取响应的 SHA-256；不以 .plain 抽取文本哈希替代。"
+    },
+    "google-adk": {
+      "source_sha256": "43e2deba541c4984d935ce3483ed70d54d7ea926576a649dfabffa8cb30fcb8c",
+      "basis": "source-fetches.json 所记抓取响应的 SHA-256；不以 .plain 抽取文本哈希替代。"
+    },
+    "autogen-overview": {
+      "source_sha256": "b6dbd2156cb2a0a00ae3c99054a2ceeb98550ff1026c5d48bf2eb335c5c3404e",
+      "basis": "source-fetches.json 所记抓取响应的 SHA-256；不以 .plain 抽取文本哈希替代。"
+    },
+    "deepseek-api-surface": {
+      "source_sha256": "unknown",
+      "basis": "unknown：source-fetches.json 记录抓取失败，无可核对响应字节。"
+    },
+    "vite-dev-server-advisory": {
+      "source_sha256": "4caf9fa23d9f8f68827fa546db39ebe0146faebb509d747e4db7bed837d53377",
+      "basis": "source-fetches.json 所记抓取响应的 SHA-256；不以 .plain 抽取文本哈希替代。"
+    },
+    "esbuild-dev-server-advisory": {
+      "source_sha256": "6be3c9168f440a4a634ee8e1c754d25c5e7e67b6aab9fab7ea4ca26a9e7973f6",
+      "basis": "source-fetches.json 所记抓取响应的 SHA-256；不以 .plain 抽取文本哈希替代。"
+    },
+    "codex-permission-profiles": {
+      "source_sha256": "f197a604d2ea41031e3c36ff3c93c6ce3ce3554fe96f8e32620f43af88c24662",
+      "basis": "source-fetches.json 所记抓取响应的 SHA-256；不以 .plain 抽取文本哈希替代。"
+    },
+    "codex-retired-approval": {
+      "source_sha256": "d00fe7122deea121b7a1d2fa15ba9f31f6d45941da1b22688efd9edb3ebd6713",
+      "basis": "source-fetches.json 所记抓取响应的 SHA-256；不以 .plain 抽取文本哈希替代。"
+    },
+    "claude-agents-md": {
+      "source_sha256": "1cf44b112e7daa1bc85820c368b8bed40359abc687d962925d4f93b2f54ffb82",
+      "basis": "source-fetches.json 所记抓取响应的 SHA-256；不以 .plain 抽取文本哈希替代。"
+    },
+    "claude-permissions": {
+      "source_sha256": "eab3c45e44187c7be90a7566d21233835354237c9b41ac36906ea45114cc21cb",
+      "basis": "source-fetches.json 所记抓取响应的 SHA-256；不以 .plain 抽取文本哈希替代。"
+    },
+    "gemini-cli-overview": {
+      "source_sha256": "5305bf8d3e272cef4a365f4b75a2b8cfef3777d3a03b7846c1f5203f4060b7a1",
+      "basis": "source-fetches.json 所记抓取响应的 SHA-256；不以 .plain 抽取文本哈希替代。"
+    },
+    "maf-overview": {
+      "source_sha256": "4a628aa224c014ff326587cc543a4991e483e11723a226f6fcdb22664224c58a",
+      "basis": "source-fetches.json 所记抓取响应的 SHA-256；不以 .plain 抽取文本哈希替代。"
+    },
+    "autogen-maintenance": {
+      "source_sha256": "5d300aa3304aeecf1a48f68ac76a1af255b8645d666b8aa154790cb30f1dbb94",
+      "basis": "source-fetches.json 所记抓取响应的 SHA-256；不以 .plain 抽取文本哈希替代。"
+    },
+    "deepagents-overview": {
+      "source_sha256": "286340c4719c8d0234246209a781aa55fafef5a6d87db9788333000549fcc102",
+      "basis": "source-fetches.json 所记抓取响应的 SHA-256；不以 .plain 抽取文本哈希替代。"
+    },
+    "pydantic-ai-overview": {
+      "source_sha256": "059fb82c02b0393b02e6a17722ac885c0e9b81394319fb14e5e506365d7d13d2",
+      "basis": "source-fetches.json 所记抓取响应的 SHA-256；不以 .plain 抽取文本哈希替代。"
+    },
+    "crewai-overview": {
+      "source_sha256": "6f3b50571310a79a9648a54907120e07e03714a44b1962fb4bd6e91198c88025",
+      "basis": "source-fetches.json 所记抓取响应的 SHA-256；不以 .plain 抽取文本哈希替代。"
+    },
+    "anthropic-catalog": {
+      "source_sha256": "24cee96a02abd68ca1bae07a6791fc1a9f4ba66fbbc3f6385369d7f9d4ebd7e1",
+      "basis": "source-fetches.json 所记抓取响应的 SHA-256；不以 .plain 抽取文本哈希替代。"
+    },
+    "google-catalog": {
+      "source_sha256": "d9e535f50e368066c8be4c5bedede9d4ad2d41662cc49674c2cdc3e928172418",
+      "basis": "source-fetches.json 所记抓取响应的 SHA-256；不以 .plain 抽取文本哈希替代。"
+    },
+    "qwen-catalog": {
+      "source_sha256": "f874cc1c99c3454e3ea933dac9790e5cb329e25bf5766b270ab9e38bd780bffe",
+      "basis": "source-fetches.json 所记抓取响应的 SHA-256；不以 .plain 抽取文本哈希替代。"
+    },
+    "llama-catalog": {
+      "source_sha256": "0a7b304b54835ceaf99899789c03fadcd862f4be696ad41c98f7bcc0c238262f",
+      "basis": "source-fetches.json 标记为保存的 UTF-8 文本；PowerShell CRLF/LF 归一化可能与 HTTP 字节不同。"
+    },
+    "llamaindex-overview": {
+      "source_sha256": "d0b3e1142d2a3acb10f40a3a60256d7e05a2c8ed73ae3b1c07bc55499ed56592",
+      "basis": "source-fetches.json 所记抓取响应的 SHA-256；不以 .plain 抽取文本哈希替代。"
+    },
+    "otel-genai": {
+      "source_sha256": "8ab882b40b743b3474de8d651671e0421e82dd0a8a48967d1bd0d7b06380b46d",
+      "basis": "source-fetches.json 所记抓取响应的 SHA-256；不以 .plain 抽取文本哈希替代。"
+    },
+    "swe-bench": {
+      "source_sha256": "c862011a4ee1d1a7199fad6ca0905fa5c64f58216f7217ac1eddf37f28788433",
+      "basis": "source-fetches.json 所记抓取响应的 SHA-256；不以 .plain 抽取文本哈希替代。"
+    },
+    "terminal-bench": {
+      "source_sha256": "1ef5d5bd4774471866f969a2a7721381237187f4c8ea3158f772c1341d17b922",
+      "basis": "source-fetches.json 所记抓取响应的 SHA-256；不以 .plain 抽取文本哈希替代。"
+    },
+    "gaia-benchmark": {
+      "source_sha256": "456b2f17fcafca41eca47921efb5da8fd2b46f43f54155e15f692a9d05bcadea",
+      "basis": "source-fetches.json 标记为保存的 UTF-8 文本；PowerShell CRLF/LF 归一化可能与 HTTP 字节不同。"
+    },
+    "tau-benchmark": {
+      "source_sha256": "1a4b1b00634fe46fd677dd11dfa25a9bf357b5d7c3d726ff83025e8f104329f9",
+      "basis": "source-fetches.json 所记抓取响应的 SHA-256；不以 .plain 抽取文本哈希替代。"
+    },
+    "tau3-benchmark": {
+      "source_sha256": "ed39688aa5d40bd73007355df65f4e41a6c250960642e56764c3ad44da1df8d2",
+      "basis": "source-fetches.json 所记抓取响应的 SHA-256；不以 .plain 抽取文本哈希替代。"
+    },
+    "openai-runtime-options": {
+      "source_sha256": "df4f61b609550619a3f9e445c66d28318b9f681affe1a819ef0098cde32bf43a",
+      "basis": "source-fetches.json 所记抓取响应的 SHA-256；不以 .plain 抽取文本哈希替代。"
+    },
+    "openai-agents-api": {
+      "source_sha256": "11812095118085202bf23f2a5ac3389e4e43c31df854ad17993842aa87ddeb07",
+      "basis": "source-fetches.json 所记抓取响应的 SHA-256；不以 .plain 抽取文本哈希替代。"
+    },
+    "browser-use-cloud": {
+      "source_sha256": "b98b460e12ee381842756b5ec7357c9f23ff61660a99d7bb45fabbf1ba4954b3",
+      "basis": "source-fetches.json 所记抓取响应的 SHA-256；不以 .plain 抽取文本哈希替代。"
+    },
+    "ollama-overview": {
+      "source_sha256": "15b3b3b270b31022dfad91871bda7b8eb4288d79840ae24455d7520e33340eb8",
+      "basis": "source-fetches.json 所记抓取响应的 SHA-256；不以 .plain 抽取文本哈希替代。"
+    },
+    "vllm-serving": {
+      "source_sha256": "fea6787b78f73d868f2411d03e83f62b5a4ce5b8c719490d6943ce625ae1d2eb",
+      "basis": "source-fetches.json 所记抓取响应的 SHA-256；不以 .plain 抽取文本哈希替代。"
+    },
+    "sglang-serving": {
+      "source_sha256": "f35ad9d1842975003a26ea4e0191f46caaa5b3d5cea58872f1a70f5e8fb5868b",
+      "basis": "source-fetches.json 所记抓取响应的 SHA-256；不以 .plain 抽取文本哈希替代。"
+    },
+    "openai-prompt-cache": {
+      "source_sha256": "ecced3016c57dcef3115dbda6f73ba6f153f99856f1dadac46d165c12611ab44",
+      "basis": "source-fetches.json 所记抓取响应的 SHA-256；不以 .plain 抽取文本哈希替代。"
+    },
+    "a2a-protocol": {
+      "source_sha256": "cd8978404ffbc88ad48edff895a8931b751131df0ca06aae38adfa81da88a217",
+      "basis": "source-fetches.json 所记抓取响应的 SHA-256；不以 .plain 抽取文本哈希替代。"
+    },
+    "agent-skills-format": {
+      "source_sha256": "2b1dbb4fd80c31748d15812c4ebd3e66c09383d0c792801f617718684489e40d",
+      "basis": "source-fetches.json 所记抓取响应的 SHA-256；不以 .plain 抽取文本哈希替代。"
+    },
+    "mcp-current-protocol": {
+      "source_sha256": "f8df03767e5cbdd4921ae569d1d69e8da9e455e1629fadf4d0613cd658dd632f",
+      "basis": "source-fetches.json 所记抓取响应的 SHA-256；不以 .plain 抽取文本哈希替代。"
+    },
+    "mcp-tasks": {
+      "source_sha256": "08ca547b93b20be582dc419075510430dbcc152bd623ccc3009f552c1c1d2190",
+      "basis": "source-fetches.json 所记抓取响应的 SHA-256；不以 .plain 抽取文本哈希替代。"
+    },
+    "mcp-apps": {
+      "source_sha256": "ebae6e6d71c0561230261caf3b84a7493bd55beae704593accc6e1bceedb0e39",
+      "basis": "source-fetches.json 所记抓取响应的 SHA-256；不以 .plain 抽取文本哈希替代。"
+    },
+    "openai-skills-lifecycle": {
+      "source_sha256": "a314457cb459696b9ef8cc134e27ec319f355666f3df34749fbc1f371ea501c7",
+      "basis": "source-fetches.json 所记抓取响应的 SHA-256；不以 .plain 抽取文本哈希替代。"
+    },
+    "openai-programmatic-tools": {
+      "source_sha256": "28f074158c38b555f6835d349806a0c8ce1b4238f7a724cef748eaf1a509d261",
+      "basis": "source-fetches.json 所记抓取响应的 SHA-256；不以 .plain 抽取文本哈希替代。"
+    },
+    "test-time-compute-study": {
+      "source_sha256": "c38ea95eb2e29a5154f502608d5abea49cfddaf6b74674bb3cd42a5fd6d16086",
+      "basis": "source-fetches.json 所记抓取响应的 SHA-256；不以 .plain 抽取文本哈希替代。"
+    },
+    "agent-lightning-architecture": {
+      "source_sha256": "80652c19f70d5f6dc2770a34b3827f34c1b90fd79b05fbc6d84c5bf173635dc5",
+      "basis": "source-fetches.json 所记抓取响应的 SHA-256；不以 .plain 抽取文本哈希替代。"
+    },
+    "gemini-cli-lifecycle": {
+      "source_sha256": "5305bf8d3e272cef4a365f4b75a2b8cfef3777d3a03b7846c1f5203f4060b7a1",
+      "basis": "source-fetches.json 所记抓取响应的 SHA-256；不以 .plain 抽取文本哈希替代。"
+    }
+  },
+  "entries": [
+    {
+      "id": "boundary-harness",
+      "kind": "project definition",
+      "locator": "docs/foundations/what-is-harness.md:5",
+      "excerpt": "Harness 是承载、约束并验证该循环的系统",
+      "supported_scope": "本项目的工程定义。",
+      "boundary": "不是跨产品的唯一严格定义。",
+      "cache_file": "docs/foundations/what-is-harness.md",
+      "cache_file_sha256": "31186a5e54ba8965c95aca0536b595a8a199b28e630ffbe29ceb5a8fc87aa1bf"
+    },
+    {
+      "id": "codex-agents-md",
+      "kind": "official product documentation",
+      "locator": "codex-agents-md.plain:31",
+      "excerpt": "Files closer to your current directory override earlier guidance",
+      "supported_scope": "发现、拼接和近目录覆盖。",
+      "boundary": "不证明本机某文件已加载。",
+      "cache_file": "codex-agents-md.plain",
+      "cache_file_sha256": "e119c4d9c49ad54605f5dc9f00a79e4889d91d2bddd2eba0cfca5a038fc9cc1c"
+    },
+    {
+      "id": "codex-config",
+      "kind": "official product documentation",
+      "locator": "codex-config.plain:7-10,31",
+      "excerpt": "Codex reads configuration details from more than one location",
+      "supported_scope": "配置层与 precedence。",
+      "boundary": "不证明某字段在全部 surface 可用。",
+      "cache_file": "codex-config.plain",
+      "cache_file_sha256": "f868a873bd07731264a48f46a1a7c15b32b30d416d0a12f6cee9922fe751fabb"
+    },
+    {
+      "id": "codex-sandbox-approval",
+      "kind": "official product documentation",
+      "locator": "codex-sandbox-approval.plain:13,66-72",
+      "excerpt": "an OS-enforced sandbox ... plus an approval policy",
+      "supported_scope": "sandbox、approval 与 network 的独立职责。",
+      "boundary": "默认值不等于当前会话配置。",
+      "cache_file": "codex-sandbox-approval.plain",
+      "cache_file_sha256": "19dfc51f416c8fde64b3ccea611db138e050c67d1665b10736c84fafd21713c8"
+    },
+    {
+      "id": "openai-function-calling",
+      "kind": "official protocol documentation",
+      "locator": "openai-function-calling.plain:24,461",
+      "excerpt": "referenced by `call_id` ... used later to submit the function result",
+      "supported_scope": "调用和结果回传关系。",
+      "boundary": "不证明任一工具会被模型选择。",
+      "cache_file": "openai-function-calling.plain",
+      "cache_file_sha256": "b76d23f69683644b67c2ad1b7172b25e3cbd3e703e48a0d39577e49d8edd36b0"
+    },
+    {
+      "id": "openai-function-controls",
+      "kind": "official protocol documentation",
+      "locator": "openai-function-calling.plain:369,461",
+      "excerpt": "`strict` ... enforce strict mode for the function call",
+      "supported_scope": "strict schema；同页列出控制字段。",
+      "boundary": "未把字段存在解释为任意模型支持。",
+      "cache_file": "openai-function-calling.plain",
+      "cache_file_sha256": "b76d23f69683644b67c2ad1b7172b25e3cbd3e703e48a0d39577e49d8edd36b0"
+    },
+    {
+      "id": "openai-reasoning-items",
+      "kind": "official protocol documentation",
+      "locator": "openai-reasoning-items.plain:184-186",
+      "excerpt": "you'll receive a response with a `status` of `incomplete`",
+      "supported_scope": "连续调用的 items/状态须保留。",
+      "boundary": "未运行模型验证。",
+      "cache_file": "openai-reasoning-items.plain",
+      "cache_file_sha256": "f3710fc96b859bc48a78168f2757a2e2b751bdae09f8efc194fc474c36de2673"
+    },
+    {
+      "id": "openai-reasoning-effort",
+      "kind": "official product documentation",
+      "locator": "openai-reasoning-effort.plain:123-136",
+      "excerpt": "GPT-5.6 defaults to `medium` in both modes",
+      "supported_scope": "支持值/默认值须按具体模型和 reasoning mode 读取；此段明确 GPT-5.6 的默认。",
+      "boundary": "不把 GPT-5.6 默认推广到其他模型。",
+      "cache_file": "openai-reasoning-effort.plain",
+      "cache_file_sha256": "f3710fc96b859bc48a78168f2757a2e2b751bdae09f8efc194fc474c36de2673"
+    },
+    {
+      "id": "openai-incomplete-status",
+      "kind": "official protocol documentation",
+      "locator": "openai-reasoning-items.plain:184-207",
+      "excerpt": "`incomplete_details` with `reason` set to `max_output_tokens`",
+      "supported_scope": "incomplete 与原因细节。",
+      "boundary": "只覆盖文中输出预算例。",
+      "cache_file": "openai-reasoning-items.plain",
+      "cache_file_sha256": "f3710fc96b859bc48a78168f2757a2e2b751bdae09f8efc194fc474c36de2673"
+    },
+    {
+      "id": "openai-streaming-events",
+      "kind": "official protocol documentation",
+      "locator": "openai-streaming-events.plain:111-117",
+      "excerpt": "Each event is typed with a predefined schema",
+      "supported_scope": "typed streaming events、delta 与 completed。",
+      "boundary": "错误处理为项目建议，非该摘录的完整枚举。",
+      "cache_file": "openai-streaming-events.plain",
+      "cache_file_sha256": "e2becbf9b8c399a06420ef584f6107621594ecde272d4fae37071a382ddad81a"
+    },
+    {
+      "id": "claude-memory",
+      "kind": "official product documentation",
+      "locator": "claude-memory.plain:26-40",
+      "excerpt": "each with a different scope ... from broadest scope to most specific",
+      "supported_scope": "CLAUDE.md 的作用域/加载顺序。",
+      "boundary": "不是强制权限控制。",
+      "cache_file": "claude-memory.plain",
+      "cache_file_sha256": "97478f6e23d29cbd2814871102ed2d423f7a392e6941c9eed1cee1a2493a6421"
+    },
+    {
+      "id": "claude-settings",
+      "kind": "official product documentation",
+      "locator": "claude-settings.plain:234-236",
+      "excerpt": "the file it reads a setting from decides who the setting applies to",
+      "supported_scope": "settings 文件位置、适用对象和 precedence。",
+      "boundary": "云会话有不同读取范围。",
+      "cache_file": "claude-settings.plain",
+      "cache_file_sha256": "3ab4b3797d1725812385439e518e9a0c67d8b76148ce93df93417d04815eed06"
+    },
+    {
+      "id": "pi-readme",
+      "kind": "pinned upstream README",
+      "locator": "pi-readme.plain:145-176",
+      "excerpt": "Sessions ... Compaction ... Skills ... Extensions",
+      "supported_scope": "README 列出的能力面。",
+      "boundary": "不代表已在本机安装或启用。",
+      "cache_file": "pi-readme.plain",
+      "cache_file_sha256": "efb3fa5fbbbac50ca329505a49e17c2bace0534c85b3c340e8d242e1699dbc90"
+    },
+    {
+      "id": "mcp-spec",
+      "kind": "protocol specification",
+      "locator": "mcp-spec.plain:28-30,74-82",
+      "excerpt": "Hosts ... Clients ... Servers ... Hosts must obtain explicit user consent",
+      "supported_scope": "角色与协议不自动越过宿主授权。",
+      "boundary": "不证明某 host 实施了全部建议。",
+      "cache_file": "mcp-spec.plain",
+      "cache_file_sha256": "d97e4aee6a9e60f9b6b8d303361745e5b4f7452f1c0df22ba5326f6e06eedcc3"
+    },
+    {
+      "id": "langgraph-overview",
+      "kind": "official product documentation",
+      "locator": "langgraph-overview.plain:6-7",
+      "excerpt": "a low-level orchestration framework and runtime ... long-running, stateful agents",
+      "supported_scope": "产品定位。",
+      "boundary": "非性能、质量或部署成功证据。",
+      "cache_file": "langgraph-overview.plain",
+      "cache_file_sha256": "74cd7bf4d8b7a42b24cb6164b54ec4fe46926dfdb6b0b3890a64828ba08a2038"
+    },
+    {
+      "id": "openai-agents-sdk",
+      "kind": "official product documentation",
+      "locator": "openai-agents-sdk.plain:8,22",
+      "excerpt": "Control the agent loop in your application ... runner handles the agent loop and handoffs",
+      "supported_scope": "SDK 的应用内 loop/runtime 定位。",
+      "boundary": "不证明已部署、支持全部 surface 或性能。",
+      "cache_file": "openai-agents-sdk.plain",
+      "cache_file_sha256": "0101d8cf872054ecdb2abbf511e6a8eae664ea6cc059deed2f1e755e96b91349"
+    },
+    {
+      "id": "google-adk",
+      "kind": "official product documentation",
+      "locator": "google-adk.plain:77-105,117-145,214-216",
+      "excerpt": "Agent Runtime ... Deployment ... Observability ... Evaluation ... Sessions",
+      "supported_scope": "导航页明确列出 agent、tool、session、runtime、deployment、observability 与 evaluation；简介定位为开发/调试/部署框架。",
+      "boundary": "导航结构不证明各构件在每种语言都同等可用。",
+      "cache_file": "google-adk.plain",
+      "cache_file_sha256": "32b452d9dde2b6fa17b700b5085da86cbf25fef5cfa9d6a49c30e6940bc818f7"
+    },
+    {
+      "id": "autogen-overview",
+      "kind": "official product documentation",
+      "locator": "autogen-overview.plain:6-8,21-23,75-83",
+      "excerpt": "AgentChat ... Built on Core ... Extensions",
+      "supported_scope": "AgentChat/Core/Extensions/Studio 层次。",
+      "boundary": "不把文档层次当作运行时隔离保证。",
+      "cache_file": "autogen-overview.plain",
+      "cache_file_sha256": "80b2fecf5e35d4d429fd06f21c73a0d333cef022e9e9956c9caeb872700f0a4d"
+    },
+    {
+      "id": "deepseek-api-surface",
+      "kind": "pending fetch failure",
+      "locator": "source-fetches.json:deepseek-api-surface",
+      "excerpt": "SSLV3_ALERT_HANDSHAKE_FAILURE",
+      "supported_scope": "仅记录本轮不能复核。",
+      "boundary": "保留 pending 和原 checked=2026-08-20；无缓存、无 hash。",
+      "cache_file": null,
+      "cache_file_sha256": null
+    },
+    {
+      "id": "vite-dev-server-advisory",
+      "kind": "GitHub security advisory",
+      "locator": "vite-dev-server-advisory.plain:5",
+      "excerpt": "`server.fs.deny` bypass on Windows alternate paths",
+      "supported_scope": "公告描述的漏洞类别。",
+      "boundary": "版本受影响性仍须与 lockfile 单独交叉。",
+      "cache_file": "vite-dev-server-advisory.plain",
+      "cache_file_sha256": "1b63e503877c02e3ef7a1fa5b0f7c57f5e84c914a45bb24183f3acfd3c9366b8"
+    },
+    {
+      "id": "esbuild-dev-server-advisory",
+      "kind": "GitHub security advisory",
+      "locator": "esbuild-dev-server-advisory.plain:5,30",
+      "excerpt": "any website ... read the response",
+      "supported_scope": "公告描述的开发服务器风险。",
+      "boundary": "版本受影响性仍须与 lockfile 单独交叉。",
+      "cache_file": "esbuild-dev-server-advisory.plain",
+      "cache_file_sha256": "6d92a9b846ad84101e2dac8c48dd2aab992f0d4a8f4332b9e75605df773e6fc7"
+    },
+    {
+      "id": "codex-permission-profiles",
+      "kind": "official product documentation",
+      "locator": "codex-config.plain:75,128-130",
+      "excerpt": "organization may also enforce constraints ... named permission profiles",
+      "supported_scope": "profiles 与组织约束分层。",
+      "boundary": "不证明组织已配置约束。",
+      "cache_file": "codex-config.plain",
+      "cache_file_sha256": "f868a873bd07731264a48f46a1a7c15b32b30d416d0a12f6cee9922fe751fabb"
+    },
+    {
+      "id": "codex-retired-approval",
+      "kind": "official product documentation",
+      "locator": "codex-sandbox-approval.plain:21-27,51-72",
+      "excerpt": "Migrate from the retired `untrusted` approval policy",
+      "supported_scope": "退役字段与 trust/approval 的区分。",
+      "boundary": "不推断旧配置已迁移。",
+      "cache_file": "codex-sandbox-approval.plain",
+      "cache_file_sha256": "19dfc51f416c8fde64b3ccea611db138e050c67d1665b10736c84fafd21713c8"
+    },
+    {
+      "id": "claude-agents-md",
+      "kind": "official product documentation",
+      "locator": "claude-memory.plain:208,240",
+      "excerpt": "requires Claude Code v2.1.277 or later",
+      "supported_scope": "AGENTS.md 直接读取的版本和会话条件。",
+      "boundary": "不证明本机版本/feature flag。",
+      "cache_file": "claude-memory.plain",
+      "cache_file_sha256": "97478f6e23d29cbd2814871102ed2d423f7a392e6941c9eed1cee1a2493a6421"
+    },
+    {
+      "id": "claude-permissions",
+      "kind": "official product documentation",
+      "locator": "claude-permissions.plain:35-42",
+      "excerpt": "Rules are evaluated in order: deny, then ask, then allow",
+      "supported_scope": "规则求值顺序和宿主执行。",
+      "boundary": "不证明某规则已在项目配置。",
+      "cache_file": "claude-permissions.plain",
+      "cache_file_sha256": "2ed203e4ee5db9324c1636185677cafe53d527b434a54a171aded958b8c77fa8"
+    },
+    {
+      "id": "gemini-cli-overview",
+      "kind": "official product documentation",
+      "locator": "gemini-cli.plain:2-7,47-74",
+      "excerpt": "Gemini CLI brings the power of Gemini models directly into your terminal",
+      "supported_scope": "终端、context、session、MCP 文档入口。",
+      "boundary": "未验证安装和功能可用性。",
+      "cache_file": "gemini-cli.plain",
+      "cache_file_sha256": "feb4ffd95fbaba28307b517e527ace06c7a0547cad61eabb4266d85d60c8e98e"
+    },
+    {
+      "id": "maf-overview",
+      "kind": "upstream README",
+      "locator": "maf.plain:8-9,125",
+      "excerpt": "framework for building production-grade AI agents and multi-agent workflows ... Hosting: A2A",
+      "supported_scope": "agent/workflow构件、README的A2A hosting入口，以及维护仓库MCP示例入口。",
+      "boundary": "E0来源核验；不证明当前环境可运行、权限安全或网络协议兼容。",
+      "cache_file": "maf.plain",
+      "cache_file_sha256": "e21ec5ddaeca35c41f419cc2b96a51c1b1307d07fd6ccf107dea185a1e620c3a",
+      "supporting_sources": [
+        {
+          "source": "https://raw.githubusercontent.com/microsoft/agent-framework/main/python/samples/02-agents/mcp/README.md",
+          "checked": "2026-09-21",
+          "locator": "MCP (Model Context Protocol) Examples; introductory paragraph and Agent as MCP Server row",
+          "excerpt": "This folder contains examples demonstrating how to work with MCP using Agent Framework.",
+          "cache_file": "maf-mcp.txt",
+          "cache_file_sha256": "528a0adaffa31790ba0db95393237a4c545409b6c9dc2c68dc8426e6dbdb2777",
+          "scope": "官方维护仓库存在MCP入口和示例；仅阅读，未执行。"
+        }
+      ]
+    },
+    {
+      "id": "autogen-maintenance",
+      "kind": "upstream README",
+      "locator": "autogen-maintenance.plain:10-16",
+      "excerpt": "AutoGen is now in maintenance mode ... New users should start with Microsoft Agent Framework",
+      "supported_scope": "维护态与新用户引导。",
+      "boundary": "不评价既有项目的迁移成本。",
+      "cache_file": "autogen-maintenance.plain",
+      "cache_file_sha256": "7f51c95b717ae47ffe416d06fdefda1e8fbda4529e00df03a9a75a58f52ec72e"
+    },
+    {
+      "id": "deepagents-overview",
+      "kind": "official product documentation",
+      "locator": "deepagents.plain:5,843,849",
+      "excerpt": "Build agents that can plan, use subagents, and leverage file systems for complex tasks",
+      "supported_scope": "复杂任务的规划/文件系统/subagent 构件。",
+      "boundary": "不证明默认启用。",
+      "cache_file": "deepagents.plain",
+      "cache_file_sha256": "fbd084d6d1057ae6ccdb40c13d50795f1f2f09bdb0e309d24ab8bce1212f26a6"
+    },
+    {
+      "id": "pydantic-ai-overview",
+      "kind": "official product documentation",
+      "locator": "pydantic-ai.plain:188,198,270",
+      "excerpt": "Structured outputs, typed dependency injection, typed tools",
+      "supported_scope": "类型化 Agent、结构化结果与依赖注入；银行示例还说明 DI 将数据库连接带入 instructions/tools。",
+      "boundary": "不证明应用已接入真实数据库。",
+      "cache_file": "pydantic-ai.plain",
+      "cache_file_sha256": "42d0c4cebb50fa7f2294efde8f1e5378c9f0e8ac9f9c472dfa7190ff9dc19539"
+    },
+    {
+      "id": "crewai-overview",
+      "kind": "official product documentation",
+      "locator": "crewai.plain:5-7,37",
+      "excerpt": "Build collaborative AI agents, crews, and flows",
+      "supported_scope": "Crews 与 Flows 的产品分工。",
+      "boundary": "不将 marketing 文案解释为质量保证。",
+      "cache_file": "crewai.plain",
+      "cache_file_sha256": "1af281288e50f3ce44d08aaef10730f448346b0dd8bc979eb98dbaf262b56e31"
+    },
+    {
+      "id": "anthropic-catalog",
+      "kind": "official product documentation",
+      "locator": "anthropic-models.plain:34,41",
+      "excerpt": "Every Claude model ID is a pinned snapshot",
+      "supported_scope": "模型 ID/alias 的目录说明。",
+      "boundary": "不表示所有模型当前可用。",
+      "cache_file": "anthropic-models.plain",
+      "cache_file_sha256": "6f02c0d717bf8c936ec46d16d3e533d5a008cf5f5cc806708d438a408ddb8ae5"
+    },
+    {
+      "id": "google-catalog",
+      "kind": "official product documentation",
+      "locator": "gemini-models.plain:6-25",
+      "excerpt": "This guide introduces all the models available through the Gemini API",
+      "supported_scope": "目录按模型区分 API/Live 路径。",
+      "boundary": "不保证账号可访问。",
+      "cache_file": "gemini-models.plain",
+      "cache_file_sha256": "9e2c92aac5c319edec55bbeb2c31e6275d8420aedb3997df96736fd4ed4d49ff"
+    },
+    {
+      "id": "qwen-catalog",
+      "kind": "official landing page",
+      "locator": "qwen.plain:3,9",
+      "excerpt": "Tech Report GitHub Hugging Face ModelScope",
+      "supported_scope": "官方入口所链接渠道。",
+      "boundary": "具体权重需固定 revision 再验证。",
+      "cache_file": "qwen.plain",
+      "cache_file_sha256": "624feb8ed34307215609f418451ac7758fb589048de8a03600385f33b7dceab5"
+    },
+    {
+      "id": "llama-catalog",
+      "kind": "upstream README",
+      "locator": "llama-repo.txt:25-33",
+      "excerpt": "Acceptable use policy | License | Model Card",
+      "supported_scope": "版本表提供三类入口。",
+      "boundary": "不证明取得权重许可。",
+      "cache_file": "llama-repo.txt",
+      "cache_file_sha256": "0a7b304b54835ceaf99899789c03fadcd862f4be696ad41c98f7bcc0c238262f"
+    },
+    {
+      "id": "llamaindex-overview",
+      "kind": "official product documentation",
+      "locator": "llamaindex.plain:41-47",
+      "excerpt": "LlamaIndex provides a framework for building agents",
+      "supported_scope": "数据、agent 与 event-driven workflow 构件。",
+      "boundary": "不证明任意数据集的效果。",
+      "cache_file": "llamaindex.plain",
+      "cache_file_sha256": "99e6f941decefb39d1191bfb04c35871162f0c9a3f2ddc57bf4cbe3de2284161"
+    },
+    {
+      "id": "otel-genai",
+      "kind": "upstream specification README",
+      "locator": "otel-genai.plain:2-4",
+      "excerpt": "including spans, metrics, and events for GenAI clients, MCP",
+      "supported_scope": "GenAI/MCP/provider 遥测语义约定覆盖面。",
+      "boundary": "maturity 未从此摘录推断。",
+      "cache_file": "otel-genai.plain",
+      "cache_file_sha256": "351678870305e98a2b2c053f35020ff4f7dcd3834efcb30d0b95b0f3380f3092"
+    },
+    {
+      "id": "swe-bench",
+      "kind": "official benchmark site",
+      "locator": "swe-bench.plain:8,83-116",
+      "excerpt": "SWE-bench Verified",
+      "supported_scope": "站点区分 Verified 变体并出现 agent/environment 语境。",
+      "boundary": "未把站点分数用作模型通用比较。",
+      "cache_file": "swe-bench.plain",
+      "cache_file_sha256": "3b3aee0aaa49b19100d4a0fcddb009df192649f9e4bc082da2f2d52aaa3f514d"
+    },
+    {
+      "id": "terminal-bench",
+      "kind": "official benchmark site",
+      "locator": "terminal-bench.plain:8-18",
+      "excerpt": "TERMINAL-BENCH 4.0 ... MODEL ... AGENT ... RESOLUTION RATE",
+      "supported_scope": "站点显示版本、字段和置信区间。",
+      "boundary": "未据此排名或复现实验。",
+      "cache_file": "terminal-bench.plain",
+      "cache_file_sha256": "9d167a6a3799dd5e5f3b06bc799068ebfeb01b0396f3c185de50beedc97b2dd1"
+    },
+    {
+      "id": "gaia-benchmark",
+      "kind": "primary paper abstract",
+      "locator": "gaia-paper.txt:30,129",
+      "excerpt": "reasoning, multi-modality handling, web browsing, and generally tool-use proficiency",
+      "supported_scope": "作者对问题能力要求的描述。",
+      "boundary": "HTML/PDF 提取，未取得数据集原始卡。",
+      "cache_file": "gaia-paper.txt",
+      "cache_file_sha256": "456b2f17fcafca41eca47921efb5da8fd2b46f43f54155e15f692a9d05bcadea"
+    },
+    {
+      "id": "tau-benchmark",
+      "kind": "upstream README",
+      "locator": "tau-bench.plain:2-3",
+      "excerpt": "The tasks in this repo are not updated",
+      "supported_scope": "旧仓库的弃用提示及后续基准链接。",
+      "boundary": "不把过往分数与新任务混比。",
+      "cache_file": "tau-bench.plain",
+      "cache_file_sha256": "09c45a24926dffda6de932c63b955c7a54c426fc5b9e314458cc4efa73bfcfbe"
+    },
+    {
+      "id": "tau3-benchmark",
+      "kind": "upstream README",
+      "locator": "tau3-bench.plain:9-25",
+      "excerpt": "From text-only to multimodal, knowledge-aware agent evaluation",
+      "supported_scope": "τ³、voice 与 knowledge-retrieval 方向。",
+      "boundary": "无本地运行或复现。",
+      "cache_file": "tau3-bench.plain",
+      "cache_file_sha256": "4e73546a621245985ad36e9f83238b11cd1e8e678123299c933175c76ecd52e7"
+    },
+    {
+      "id": "openai-runtime-options",
+      "kind": "official product documentation",
+      "locator": "openai-agents-sdk.plain:7-9,21-22",
+      "excerpt": "Agents API ... Agents SDK ... Responses API",
+      "supported_scope": "三种 runtime/integration 路径区分。",
+      "boundary": "不构成选型推荐或能力等价性。",
+      "cache_file": "openai-agents-sdk.plain",
+      "cache_file_sha256": "0101d8cf872054ecdb2abbf511e6a8eae664ea6cc059deed2f1e755e96b91349"
+    },
+    {
+      "id": "openai-agents-api",
+      "kind": "official product documentation",
+      "locator": "agents-api.plain:3-4,19-23",
+      "excerpt": "access to the Codex harness through an OpenAI-managed API",
+      "supported_scope": "管理边界和四个核心概念。",
+      "boundary": "不表示当前用户有 API 访问权限。",
+      "cache_file": "agents-api.plain",
+      "cache_file_sha256": "f2e136b34e561f6b261b9ce93ad82999c71ca84b4d728a302f30e6f4c3c7d0b8"
+    },
+    {
+      "id": "browser-use-cloud",
+      "kind": "official Cloud documentation",
+      "locator": "browser-use.plain:6,22-23",
+      "excerpt": "Choose Cloud API V4 for new agent integrations",
+      "supported_scope": "托管 Cloud Agent/browser 路径。",
+      "boundary": "明确不等同于 open-source library API。",
+      "cache_file": "browser-use.plain",
+      "cache_file_sha256": "6a4febbc70f545e376e4d5e6e939f1566a57934563826f47bc99f13fe1ecb867"
+    },
+    {
+      "id": "ollama-overview",
+      "kind": "official product documentation",
+      "locator": "ollama.plain:5-10",
+      "excerpt": "Choose cloud models or run models on your computer",
+      "supported_scope": "本机与云模型路径。",
+      "boundary": "不证明特定模型存在或可下载。",
+      "cache_file": "ollama.plain",
+      "cache_file_sha256": "cf847966d1a2e958dcbd00b9d4fd85da382fa1dd9c5a6761319b78c3b55a0ea5"
+    },
+    {
+      "id": "vllm-serving",
+      "kind": "official product documentation",
+      "locator": "vllm-stable.plain:5-7,17-34",
+      "excerpt": "vLLM is ... a library for LLM inference and serving",
+      "supported_scope": "推理/服务、batch、prefix cache 与 API server。",
+      "boundary": "不主张吞吐/成本实测。",
+      "cache_file": "vllm-stable.plain",
+      "cache_file_sha256": "a82277bd912bc5d79d2801a362aa4b695e509af921bf114ad88b93e6a5142bf0"
+    },
+    {
+      "id": "sglang-serving",
+      "kind": "official product documentation",
+      "locator": "sglang.plain:5",
+      "excerpt": "High-performance serving framework for large language and multimodal models",
+      "supported_scope": "LLM/多模态服务框架定位。",
+      "boundary": "不采纳页面个别模型宣传为普遍性能。",
+      "cache_file": "sglang.plain",
+      "cache_file_sha256": "5b8c972529829b3a8a912747dca451cbf2cfe11ff53e363eb49f58edd4cd17a3"
+    },
+    {
+      "id": "openai-prompt-cache",
+      "kind": "official product documentation",
+      "locator": "openai-cache.plain:4-17",
+      "excerpt": "Reusing context within a session can preserve a shared prompt prefix, but maintaining a session doesn't guarantee a cache hit",
+      "supported_scope": "same-prefix 复用及会话不保证命中。",
+      "boundary": "非本项目的缓存测量。",
+      "cache_file": "openai-cache.plain",
+      "cache_file_sha256": "6e306b33132628e53c8ef92c60059ec9a007450144341d2d8c8ba27ec5538535"
+    },
+    {
+      "id": "a2a-protocol",
+      "kind": "protocol documentation",
+      "locator": "a2a.plain:142-143,159-161",
+      "excerpt": "discover each other, delegate tasks, and share results",
+      "supported_scope": "独立 agent 的发现、委派与结果交换。",
+      "boundary": "不规定 agent 内部 sub-agent 或 tool 调用。",
+      "cache_file": "a2a.plain",
+      "cache_file_sha256": "c21fc4b19214299bb8a9b91e08adba297c9d3d84c637035f019f30bde22e2ea5"
+    },
+    {
+      "id": "agent-skills-format",
+      "kind": "specification",
+      "locator": "agent-skills.plain:7-17,134-159",
+      "excerpt": "A skill is a directory containing, at minimum, a `SKILL.md` file",
+      "supported_scope": "SKILL.md 格式、支持文件与渐进加载。",
+      "boundary": "不证明任一 host 支持该格式。",
+      "cache_file": "agent-skills.plain",
+      "cache_file_sha256": "7de3433714b808f8e1c6352392040612771f4363cfae28d3a5550c2f7d23244f"
+    },
+    {
+      "id": "mcp-current-protocol",
+      "kind": "protocol specification",
+      "locator": "mcp-spec.plain:39-40",
+      "excerpt": "Stateless, self-contained requests; Per-request capability negotiation",
+      "supported_scope": "2026-07-28 概览所列通信特性。",
+      "boundary": "未据此推断全部扩展行为。",
+      "cache_file": "mcp-spec.plain",
+      "cache_file_sha256": "d97e4aee6a9e60f9b6b8d303361745e5b4f7452f1c0df22ba5326f6e06eedcc3"
+    },
+    {
+      "id": "mcp-tasks",
+      "kind": "extension documentation",
+      "locator": "mcp-tasks.plain:5-11,19-28",
+      "excerpt": "servers return a durable handle ... poll for progress, provide input",
+      "supported_scope": "长操作句柄、状态和中途输入。",
+      "boundary": "扩展支持须由 client/server 协商。",
+      "cache_file": "mcp-tasks.plain",
+      "cache_file_sha256": "af28cdd9399dd2e851428f9a414363f7d78edeb8a423b4fcf26b7e5da8639fb2"
+    },
+    {
+      "id": "mcp-apps",
+      "kind": "extension documentation",
+      "locator": "mcp-apps.plain:5,29-40",
+      "excerpt": "Interactive UI applications that render inside MCP hosts",
+      "supported_scope": "工具引用由支持宿主嵌入的 interactive HTML。",
+      "boundary": "宿主支持与用户 consent 另行验证。",
+      "cache_file": "mcp-apps.plain",
+      "cache_file_sha256": "cbe3abd13de8c401de687165bded21f9b4dc64d53b8ee209fe82d6a43aaabedb"
+    },
+    {
+      "id": "openai-skills-lifecycle",
+      "kind": "official product documentation",
+      "locator": "openai-skills.plain:3-9,51-52",
+      "excerpt": "Responses API shell tools ... Agents API sessions discover skills from directories",
+      "supported_scope": "Responses 附加与 Agents API 目录发现的区分。",
+      "boundary": "不证明某 skill 已挂载。",
+      "cache_file": "openai-skills.plain",
+      "cache_file_sha256": "cd8e2bcfa0dead112902f4b1f94bf3bb555d462f7da261d30dc7f80871f6a537"
+    },
+    {
+      "id": "openai-programmatic-tools",
+      "kind": "official product documentation",
+      "locator": "openai-ptc.plain:3-8,20,56-58",
+      "excerpt": "fresh, isolated V8 runtime ... does not provide Node.js ... direct network access",
+      "supported_scope": "受限 JavaScript runtime 与 allowed_callers 配置。",
+      "boundary": "不证明外部工具的实际结果。",
+      "cache_file": "openai-ptc.plain",
+      "cache_file_sha256": "fb025e0e88e4d1305f80d6446fde5346e547feeb46941403eb65fd7f939cba73"
+    },
+    {
+      "id": "test-time-compute-study",
+      "kind": "primary paper abstract",
+      "locator": "test-time-scaling.plain:1",
+      "excerpt": "effectiveness ... critically varies depending on the difficulty of the prompt",
+      "supported_scope": "该作者研究的两种机制与难度依赖结论。",
+      "boundary": "不作为模型或 harness 通用排名。",
+      "cache_file": "test-time-scaling.plain",
+      "cache_file_sha256": "7972bc381e44a934c564e874a6ce305377134064f3f3347ce365e25cb311e2a7"
+    },
+    {
+      "id": "agent-lightning-architecture",
+      "kind": "upstream README",
+      "locator": "agent-lightning.plain:1",
+      "excerpt": "three lightweight components: Trainer ... API Gateway ... Rollout Controller",
+      "supported_scope": "v1.0 README 的架构陈述和 real harness。",
+      "boundary": "未复现实验分数。",
+      "cache_file": "agent-lightning.plain",
+      "cache_file_sha256": "76566010679eb18c8b8add58bb4e081641558950d485ee194e97428ac557a45a"
+    },
+    {
+      "id": "gemini-cli-lifecycle",
+      "kind": "official page banner",
+      "locator": "gemini-cli.txt:39",
+      "excerpt": "replaced by Antigravity CLI on June 18th, 2026",
+      "supported_scope": "该页面 banner 的 lifecycle 声明。",
+      "boundary": "main-area plain extraction 会漏 banner；不推断迁移资格。",
+      "cache_file": "gemini-cli.txt",
+      "cache_file_sha256": "58e1a3314fdda2d7ed6ec44d2d214308ba07e7796f9ab89c27dc0ca3d933f0dc"
+    }
+  ]
+}

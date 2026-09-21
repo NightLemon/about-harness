@@ -36,4 +36,6 @@ npm run verify
 
 Node 与 Python 依赖保留锁文件；新增包需核对来源、许可、传递依赖、安装脚本、权限和卸载。开发服务器只绑定可信本机，生产只部署 VitePress 静态产物。Pages 工作流先运行 `npm run pages:check`，构建 job 只有 `contents: read`，仅 deploy job 获得 `pages: write` 与 `id-token: write`。
 
-维护者每季度运行带网络的外链探针并刷新高易变事实。发布前从干净安装执行 `npm run verify`，人工抽查移动端导航、搜索、深色模式、内部链接与公开结果。创建 remote、push、PR、修改 Pages 设置或发布均需单独授权；失败时保留上一个可用版本，不 force push 或移动既有 tag。
+修改易变主张时及每次发布前，维护者实际阅读相应官方来源并复核版本；高易变的 verified 事实不得超过 30 天。季度全量外链探针是补充，不替代语义核验。HTTP 200 也不表示页面仍支持原主张。
+
+发布前从干净安装执行 `npm run verify`，人工抽查移动端导航、搜索、深色模式、内部链接与公开结果。教程命令契约清单只核验可定位的页面/命令/脚本/测试引用，不评价文字深度。创建 remote、push、PR、修改 Pages 设置或发布均需单独授权；失败时保留上一个可用版本，不 force push 或移动既有 tag。

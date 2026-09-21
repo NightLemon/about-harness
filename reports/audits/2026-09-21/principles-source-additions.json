@@ -1,0 +1,62 @@
+{
+  "checked": "2026-09-21",
+  "purpose": "供 root 登记新生态页的易变事实；本文件不是事实注册表。",
+  "entries": [
+    {
+      "suggested_fact_id": "otel-genai",
+      "url": "https://raw.githubusercontent.com/open-telemetry/semantic-conventions-genai/main/README.md",
+      "version": "main rolling",
+      "source_status": "verified",
+      "short_excerpt": "Semantic Conventions for Generative AI ... including spans, metrics, and events for GenAI clients, MCP, and provider-specific conventions.",
+      "claim": "OpenTelemetry GenAI 语义约定覆盖 GenAI client、MCP、provider 的 span、metric、event 信号。",
+      "used_by": "/ecosystem/evaluation-observability"
+    },
+    {
+      "suggested_fact_id": "swe-bench",
+      "url": "https://www.swebench.com/",
+      "version": "official leaderboard rolling",
+      "source_status": "verified",
+      "short_excerpt": "官方页面列出 SWE-bench、Verified、Multilingual、Multimodal、Lite 和 Full，并提供按 agent environment 的 Bash Only 筛选。",
+      "claim": "SWE-bench 官方页面区分多个变体，公开结果依赖 agent 环境。",
+      "used_by": "/ecosystem/evaluation-observability"
+    },
+    {
+      "suggested_fact_id": "terminal-bench",
+      "url": "https://www.tbench.ai/",
+      "version": "site displayed Terminal-Bench 4.0",
+      "source_status": "verified",
+      "short_excerpt": "A benchmark to measure and evolve with the frontier of agent work; 页面显示 TERMINAL-BENCH 4.0。",
+      "claim": "Terminal-Bench 是面向 agent work 的 benchmark；站点版本与榜单会变化。",
+      "used_by": "/ecosystem/evaluation-observability"
+    },
+    {
+      "suggested_fact_id": "gaia-benchmark",
+      "url": "https://arxiv.org/abs/2311.12983",
+      "version": "GAIA paper",
+      "source_status": "verified",
+      "short_excerpt": "作者论文将 GAIA 描述为考察 reasoning、multi-modality、web browsing 与 tool-use 的问题基准；原始 Hugging Face 数据卡 raw URL 本轮为 401。",
+      "claim": "本页只按作者论文描述 GAIA 的问题设定，不把原始数据卡当前状态写成已核验。",
+      "used_by": "/ecosystem/evaluation-observability",
+      "caveat": "https://huggingface.co/datasets/gaia-benchmark/GAIA/raw/main/README.md returned HTTP 401 on 2026-09-21."
+    },
+    {
+      "suggested_fact_id": "tau-benchmark",
+      "url": "https://raw.githubusercontent.com/sierra-research/tau-bench/main/README.md",
+      "version": "main rolling",
+      "source_status": "verified",
+      "short_excerpt": "维护 README 对旧任务给出迁移/不应作为当前入口的警告。",
+      "claim": "旧 tau-bench 任务不应被默认为当前评测入口。",
+      "used_by": "/ecosystem/evaluation-observability"
+    },
+    {
+      "suggested_fact_id": "tau3-benchmark",
+      "url": "https://raw.githubusercontent.com/sierra-research/tau2-bench/main/README.md",
+      "version": "main rolling; cached as tau3-bench.txt",
+      "source_status": "verified",
+      "short_excerpt": "本轮缓存的 tau3-bench.txt 是维护方当前 τ³ 入口材料；页面仅把它用于版本边界，不记录结果或排名。",
+      "claim": "τ³ 必须作为独立版本的交互任务环境记录，不能与旧 τ-bench 结果混用。",
+      "used_by": "/ecosystem/evaluation-observability",
+      "caveat": "发布前应再次核对维护方的正式版本命名与仓库路径。"
+    }
+  ]
+}

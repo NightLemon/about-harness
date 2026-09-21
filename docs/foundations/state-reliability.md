@@ -120,7 +120,7 @@ created_at / writer / fencing token
 | `cost_usd` | 累计 Action 声明成本 | 有限、非负 |
 | `adapter_state` | Adapter 自定义 JSON 对象 | 必须为对象；FakeAdapter 另验 `index` |
 
-每次工具成功或 cache 命中后，runner 才创建新 checkpoint。完成 Action 不增加 `steps`，也不生成新 checkpoint；`steps` 始终只计算成功或复用的工具状态转移。最终 Result 的 `model_calls`、cost 可能已包含后续 completion proposal，因此这些值可以大于最近 checkpoint，对应的 tool step 则保持一致。
+每次工具成功或 cache 命中后，runner 创建新 checkpoint；completion 验收拒绝后也会保存 checkpoint，以保留已消费调用、成本与 Adapter 游标。完成 Action 不增加 `steps`，验收通过时沿用最近 checkpoint；`steps` 始终只计算成功或复用的工具状态转移。最终 Result 的 `model_calls`、cost 可能已包含后续 completion proposal，因此这些值可以大于最近 checkpoint，对应的 tool step 则保持一致。
 
 恢复时，runner 继承 step/model/tool/reused/cost，并调用 `adapter.restore(adapter_state)`。它会创建新的 TraceRecorder，所以新 Result 的 trace 不包含上一段事件；`started` 也重新读取时钟，所以 `timeout_ms` 从恢复调用开始重新计算。工具 cache 不在 checkpoint 内，新建 `ToolRegistry` 后旧幂等结果不会恢复。
 
@@ -278,7 +278,7 @@ uv run --frozen --offline pytest -q \
   lab/tests/test_contracts_and_schema.py::test_checkpoint_rejects_inconsistent_or_negative_counters
 ```
 
-预期退出码为 0，显示 `7 passed`。这些案例分别证明：
+预期退出码为 0，显示 `passed`。这些案例分别证明：
 
 1. 两次 retry trace 与实际 sleeper 值一致，第二个同 key 调用复用内存 cache；
 2. 同 key 改 arguments 或 tool name 的两个负例都失败，第二个 handler 不执行；

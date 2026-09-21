@@ -1,8 +1,8 @@
 # LangGraph：用显式状态图约束长运行 Agent
 
-官方来源：[LangGraph overview](https://docs.langchain.com/oss/python/langgraph/overview)，核对日期：2026-08-20。
+官方来源：[LangGraph overview](https://docs.langchain.com/oss/python/langgraph/overview)，核对日期：2026-09-21。
 
-官方 overview（核对 2026-08-20）将 LangGraph 描述为构建长运行、有状态 Agent 的 low-level orchestration framework/runtime（低层编排框架/运行时），强调 durable execution（可恢复执行）、streaming（流式事件）、human-in-the-loop（人在回路），以及确定性步骤与 LLM（大语言模型）步骤混合。[FACT:langgraph-overview] 这是 E0 产品事实；具体 API 与目标版本仍需安装后验证。
+官方 overview（核对 2026-09-21）将 LangGraph 描述为构建长运行、有状态 Agent 的 low-level orchestration framework/runtime（低层编排框架/运行时），强调 durable execution（可恢复执行）、streaming（流式事件）、human-in-the-loop（人在回路），以及确定性步骤与 LLM（大语言模型）步骤混合。[FACT:langgraph-overview] 这是 E0 产品事实；具体 API 与目标版本仍需安装后验证。
 
 ## 学习目标与选择问题
 

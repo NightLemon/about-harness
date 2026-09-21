@@ -1,0 +1,311 @@
+[
+  {
+    "id": "S-A01",
+    "severity": "P1",
+    "type": "review_finding",
+    "paths": [
+      "docs/evaluation/metrics.md"
+    ],
+    "initial_review_reason": "任一次成功被写成best-of-k交付成功",
+    "fix_and_acceptance": "拆分oracle集合成功与实际选择器验收，给出选错b的反例",
+    "status": "pass",
+    "independent_reviewer": "second-principles"
+  },
+  {
+    "id": "S-A02",
+    "severity": "P1",
+    "type": "review_finding",
+    "paths": [
+      "docs/foundations/agent-loop.md",
+      "docs/foundations/state-reliability.md"
+    ],
+    "initial_review_reason": "completion的step+1及仅工具生成checkpoint与实现不符",
+    "fix_and_acceptance": "统一工具step计数及验收拒绝checkpoint，逐段对照loop.py",
+    "status": "pass",
+    "independent_reviewer": "second-principles"
+  },
+  {
+    "id": "S-A03",
+    "severity": "P2",
+    "type": "review_finding",
+    "paths": [
+      "docs/foundations/agent-loop.md",
+      "docs/security/threat-model.md",
+      "docs/security/secrets-privacy.md"
+    ],
+    "initial_review_reason": "固定测试和扫描数量过期",
+    "fix_and_acceptance": "全站相关预期改为业务断言，不以可变总数判通过",
+    "status": "pass",
+    "independent_reviewer": "second-principles"
+  },
+  {
+    "id": "S-A04",
+    "severity": "P2",
+    "type": "review_finding",
+    "paths": [
+      "docs/ecosystem/evaluation-observability.md"
+    ],
+    "initial_review_reason": "run_id与Task hash误称低基数",
+    "fix_and_acceptance": "trace关联身份与metric低基数标签分开",
+    "status": "pass",
+    "independent_reviewer": "second-principles"
+  },
+  {
+    "id": "S-A05",
+    "severity": "P2",
+    "type": "review_finding",
+    "paths": [
+      "docs/evaluation/judges.md"
+    ],
+    "initial_review_reason": "阈值方向缺手算与等号边界",
+    "fix_and_acceptance": "同组u/c表、严格比较、覆盖/风险/人工比例与空集合明确",
+    "status": "pass",
+    "independent_reviewer": "second-principles"
+  },
+  {
+    "id": "S-A06",
+    "severity": "P2",
+    "type": "review_finding",
+    "paths": [
+      "docs/evaluation/judges.md"
+    ],
+    "initial_review_reason": "格式恢复仍可能算独立票，缺追溯记录",
+    "fix_and_acceptance": "四调用两draw两票的完整记录，位置交换只作诊断",
+    "status": "pass",
+    "independent_reviewer": "second-principles"
+  },
+  {
+    "id": "S-A07",
+    "severity": "P2",
+    "type": "review_finding",
+    "paths": [
+      "docs/optimization/experiment.md"
+    ],
+    "initial_review_reason": "配置包解释后仍缺单字段候选",
+    "fix_and_acceptance": "固定selection数据只变threshold，差异可复算",
+    "status": "pass",
+    "independent_reviewer": "second-principles"
+  },
+  {
+    "id": "S-A08",
+    "severity": "P1",
+    "type": "review_finding",
+    "paths": [
+      "docs/security/prompt-injection.md"
+    ],
+    "initial_review_reason": "定义偏工具，纯回答缺固定正反例",
+    "fix_and_acceptance": "新增answer-integrity fixture及测试，正常通过、攻击字段失败",
+    "status": "pass",
+    "independent_reviewer": "second-principles"
+  },
+  {
+    "id": "S-A09",
+    "severity": "P2",
+    "type": "review_finding",
+    "paths": [
+      "docs/foundations/context.md",
+      "docs/optimization/context-tools.md"
+    ],
+    "initial_review_reason": "范围声明与重复正文不符",
+    "fix_and_acceptance": "基础页定义、调优页变量/指标/回退实验表",
+    "status": "pass",
+    "independent_reviewer": "second-principles"
+  },
+  {
+    "id": "S-B01",
+    "severity": "P1",
+    "type": "review_finding",
+    "paths": [
+      "docs/harnesses/claude-code.md"
+    ],
+    "initial_review_reason": "allow误写成封闭读取/命令白名单",
+    "fix_and_acceptance": "改为预先许可，未匹配仍由其他规则与模式决定",
+    "status": "pass",
+    "independent_reviewer": "second-products"
+  },
+  {
+    "id": "S-B02",
+    "severity": "P1",
+    "type": "review_finding",
+    "paths": [
+      "docs/harnesses/codex.md"
+    ],
+    "initial_review_reason": "workspace-write误要求范围外读取失败",
+    "fix_and_acceptance": "分别验读写，区分工具授权与OS拒绝层",
+    "status": "pass",
+    "independent_reviewer": "second-products"
+  },
+  {
+    "id": "S-B03",
+    "severity": "P2",
+    "type": "review_finding",
+    "paths": [
+      "docs/harnesses/claude-code.md"
+    ],
+    "initial_review_reason": "AGENTS条件遗漏及缺诊断/import",
+    "fix_and_acceptance": "补.claude/CLAUDE、用户/managed/rules例外、config/context及回退",
+    "status": "pass",
+    "independent_reviewer": "second-products"
+  },
+  {
+    "id": "S-B04",
+    "severity": "P3",
+    "type": "review_finding",
+    "paths": [
+      "docs/models/adaptation.md"
+    ],
+    "initial_review_reason": "replay测试数量过期",
+    "fix_and_acceptance": "改行为断言并保留live-disable边界",
+    "status": "pass",
+    "independent_reviewer": "second-products"
+  },
+  {
+    "id": "S-B05",
+    "severity": "P2",
+    "type": "review_finding",
+    "paths": [
+      "docs/frameworks/autogen.md",
+      "docs/frameworks/comparison.md"
+    ],
+    "initial_review_reason": "仅探测旧autogen模块",
+    "fix_and_acceptance": "增加autogen_agentchat/core/ext缺依赖检查",
+    "status": "pass",
+    "independent_reviewer": "second-products"
+  },
+  {
+    "id": "S-B06",
+    "severity": "P2",
+    "type": "review_finding",
+    "paths": [
+      "docs/ecosystem/knowledge-and-memory.md",
+      "docs/ecosystem/multimodal.md"
+    ],
+    "initial_review_reason": "工作坊链接声称有不存在输入",
+    "fix_and_acceptance": "改为本页E0自含输入、判据、失败和清理练习",
+    "status": "pass",
+    "independent_reviewer": "second-products"
+  },
+  {
+    "id": "S-B07",
+    "severity": "P3",
+    "type": "review_finding",
+    "paths": [
+      "docs/harnesses/comparison.md"
+    ],
+    "initial_review_reason": "残留三产品和三证据轴",
+    "fix_and_acceptance": "统一四产品和五证据轴",
+    "status": "pass",
+    "independent_reviewer": "second-products"
+  },
+  {
+    "id": "S-B08",
+    "severity": "P2",
+    "type": "review_finding",
+    "paths": [
+      "docs/harnesses/codex.md"
+    ],
+    "initial_review_reason": "permission profile与approval混为可替代项",
+    "fix_and_acceptance": "独立记录文件/网络策略及approval_policy",
+    "status": "pass",
+    "independent_reviewer": "second-products"
+  },
+  {
+    "id": "S-C01",
+    "severity": "P2",
+    "type": "review_finding",
+    "paths": [
+      "docs/labs/runner.md",
+      "docs/labs/migration.md",
+      "docs/implementation/testing.md"
+    ],
+    "initial_review_reason": "canonical JSON哈希误称任何字节变化",
+    "fix_and_acceptance": "明确规范化内容身份与空白/键序边界",
+    "status": "pass",
+    "independent_reviewer": "second-learning"
+  },
+  {
+    "id": "S-C02",
+    "severity": "P2",
+    "type": "review_finding",
+    "paths": [
+      "docs/labs/setup.md"
+    ],
+    "initial_review_reason": "research预期无unsupported与fixture矛盾",
+    "fix_and_acceptance": "保留deletion_process不足及unsupported_claims=1",
+    "status": "pass",
+    "independent_reviewer": "second-learning"
+  },
+  {
+    "id": "S-C03",
+    "severity": "P1",
+    "type": "review_finding",
+    "paths": [
+      "docs/labs/migration.md"
+    ],
+    "initial_review_reason": "worktree被当作sandbox补偿",
+    "fix_and_acceptance": "明确Git隔离不等于OS强制边界",
+    "status": "pass",
+    "independent_reviewer": "second-learning"
+  },
+  {
+    "id": "S-C04",
+    "severity": "P1",
+    "type": "review_finding",
+    "paths": [
+      "docs/practice/ecosystem-workshop.md",
+      "lab/src/about_harness/ecosystem.py"
+    ],
+    "initial_review_reason": "集合模拟被称为真实handler调用",
+    "fix_and_acceptance": "字段改planned_handler_calls，事件和正文同步",
+    "status": "pass",
+    "independent_reviewer": "second-learning"
+  },
+  {
+    "id": "S-C05",
+    "severity": "P2",
+    "type": "review_finding",
+    "paths": [
+      "docs/implementation/testing.md"
+    ],
+    "initial_review_reason": "门禁列表含已不存在脚本及过时总数",
+    "fix_and_acceptance": "与package.json实际脚本逐项对齐",
+    "status": "pass",
+    "independent_reviewer": "second-learning"
+  },
+  {
+    "id": "S-C06",
+    "severity": "P2",
+    "type": "review_finding",
+    "paths": [
+      "docs/implementation/extensions.md"
+    ],
+    "initial_review_reason": "仅Node前置不足以运行检查",
+    "fix_and_acceptance": "补Python/uv锁文件及Chromium前置，setup补获取命令",
+    "status": "pass",
+    "independent_reviewer": "second-learning"
+  },
+  {
+    "id": "S-C07",
+    "severity": "P2",
+    "type": "review_finding",
+    "paths": [
+      "docs/practice/evaluation.md"
+    ],
+    "initial_review_reason": "检查题仍称两阈值未执行",
+    "fix_and_acceptance": "改问执行前提与剩余证据缺口",
+    "status": "pass",
+    "independent_reviewer": "second-learning"
+  },
+  {
+    "id": "S-C08",
+    "severity": "P1",
+    "type": "review_finding",
+    "paths": [
+      "reports/audits/2026-09-21/source-reviews.json"
+    ],
+    "initial_review_reason": "泛化核对声明无法回溯支持段落",
+    "fix_and_acceptance": "为59条补实际来源摘录、定位、支持范围及缓存身份",
+    "status": "pass",
+    "independent_reviewer": "second-learning"
+  }
+]

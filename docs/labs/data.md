@@ -193,7 +193,7 @@ mode                       = offline-contract-seam
 uv run --frozen --offline pytest -q lab/tests/test_m5_labs.py -k data
 ```
 
-预期 `8 passed`、退出码 0。负例测试通过表示坏输入被正确阻断；它不表示真实数据源、PydanticAI 或任意敏感内容已验证。
+预期所有选中的 data 测试通过且退出码为 0。负例测试通过表示坏输入被正确阻断；它不表示真实数据源、PydanticAI 或任意敏感内容已验证。
 
 再检查上一步结果中的 `offline=true`、`evidence=E1` 与 `mode=offline-contract-seam`。它们证明固定数据职责接缝运行过，不证明 PydanticAI 已安装、真实 provider 可用或生产数据兼容；任何缺失或被改成 live 的结果都应停止引用。这个证据判断必须读取实际结果，不能由页面中是否出现产品名替代。
 

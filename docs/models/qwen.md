@@ -5,7 +5,7 @@
 - [Qwen 官方站](https://qwenlm.github.io/)
 - 目标模型的官方 model card（模型说明卡）、仓库 revision（修订版本）与 provider 文档
 
-核对日期：2026-08-20。Qwen 家族可通过不同 provider（模型供应方）、兼容 API 或本地 runtime（运行时）接入；目标模型、许可证、上下文、价格和能力必须在采用前按实际 surface（使用界面/执行表面）重新核对。本页只给出 E0 适配方法，没有运行 Qwen checkpoint、云 API 或真实任务比较。
+核对日期：2026-09-21。[FACT:qwen-catalog] Qwen 家族可通过不同 provider（模型供应方）、兼容 API 或本地 runtime（运行时）接入；目标模型、许可证、上下文、价格和能力必须在采用前按实际 surface（使用界面/执行表面）重新核对。本页只给出 E0 适配方法，没有运行 Qwen checkpoint、云 API 或真实任务比较。
 
 “OpenAI-compatible（兼容 OpenAI API）”通常只说明一部分请求外形相似，不证明 tool calling、streaming、error、usage、JSON、stop 或 retry 语义等价。协议未经探针验证前，不把兼容标签当作可替换承诺。
 
@@ -165,7 +165,7 @@ npm run lab:ts-runtime-test
 npm run facts:check
 ```
 
-前置条件是 Python 3.11+、`uv 0.11.16`、Node.js 22+ 与锁定依赖。输入是仓库固定 replay fixture；预期 Python 显示 `5 passed`，TypeScript runtime 拒绝坏 Task/Action，事实检查确认正文引用的易变主张已有来源状态、版本和日期。断言 live adapter 在任何 provider/权重动作前失败。
+前置条件是 Python 3.11+、`uv 0.11.16`、Node.js 22+ 与锁定依赖。输入是仓库固定 replay fixture；预期 Python 显示 `passed`，TypeScript runtime 拒绝坏 Task/Action，事实检查确认正文引用的易变主张已有来源状态、版本和日期。断言 live adapter 在任何 provider/权重动作前失败。
 
 这些 E1 控制结果不下载权重、不访问 Qwen/第三方 API，也不验证 tokenizer、chat template、tool/stream/error/usage、硬件性能、许可证或模型质量。`facts:check` 只验证事实引用，不是 Qwen 兼容测试；协议解释的充分性由人工对照目标 surface 复核。
 
@@ -177,6 +177,6 @@ npm run facts:check
 2. “OpenAI-compatible”还需验证哪些 tool、stream、error 与 usage 语义？
 3. 量化实验必须同时记录哪些质量、延迟与资源指标？
 4. 为什么托管 API 账单和本地 GPU 利用率不能直接排成统一价格榜？
-5. 当前离线 `5 passed` 为什么不能证明 Qwen checkpoint 可用？
+5. 当前离线 `passed` 为什么不能证明 Qwen checkpoint 可用？
 
 先填写[模型适配卡](/practice/model-playbook)，按[协议兼容性](/models/protocol-compatibility)建立资格探针，再用[实验方法](/optimization/experiment)做单变量比较。

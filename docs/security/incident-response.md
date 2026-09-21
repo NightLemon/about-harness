@@ -240,7 +240,7 @@ uv run --frozen --offline python scripts/run-labs.py browser
 
 ### 预期输出与断言
 
-Pytest 应有 3 项通过，并证明：未授权 handler 没有执行；adapter 返回控制后取消被观察为 `cancelled`；合成 token、Authorization 和个人路径未进入序列化结果。浏览器案例应为 `E1/offline`，外域负例被拒绝、`side_effects=0`。
+相关测试应全部通过，并证明：未授权 handler 没有执行；adapter 返回控制后取消被观察为 `cancelled`；合成 token、Authorization 和个人路径未进入序列化结果。浏览器案例应为 `E1/offline`，外域负例被拒绝、`side_effects=0`。
 
 把结果按事件响应解释：permission test 是 near miss 控制证据；cancellation test 只证明协作式检查点，不证明能强制中断阻塞 adapter 或进程树；redaction test 只证明固定模式，不证明数据从未外发。浏览器案例也没有真实模型或浏览器。
 

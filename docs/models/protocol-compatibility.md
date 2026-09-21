@@ -176,7 +176,7 @@ opened → item_started → zero-or-more deltas → item_completed
 
 测试事件拆分在任意 UTF-8/JSON 边界、空 delta、多个 item 交错、重复 delta、完成前断线、完成后 late event 和客户端取消。Tool arguments 只有在 provider 标记完成并通过 JSON/schema 校验后才能交给 policy；不能执行半截参数。
 
-非流式与流式路径应产生等价 canonical result：相同 item 类型、call ID、stop class 和完整参数。若 usage 只在最终事件出现，中途断线必须记录为 missing，而不是 0。
+同一已冻结 response 的流式重组必须保留该 response 内的 item 类型、`call_id`、stop class 与完整参数。若分别发起流式和非流式请求，它们是两次随机生成：比较任务级断言、规范化不变量、各自的 call/result 关联和安全终态，不要求工具名、参数、item 数或 `call_id` 逐项相同。若 usage 只在最终事件出现，中途断线必须记录为 missing，而不是 0。
 
 ### Streaming 通过条件
 
@@ -216,7 +216,7 @@ Usage（用量）字段按 provider 原样保存，再映射到 canonical schema
 1. **Positive case（正例）**：最小合法输入能保持语义；
 2. **Negative case（负例）**：一个字段或事件故意损坏，系统在正确边界失败；
 3. **Round-trip case（往返例）**：provider shape 与 canonical shape 双向映射不丢字段；
-4. **Differential case（差分例）**：stream/non-stream 或 ID/replay 两条合法路径满足同一断言；
+4. **Differential case（差分例）**：同一冻结 response 的 stream 重组与完整表示保持同一协议字段；独立 stream/non-stream 或 ID/replay 请求只满足同一任务级断言与各自关联不变量；
 5. **Recovery case（恢复例）**：retry/resume 不重复副作用或重置预算。
 
 探针不追求自然语言答案完全相同。断言应针对协议不变量，例如 ID、类型、顺序、参数、stop class、状态和执行次数。
@@ -300,7 +300,7 @@ npm run facts:check
 
 ### 预期输出与断言
 
-- pytest 36 项全部通过：replay 能按 `call_id` 完成进程内 `sum`，live adapter 在 provider action 前硬拒绝；合成 stream 只在 tool call 完成且完整 JSON object 校验后生成 canonical Action，只有 `response_completed` 才返回响应，并拒绝序号/ID 冲突、断流、取消、坏参数、迟到事件和并行 tool call；loop 会在 metrics、trace 与 handler 前深层重验 Adapter Action，拒绝嵌套非有限 JSON 数字，并能区分预算、权限、tool error、幂等复用、timeout 和 resume；
+- 相关测试应全部通过：replay 能按 `call_id` 完成进程内 `sum`，live adapter 在 provider action 前硬拒绝；合成 stream 只在 tool call 完成且完整 JSON object 校验后生成 canonical Action，只有 `response_completed` 才返回响应，并拒绝序号/ID 冲突、断流、取消、坏参数、迟到事件和并行 tool call；loop 会在 metrics、trace 与 handler 前深层重验 Adapter Action，拒绝嵌套非有限 JSON 数字，并能区分预算、权限、tool error、幂等复用、timeout 和 resume；
 - TypeScript runtime 测试拒绝空/重复工具名、非有限预算与非法 action，并阻止坏值进入 metrics；
 - `facts:check` 确认易变产品主张的来源状态、版本、日期和正文引用一致，但不把引用完整误当作协议兼容；
 - 人工逐行复核兼容矩阵中的目标 surface、状态载体、工具循环、错误/usage、控制责任和 live 状态，任何 `untested` 都不能被命令成功改写。

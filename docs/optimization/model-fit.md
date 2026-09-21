@@ -218,7 +218,7 @@ npm run facts:check
 
 ### 预期输出与断言
 
-- pytest 应有 2 项通过：replay 在无网络/凭据下完成 `1+2+3=6`；live adapter 在产生 provider action 前抛出 `LiveAdapterDisabled`；
+- 相关测试应全部通过：replay 在无网络/凭据下完成 `1+2+3=6`；live adapter 在产生 provider action 前抛出 `LiveAdapterDisabled`；
 - `facts:check` 应确认产品主张的来源状态、版本、日期和正文引用一致；
 - 人工逐行检查目标 identity、tool flow、reasoning state、effort control，以及 source fact、offline seam、live evidence 和 control-layer evidence 是否分列；关键词存在本身不算通过。
 

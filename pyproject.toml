@@ -37,6 +37,7 @@ include = [
     "scripts/run-labs.py",
     "scripts/debugging-workshop.py",
     "scripts/reliability-workshop.py",
+    "scripts/ecosystem-workshop.py",
 ]
 extraPaths = ["lab/src"]
 pythonVersion = "3.11"

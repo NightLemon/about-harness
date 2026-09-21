@@ -284,7 +284,7 @@ Shared RunResult fixture passed in TypeScript: 14 cases.
 uv run --frozen --offline pytest -q lab/tests/test_acceptance.py lab/tests/test_contracts_and_schema.py
 ```
 
-预期 79 项测试全部通过。这里的 assertion（断言）证明 Python 重放九个验收案例、30 个 Task/Action 和 14 个 Result 案例；TypeScript 在上一步读取同一批 fixture。Result 的 schema/runtime 预期分开记录，避免把单对象 schema 冒充跨字段关系校验；两边 checkpoint 能力差异仍是显式边界。
+预期相关测试全部通过。这里的 assertion（断言）证明 Python 重放九个验收案例、30 个 Task/Action 和 14 个 Result 案例；TypeScript 在上一步读取同一批 fixture。Result 的 schema/runtime 预期分开记录，避免把单对象 schema 冒充跨字段关系校验；两边 checkpoint 能力差异仍是显式边界。
 
 ## 失败练习：证明类型断言会破坏防线
 

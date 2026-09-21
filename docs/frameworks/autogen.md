@@ -1,12 +1,18 @@
-# AutoGen：从对话原型到可控多 Agent 系统
+# AutoGen：存量迁移与可控多 Agent 系统
 
-官方来源：[AutoGen stable docs](https://microsoft.github.io/autogen/stable/)，核对日期：2026-08-20。
+官方来源：[AutoGen stable docs](https://microsoft.github.io/autogen/stable/) 与 [维护公告](https://github.com/microsoft/autogen)，核对日期：2026-09-21。
 
-官方 stable 文档（核对 2026-08-20）将 AutoGen 描述为构建 AI agents/applications 的 framework，并区分 AgentChat、Core、Extensions 与 Studio。[FACT:autogen-overview] 这是 E0 产品事实；本页其余内容是项目的架构分析与采用建议，不表示这些能力已在本仓库运行。
+AutoGen stable 文档将其分为 AgentChat、Core、Extensions 与 Studio；维护仓库现标记为 maintenance mode，建议新用户从 Microsoft Agent Framework（MAF）开始。[FACT:autogen-overview] [FACT:autogen-maintenance] 因此本页只服务于既有 AutoGen 系统的责任审计与迁移准备，不构成新项目采用建议，也不表示任何上游包已在本仓库运行。
+
+## 先决定：保留存量，还是迁移
+
+已有 AutoGen 工作流先冻结版本、participant 输入输出、工具 schema、checkpoint/session、trace 和外部副作用账本；再用同一 Task 和 validator 建立迁移前基线。新功能不再以 AutoGen API 为默认目标，转读 [Microsoft Agent Framework](/frameworks/microsoft-agent-framework)。
+
+迁移不是把类名逐字替换。逐条映射 source responsibility → MAF target responsibility → 语义缺口 → 补偿控制 → 正负例；无法证明等价时缩小自动化范围。没有安装 AutoGen 或 MAF、没有调用 provider 的本仓库只能记录 E0 来源和离线职责 seam，不能声称迁移完成或 runtime 兼容。
 
 ## 学习目标与采用问题
 
-读完本页，你应能判断：为什么需要 AutoGen 而不是普通函数或单 Agent loop；应从哪个抽象层切入；多个 participant（参与者）如何划分所有权、消息、工具、预算与终止；以及怎样用单 Agent baseline（基线）证明新增编排确实解决了问题。
+读完本页，你应能审计既有 AutoGen 的抽象层、participant（参与者）的所有权、消息、工具、预算与终止，并用单 Agent baseline（基线）判断迁移是否解决了可测问题。
 
 先问一句：任务的困难来自模型能力、工具和验收，还是确实来自多个相对独立的角色需要协作？如果单 Agent 配合确定性工具已经可控，多 Agent 只会增加消息、路由、状态同步和失败组合。
 
@@ -132,11 +138,11 @@ Checkpoint（检查点）至少保存任务/config 版本、每个 participant �
 前置条件是 Python 3.11+、`uv 0.11.16`、Node.js 22+ 和锁定依赖。在仓库根目录离线运行：
 
 ```powershell
-uv run --frozen --offline python -c "import importlib.util as u; assert u.find_spec('autogen') is None"
+uv run --frozen --offline python -c "import importlib.util as u; assert all(u.find_spec(name) is None for name in ('autogen', 'autogen_agentchat', 'autogen_core', 'autogen_ext'))"
 npm run facts:check
 ```
 
-预期两条命令退出码均为 0：第一条证明当前 Python 环境没有可导入的 `autogen` 包；事实检查确认官方 Source fact 已登记。人工复核兼容矩阵应继续把 AutoGen 标为只有职责说明，不能用产品名或页面措辞替代 Offline seam/Live evidence。
+预期两条命令退出码均为 0：第一条证明当前 Python 环境没有可导入的旧 `autogen` 或现代 `autogen_agentchat`、`autogen_core`、`autogen_ext` 包；事实检查确认官方 Source fact 已登记。人工复核兼容矩阵应继续把 AutoGen 标为只有职责说明，不能用产品名或页面措辞替代 Offline seam/Live evidence。
 
 这些结果只有已核验的 E0 来源和本地依赖缺失检查。它们没有创建 AgentChat team、运行 Core、加载 Extensions/Studio 或调用模型，不能声称 AutoGen 已接入、兼容、可恢复、生产可用或优于其他 Framework。
 

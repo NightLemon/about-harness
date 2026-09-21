@@ -8,7 +8,7 @@
 - [Config basics](https://learn.chatgpt.com/docs/config-file/config-basic)
 - [Agent approvals & security](https://learn.chatgpt.com/docs/agent-approvals-security)
 
-事实注册表锁定的核对日期为 **2026-08-27**。[FACT:codex-agents-md] [FACT:codex-config] [FACT:codex-sandbox-approval] 滚动文档、账号可用模型、价格、默认值和不同 surface（使用界面/执行表面）仍可能变化，真实运行前必须按目标版本重新确认。
+本页于 **2026-09-21** 复读官方配置、安全和 AGENTS 文档。[FACT:codex-agents-md] [FACT:codex-config] [FACT:codex-sandbox-approval] [FACT:codex-permission-profiles] [FACT:codex-retired-approval] 滚动文档、账号可用模型、价格、默认值和不同 surface（使用界面/执行表面）仍可能变化，真实运行前必须按目标版本重新确认。
 
 当前仓库只有 E0 静态配置和 E1 迁移职责 fixture；没有启动 Codex、调用模型或证明任何模型配置更好。
 
@@ -23,13 +23,14 @@ Task prompt
       Codex loop
         ↓
 sandbox: 技术可达范围
-approval: 何时暂停询问
+permission profile: 文件系统与网络策略组合
+approval policy: 何时暂停询问
 network: 是否及向哪里出站
 tools: 实际执行能力
 validator: 任务是否真正完成
 ```
 
-Task prompt 描述本次目标；`AGENTS.md` 提供项目知识；配置决定模型和运行策略；sandbox 限制技术可达范围；approval 决定何时询问；network 独立控制出口。它们不能互相替代。
+Task prompt 描述本次目标；`AGENTS.md` 提供项目知识；配置决定模型和运行策略；sandbox 限制技术可达范围；permission profile 组合文件系统与网络策略，approval policy 独立决定何时询问；network 独立控制出口。它们不能互相替代。
 
 例如在 `AGENTS.md` 写“不要联网”只是 instruction（指令）；只有执行环境的网络控制才能构成强制边界。把 approval 设得更频繁，也不会自动缩小进程可读取的文件。
 
@@ -43,7 +44,8 @@ model request / provider / resolved model identity
 cwd / repository root / commit / dirty paths
 effective AGENTS.md files + ordered hash
 user/project config sources + profile + CLI overrides
-sandbox mode / approval policy / network policy
+sandbox mode / effective permission profile / network policy
+approval_policy / applicable managed restrictions
 tool and MCP inventory + schema/version hash
 skills/plugins/subagents enabled state
 Task / acceptance / validator / budget
@@ -70,6 +72,8 @@ session or task identity / checkpoint / compaction state
 
 ## 配置层：显式记录最终有效值
 
+Permission profile 是可复用的文件系统与网络策略，由 `default_permissions` 和 `permissions.<name>` 等配置选择；它不替代独立的 `approval_policy`。旧称为 `untrusted` 的 approval 模式已退役，不能把它与项目 trust 或任意“只读”语义混用。[FACT:codex-permission-profiles] [FACT:codex-retired-approval] 运行卡必须记录实际 surface 显示的 permission profile 与 approval_policy 的各自有效值，而不是凭旧教程推断。
+
 `.codex/config.toml` 示例：
 
 ```toml
@@ -95,7 +99,7 @@ network_access = false
 
 ### Sandbox
 
-验证技术边界，而不是询问模型“能否访问”。设计安全 canary（探针）：允许目录读取应成功，范围外合成路径的读取/写入应在副作用前失败。不要用真实私人文件做 canary。
+验证技术边界，而不是询问模型“能否访问”。设计安全 canary（探针）：按有效 profile 分别测试读、写：`workspace-write` 通常限制可写范围，并不默认禁止读取工作区外文件。允许路径读取应成功，受保护路径写入应失败；只有额外配置了读取隔离时，才把范围外读取失败作为验收。不要用真实私人文件做 canary。
 
 ### Approval
 
@@ -157,7 +161,7 @@ Harness examples negative tests passed ...
 
 ### 3. Policy probes
 
-分别执行允许读取、拒绝范围外读取、可逆 ask、网络拒绝。断言 gate 在工具 handler 前生效。
+分别执行允许读取、受保护范围写入拒绝、可逆 ask、网络拒绝；读取隔离仅在有效环境明确提供时增加对应探针。工具授权在 handler 前核对，OS sandbox 的访问拒绝可能发生在进程执行时；分别记录拦截层和副作用，不能把二者当作同一 gate。
 
 ### 4. Local reversible edit
 
@@ -249,4 +253,4 @@ Git 能恢复文件版本，但不能撤回已发送消息或远端写操作。T
 4. Resume 时 Git 状态之外还要核对哪些副作用？
 5. 换模型比较时为什么必须固定 Codex surface 和配置？
 
-下一步运行[三个 Harness 对照](/harnesses/comparison)与[迁移案例](/labs/migration)，再用[模型—Harness 匹配](/optimization/model-fit)定义自己的任务矩阵。
+下一步运行[Harness 职责对照](/harnesses/comparison)与[迁移案例](/labs/migration)，再用[模型—Harness 匹配](/optimization/model-fit)定义自己的任务矩阵。

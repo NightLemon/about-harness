@@ -4,16 +4,17 @@ Framework（框架）提供构建 Agent 的部件或 runtime（运行时）；Ha
 
 本页比较的是“框架抽象怎样映射到 Harness 责任”，不是给模型或框架排通用名次。任何结论都必须绑定 workload（工作负载）、框架版本、provider/model、工具、预算、部署环境和证据等级。
 
-## 四个对象分别从哪里切入
+## 当前候选与存量路径分别从哪里切入
 
 | Framework | 官方材料首先强调的抽象 | 适合用来观察 | 采用后仍由项目负责 |
 | --- | --- | --- | --- |
 | LangGraph | 面向长运行、有状态流程的低层 orchestration framework/runtime [FACT:langgraph-overview] | 状态图、节点/边、checkpoint、interrupt 与恢复 | 节点契约、工具、权限、部署和业务验收 |
 | OpenAI Agents SDK | Code-first agent runtime，由 SDK runner 管理 agent loop，并提供 tools、handoff、guardrail、session/state 与 tracing 等构件 [FACT:openai-agents-sdk] | Agent 生命周期、工具轮次、所有权转移、暂停/恢复 | Server、工具实现、状态存储、审批决定和产品接入 |
 | Google ADK | Agents、models、tools、sessions、runtime、deployment、observability、evaluation 等构件 [FACT:google-adk] | Agent/model/tool/session/runtime 的组合边界 | Provider 身份、policy、数据治理、业务 validator 和部署治理 |
-| AutoGen | AgentChat、Core、Extensions 与 Studio 等分层 [FACT:autogen-overview] | 对话模式、事件运行时、扩展与原型界面的分层 | 终止、权限、状态、成本、数据生命周期和发布门禁 |
+| Microsoft Agent Framework | 企业级多 Agent 编排、多 provider 与 A2A/MCP 互操作 [FACT:maf-overview] | 新项目的 agent/workflow、互操作与迁移边界 | 终止、权限、状态、成本、数据生命周期和发布门禁 |
+| AutoGen（存量） | AgentChat、Core、Extensions 与 Studio 等分层；现为 maintenance mode [FACT:autogen-maintenance] | 既有系统的责任审计和迁移输入 | 新功能、终止、权限、状态、成本、数据生命周期和发布门禁 |
 
-这些是产品来源事实 E0，不是本项目对上游包的运行结论。当前仓库没有安装或执行这四个 Framework；离线实验只验证部分职责接缝 E1。详细来源、核对日期和证据状态见[事实注册表](/references/fact-registry)与各 Framework 页面。
+这些是产品来源事实 E0，不是本项目对上游包的运行结论。当前仓库没有安装或执行这些 Framework；离线实验只验证部分职责接缝 E1。DeepAgents、PydanticAI、CrewAI 与协议/API 层的选择边界见[现代运行时](/frameworks/modern-runtimes)。详细来源、核对日期和证据状态见[事实注册表](/references/fact-registry)与各 Framework 页面。
 
 ## Framework 不是完整 Harness
 
@@ -80,7 +81,7 @@ Google ADK 可作为这一类候选。重点检查 model/provider 能否精确�
 
 当多个参与者通过消息、topic 或事件协作，比较 conversation/event runtime。先证明为什么需要多个 Agent；如果只是把串行步骤换成角色对话，通常只会增加 token、延迟和归因难度。
 
-AutoGen 的 AgentChat/Core/Extensions/Studio 分层可用于观察高层对话模式与较低层事件运行时的差异。无论选哪层，都要补 owner、路由、终止、总预算和独立 validator。见[AutoGen](/frameworks/autogen)。
+新项目以 Microsoft Agent Framework 作为候选，先核对其 agent/workflow、provider、A2A/MCP 边界及目标语言版本；无论选哪层，都要补 owner、路由、终止、总预算和独立 validator。已有 AutoGen 系统按[AutoGen 存量迁移](/frameworks/autogen)保存当前基线后再迁移。
 
 ## 七步选型流程
 
@@ -98,7 +99,7 @@ Baseline 至少能处理一个正常用例和一个失败用例。它可以是�
 
 ### 4. 只选一到两个合理候选
 
-候选应由任务形状决定，而不是流行度。为每个候选固定版本、语言、provider/model adapter 和最小抽象层。不要同时评测四个 Framework 的所有能力，那会把学习成本当成任务差异。
+候选应由任务形状决定，而不是流行度。为每个候选固定版本、语言、provider/model adapter 和最小抽象层。不要同时评测所有候选的全部能力，那会把学习成本当成任务差异。
 
 ### 5. 映射同一内部契约
 
@@ -231,7 +232,7 @@ Lock-in（锁定）不只来自 import。最难迁移的通常是 checkpoint、s
 
 ## 在本项目做一次离线选型练习
 
-当前仓库不安装 LangGraph、OpenAI Agents SDK、Google ADK 或 AutoGen。本练习验证的是“用同一内部契约观察职责接缝”，不是框架 API 或模型质量。
+当前仓库不安装 LangGraph、OpenAI Agents SDK、Google ADK、MAF、AutoGen 或现代 runtime。本练习验证的是“用同一内部契约观察职责接缝”，不是框架 API 或模型质量。
 
 ### 前置条件与固定输入
 
@@ -242,7 +243,7 @@ Lock-in（锁定）不只来自 import。最难迁移的通常是 checkpoint、s
 ### 命令
 
 ```powershell
-uv run --frozen --offline python -c "import importlib.util as u; assert u.find_spec('langgraph') is None; assert u.find_spec('agents') is None; assert u.find_spec('autogen') is None; assert u.find_spec('google') is None or u.find_spec('google.adk') is None"
+uv run --frozen --offline python -c "import importlib.util as u; assert u.find_spec('langgraph') is None; assert u.find_spec('agents') is None; assert all(u.find_spec(name) is None for name in ('autogen', 'autogen_agentchat', 'autogen_core', 'autogen_ext')); assert u.find_spec('google') is None or u.find_spec('google.adk') is None"
 npm run labs:all
 npm run facts:check
 ```
@@ -270,7 +271,7 @@ git diff -- pyproject.toml uv.lock package.json package-lock.json lab docs/frame
 
 官方页面与事实注册表提供 E0 产品事实；本项目命令提供 E1，证明统一离线 runner 能执行固定 case、拒绝固定负例，并区分来源事实、项目接缝与真实运行。
 
-这些命令没有执行四个 Framework 的 runtime、checkpoint、handoff、session、deployment 或 trace，也没有调用真实模型。通过后仍不能声称任何候选已接入、兼容、生产可用或优于其他候选。
+这些命令没有执行任何候选 Framework 的 runtime、checkpoint、handoff、session、deployment 或 trace，也没有调用真实模型。通过后仍不能声称任何候选已接入、兼容、生产可用或优于其他候选。
 
 ## 常见反模式
 
@@ -300,7 +301,7 @@ git diff -- pyproject.toml uv.lock package.json package-lock.json lab docs/frame
 - Required 能力没有 `untested`，未知项不会被默认值掩盖；
 - E0 来源、E1 离线、E2 live 兼容与 E3 workload 质量严格分开。
 
-下一步先把自己的任务填入[Framework 选型工作表](/practice/framework-selection)，再按形状选择候选：状态图看[LangGraph](/frameworks/langgraph)，code-first loop 看[OpenAI Agents SDK](/frameworks/openai-agents-sdk)，组件组合看[Google ADK](/frameworks/google-adk)，conversation/event 分层看[AutoGen](/frameworks/autogen)。然后用[Adapter 契约](/implementation/adapter-contract)建立统一内部边界，以[评测方法](/evaluation/method)设计同条件实验。
+下一步先把自己的任务填入[Framework 选型工作表](/practice/framework-selection)，再按形状选择候选：状态图看[LangGraph](/frameworks/langgraph)，code-first loop 看[OpenAI Agents SDK](/frameworks/openai-agents-sdk)，组件组合看[Google ADK](/frameworks/google-adk)，新多 Agent 路径看[Microsoft Agent Framework](/frameworks/microsoft-agent-framework)，存量 AutoGen 看[迁移页](/frameworks/autogen)。DeepAgents、PydanticAI、CrewAI 的选择条件见[现代运行时](/frameworks/modern-runtimes)。然后用[Adapter 契约](/implementation/adapter-contract)建立统一内部边界，以[评测方法](/evaluation/method)设计同条件实验。
 
 ## 检查题
 

@@ -201,7 +201,7 @@ npm run reliability:workshop -- --unsafe-retry-demo
 uv run --frozen --offline pytest -vv lab/tests/test_recovery.py
 ```
 
-预期收集 4 项并全部通过，分别验证：
+预期相关测试全部通过，分别验证：
 
 - 明确回执无需 lookup；
 - 提交后丢响应能靠 receipt 对账且不重复写；

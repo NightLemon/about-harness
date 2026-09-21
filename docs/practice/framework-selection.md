@@ -327,7 +327,7 @@ boundary_violations=[]
 verbatim_targets=[]
 ```
 
-Pytest 应显示 `2 passed`。第二个测试是可执行失败演练：它要求未知 Harness、空字段、逐字复制和扩大 network boundary 的 proposal 被 evaluator 拒绝。`facts:check` 应报告已登记的 Framework 来源状态，但不会把任何产品升级为 E1/live。
+两项列出的 Pytest 节点都应通过。第二项是可执行失败演练：它要求未知 Harness、空字段、逐字复制和扩大 network boundary 的 proposal 被 evaluator 拒绝。`facts:check` 应报告已登记的 Framework 来源状态，但不会把任何产品升级为 E1/live。
 
 人工再断言：migration fixture 的 `source_semantics`、`target_semantics`、`gap`、`compensating_control`、`evidence_axis` 与 `preserves_boundary` 都能映射到本页责任矩阵；结果中没有模型响应、Provider usage 或真实产品版本。
 

@@ -6,7 +6,7 @@
 
 ## 固定版本
 
-产品语义固定到 Pi 仓库 commit `496185f6e4267b979e3663c45f7eb70b0c6a97b4`，并于 2026-08-27 复核。模型/provider 不固定，真实运行必须另行记录其精确 ID。
+产品语义固定到 Pi 仓库 commit `496185f6e4267b979e3663c45f7eb70b0c6a97b4`，并于 2026-09-21 复核。模型/provider 不固定，真实运行必须另行记录其精确 ID。
 
 ## 输入
 
@@ -14,7 +14,7 @@
 
 ## 配置
 
-Pi 的项目设置在项目被信任后才加载。示例不安装 extension、不写 provider credential，也不声称 Pi 自带与其他产品等价的 OS sandbox。需要硬隔离时使用容器、受限用户或隔离 worktree。
+Pi 的项目设置在项目被信任后才加载。示例不安装 extension、不写 provider credential，也不声称 Pi 自带与其他产品等价的 OS sandbox。Git worktree 只分离工作目录，不限制进程读取其他路径或访问网络。需要强制权限隔离时，使用经配置和负例验证的受限账户或容器，并检查挂载、网络和进程权限。
 
 ## 验证
 

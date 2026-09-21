@@ -2,10 +2,10 @@
 
 ## 核对入口与证据边界
 
-- [Claude models overview](https://docs.anthropic.com/en/docs/about-claude/models/overview)
+- [Claude models overview](https://platform.claude.com/docs/en/models/overview)
 - [Claude Code model configuration](https://code.claude.com/docs/en/model-config)
 
-核对日期：2026-08-20。模型名称、alias（别名）、上下文与价格以目标 provider（模型供应方）官方页面为准，不从旧 benchmark（基准测试）推断当前行为。本页只给出 E0 适配方法；项目没有调用 Anthropic 或云转售 API，也没有 Claude 模型质量证据。
+核对日期：2026-09-21。[FACT:anthropic-catalog] Anthropic 当前目录说明 Claude API model ID 是 pinned snapshot；4.6 及以后可使用无日期 ID，不能把“所有 alias 都会漂移”写成通用事实。转售 provider 的部署名、区域、生命周期与解析身份仍须单独核对。本页只给出 E0 适配方法；项目没有调用 Anthropic 或云转售 API，也没有 Claude 模型质量证据。
 
 ## 先区分三种被混叫“Claude”的对象
 
@@ -134,7 +134,7 @@ npm run lab:ts-runtime-test
 npm run facts:check
 ```
 
-前置条件是 Python 3.11+、`uv 0.11.16`、Node.js 22+ 和锁定依赖。预期 Python 显示 `5 passed`：replay 可完成固定 tool loop，未知字段/坏 checkpoint 被拒绝，live adapter 在任何 provider 动作前失败；TypeScript runtime 拒绝坏 Task/Action；事实检查确认正文引用的产品主张已登记来源状态、版本和日期。
+前置条件是 Python 3.11+、`uv 0.11.16`、Node.js 22+ 和锁定依赖。预期 Python 显示 `passed`：replay 可完成固定 tool loop，未知字段/坏 checkpoint 被拒绝，live adapter 在任何 provider 动作前失败；TypeScript runtime 拒绝坏 Task/Action；事实检查确认正文引用的产品主张已登记来源状态、版本和日期。
 
 这些是 E1 控制契约，不包含 Anthropic 请求、Claude Code 启动、真实 usage/cache、thinking 或模型任务。`facts:check` 只验证事实谱系，不是 Claude 兼容测试；身份、状态和工具流是否解释充分仍由内容审阅判断。
 
@@ -146,6 +146,6 @@ npm run facts:check
 2. Tool request JSON 合法后，为什么仍不能直接执行？
 3. CLAUDE.md/auto memory 为什么不是权限边界？
 4. Prompt caching 命中时，哪些质量变量仍可能变化？
-5. 当前 `5 passed` 为什么不能证明 Claude 模型适合 coding？
+5. 当前 `passed` 为什么不能证明 Claude 模型适合 coding？
 
 先完成[Claude Code 教程](/harnesses/claude-code)，再用[协议兼容性](/models/protocol-compatibility)写资格探针，并按[推理预算](/models/reasoning-budget)设计配对任务。

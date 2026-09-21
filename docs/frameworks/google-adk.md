@@ -1,8 +1,8 @@
 # Google Agent Development Kit：把 Agent、Session 与部署责任分开
 
-官方来源：[Google ADK](https://google.github.io/adk-docs/)，核对日期：2026-08-20。
+官方来源：[Google ADK](https://adk.dev/)，核对日期：2026-09-21。
 
-官方 ADK 文档（核对 2026-08-20）提供 agents、models、tools、sessions、runtime、deployment、observability、evaluation 与 safety/security 导航。[FACT:google-adk] 这条已登记事实是 E0；本页不会把导航中的能力名称写成本项目已经安装、配置或验证的功能。
+官方 ADK 文档（核对 2026-09-21）提供 agents、models、tools、sessions、runtime、deployment、observability、evaluation 与 safety/security 导航。[FACT:google-adk] 这条已登记事实是 E0；本页不会把导航中的能力名称写成本项目已经安装、配置或验证的功能。
 
 ## 学习目标与选择问题
 

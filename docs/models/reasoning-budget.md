@@ -228,7 +228,7 @@ npm run lab:ts-runtime-test
 
 ### 预期输出与断言
 
-pytest 应有 3 项通过：额外 model call 在 `max_model_calls=1` 前被阻止；无限工具循环在 3 steps 后停止；1000 ms deadline 后到达的 completion 不被标成成功。
+相关测试应全部通过：额外 model call 在 `max_model_calls=1` 前被阻止；无限工具循环在 3 steps 后停止；1000 ms deadline 后到达的 completion 不被标成成功。
 
 TypeScript runtime 测试应退出 0，证明空/重复工具、非有限/非法预算和 action cost 在进入 loop/metrics 前被拒绝。
 

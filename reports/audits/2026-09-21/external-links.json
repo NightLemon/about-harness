@@ -1,0 +1,21 @@
+{
+  "command": "npm run links:check -- --network",
+  "started_at": "2026-09-21T07:03:11.769672+00:00",
+  "finished_at": "2026-09-21T07:03:24.065114+00:00",
+  "exit_code": 1,
+  "output": "\n> about-harness@0.1.0 links:check\n> node scripts/check-external-links.mjs --network\n\nExternal-link check failed with 2 error(s):\n- https://example.invalid/learning/schema-check: fetch failed\n- https://api-docs.deepseek.com/: fetch failed\n",
+  "output_sha256": "35a4fe89374610a84a83ab53b01f409a75415939043b3ccffe9215039080a936",
+  "boundary": "Reachability only; HTTP success does not verify a claim.",
+  "classification": [
+    {
+      "url": "https://example.invalid/learning/schema-check",
+      "status": "expected_unresolvable",
+      "reason": "扩展声明中的保留测试域，仅作占位示例，不是外部来源。"
+    },
+    {
+      "url": "https://api-docs.deepseek.com/",
+      "status": "blocked",
+      "reason": "本次网络fetch失败；前序两客户端TLS失败。对应产品事实维持pending，不伪造当前核验。"
+    }
+  ]
+}

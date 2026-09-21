@@ -222,7 +222,7 @@ uv run --frozen --offline python --version
 uv run --frozen --offline pytest -q lab/tests/test_memory_context_trace.py::test_context_budget_prioritizes_required_and_trusted_sources lab/tests/test_memory_context_trace.py::test_memory_expiration_pollution_filter_and_delete lab/tests/test_memory_context_trace.py::test_working_memory_supports_explicit_deletion
 ```
 
-预期退出码为 0，3 项测试全部通过。断言分别证明：
+预期退出码为 0，相关测试全部通过。断言分别证明：
 
 - 8-token 预算保留 required/trusted 的项目规则和可信代码，丢弃优先级更高但不可信的网页；
 - 默认检索只返回未过期的可信记录，显式关闭过滤时才会看到污染记录；

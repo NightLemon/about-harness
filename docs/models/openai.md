@@ -11,7 +11,7 @@
 - [Codex Models](https://learn.chatgpt.com/docs/models)
 - [Codex configuration](https://learn.chatgpt.com/docs/config-file/config-basic)
 
-API 三份指南于 2026-09-03 实际读取；Codex 配置事实沿用注册表中的 2026-08-27 核对记录。[FACT:codex-config] 官方来源已核验只说明产品事实可追溯，实验等级仍是 E0；当前仓库没有 OpenAI client、API key reader 或 live run。
+API 三份指南与 Codex 配置资料于 2026-09-21 实际复核。[FACT:codex-config] 官方来源已核验只说明产品事实可追溯，实验等级仍是 E0；当前仓库没有 OpenAI client、API key reader 或 live run。
 
 ## 先区分 API model 与 Codex surface
 
@@ -198,7 +198,7 @@ npm run facts:check
 
 ### 预期输出与断言
 
-- pytest 显示 `5 passed`：固定 `call_id` 的 replay 完成求和；未知字段与坏 checkpoint 被拒绝；`LiveAdapter` 在任何 provider 动作前硬失败；
+- pytest 显示 `passed`：固定 `call_id` 的 replay 完成求和；未知字段与坏 checkpoint 被拒绝；`LiveAdapter` 在任何 provider 动作前硬失败；
 - TypeScript runtime 测试拒绝空/重复工具名、非有限预算和非法 Action，坏值不能进入 metrics；
 - 事实检查确认本页引用的 OpenAI/Codex 主张有来源状态、版本、日期和实验边界；
 - 进程不读取 credential、不创建网络请求，也不产生费用。

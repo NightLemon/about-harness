@@ -4,7 +4,7 @@
 
 Runner（运行器）不是一个假模型，也不是缩小版第三方框架。它把固定输入、校验顺序、案例逻辑、负例和结果结构串成可复现的 E1 执行面，用来回答：
 
-1. 输入是否与 manifest 声明的字节一致？
+1. 输入的 canonical JSON（规范化 JSON）身份是否与 manifest 一致？
 2. 案例是否执行了预定的稳定机制？
 3. 正例与负例是否都得到结构化判定？
 4. 结果能否被后续评测和审阅读取？
@@ -25,7 +25,7 @@ negative.json   必须拒绝或安全处理的失败输入
 
 `scripts/run-labs.py` 接受一个 case 名或 `all`，可选 `--fixtures-root` 只改变读取根目录。合法 case 固定为 `coding`、`browser`、`research`、`data`、`document`、`migration`；未知名称由参数解析直接拒绝。
 
-输入不是“看到 JSON 就相信”。Runner 先用 manifest 校验三个文件 SHA256，再按固定行构造整个 fixture hash。任一字节变化都会在案例执行前失败，避免输入已漂移但结果仍沿用旧身份。
+输入不是“看到 JSON 就相信”。Runner 先对三个 JSON 文件解析并按固定键序、分隔符编码后校验 manifest 中的 SHA256，再按固定行构造整个 fixture hash。语义内容变化会在案例执行前失败；仅缩进、换行或对象键顺序变化不会改变此身份，避免输入已漂移但结果仍沿用旧身份。
 
 ## 执行生命周期
 
@@ -193,7 +193,7 @@ esac
 | 现象 | 最可能的层 | 首查证据 |
 | --- | --- | --- |
 | 参数直接被拒绝 | CLI contract | case choices 与实际命令 |
-| `hash mismatch` | Fixture identity | manifest、字节 diff、编码 |
+| `hash mismatch` | Fixture identity | manifest、解析后的 JSON 内容、规范化编码 |
 | 正例输出不符 | Case logic / expected | 结构化 output 与断言路径 |
 | `negative_rejected=false` | Validator / negative | 负例输入与拒绝条件 |
 | 顶层失败但案例看似通过 | Aggregation | 每个 case 的严格布尔字段 |

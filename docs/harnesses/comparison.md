@@ -1,15 +1,15 @@
-# Codex、Pi 与 Claude Code：职责对照
+# Codex、Pi、Claude Code 与 Gemini CLI：职责对照
 
 ## 比较目标与证据边界
 
 这不是“哪个产品绝对最好”的排行榜，而是一套 responsibility comparison（责任对照）方法：对同一个工作负载，确认每个 Harness 如何承担指令、工具、权限、状态、验证与恢复。
 
-产品行为会随版本、surface（使用界面/执行表面）和配置变化。来源、核对日期与证据轴以各专题、[事实注册表](/references/fact-registry)和[兼容矩阵](/references/compatibility)为准。当前仓库对三者只有：
+产品行为会随版本、surface（使用界面/执行表面）和配置变化。来源、核对日期与证据轴以各专题、[事实注册表](/references/fact-registry)和[兼容矩阵](/references/compatibility)为准。当前仓库对四者只有：
 
 - 官方来源或固定仓库的 E0 产品事实；
 - 脱敏静态配置的 E0 校验；
 - 跨 Harness 责任映射的 E1 离线 fixture；
-- 没有三套产品的 live E2 或代表性 E3 运行。
+- 没有四套产品的 live E2 或代表性 E3 运行。
 
 因此本页可以帮助设计选择和迁移实验，不能证明某个产品在你的代码、模型、账号与网络环境中更好。
 
@@ -37,19 +37,19 @@ human interventions / retry / stop reason
 
 下表描述迁移时要寻找的责任，不承诺所有版本都存在完全相同的功能：
 
-| 责任 | Codex | Pi | Claude Code | 迁移时保留 |
+| 责任 | Codex | Pi | Claude Code | Gemini CLI | 迁移时保留 |
 | --- | --- | --- | --- | --- |
-| 项目指导 | 分层 `AGENTS.md` | context files / AGENTS | `CLAUDE.md` / rules | 意图、作用域、优先级、冲突规则 |
-| 重用流程 | skills / plugins | skills / templates / packages | skills / plugins | 触发、输入、来源、版本、卸载 |
-| 程序化扩展 | MCP / tools / plugins | TypeScript extensions | tools / hooks / plugins | schema、身份、权限、timeout、错误 |
-| 技术隔离 | sandbox / permission profile | 运行环境或容器补偿 | sandbox，按目标版本核验 | 模型技术上不可触达的边界 |
-| 询问授权 / 人工批准 | approval policy | project trust 与自建 policy | permission rules / hooks | 何时暂停、谁批准、拒绝终态 |
-| 网络 | 独立开关与策略 | 运行环境 / extension | settings / sandbox | 默认行为、allowlist、实际出口 |
-| 状态恢复 | 因 surface 而异 | session / tree / fork / import | conversation / context，按版本核验 | checkpoint、幂等、未决项、重放语义 |
-| 委派 | subagents | 由扩展或流程实现 | subagents | 子任务契约、隔离、父级验收 |
-| 可观测性 | task/tool/terminal 等 surface | session/event/extension 自建记录 | conversation/tool/hook 等记录 | canonical trace、时间、身份与脱敏 |
-| 验证闭环 | 指令、工具与 CI 组合 | extension/命令/外部 CI | hooks/tools/外部 CI | acceptance 由模型外部判定 |
-| 回滚 | Git/worktree/checkpoint 组合 | session tree + 外部版本控制 | conversation/context + 外部版本控制 | 候选隔离、旧状态与恢复步骤 |
+| 项目指导 | 分层 `AGENTS.md` | context files / AGENTS | `CLAUDE.md` / rules / 条件 AGENTS | GEMINI.md/目标版本配置待探针 | 意图、作用域、优先级、冲突规则 |
+| 重用流程 | skills / plugins | skills / templates / packages | skills / plugins | extensions/commands，目标版本待探针 | 触发、输入、来源、版本、卸载 |
+| 程序化扩展 | MCP / tools / plugins | TypeScript extensions | tools / hooks / plugins | MCP/extensions，transport 与权限待探针 | schema、身份、权限、timeout、错误 |
+| 技术隔离 | sandbox / permission profile | 运行环境或容器补偿 | sandbox，按目标版本核验 | 目标 surface 的 sandbox/环境补偿待探针 | 模型技术上不可触达的边界 |
+| 询问授权 / 人工批准 | approval policy | project trust 与自建 policy | permission rules / hooks | approval/confirmation 语义待探针 | 何时暂停、谁批准、拒绝终态 |
+| 网络 | 独立开关与策略 | 运行环境 / extension | settings / sandbox | 配置与执行环境分别核验 | 默认行为、allowlist、实际出口 |
+| 状态恢复 | 因 surface 而异 | session / tree / fork / import | conversation / context，按版本核验 | session/resume 语义待探针 | checkpoint、幂等、未决项、重放语义 |
+| 委派 | subagents | 由扩展或流程实现 | subagents | 目标版本能力待探针 | 子任务契约、隔离、父级验收 |
+| 可观测性 | task/tool/terminal 等 surface | session/event/extension 自建记录 | conversation/tool/hook 等记录 | 日志/trace 导出待探针 | canonical trace、时间、身份与脱敏 |
+| 验证闭环 | 指令、工具与 CI 组合 | extension/命令/外部 CI | hooks/tools/外部 CI | 命令/外部 validator 组合 | acceptance 由模型外部判定 |
+| 回滚 | Git/worktree/checkpoint 组合 | session tree + 外部版本控制 | conversation/context + 外部版本控制 | 外部版本控制 + 未决副作用对账 | 候选隔离、旧状态与恢复步骤 |
 
 矩阵中“有某功能”仍不足以判断边界。要继续问：默认是否开启、由谁配置、技术上能否绕过、失败如何表示、是否可审计、目标版本是否实际验证。
 
@@ -75,7 +75,7 @@ Memory（记忆）可能只是加入上下文的摘要；durable state（持久�
 
 工具退出 0 只说明该调用成功。Task 是否完成仍由测试、schema、diff、来源或业务 validator 判定，不能让模型自己的完成文字成为唯一证据。
 
-## 三条证据轴分开记录
+## 五条证据轴分开记录
 
 每个责任项都应标明证据来自哪里：
 
@@ -178,7 +178,7 @@ boundary_violations=[]
 verbatim_targets=[]
 ```
 
-负例会拒绝整条路径逐字复制，以及把网络扩大为 unrestricted 且无补偿控制。该 E1 结果只证明迁移契约可执行，没有启动三个 Harness。
+负例会拒绝整条路径逐字复制，以及把网络扩大为 unrestricted 且无补偿控制。该 E1 结果只证明迁移契约可执行，没有启动四个 Harness。
 
 若结果失败，先查看是哪一类责任缺失、目标语义为空、gap 无补偿、边界扩大或逐字复制；不要删除该责任或改 expected 让其通过。
 
@@ -186,7 +186,7 @@ verbatim_targets=[]
 
 | 失真 | 为什么错误 | 修正方式 |
 | --- | --- | --- |
-| 只给三个产品同一句 prompt | 实际上下文和工具不同 | 固定完整 config 并报告有效输入 |
+| 只给四个产品同一句 prompt | 实际上下文和工具不同 | 固定完整 config 并报告有效输入 |
 | 一边允许网络，另一边禁网 | 可用信息与风险不等价 | 对齐 policy 或明确结构差异 |
 | 只统计一次是否完成 | 随机性和失败分布不可见 | 重复运行并报告区间/失败类型 |
 | 把人工修正藏起来 | 人工成本影响系统质量 | 记录每次 intervention |
@@ -201,7 +201,7 @@ verbatim_targets=[]
 
 真实迁移先保留 source 配置与 checkpoint，在隔离 worktree/目录生成 target 候选；失败时停用候选并恢复旧组合。外部写操作先对账，不能只回滚本地文本。
 
-当前页面没有三产品 live 数据、性能样本、费用或模型质量证据。所有选择结论必须回到读者自己的版本、surface、workload 和约束。
+当前页面没有四产品 live 数据、性能样本、费用或模型质量证据。所有选择结论必须回到读者自己的版本、surface、workload 和约束。
 
 ## 检查题与下一步
 

@@ -212,7 +212,7 @@ uv run --frozen --offline pytest -q lab/tests/test_memory_context_trace.py::test
 
 ### 预期输出与断言
 
-应有 3 项通过：
+预期相关测试全部通过：
 
 - 8-token 上下文预算优先保留 required/trusted 的项目规则与代码，丢弃高优先级但不可信的网页内容；
 - 长期记忆默认只返回 trusted、未过期且内容包含查询子串的记录；显式关闭可信过滤才会看到不可信记录；

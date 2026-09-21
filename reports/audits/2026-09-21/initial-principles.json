@@ -1,0 +1,48 @@
+{
+  "reviewer": "initial-principles",
+  "pages": [
+    {"path":"docs/foundations/agent-loop.md","readability":"pass","accuracy":"pass","coverage":"pass","note":"清楚区分 retry、repair、replan，并把当前 E1 与目标设计分开。","issues":[]},
+    {"path":"docs/foundations/architecture.md","readability":"pass","accuracy":"pass","coverage":"pass","note":"责任平面、唯一所有权和离线验证边界相互一致。","issues":[]},
+    {"path":"docs/foundations/context.md","readability":"pass","accuracy":"pass","coverage":"fail","note":"基础机制完整，但与调优页重复讲选择、信任、压缩和工具输出，读者难以判断各页职责。","issues":["A06"]},
+    {"path":"docs/foundations/human-control.md","readability":"pass","accuracy":"pass","coverage":"pass","note":"授权范围、过期、取消和人工验收链条完整。","issues":[]},
+    {"path":"docs/foundations/instructions.md","readability":"pass","accuracy":"pass","coverage":"pass","note":"将指令、门禁、证据和回滚分层，示例有停止条件。","issues":[]},
+    {"path":"docs/foundations/memory.md","readability":"pass","accuracy":"pass","coverage":"pass","note":"生命周期、权限过滤、删除与当前 E1 限制清楚。","issues":[]},
+    {"path":"docs/foundations/multi-agent.md","readability":"pass","accuracy":"pass","coverage":"pass","note":"依赖图、委派契约、交接与独立验证覆盖充分。","issues":[]},
+    {"path":"docs/foundations/observability.md","readability":"pass","accuracy":"pass","coverage":"pass","note":"事件身份、因果、遥测质量和隐私边界完整。","issues":[]},
+    {"path":"docs/foundations/protocols.md","readability":"pass","accuracy":"pass","coverage":"pass","note":"协议层、流式组装、授权和兼容性四态说明清楚。","issues":[]},
+    {"path":"docs/foundations/reasoning.md","readability":"pass","accuracy":"fail","coverage":"pass","note":"重试与反思的主要边界清楚，但把同一 prompt/context/config 的连续再推理一概判为无新增信息，漏掉可记录并验收的随机重采样。","issues":["A08"]},
+    {"path":"docs/foundations/security.md","readability":"pass","accuracy":"pass","coverage":"pass","note":"威胁、能力、策略、隔离和恢复之间的边界完整。","issues":[]},
+    {"path":"docs/foundations/state-reliability.md","readability":"pass","accuracy":"pass","coverage":"pass","note":"unknown outcome、幂等、超时与取消的限制表述准确。","issues":[]},
+    {"path":"docs/foundations/tools.md","readability":"pass","accuracy":"pass","coverage":"pass","note":"工具契约、错误分类、副作用和权限边界覆盖充分。","issues":[]},
+    {"path":"docs/foundations/what-is-harness.md","readability":"fail","accuracy":"pass","coverage":"fail","note":"定义直观，但首屏使用 Agent、模型、上下文、工具等术语时未就地定义或链接术语表。","issues":["A05"]},
+    {"path":"docs/optimization/context-tools.md","readability":"pass","accuracy":"pass","coverage":"fail","note":"调优方法扎实，但与基础上下文页存在大段同主题覆盖，页间职责未收束。","issues":["A06"]},
+    {"path":"docs/optimization/debugging.md","readability":"fail","accuracy":"pass","coverage":"pass","note":"诊断步骤和验证链完整；记录模板的连续英文标题破坏中文教程可读性。","issues":["A07"]},
+    {"path":"docs/optimization/experiment.md","readability":"pass","accuracy":"fail","coverage":"fail","note":"实验原则正确，但 E1 示例将多控制差异的离线配置与单变量干预教学并置；卡片中以 E1 验证模型工具选择行为的假设也与 fake/replay 证据边界不匹配。","issues":["A03","A09"]},
+    {"path":"docs/optimization/memory.md","readability":"pass","accuracy":"pass","coverage":"pass","note":"优化单位、scope、truth、utility 和关闭路径区分明确。","issues":[]},
+    {"path":"docs/optimization/model-fit.md","readability":"pass","accuracy":"pass","coverage":"pass","note":"资格与效用分层、完整身份和 E1/E2/E3边界准确。","issues":[]},
+    {"path":"docs/optimization/prompting.md","readability":"pass","accuracy":"pass","coverage":"pass","note":"任务契约、验收、风险和停止条件结构完整。","issues":[]},
+    {"path":"docs/optimization/reasoning-routing.md","readability":"pass","accuracy":"fail","coverage":"pass","note":"路由可见特征、预算和有限 fallback 清楚，但将同输入、状态、配置的连续重试绝对化为无信息，未区分随机重采样。","issues":["A08"]},
+    {"path":"docs/evaluation/judges.md","readability":"pass","accuracy":"fail","coverage":"fail","note":"Rubric、校准、盲化和证据边界扎实；不确定性阈值方向错误，且重试与独立随机重采样没有形成可审计的互斥语义。","issues":["A01","A02"]},
+    {"path":"docs/evaluation/method.md","readability":"pass","accuracy":"pass","coverage":"pass","note":"九步研究流程、分母、E0-E3与当前样例限制一致。","issues":[]},
+    {"path":"docs/evaluation/metrics.md","readability":"pass","accuracy":"pass","coverage":"pass","note":"分析单位、区间、配对和样本流失说明准确。","issues":[]},
+    {"path":"docs/evaluation/regression.md","readability":"pass","accuracy":"pass","coverage":"pass","note":"holdout污染、flaky规则、晋级和当前E1限制清楚。","issues":[]},
+    {"path":"docs/evaluation/reporting.md","readability":"pass","accuracy":"pass","coverage":"pass","note":"主张账本、公开包、脱敏、更正和复核链条完整。","issues":[]},
+    {"path":"docs/evaluation/task-schema.md","readability":"pass","accuracy":"pass","coverage":"pass","note":"对象所有权、谱系、不变量与演进策略完整。","issues":[]},
+    {"path":"docs/security/incident-response.md","readability":"pass","accuracy":"pass","coverage":"pass","note":"分诊、遏制、取证、恢复与演练边界完整。","issues":[]},
+    {"path":"docs/security/prompt-injection.md","readability":"pass","accuracy":"pass","coverage":"fail","note":"权限和外发防护全面，但回归断言只覆盖越权动作及副作用，遗漏无工具时答案完整性遭操纵的攻击。","issues":["A04"]},
+    {"path":"docs/security/secrets-privacy.md","readability":"pass","accuracy":"pass","coverage":"pass","note":"分类、数据流、脱敏、删除和泄漏处置完整。","issues":[]},
+    {"path":"docs/security/supply-chain.md","readability":"pass","accuracy":"pass","coverage":"pass","note":"引入、锁定、脚本、CI、advisory与回退链条完整。","issues":[]},
+    {"path":"docs/security/threat-model.md","readability":"pass","accuracy":"pass","coverage":"pass","note":"资产、威胁、控制、证据和模型失效条件覆盖充分。","issues":[]}
+  ],
+  "findings": [
+    {"id":"A01","severity":"P1","type":"error","path":"docs/evaluation/judges.md","line":266,"quote":"提高不确定阈值通常会降低覆盖率","reason":"若规则是 uncertainty >= threshold 则弃权，阈值升高会减少弃权并提高覆盖率；只有把阈值定义为最低置信度才会得到文中方向。当前未定义方向，结论会让读者反向配置自动升级。","fix":"显式定义分数及比较符号，分别写出提高 uncertainty-abstain 阈值和提高 confidence-accept 阈值对覆盖率、选择性风险与人工成本的方向。","acceptance":"给出同一组分数的两种等价阈值定义，四项方向均可由表或公式复核，且不再使用未定义的“不确定阈值”。"},
+    {"id":"A02","severity":"P1","type":"gap","path":"docs/evaluation/judges.md","line":276,"quote":"是否允许同一 provider 重试","reason":"这里把传输或无效 schema 的 retry 与为估计随机性的独立 re-sample 放在同一“重复评分”流程，未要求记录 attempt_reason、是否消耗样本配额和聚合资格。两者混计会改变分母、方差和多数票权重。","fix":"定义互斥 attempt 类型：infrastructure/schema retry 只恢复同一计划 run，随机重采样是预注册的新评分 draw；分别保存 parent run、seed、原因、配额和聚合规则。","acceptance":"Schema/流程示例能对一次解析失败重试、一次随机重采样和一次位置交换分别生成可追溯记录，汇总器不会把前者当独立投票。"},
+    {"id":"A03","severity":"P1","type":"gap","path":"docs/optimization/experiment.md","line":230,"quote":"2 个 config、3 次重复的矩阵协议、固定 fixture lineage 和 12 行 development 样例","reason":"本页先要求单一主要干预，样例却比较 default 与含额外 policy.check、source filter、schema validation、negative fixture 的 engineering bundle；二者同为 offline-replay。它可演示配置包汇总，不能成为模型选择或单变量机制的教学例，当前未在该页把处理对象固定为 bundle。","fix":"把样例明确命名为“多控制工程配置包的 E1 汇总演示”，列出差异并禁止单变量或模型归因；另增加一个只改变单一字段的候选 fixture，或链接到它。","acceptance":"读者能从页面独立判断样例比较的是配置包而非模型；单变量示例有唯一 changed variable、相同其余身份和可复算的差异。"},
+    {"id":"A04","severity":"P1","type":"gap","path":"docs/security/prompt-injection.md","line":170,"quote":"实际副作用、外发字节和持久化写入是否为零","reason":"四项观察和离线断言都围绕越权 Action；攻击可不触发工具，而让答案省略关键证据、采信恶意指令或输出错误结论。此时 side_effects=0 仍是完整性失败，现有回归集没有可判定 oracle。","fix":"增加纯答案攻击载体及完整性 oracle，例如要求保持指定来源、拒绝恶意结论、保留冲突与引用；把 answer-integrity 与 action-safety 分开报告。","acceptance":"至少一个无工具、side_effects=0 的注入 fixture 会因引用、结论或必需限制被操纵而失败；另一正常答案通过，结果记录来源与判定依据。"},
+    {"id":"A05","severity":"P2","type":"editorial","path":"docs/foundations/what-is-harness.md","line":5,"quote":"让模型能够在约束下持续观察、决策、行动和验证","reason":"首屏在定义 Harness 时已经依赖 Agent、模型、上下文、工具、验证等核心词，随后才在后文展开；新读者难以分清 Harness、Agent 和执行环境。","fix":"在一句话定义后加入三到四行最小术语对照，或链接术语表并在首次使用处给中文定义。","acceptance":"不离开首屏即可区分模型、Agent、Harness、工具/环境的责任；英文首次出现均有中文定义或明确术语表链接。"},
+    {"id":"A06","severity":"P2","type":"editorial","path":"docs/foundations/context.md; docs/optimization/context-tools.md","line":"29; 27","quote":"上下文构建是一条流水线；上下文先做清单，再做压缩","reason":"两页都覆盖选择、来源信任、预算、压缩、工具结果和验证，重复率高，却没有在开头限定一页讲稳定机制、另一页讲实验调优与工具设计。","fix":"明确章节边界并交叉链接：foundation 保留定义、数据流和不变量；optimization 聚焦诊断、干预、指标和实验。合并或改写重叠段落。","acceptance":"两页开头各有范围声明；共享概念只保留一个规范定义，另一页用短链接引用；学习路径能说明何时读哪一页。"},
+    {"id":"A07","severity":"P2","type":"editorial","path":"docs/optimization/debugging.md","line":186,"quote":"## Symptom and impact","reason":"中文教程的诊断记录模板连续使用未定义英文标题，和仓库“首次定义英文术语、使用中文 prose”的写作约定不一致。","fix":"将模板标题改为中文，必要时首次以“症状与影响（Symptom and impact）”并列。","acceptance":"模板字段为中文或首次中英并列，读者无需依赖英文即可填写诊断记录。"}
+    ,{"id":"A08","severity":"P1","type":"error","path":"docs/foundations/reasoning.md; docs/optimization/reasoning-routing.md","line":"91; 102","quote":"同一 prompt、上下文和配置连续“再想一遍”；重试只有在输入、状态、模型配置或外部可用性发生了有意义变化时才可能提供新信息","reason":"这把盲重试和随机重采样等同。对随机模型，即使输入、状态、配置保持不变，一次预注册的新 draw 也会产生新候选；若配合独立 verifier、聚合或 best-of-k 规则，它可提供可验的候选多样性。只有没有验证反馈、未记录采样身份且不改变决策规则的盲重试，才通常只增加费用和尾延迟。","fix":"两页一致限定为“无有效验证反馈的盲重试”；新增随机重采样定义，要求记录 seed/temperature、draw ID、预算、独立验证结果和预注册聚合规则，并说明它不增加独立 task 样本。","acceptance":"页面能把同 prompt 的盲重试、随机重采样、收到验证反馈后的 repair/replan 分成互斥路径；示例显示重采样可产生新候选但不会被当作新的 task 或无条件升级。"}
+    ,{"id":"A09","severity":"P1","type":"gap","path":"docs/optimization/experiment.md","line":"58-60","quote":"evidence_target: E1；hypothesis: 合并重叠工具会减少 invalid_tool_selection","reason":"invalid_tool_selection 是模型在工具集合中选择的行为结果。固定 fake/replay 可以验证 registry/schema、计数与固定轨迹，却不能证明合并工具会降低真实模型的选择错误；卡片虽称为 E0 模板，仍把目标 E1 和模型行为假设并列，容易把离线接缝验证误读为模型选择证据。","fix":"若保持 E1，把假设改为固定 fixture 的工具集合可区分性或 validator 行为；若要检验模型选择错误，改为获授权、锁定完整身份的 E2 探针，并保留真实 task、候选动作与 validator 记录。","acceptance":"实验卡的 hypothesis、evidence_target、输入和 verdict 同层一致：E1 只支持固定离线接缝；涉及模型工具选择的结论至少有 E2 的运行身份、原始候选和独立判定证据。"}
+  ]
+}

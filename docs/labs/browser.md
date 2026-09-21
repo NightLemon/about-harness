@@ -182,7 +182,7 @@ mode             = offline-contract-seam
 uv run --frozen --offline pytest -q lab/tests/test_m5_labs.py -k browser
 ```
 
-预期 `9 passed`，退出码为 0。测试通过表示确定性 handler 观察到了相邻坏输入并在提取前拒绝；不是说真实导航、页面或模型安全已经验证。
+预期所有选中的 browser 测试通过且退出码为 0。它们覆盖 observation grounding、URL 歧义、字段扩权、record budget 和重复 identity；通过不表示真实导航、页面或模型安全已经验证。
 
 再检查上一步结果中的 `offline=true`、`evidence=E1` 与 `mode=offline-contract-seam`。三者缺一就停止引用该结果；即使三者齐全，也只说明固定浏览职责接缝运行过，不说明 Browser Use 包已安装或真实浏览器集成可用。这个语义边界由读者对照实际结果判断，不能靠正文出现某个关键词证明。
 

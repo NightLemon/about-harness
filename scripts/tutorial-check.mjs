@@ -26,6 +26,47 @@ const packageLockText = read('package-lock.json')
 const workflows = ['ci', 'deploy', 'facts'].map((name) => [name, read(`.github/workflows/${name}.yml`)])
 const cases = ['coding', 'browser', 'research', 'data', 'document', 'migration']
 
+function validateTutorialContracts() {
+  const manifestText = read('scripts/tutorial-contracts.json')
+  let manifest
+  try {
+    manifest = JSON.parse(manifestText)
+  } catch {
+    errors.push('tutorial command contracts: manifest is not valid JSON')
+    return
+  }
+  if (manifest.schema_version !== 1 || !Array.isArray(manifest.contracts)) {
+    errors.push('tutorial command contracts: unsupported manifest schema')
+    return
+  }
+  let packageScripts = {}
+  try {
+    packageScripts = JSON.parse(read('package.json')).scripts || {}
+  } catch {
+    errors.push('tutorial command contracts: package.json is not valid JSON')
+  }
+  for (const contract of manifest.contracts) {
+    if (!contract || typeof contract.page !== 'string' || typeof contract.command !== 'string' || !Array.isArray(contract.references)) {
+      errors.push('tutorial command contracts: malformed contract')
+      continue
+    }
+    const page = read(contract.page)
+    if (!page.includes(contract.command)) errors.push(`tutorial command contracts: ${contract.page} is missing exact command ${contract.command}`)
+    for (const match of contract.command.matchAll(/\bnpm run ([\w:-]+)/g)) {
+      if (typeof packageScripts[match[1]] !== 'string') {
+        errors.push(`tutorial command contracts: ${contract.page} invokes unknown npm script ${match[1]}`)
+      }
+    }
+    for (const reference of contract.references) {
+      if (typeof reference !== 'string' || !fs.existsSync(path.join(root, reference))) {
+        errors.push(`tutorial command contracts: ${contract.page} references missing ${reference}`)
+      }
+    }
+  }
+}
+
+validateTutorialContracts()
+
 for (const marker of [
   'docker compose run --rm labs-all',
   'Windows（PowerShell）',

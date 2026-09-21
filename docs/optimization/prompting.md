@@ -208,7 +208,7 @@ npm run eval:validate
 
 ### 预期输出与断言
 
-pytest 应显示 17 项通过：合法 Task 同时被 JSON Schema 与 Python runtime 接受；空白 goal、非法 ID、空/重复工具、缺失/布尔/非有限/超限预算、负成本、非 object input、非有限或循环 input 及未知字段被一致拒绝。TypeScript runtime 输出还应报告同一文件中的 30 个 Task/Action 案例通过。
+相关测试应全部通过：合法 Task 同时被 JSON Schema 与 Python runtime 接受；空白 goal、非法 ID、空/重复工具、缺失/布尔/非有限/超限预算、负成本、非 object input、非有限或循环 input 及未知字段被一致拒绝。TypeScript runtime 输出还应报告同一文件中的 30 个 Task/Action 案例通过。
 
 Eval validator 应退出 0，并报告 20 tasks、6 workloads、6 holdout、2 configs、3 repeats、6 fixture refs、120 个预期 cell、12 个已有 cell、108 个缺失，以及 `sample_matrix_complete=false`。这证明样例契约与谱系可解析，不代表评测已经完成。
 

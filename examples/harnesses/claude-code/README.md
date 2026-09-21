@@ -6,7 +6,7 @@
 
 ## 固定版本
 
-设置语义按 2026-08-27 实际核对的 Claude Code 滚动文档编写。真实运行必须记录 CLI 版本、model/provider、surface、cwd、trust 与所有 active settings。
+设置语义按 2026-09-21 实际核对的 Claude Code 滚动文档编写。真实运行必须记录 CLI 版本、model/provider、surface、cwd、trust 与所有 active settings。
 
 ## 输入
 

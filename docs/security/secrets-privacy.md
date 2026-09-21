@@ -180,7 +180,7 @@ npm run eval:self-test
 
 ### 预期输出与断言
 
-Python 测试应有 1 项通过，并证明嵌套 tool result 中的合成 token、Authorization 值和 Windows 个人路径不会进入序列化 Result。仓库扫描应通过已跟踪和候选文件；公开结果扫描应报告 2 个 JSON/JSONL 文件通过。
+相关测试应全部通过，并证明嵌套 tool result 中的合成 token、Authorization 值和 Windows 个人路径不会进入序列化 Result。仓库扫描应通过已跟踪和候选文件；公开结果扫描应覆盖当前目录全部 JSON/JSONL 文件并通过，文件数随结果集变化。
 
 `eval:self-test` 应证明负例真的有效：公开目录中的合成 secret、规范化后的 `rawPrompt` 键和未知 `.log` 格式都会被拒绝，安全 JSONL 会被接受。正例门禁通过而负例也通过，说明 checker 没有证据价值。
 

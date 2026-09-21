@@ -55,7 +55,8 @@ Agent optimization experiment（Agent 优化实验）是用受控干预回答一
 experiment_id: tool-overlap-v1
 decision: 是否合并两个代码搜索工具
 workload: debugging
-evidence_target: E1
+evidence_target: E2
+e1_precheck: 固定 replay 只验证工具 schema、计数与负例门禁
 baseline_ref: config/default@<hash>
 hypothesis: 合并重叠工具会减少 invalid_tool_selection
 changed_variable: tool_registry
@@ -75,7 +76,7 @@ stop_if:
 rollback: restore baseline config ref
 ```
 
-这是 E0 模板，不是本项目已经运行的工具比较。实验卡提交到版本历史，正式运行后不原地改假设和门槛；偏离另记原因。
+这是 E0 模板，不是本项目已经运行的工具比较。`invalid_tool_selection` 是模型在工具集合中的行为结果：E1 fake/replay 只能验证 registry/schema、计数和固定轨迹，不能证明合并会降低真实模型的选择错误；这个假设因此以获授权、锁定完整身份的 E2 探针为最低目标。若只做 E1，应把假设改成固定 fixture 中的工具集合可区分性或 validator 行为。实验卡提交到版本历史，正式运行后不原地改假设和门槛；偏离另记原因。
 
 Held constant（保持不变项）要写出可比较身份，而不是“其他相同”。至少保存 task/fixture hash、model/provider/adapter、harness/surface、system/project/task instruction hash、tool schema、权限、reasoning、预算、代码与依赖 commit、runner/Judge 版本。
 
@@ -96,6 +97,12 @@ Held constant（保持不变项）要写出可比较身份，而不是“其他�
 若同时换模型、prompt、工具和权限，仍可以问“整个 bundle 是否值得采用”，但不能把收益归因给某个组件。需要研究交互时预先设计 factorial experiment（因子实验）；不要事后从少量组合猜因果。
 
 干预要有删除路径。Prompt 候选可切回旧 hash；工具 schema 保留旧 reader；记忆候选用隔离 namespace；hook 可禁用；模型路由可回到固定工程基线。无法安全回退的变更先在 fake/replay 或影子模式中验证。
+
+### 一个可复算的单字段候选
+
+使用[生态工作坊的固定候选](/practice/ecosystem-workshop)与 `lab/fixtures/ecosystem.json` 中的 `selection`：baseline 的 `threshold=0.25`，candidate 仅改为 `threshold=0.75`。同一批 a–d 候选、score、uncertainty、oracle 标签、选择实现及 fixture hash 全部不变；阈值只决定 `uncertainty < threshold` 的接受集合。
+
+按工作坊的 `selection` 命令执行，两个阈值的结果在同一次输出中：接受数从 1 变为 3，覆盖率从 1/4 变为 3/4，接受后错误率从 0/1 变为 1/3。变化可逐行复算，唯一干预是阈值。它证明固定数据上的决策规则如何变化，属于 E1；不证明真实 Judge 分数已校准、候选独立或某模型更好。失败例、固定依赖、命令和回滚均见工作坊。下面的 `offline-default` / `offline-engineering` 仍是另一项多控制配置包演示，不能借此获得单变量归因。
 
 ## 用漏斗逐层提高证据成本
 
@@ -227,7 +234,7 @@ Inconclusive（结论不足）不是软性通过。样本太少、区间跨阈�
 
 需要 Python 3.11+、uv 0.11、Node.js 22+，依赖由 `uv.lock` 和 `package-lock.json` 固定。从仓库根目录执行；不配置真实模型、网络、API key 或外部写权限。
 
-输入包括六个版本化 E1 fake/replay fixture、`evals/study.example.json`、20 个 task 定义、2 个 config、3 次重复的矩阵协议、固定 fixture lineage 和 12 行 development 样例。
+输入包括六个版本化 E1 fake/replay fixture、`evals/study.example.json`、20 个 task 定义、2 个配置包、3 次重复的矩阵协议、固定 fixture lineage 和 12 行 development 样例。`offline-default` 与 `offline-engineering` 共享 `offline-replay`，后者还增加来源过滤、结构化验证、负例和工具控制；它们是多控制配置包，不是两个模型，也不是单变量候选。
 
 ### 命令
 
@@ -245,7 +252,7 @@ npm run eval:self-test
 - `eval:summary`：`promotion_eligible=false`，blockers 为 `incomplete_matrix` 与 `evidence_below_target`，holdout 汇总为 null；
 - `eval:self-test`：坏 fixture lineage、重复/缺失矩阵、错误晋级、脱敏和不支持格式 canary 被拒绝。
 
-已有 development 配对显示 5 win、0 loss、1 tie，只能验证汇总逻辑。它不能抵消没有 holdout、矩阵不完整和证据仅为 E1，也不能形成真实模型排名。
+已有 development 配对显示 5 win、0 loss、1 tie，只能验证这两个离线配置包的汇总逻辑。它不能抵消没有 holdout、矩阵不完整和证据仅为 E1，也不能形成真实模型排名或归因某一个控制的收益。
 
 ### 失败、停止、清理与回退
 

@@ -255,7 +255,7 @@ npm run lab:ts-runtime-test
 
 ### 预期输出与断言
 
-pytest 应有 23 项通过：
+相关测试应全部通过：
 
 - Replay 保存 tool call 并完成固定 `sum=6`；
 - live adapter 在任何 provider action 前硬拒绝；

@@ -159,7 +159,7 @@ Result 固定 `run_id/task_id/status/stop_reason/output/metrics/trace/checkpoint
 uv run --frozen --offline pytest -q lab/tests/test_contracts_and_schema.py
 ```
 
-预期退出 0，显示 64 项通过，并覆盖 30 个 Task/Action 与 14 个 Result 共享案例、schema/runtime 分层预期、未知字段、非有限成本、终态/trace/metrics/checkpoint 矛盾。
+预期退出 0，显示全部测试通过，并覆盖 30 个 Task/Action 与 14 个 Result 共享案例、schema/runtime 分层预期、未知字段、非有限成本、终态/trace/metrics/checkpoint 矛盾。
 
 这些检查提供固定 E1 契约证据，不证明 goal 合理、工具安全、acceptance 充分或 checkpoint 能跨实现恢复。
 
@@ -216,7 +216,7 @@ metrics.tool_calls=1
 metrics.reused_tool_calls=1
 ```
 
-预期 3 项通过。`ToolRegistry` 只对显式 `RetryableError` 做有界 retry；确定性 ToolError 不重试。相同 idempotency key 还必须匹配 tool name 和 canonical arguments 的 SHA-256 指纹，才会在当前进程 cache 中复用结果；`call_id` 可以不同，object key 顺序也不改变指纹。
+预期相关测试全部通过。`ToolRegistry` 只对显式 `RetryableError` 做有界 retry；确定性 ToolError 不重试。相同 idempotency key 还必须匹配 tool name 和 canonical arguments 的 SHA-256 指纹，才会在当前进程 cache 中复用结果；`call_id` 可以不同，object key 顺序也不改变指纹。
 
 两个负例分别把 `true` 改为 JSON number `1`、把 `first` 工具改为 `second`；两者都必须得到 `failed/tool_error`，第二个 handler 调用数为 0，`reused_tool_calls` 也不增加。这里的 canonical JSON 使用排序 key 和紧凑编码，保守地区分 `1` 与 `1.0`；它不是完整 JSON Canonicalization Scheme（JCS）。cache 也没有持久化到 checkpoint 或跨进程存储。生产实现还必须绑定 subject、target identity、operation/schema version，并由目标系统或持久 store 支持幂等与对账。
 

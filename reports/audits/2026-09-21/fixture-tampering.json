@@ -1,0 +1,10 @@
+{
+  "passed": true,
+  "expected_exit": "nonzero",
+  "command": "documented PowerShell fixture tampering drill",
+  "posix_path": "not_run on Windows",
+  "cleanup": "not_run: recursive temporary-directory cleanup command rejected by automatic policy; synthetic temporary copy retained outside repository",
+  "container_path": "not_run; optional alternative to validated local path",
+  "expected_message": "hash mismatch for input.json",
+  "exit_code": 1
+}

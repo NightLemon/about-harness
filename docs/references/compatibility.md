@@ -45,11 +45,13 @@ Source status 与 experiment level 是两套坐标。官方来源 verified 不�
 
 | 对象 | Source fact | Local static | Offline seam | Live evidence | 阅读边界 |
 | --- | --- | --- | --- | --- | --- |
-| Codex | 官方滚动文档，2026-08-27 [FACT:codex-agents-md] [FACT:codex-config] [FACT:codex-sandbox-approval] | `examples/harnesses/codex`，E0 | Migration E1 | untested | AGENTS、config、sandbox、approval、network 分开 |
-| Pi | 固定 commit `496185f`，2026-08-27 [FACT:pi-readme] | `examples/harnesses/pi`，E0 | Migration E1 | untested | Tool、session、context、trust、extension 与外部隔离 |
-| Claude Code | Memory 2026-08-20；settings/permissions 2026-08-27 [FACT:claude-memory] [FACT:claude-settings] | `examples/harnesses/claude-code`，E0 | Migration E1 | untested | CLAUDE.md/memory、permissions、hooks、sandbox 分开 |
+| Codex | 官方滚动文档，2026-09-21 [FACT:codex-agents-md] [FACT:codex-config] [FACT:codex-sandbox-approval] | `examples/harnesses/codex`，E0 | Migration E1 | untested | AGENTS、config、sandbox、approval、network 分开 |
+| Pi | 固定 commit `496185f`，2026-09-21 [FACT:pi-readme] | `examples/harnesses/pi`，E0 | Migration E1 | untested | Tool、session、context、trust、extension 与外部隔离 |
+| Claude Code | Memory/settings/permissions 2026-09-21 [FACT:claude-memory] [FACT:claude-settings] | `examples/harnesses/claude-code`，E0 | Migration E1 | untested | CLAUDE.md/memory、permissions、hooks、sandbox 分开 |
 
-三套示例通过仓库静态检查，但没有启动产品。Migration fixture 只验证责任字段、gap、补偿和负例；不能把其 E1 写成三者真实兼容。
+新增 Gemini CLI 来源及资格设计为 E0 [FACT:gemini-cli-overview]；部分用户层的当前迁移公告见[Gemini CLI](/harnesses/gemini-cli)。它没有本地配置样例、迁移 fixture 或真实运行。
+
+三套既有示例通过仓库静态检查，但没有启动产品。Migration fixture 只验证责任字段、gap、补偿和负例；不能把其 E1 写成三者真实兼容。
 
 详细阅读：[Codex](/harnesses/codex)、[Pi](/harnesses/pi)、[Claude Code](/harnesses/claude-code)与[横向比较](/harnesses/comparison)。
 
@@ -78,6 +80,7 @@ Codex 中 sandbox 限制技术可达范围，approval 决定何时询问，netwo
 | Anthropic Claude | 官方模型/Claude Code 配置入口 | E0 适配方法 + 共享离线控制 | 没有 Anthropic/转售 API run |
 | Google Gemini | 官方 models/ADK 入口 | E0 适配方法 + 共享离线控制 | 没有 Gemini/Vertex run |
 | Qwen | 官方站 + 目标 model card/revision 要求 | E0 checkpoint/runtime/协议方法 | 没有 API/权重加载结果 |
+| Llama | 维护仓库的模型卡与许可入口 [FACT:llama-catalog] | E0 权重/运行时适配方法 | 没有权重加载或真实推理结果 |
 | DeepSeek | API surface 的价格、alias、context、availability 为 pending [FACT:deepseek-api-surface] | E0 方法，pending 阻止费用结论 | 没有官方/第三方/本地 run |
 
 “共享 TypeScript runtime test 通过”只证明公共 Task/Action/Result 拒绝坏值；Python 合成 stream 测试也只证明项目内 assembler 对固定事件的状态转换。两者都不是任一 Provider 的 tool/stream/error 兼容测试。
@@ -89,12 +92,22 @@ Codex 中 sandbox 限制技术可达范围，approval 决定何时询问，netwo
 | 名称 | Source fact | 本项目实际执行 | Offline seam | Live evidence |
 | --- | --- | --- | --- | --- |
 | LangGraph | 低层有状态 orchestration/runtime 已核对 [FACT:langgraph-overview] | Research 的确定性状态转换 | E1 离线职责接缝 | untested；未安装上游包 |
-| Browser Use | 来源入口已列，版本未锁定 | Browser 的本地合成页面与注入拒绝 | E1 离线职责接缝 | untested；未安装上游包 |
-| PydanticAI | 来源入口已列，版本未锁定 | Data 的 schema 漂移与敏感字段 | E1 离线职责接缝 | untested；未安装上游包 |
-| LlamaIndex | 来源入口已列，版本未锁定 | Document 的版本化问答 | E1 离线职责接缝 | untested；未安装上游包 |
+| Browser Use | 仅当前Cloud quickstart来源核验 [FACT:browser-use-cloud] | Browser 的本地合成页面与注入拒绝 | E1 离线职责接缝 | untested；未安装上游包 |
+| PydanticAI | 官方类型化应用概览 [FACT:pydantic-ai-overview] | Data 的 schema 漂移与敏感字段 | E1 离线职责接缝 | untested；未安装上游包 |
+| LlamaIndex | 官方数据/Agent/workflow概览 [FACT:llamaindex-overview] | Document 的版本化问答 | E1 离线职责接缝 | untested；未安装上游包 |
 | OpenAI Agents SDK | 官方架构入口已核对 [FACT:openai-agents-sdk] | 只有职责说明 | not-implemented / E0 | untested；未安装上游包 |
 | Google ADK | 官方架构入口已核对 [FACT:google-adk] | 只有职责说明 | not-implemented / E0 | untested；未安装上游包 |
-| AutoGen | 官方分层入口已核对 [FACT:autogen-overview] | 只有职责说明 | not-implemented / E0 | untested；未安装上游包 |
+| AutoGen | 历史分层及当前维护态 [FACT:autogen-overview] [FACT:autogen-maintenance] | 只有职责说明 | not-implemented / E0 | untested；未安装上游包 |
+
+新增生态对象的证据单独列出，不能继承同名教学模块的实验等级：
+
+| 对象 | 本次来源范围 | 本项目证据 | 真实目标环境 |
+| --- | --- | --- | --- |
+| MAF、Deep Agents、CrewAI | 架构定位与生命周期，见[现代运行时](/frameworks/modern-runtimes) | E0；未安装 | untested |
+| MCP 2026-07-28、Tasks、Apps、A2A、Agent Skills | 规范与扩展，见[协议与技能](/ecosystem/protocols-and-skills) | E0；工作坊的集合判断仅为内部教学E1 | 协议与认证互操作 untested |
+| Agents API | 官方托管责任，见[长任务与部署](/ecosystem/long-running) | E0；未创建会话/沙箱 | untested |
+| vLLM、SGLang、Ollama | 服务定位，见[模型与服务](/ecosystem/models-and-services) | E0；未下载权重或启动服务 | untested |
+| OTel GenAI与基准族 | 约定、测量对象与版本，见[评测与观测](/ecosystem/evaluation-observability) | E0；未运行上游基准 | 兼容性及模型质量 untested |
 
 `lab/src/about_harness/integrations/` 的同名文件不会 import 上游 Framework。它们只把领域责任标为 `offline-contract-seam`。文件存在、case 通过或名称相同都不能证明 API 兼容。
 

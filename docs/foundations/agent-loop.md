@@ -78,7 +78,7 @@ Action 只是模型输出的结构化提议。它通过 schema 不等于已获�
 
 一次 model call 可以没有 Tool、产生一个 Tool，或在更丰富协议中产生多个并发 Tool；一次 Tool call 也可能有多个 attempt。预算、trace 和报告分别保存这些计数，否则“三步完成”没有可比较含义。
 
-当前 `HarnessRunner` 的 `step` 主要推进成功/复用的 Tool Action；Result 在 `complete` 时返回 `step + 1`，而 checkpoint 仍停在最后一个 Tool step。因此当前 Result `steps` 与 checkpoint `step` 语义并不完全相同。正式契约应明确 `action_count/tool_step_count/transition_count`，不要让一个模糊 `steps` 同时承担多种含义。
+当前 `HarnessRunner` 的 `step` 只累计成功/复用的 Tool Action；Result 在 `complete` 时返回当前 `step`，不会额外加一。验收拒绝 completion 时会保存含最新 model call、cost 和 Adapter 游标的 checkpoint，但其 `step` 不增加。正式契约应明确 `action_count/tool_step_count/transition_count`，不要让一个模糊 `steps` 同时承担多种含义。
 
 ## 一轮的安全顺序
 
@@ -342,7 +342,7 @@ terminal：completed，关联 intent、receipt、测试和 revision
 uv run --frozen --offline pytest -q lab/tests/test_loop.py
 ```
 
-预期退出码为 0，并显示 `13 passed`。十三条路径除原有完成、预算、权限、retry/幂等、恢复、取消和 timeout 外，还覆盖验收拒绝后修正、反复拒绝受 model budget 停止、validator 异常失败关闭，以及 validator 返回过晚不能覆盖 timeout。重点断言包括：未授权 handler 调用次数为零；两次 retry 的等待值进入 trace；验收失败输出不会成为 completed；恢复保留 Adapter position；迟到 `complete` 或 validator 结果不会覆盖 `timeout`。
+预期退出码为 0，并显示 `passed`。测试路径除原有完成、预算、权限、retry/幂等、恢复、取消和 timeout 外，还覆盖验收拒绝后修正、反复拒绝受 model budget 停止、validator 异常失败关闭，以及 validator 返回过晚不能覆盖 timeout。重点断言包括：未授权 handler 调用次数为零；两次 retry 的等待值进入 trace；验收失败输出不会成为 completed；恢复保留 Adapter position；迟到 `complete` 或 validator 结果不会覆盖 `timeout`。
 
 为了看清测试名与边界，运行五条代表路径：
 
@@ -365,7 +365,7 @@ npm run debug:workshop
 
 预期 `offline=true`、`passed=true`，并能看到 Adapter、policy、retry/幂等三条结构化事件链。它帮助练习归因，不增加真实模型证据；完整 expected/observed 与故障 canary 见[问题诊断](/practice/debugging)。
 
-若测试失败，先按 `contract / budget / policy / tool / checkpoint / cancel / timeout` 分类并保留输出，不通过增大预算、删除负例或放宽权限让结果变绿。命令只读固定输入、使用内存状态并可能留下被忽略的测试 cache，没有业务数据需要清理；cache 可保留。若为了学习修改代码，回滚时先查看精确 diff，只恢复自己的修改，再重跑九项测试和工作坊。
+若测试失败，先按 `contract / budget / policy / tool / checkpoint / cancel / timeout` 分类并保留输出，不通过增大预算、删除负例或放宽权限让结果变绿。命令只读固定输入、使用内存状态并可能留下被忽略的测试 cache，没有业务数据需要清理；cache 可保留。若为了学习修改代码，回滚时先查看精确 diff，只恢复自己的修改，再重跑上述测试和工作坊。
 
 ## 已知限制
 
@@ -375,7 +375,7 @@ npm run debug:workshop
 - 幂等 cache 只在进程内，不能证明外部系统 exactly-once（恰好一次）。
 - 默认验收器只做 JSON 子集比对；没有 artifact/测试/业务系统对账、补偿事务或真实 model/provider Adapter；validator 异常在 result-v1.1 暂映射为 `invalid_action`。
 
-这些限制意味着九条测试证明的是固定控制路径，不是生产可靠性或模型质量。
+这些限制意味着这些测试证明的是固定控制路径，不是生产可靠性或模型质量。
 
 ## 检查题
 

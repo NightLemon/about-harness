@@ -19,7 +19,7 @@ hero:
 features:
   - icon: 🧭
     title: 建立完整心智模型
-    details: 区分 model、provider、adapter、agent、framework、runtime、protocol、surface 与 harness，定位真正的责任边界。
+    details: 看懂模型、工具、权限、状态与验收怎样协作，再把具体产品放回它承担的责任层。
   - icon: 🧪
     title: 用实验替代排行榜
     details: 固定任务、版本、fixture、预算和评分标准，分清 E0 假设、E1 离线证据、E2 烟测与 E3 正式比较。
@@ -41,12 +41,15 @@ features:
 
 先读[学习路径](/guide/start)，核对[前置知识](/guide/prerequisites)与[知识地图](/guide/roadmap)，再按[作品集 rubric](/guide/portfolio)收集证据。
 
+需要了解当前领域全貌时，打开[Agent 生态全景](/ecosystem/overview)：从模型服务、Harness 与框架到 MCP/A2A/Skills、长任务部署、多模态和评测，按责任定位产品，再选择深入阅读与练习。
+
 ## 按你眼前的问题进入
 
 不必从侧栏第一篇顺序读到最后一篇。先选择一个真实问题，完成最短闭环，再回到知识地图补齐依赖。
 
 | 你现在想解决什么 | 第一站 | 接着做什么 | 应得到的产物 |
 | --- | --- | --- | --- |
+| 看懂 Agent 生态的新方向和产品关系 | [生态全景](/ecosystem/overview) | 运行[生态机制工作坊](/practice/ecosystem-workshop) | 能力、授权、编排与候选验收的三条边界 |
 | 看懂 Agent 为什么会行动或停止 | [Agent 循环](/foundations/agent-loop) | 跟读[Python 最小 Harness](/implementation/minimal-harness-python) | 一张 observe–decide–act–verify 状态图 |
 | 从零设计自己的 Harness | [系统架构](/foundations/architecture) | 填写[Harness 设计工作表](/practice/harness-design) | Task、责任图、Action 生命周期与验证计划 |
 | 判断失败来自模型还是工作环境 | [问题诊断](/optimization/debugging) | 用[可观测性](/foundations/observability)补证据 | 最小失败 fixture、根因与回归用例 |

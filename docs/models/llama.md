@@ -9,7 +9,7 @@
 - [Meta Developer：AI Developer Docs & Resources](https://developer.meta.com/ai/docs/overview/)
 - 目标 checkpoint 的官方 model card、license、acceptable-use 条款和不可变下载来源
 
-本页于 2026-09-03 实际打开官方入口并确认页面可访问。旧 `llama.com/docs/overview/` 入口当前会转到 Meta Developer 的 canonical 页面；具体模型、下载、许可、上下文、工具格式和运行要求仍必须以目标 checkpoint 的官方材料为准。
+本页于 2026-09-21 读取 Meta Llama 官方维护仓库的 model-card/license 指针。[FACT:llama-catalog] 旧 `llama.com/docs/overview/` 入口会转到 Meta Developer 的 canonical 页面；该入口的渲染页不是许可或 checkpoint 事实的充分依据。具体模型、下载、许可、上下文、工具格式和运行要求仍必须以目标 checkpoint 的官方 model card、license 与不可变 revision 为准。
 
 这条来源核验只能提供 E0。当前仓库没有下载权重、安装推理 runtime、启动 server 或调用托管 Llama API，不能据此声称任何真实组合兼容、可用或效果更好。
 

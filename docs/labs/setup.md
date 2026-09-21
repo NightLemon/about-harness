@@ -63,6 +63,8 @@ git status --short --branch
 ```powershell
 npm ci
 uv sync --frozen
+# 仅站点视觉检查需要：使用本仓库锁定的 Playwright 获取 Chromium
+npm exec -- playwright install chromium
 ```
 
 依赖已进入 cache（缓存）后，实验阶段显式保持离线：
@@ -95,7 +97,7 @@ Windows、macOS 与 Linux 读取相同锁文件和 fixture，但分别保留实�
 npm run labs:all
 npm run eval:validate
 npm run eval:summary
-npm run results:redact
+npm run results:redact # 失败关闭扫描：不修改或生成脱敏副本
 ```
 
 ### macOS / Linux（POSIX shell）
@@ -104,7 +106,7 @@ npm run results:redact
 npm run labs:all
 npm run eval:validate
 npm run eval:summary
-npm run results:redact
+npm run results:redact # 失败关闭扫描：不修改或生成脱敏副本
 ```
 
 预期：
@@ -113,7 +115,7 @@ npm run results:redact
 - 汇总为 `evidence=E1`、`offline=true`；
 - study 有 20 个 task、6 类 workload、6 个 holdout、2 个 config、3 次重复；
 - 示例 run 只有 12 行，而完整矩阵需要 120 行，因此 `promotion_eligible=false`；
-- 公开 JSON/JSONL 脱敏检查通过。
+- 公开 JSON/JSONL 的失败关闭扫描通过；它只拒绝已知敏感键、路径和凭据模式，不会自动脱敏或生成安全副本。
 
 矩阵不完整是示例刻意保留的事实，不是应删除的红色噪音。它演示“缺数据时拒绝晋级”。
 
@@ -146,7 +148,7 @@ docker compose run --rm labs-all
 | --- | --- |
 | `coding` | 补丁应用，空/单/多值测试均通过，只改变允许文件 |
 | `browser` | `injection_refused=true`、`side_effects=0` |
-| `research` | 冲突仍标记为 `conflict`，无 unsupported claim |
+| `research` | 冲突仍标记为 `conflict`；`unsupported_claims=1` 保留 deletion_process 的证据不足，不补写答案 |
 | `data` | Email 被脱敏，schema 漂移得到显式处理 |
 | `document` | 只引用当前版本，旧版本被忽略 |
 | `migration` | 两条路径、12 项责任完成映射，无边界扩大或逐字复制 |
@@ -189,7 +191,7 @@ docker compose run --rm labs-all
 | 本地通过、容器失败 | 镜像、复制范围、路径、Python 版本 | 宣称容器不重要 |
 | 容器通过、本地失败 | uv 环境、缓存、宿主权限 | 改 fixture 适配本机 |
 | `eval:validate` 失败 | task/fixture lineage、矩阵主键 | 删除缺失行检查 |
-| `results:redact` 失败 | 原始结果中的敏感字段与格式 | 把整个文件排除扫描 |
+| `results:redact` 失败 | 原始结果中的敏感字段与格式 | 隔离原始 artifact，先在受限位置制作脱敏副本并复扫；不能发布原文或把整个文件排除扫描 |
 | 负例通过 | validator 覆盖、条件方向、案例输出 | 只看顶层退出码 |
 | 两次输出不同 | commit、fixture/config hash、排序和环境 | 称为模型随机性 |
 

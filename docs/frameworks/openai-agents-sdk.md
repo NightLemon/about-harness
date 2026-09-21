@@ -2,7 +2,7 @@
 
 OpenAI Agents SDK 是面向 TypeScript/Python 的 code-first agent application（代码优先 Agent 应用）路径。它把 agent definition、runner、tool loop、handoff、guardrail、session/state、tracing 与 evaluation 等运行组件组织在一起，但不会替应用完成部署、业务工具、数据治理和采用评测。
 
-官方入口：[Build agents](https://developers.openai.com/api/docs/guides/agents)。本页于 2026-09-03 实际复核该页面；SDK 的具体 API、可用能力和默认行为仍以目标语言、目标版本的官方文档为准。[FACT:openai-agents-sdk]
+官方入口：[Build agents](https://developers.openai.com/api/docs/guides/agents)。本页于 2026-09-21 实际复核该页面；SDK 的具体 API、可用能力和默认行为仍以目标语言、目标版本的官方文档为准。[FACT:openai-agents-sdk]
 
 ## 先决定是否需要 SDK
 

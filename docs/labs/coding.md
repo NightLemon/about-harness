@@ -265,7 +265,7 @@ uv run --frozen --offline pytest -q `
   lab/tests/test_m5_labs.py::test_cli_accepts_isolated_fixture_root_and_rejects_tampering
 ```
 
-预期显示 `8 passed`。其中一个测试应用合法的 under-fix diff，`patch.applied=true` 但只有 `empty` 通过，证明测试数不是名称计数；其他测试分别要求 import、陈旧 base、路径穿越、schema/scope 扩大、hunk 行数和 context 漂移被拒绝。
+预期所有列出的定向测试通过。其中一个测试应用合法的 under-fix diff，`patch.applied=true` 但只有 `empty` 通过，证明测试数不是名称计数；其他测试分别要求 import、陈旧 base、路径穿越、schema/scope 扩大、hunk 行数和 context 漂移被拒绝。
 
 `negative.json` 使用与正例相同的 payload，再逐项 override `candidate_patch.diff` 或 base hash。Import 负例先成功通过 diff 解析，随后因结果 AST 不在预审集合而拒绝；这能验证当前固定边界，却不能声称系统通用理解依赖变更。真实项目还要检查 package manifest、lockfile、实际 diff 和允许策略。
 
@@ -368,7 +368,7 @@ git status --short
 - [ ] Base hash、allowed path、hunk context/行数和 result hash 均可解释；
 - [ ] 合法 under-fix 能应用但只通过 1/3，测试确实执行；
 - [ ] 路径穿越、陈旧 base 与 import 扩权三组 fixture 负例全部拒绝；
-- [ ] 定向测试显示 `8 passed`；
+- [ ] 定向测试全部通过，且 under-fix 仍只通过 `empty`；
 - [ ] 没有把内存 `changed_files`、`passed=true` 或 E1 写成真实模型能力；
 - [ ] 临时副本和输出已清理，原工作树状态可解释。
 

@@ -1,5 +1,7 @@
 # 综合项目：从 Starter 到可复核作品集
 
+准备面试材料时，可先完成[五张面试迁移卡](interview-practice.md)，再把脱敏证据组织为 Capstone。
+
 ## 这不是填写表格比赛
 
 Capstone（综合项目）的目标，是用同一个小 Task 串起知识地图、最小 Harness、模型适配、配对评测、安全评审和跨 Harness 迁移。另一位读者应能只看版本、输入、命令、Trace、Result 和失败记录，就判断你的结论是否成立。

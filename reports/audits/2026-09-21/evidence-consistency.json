@@ -1,0 +1,11 @@
+{
+  "source_rows": 59,
+  "source_cache_hashes_matched": 58,
+  "all_evidence_refs_resolve": true,
+  "environment": {
+    "node": "v24.14.0",
+    "python": "Python 3.11.15",
+    "uv": "uv 0.11.16 (135a36367 2026-05-21 x86_64-pc-windows-msvc)"
+  },
+  "content_hashes_match": true
+}

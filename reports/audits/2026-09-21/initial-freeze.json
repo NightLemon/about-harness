@@ -1,0 +1,11 @@
+{
+  "initial_report_sha256": "fdf731082078c2145cef65bb4bba47339f9f1085787d73303391061f23ead71c",
+  "initial_reviews": {
+    "initial-principles.json": "c972f2d5ac346e742b7d9aefd4e9cd04ba3bfd824fa293e206056a236ef2b84d",
+    "initial-products.json": "9f9730b867a5c0bc292ac96accca239f85e9fbdcec38af6e7565e18cf4906895",
+    "initial-root.json": "3c0196c4e74e8db8014df3313af74c5404de040be190220d61271a37e8162958",
+    "initial-tutorials.json": "191b58ba40857ddb5dfbb5420685e01ad128e56efaeece54740169d3a4df00b1"
+  },
+  "page_count": 108,
+  "finding_count": 28
+}

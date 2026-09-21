@@ -303,7 +303,7 @@ npm run lab:smoke
 uv run --frozen --offline pytest -q lab/tests/test_loop.py::test_normal_completion_and_structured_trace lab/tests/test_loop.py::test_acceptance_rejection_returns_feedback_and_allows_repair lab/tests/test_loop.py::test_permission_denial_stops_before_tool_execution lab/tests/test_loop.py::test_wrong_adapter_return_is_classified_as_invalid_action lab/tests/test_loop.py::test_checkpoint_restores_adapter_position
 ```
 
-预期 5 项测试通过，分别证明声明的 JSON 验收通过、首次验收失败可带路径修正、policy 在 handler 前拒绝、坏 adapter 返回被分类，以及 checkpoint 恢复 action cursor。它们没有覆盖真实 context builder、provider、持久状态或任务专用业务 validator。
+预期相关测试全部通过，分别证明声明的 JSON 验收通过、首次验收失败可带路径修正、policy 在 handler 前拒绝、坏 adapter 返回被分类，以及 checkpoint 恢复 action cursor。它们没有覆盖真实 context builder、provider、持久状态或任务专用业务 validator。
 
 ## 失败案例：观察 policy 在副作用前停止
 

@@ -183,16 +183,16 @@ Delta debugging（差分最小化）是逐步删除输入、工具、上下文�
 ## 诊断记录模板
 
 ```markdown
-## Symptom and impact
-## Scope / stop conditions
-## Exact identities and diagnostic bundle
-## Expected vs observed by boundary
-## Minimal reproduction
-## Hypotheses and falsification results
-## First divergence and root cause
-## Fix + negative/regression tests
-## Verification commands and exit codes
-## Residual uncertainty / rollback
+## 症状与影响（Symptom and impact）
+## 范围与停止条件（Scope / stop conditions）
+## 精确身份与诊断包（Exact identities and diagnostic bundle）
+## 按边界的预期与实际（Expected vs observed by boundary）
+## 最小复现（Minimal reproduction）
+## 假设与证伪结果（Hypotheses and falsification results）
+## 第一处分歧与根因（First divergence and root cause）
+## 修复与负例/回归测试（Fix + negative/regression tests）
+## 验证命令与退出码（Verification commands and exit codes）
+## 剩余不确定性与回退（Residual uncertainty / rollback）
 ```
 
 若第三方不能仅凭记录重现或证伪结论，诊断还不完整。失败输出和被否定假设也有价值，避免下一人重复同一路径。
@@ -211,7 +211,7 @@ uv run --frozen --offline pytest -q lab/tests/test_loop.py::test_wrong_adapter_r
 
 ### 预期输出与诊断
 
-应有 3 项通过：
+预期相关测试全部通过：
 
 - 错误 adapter 返回普通对象而不是 `Action`，第一处分歧位于 adapter trust boundary；runner 返回 `failed/invalid_action`，而不是让坏值进入后续工具；
 - 模型提出已注册但 Task 未允许的危险工具，policy 返回 `permission_denied`，handler 的执行标志仍为 false；
